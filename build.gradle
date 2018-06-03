@@ -1,0 +1,128 @@
+import org.atom.gradle.task.ReobfuscateTask
+import org.atom.gradle.task.ShrinkJarTask
+
+plugins {
+    id 'java'
+    id 'maven'
+    id 'idea'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = "forge"
+        url = "http://files.minecraftforge.net/maven"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        name = 'minecraft'
+        url = 'https://libraries.minecraft.net/'
+    }
+}
+
+group = 'org.atom'
+version = '0.1-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0'
+    testCompile 'org.opentest4j:opentest4j:1.0.0'
+    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'com.mojang:patchy:1.1'
+    compile 'oshi-project:oshi-core:1.1'
+    compile 'net.java.dev.jna:jna:4.4.0'
+    compile 'net.java.dev.jna:platform:3.4.0'
+    compile 'com.ibm.icu:icu4j-core-mojang:51.2'
+    compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+    compile 'com.paulscode:codecjorbis:20101023'
+    compile 'com.paulscode:codecwav:20101023'
+    compile 'com.paulscode:libraryjavasound:20101123'
+    compile 'com.paulscode:librarylwjglopenal:20100824'
+    compile 'com.paulscode:soundsystem:20120107'
+    compile 'io.netty:netty-all:4.1.9.Final'
+    compile 'com.google.guava:guava:21.0'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'commons-io:commons-io:2.5'
+    compile 'commons-codec:commons-codec:1.10'
+    compile 'net.java.jinput:jinput:2.0.5'
+    compile 'net.java.jutils:jutils:1.0.0'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.mojang:authlib:1.5.25'
+    compile 'com.mojang:realms:1.10.19'
+    compile 'org.apache.commons:commons-compress:1.8.1'
+    compile 'org.apache.httpcomponents:httpclient:4.3.3'
+    compile 'commons-logging:commons-logging:1.1.3'
+    compile 'org.apache.httpcomponents:httpcore:4.3.2'
+    compile 'it.unimi.dsi:fastutil:7.1.0'
+    compile 'org.apache.logging.log4j:log4j-api:2.8.1'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.8.1' // log4j uses annotation processors
+    compile 'org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209'
+    compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209'
+    compile 'com.mojang:text2speech:1.10.3'
+    compile 'net.minecraft:launchwrapper:1.12'
+    compile 'jline:jline:2.13'
+    compile 'org.ow2.asm:asm-debug-all:6.0_BETA'
+    compile 'com.typesafe.akka:akka-actor_2.11:2.3.3'
+    compile 'com.typesafe:config:1.2.1'
+    compile 'lzma:lzma:0.0.1'
+    compile 'java3d:vecmath:1.5.2'
+    compile 'net.sf.trove4j:trove4j:3.0.3'
+    compile 'org.apache.maven:maven-artifact:3.5.3'
+}
+
+jar {
+    classifier = 'dev'
+}
+
+task reobfuscate(type: ReobfuscateTask) {
+    dependsOn(tasks.jar)
+    classpath = sourceSets.main.compileClasspath
+    srg = new File('conf/mcp-notch.srg')
+    inputJar = (File) tasks.jar.archivePath
+}
+
+task shrinkJar(type: ShrinkJarTask) {
+    dependsOn(tasks.reobfuscate)
+    inputJar = (File) tasks.reobfuscate.outputJar
+}
+
+task processServerResources(type: ProcessResources) {
+    from sourceSets.main.resources.srcDirs
+    into new File(buildDir, 'resources_server')
+    exclude 'assets/minecraft/font'
+    exclude 'assets/minecraft/shaders'
+    exclude 'assets/minecraft/texts'
+    exclude 'assets/minecraft/textures'
+    exclude 'assets/fml/textures'
+}
+
+task jar_server(type: Jar) {
+    dependsOn(tasks.shrinkJar, tasks.processServerResources)
+    from fileTree(tasks.shrinkJar.classesServer), tasks.processServerResources
+    classifier = 'server'
+    manifest {
+        attributes(
+                "Main-Class": "net.minecraftforge.fml.relauncher.ServerLaunchWrapper",
+                "TweakClass": "net.minecraftforge.fml.common.launcher.FMLTweaker",
+                "Class-Path": configurations.compile.collect { 'libraries/' + it.getName() }.join(' '),
+        )
+    }
+}
+
+artifacts {
+    archives jar_server
+}
+
+task dumpLibs(type: Copy) {
+    into "$buildDir/libraries"
+    from configurations.compile
+}
