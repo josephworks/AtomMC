@@ -22,6 +22,10 @@ repositories {
         name = 'minecraft'
         url = 'https://libraries.minecraft.net/'
     }
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
 }
 
 group = 'org.atom'
@@ -78,6 +82,9 @@ dependencies {
     compile 'java3d:vecmath:1.5.2'
     compile 'net.sf.trove4j:trove4j:3.0.3'
     compile 'org.apache.maven:maven-artifact:3.5.3'
+    compile('org.spongepowered:mixin:0.7.8-SNAPSHOT') {
+        exclude module: 'launchwrapper'
+    }
 }
 
 jar {
