@@ -1,2 +1,4 @@
 rootProject.name = 'Atom'
 
+include ':LegacyLauncher'
+project(':LegacyLauncher').projectDir = new File(settingsDir, '../LegacyLauncher')
