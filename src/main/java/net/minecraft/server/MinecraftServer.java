@@ -149,6 +149,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     private long currentTime = getCurrentTimeMillis();
     @SideOnly(Side.CLIENT)
     private boolean worldIconSet;
+    private static MinecraftServer minecraftServer;
 
     public MinecraftServer(File anvilFileIn, Proxy proxyIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
     {
@@ -162,6 +163,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.commandManager = this.createCommandManager();
         this.anvilConverterForAnvilFile = new AnvilSaveConverter(anvilFileIn, dataFixerIn);
         this.dataFixer = dataFixerIn;
+        minecraftServer = this;
     }
 
     public ServerCommandManager createCommandManager()
@@ -1646,5 +1648,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     public DataFixer getDataFixer()
     {
         return this.dataFixer;
+    }
+
+    public static MinecraftServer getMinecraftServer() {
+        return minecraftServer;
     }
 }

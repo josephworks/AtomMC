@@ -7,6 +7,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerScheduler;
+import org.junit.runners.model.TestClass;
 import org.spongepowered.asm.launch.MixinTweaker;
 
 import java.lang.reflect.Method;
@@ -67,6 +68,15 @@ public class MinecraftServerRunner extends BlockJUnit4ClassRunner {
             Method addTaskMethod = mod.getDeclaredMethod("addTask", Runnable.class);
             addTaskMethod.invoke(null, task);
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected TestClass createTestClass(Class<?> testClass) {
+        try {
+            return super.createTestClass(Launch.classLoader.findClass(testClass.getName()));
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
