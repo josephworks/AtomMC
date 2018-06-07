@@ -43,7 +43,8 @@ public class FMLSecurityManager extends SecurityManager {
                     || "net.minecraft.server.dedicated.ServerHangWatchdog$1".equals(callingClass)
                     || "net.minecraft.server.dedicated.ServerHangWatchdog".equals(callingClass)
                     || ( "net.minecraft.client.Minecraft".equals(callingClass) && "net.minecraft.client.Minecraft".equals(callingParent))
-                    || ("net.minecraft.server.dedicated.DedicatedServer".equals(callingClass) && "net.minecraft.server.MinecraftServer".equals(callingParent)))
+                    || ("net.minecraft.server.dedicated.DedicatedServer".equals(callingClass) && "net.minecraft.server.MinecraftServer".equals(callingParent))
+                    || "com.intellij.rt.execution.junit.JUnitStarter".equals(callingClass)) // JUnitStarter is needed for test running
                     )
             {
                 throw new ExitTrappedException();
