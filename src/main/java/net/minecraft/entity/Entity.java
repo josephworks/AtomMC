@@ -137,7 +137,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public float entityCollisionReduction;
     protected Random rand;
     public int ticksExisted;
-    private int fire;
+    public int fire;
     protected boolean inWater;
     public int hurtResistantTime;
     protected boolean firstUpdate;
@@ -172,7 +172,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     protected UUID entityUniqueID;
     protected String cachedUniqueIdString;
     private final CommandResultStats cmdResultStats;
-    protected boolean glowing;
+    public boolean glowing;
     private final Set<String> tags;
     private boolean isPositionDirty;
     private final double[] pistonDeltas;
@@ -1882,7 +1882,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     @Nullable
-    protected final String getEntityString()
+    public final String getEntityString()
     {
         ResourceLocation resourcelocation = EntityList.getKey(this);
         return resourcelocation == null ? null : resourcelocation.toString();
@@ -2322,12 +2322,12 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.setFlag(5, invisible);
     }
 
-    protected boolean getFlag(int flag)
+    public boolean getFlag(int flag)
     {
         return (((Byte)this.dataManager.get(FLAGS)).byteValue() & 1 << flag) != 0;
     }
 
-    protected void setFlag(int flag, boolean set)
+    public void setFlag(int flag, boolean set)
     {
         byte b0 = ((Byte)this.dataManager.get(FLAGS)).byteValue();
 
@@ -3281,7 +3281,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         return SoundCategory.NEUTRAL;
     }
 
-    protected int getFireImmuneTicks()
+    public int getFireImmuneTicks()
     {
         return 1;
     }

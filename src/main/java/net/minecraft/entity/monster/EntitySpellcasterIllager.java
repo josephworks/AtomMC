@@ -66,7 +66,7 @@ public abstract class EntitySpellcasterIllager extends AbstractIllager
         this.dataManager.set(SPELL, Byte.valueOf((byte)spellType.id));
     }
 
-    protected SpellType getSpellType()
+    public SpellType getSpellType()
     {
         return !this.world.isRemote ? this.activeSpell : SpellType.getFromId(((Byte)this.dataManager.get(SPELL)).byteValue());
     }

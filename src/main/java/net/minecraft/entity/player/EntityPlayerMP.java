@@ -117,7 +117,7 @@ import org.apache.logging.log4j.Logger;
 public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private String language = "en_US";
+    public String language = "en_US";
     public NetHandlerPlayServer connection;
     public final MinecraftServer mcServer;
     public final PlayerInteractionManager interactionManager;
@@ -135,8 +135,8 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     private float lastHealth = -1.0E8F;
     private int lastFoodLevel = -99999999;
     private boolean wasHungry = true;
-    private int lastExperience = -99999999;
-    private int respawnInvulnerabilityTicks = 60;
+    public int lastExperience = -99999999;
+    public int respawnInvulnerabilityTicks = 60;
     private EnumChatVisibility chatVisibility;
     private boolean chatColours = true;
     private long playerLastActiveTime = System.currentTimeMillis();

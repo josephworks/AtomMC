@@ -86,7 +86,7 @@ public class WorldServer extends World implements IThreadListener
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftServer mcServer;
-    private final EntityTracker entityTracker;
+    public EntityTracker entityTracker;
     private final PlayerChunkMap playerChunkMap;
     private final Set<NextTickListEntry> pendingTickListEntriesHashSet = Sets.<NextTickListEntry>newHashSet();
     private final TreeSet<NextTickListEntry> pendingTickListEntriesTreeSet = new TreeSet<NextTickListEntry>();

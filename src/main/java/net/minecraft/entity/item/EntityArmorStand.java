@@ -67,12 +67,12 @@ public class EntityArmorStand extends EntityLivingBase
     public long punchCooldown;
     private int disabledSlots;
     private boolean wasMarker;
-    private Rotations headRotation;
-    private Rotations bodyRotation;
-    private Rotations leftArmRotation;
-    private Rotations rightArmRotation;
-    private Rotations leftLegRotation;
-    private Rotations rightLegRotation;
+    public Rotations headRotation;
+    public Rotations bodyRotation;
+    public Rotations leftArmRotation;
+    public Rotations rightArmRotation;
+    public Rotations leftLegRotation;
+    public Rotations rightLegRotation;
 
     public EntityArmorStand(World worldIn)
     {
@@ -804,7 +804,7 @@ public class EntityArmorStand extends EntityLivingBase
         return this.hasMarker() ? EnumPushReaction.IGNORE : super.getPushReaction();
     }
 
-    private void setSmall(boolean small)
+    public void setSmall(boolean small)
     {
         this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 1, small)));
         this.setSize(0.5F, 1.975F);
@@ -815,7 +815,7 @@ public class EntityArmorStand extends EntityLivingBase
         return (((Byte)this.dataManager.get(STATUS)).byteValue() & 1) != 0;
     }
 
-    private void setShowArms(boolean showArms)
+    public void setShowArms(boolean showArms)
     {
         this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 4, showArms)));
     }
@@ -825,7 +825,7 @@ public class EntityArmorStand extends EntityLivingBase
         return (((Byte)this.dataManager.get(STATUS)).byteValue() & 4) != 0;
     }
 
-    private void setNoBasePlate(boolean noBasePlate)
+    public void setNoBasePlate(boolean noBasePlate)
     {
         this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 8, noBasePlate)));
     }
@@ -835,7 +835,7 @@ public class EntityArmorStand extends EntityLivingBase
         return (((Byte)this.dataManager.get(STATUS)).byteValue() & 8) != 0;
     }
 
-    private void setMarker(boolean marker)
+    public void setMarker(boolean marker)
     {
         this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 16, marker)));
         this.setSize(0.5F, 1.975F);

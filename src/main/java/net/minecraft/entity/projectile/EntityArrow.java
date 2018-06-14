@@ -60,7 +60,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
     private int ticksInGround;
     private int ticksInAir;
     private double damage;
-    private int knockbackStrength;
+    public int knockbackStrength;
 
     public EntityArrow(World worldIn)
     {

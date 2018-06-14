@@ -33,15 +33,15 @@ public class EntityAreaEffectCloud extends Entity
     private static final DataParameter<Integer> PARTICLE_PARAM_1 = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
     private static final DataParameter<Integer> PARTICLE_PARAM_2 = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
     private PotionType potion;
-    private final List<PotionEffect> effects;
+    public final List<PotionEffect> effects;
     private final Map<Entity, Integer> reapplicationDelayMap;
     private int duration;
-    private int waitTime;
-    private int reapplicationDelay;
+    public int waitTime;
+    public int reapplicationDelay;
     private boolean colorSet;
-    private int durationOnUse;
-    private float radiusOnUse;
-    private float radiusPerTick;
+    public int durationOnUse;
+    public float radiusOnUse;
+    public float radiusPerTick;
     private EntityLivingBase owner;
     private UUID ownerUniqueId;
 

@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 public class FurnaceRecipes
 {
     private static final FurnaceRecipes SMELTING_BASE = new FurnaceRecipes();
-    private final Map<ItemStack, ItemStack> smeltingList = Maps.<ItemStack, ItemStack>newHashMap();
+    public final Map<ItemStack, ItemStack> smeltingList = Maps.<ItemStack, ItemStack>newHashMap();
     private final Map<ItemStack, Float> experienceList = Maps.<ItemStack, Float>newHashMap();
 
     public static FurnaceRecipes instance()
@@ -23,7 +23,7 @@ public class FurnaceRecipes
         return SMELTING_BASE;
     }
 
-    private FurnaceRecipes()
+    public FurnaceRecipes()
     {
         this.addSmeltingRecipeForBlock(Blocks.IRON_ORE, new ItemStack(Items.IRON_INGOT), 0.7F);
         this.addSmeltingRecipeForBlock(Blocks.GOLD_ORE, new ItemStack(Items.GOLD_INGOT), 1.0F);

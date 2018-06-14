@@ -8,12 +8,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class MerchantRecipe
 {
-    private ItemStack itemToBuy;
-    private ItemStack secondItemToBuy;
-    private ItemStack itemToSell;
-    private int toolUses;
-    private int maxTradeUses;
-    private boolean rewardsExp;
+    public ItemStack itemToBuy;
+    public ItemStack secondItemToBuy;
+    public ItemStack itemToSell;
+    public int toolUses;
+    public int maxTradeUses;
+    public boolean rewardsExp;
 
     public MerchantRecipe(NBTTagCompound tagCompound)
     {

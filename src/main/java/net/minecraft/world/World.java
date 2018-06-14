@@ -93,12 +93,12 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     public float thunderingStrength;
     private int lastLightningBolt;
     public final Random rand = new Random();
-    public final WorldProvider provider;
+    public WorldProvider provider;
     protected PathWorldListener pathListener = new PathWorldListener();
     protected List<IWorldEventListener> eventListeners;
     protected IChunkProvider chunkProvider;
     protected final ISaveHandler saveHandler;
-    protected WorldInfo worldInfo;
+    public WorldInfo worldInfo;
     protected boolean findingSpawnPoint;
     protected MapStorage mapStorage;
     public VillageCollection villageCollection;
@@ -107,10 +107,10 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     protected FunctionManager functionManager;
     public final Profiler profiler;
     private final Calendar calendar;
-    protected Scoreboard worldScoreboard;
+    public Scoreboard worldScoreboard;
     public final boolean isRemote;
-    protected boolean spawnHostileMobs;
-    protected boolean spawnPeacefulMobs;
+    public boolean spawnHostileMobs;
+    public boolean spawnPeacefulMobs;
     private boolean processingLoadedTiles;
     private final WorldBorder worldBorder;
     int[] lightUpdateBlockList;

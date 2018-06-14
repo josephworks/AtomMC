@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FoodStats
 {
-    private int foodLevel = 20;
-    private float foodSaturationLevel = 5.0F;
-    private float foodExhaustionLevel;
-    private int foodTimer;
-    private int prevFoodLevel = 20;
+    public int foodLevel = 20;
+    public float foodSaturationLevel = 5.0F;
+    public float foodExhaustionLevel;
+    public int foodTimer;
+    public int prevFoodLevel = 20;
 
     public void addStats(int foodLevelIn, float foodSaturationModifier)
     {

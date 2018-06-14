@@ -12,8 +12,8 @@ import net.minecraft.world.LockCode;
 public class InventoryLargeChest implements ILockableContainer
 {
     private final String name;
-    private final ILockableContainer upperChest;
-    private final ILockableContainer lowerChest;
+    public final ILockableContainer upperChest;
+    public final ILockableContainer lowerChest;
 
     public InventoryLargeChest(String nameIn, ILockableContainer upperChestIn, ILockableContainer lowerChestIn)
     {

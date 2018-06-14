@@ -123,9 +123,9 @@ public abstract class EntityPlayer extends EntityLivingBase
     public double chasingPosX;
     public double chasingPosY;
     public double chasingPosZ;
-    protected boolean sleeping;
+    public boolean sleeping;
     public BlockPos bedLocation;
-    private int sleepTimer;
+    public int sleepTimer;
     public float renderOffsetX;
     @SideOnly(Side.CLIENT)
     public float renderOffsetY;
@@ -408,7 +408,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         return SoundCategory.PLAYERS;
     }
 
-    protected int getFireImmuneTicks()
+    public int getFireImmuneTicks()
     {
         return 20;
     }
@@ -2481,7 +2481,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         return (NBTTagCompound)this.dataManager.get(LEFT_SHOULDER_ENTITY);
     }
 
-    protected void setLeftShoulderEntity(NBTTagCompound tag)
+    public void setLeftShoulderEntity(NBTTagCompound tag)
     {
         this.dataManager.set(LEFT_SHOULDER_ENTITY, tag);
     }
@@ -2491,7 +2491,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         return (NBTTagCompound)this.dataManager.get(RIGHT_SHOULDER_ENTITY);
     }
 
-    protected void setRightShoulderEntity(NBTTagCompound tag)
+    public void setRightShoulderEntity(NBTTagCompound tag)
     {
         this.dataManager.set(RIGHT_SHOULDER_ENTITY, tag);
     }

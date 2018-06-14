@@ -83,7 +83,7 @@ public abstract class EntityLivingBase extends Entity
     private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final AttributeModifier SPRINTING_SPEED_BOOST = (new AttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", 0.30000001192092896D, 2)).setSaved(false);
     protected static final DataParameter<Byte> HAND_STATES = EntityDataManager.<Byte>createKey(EntityLivingBase.class, DataSerializers.BYTE);
-    private static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityLivingBase.class, DataSerializers.FLOAT);
+    public static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityLivingBase.class, DataSerializers.FLOAT);
     private static final DataParameter<Integer> POTION_EFFECTS = EntityDataManager.<Integer>createKey(EntityLivingBase.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> HIDE_PARTICLES = EntityDataManager.<Boolean>createKey(EntityLivingBase.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Integer> ARROW_COUNT_IN_ENTITY = EntityDataManager.<Integer>createKey(EntityLivingBase.class, DataSerializers.VARINT);
@@ -116,7 +116,7 @@ public abstract class EntityLivingBase extends Entity
     public float rotationYawHead;
     public float prevRotationYawHead;
     public float jumpMovementFactor = 0.02F;
-    protected EntityPlayer attackingPlayer;
+    public EntityPlayer attackingPlayer;
     protected int recentlyHit;
     protected boolean dead;
     protected int idleTime;
@@ -126,7 +126,7 @@ public abstract class EntityLivingBase extends Entity
     protected float prevMovedDistance;
     protected float unused180;
     protected int scoreValue;
-    protected float lastDamage;
+    public float lastDamage;
     protected boolean isJumping;
     public float moveStrafing;
     public float moveVertical;

@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class ChunkProviderServer implements IChunkProvider
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Set<Long> droppedChunksSet = Sets.<Long>newHashSet();
+    public final Set<Long> droppedChunksSet = Sets.<Long>newHashSet();
     public final IChunkGenerator chunkGenerator;
     public final IChunkLoader chunkLoader;
     public final Long2ObjectMap<Chunk> id2ChunkMap = new Long2ObjectOpenHashMap<Chunk>(8192);
