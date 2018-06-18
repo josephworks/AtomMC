@@ -86,6 +86,9 @@ public class BlockIce extends BlockBreakable
 
     protected void turnIntoWater(World worldIn, BlockPos pos)
     {
+        if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()), worldIn.provider.doesWaterVaporize() ? Blocks.AIR : Blocks.WATER).isCancelled()) {
+            return;
+        }
         if (worldIn.provider.doesWaterVaporize())
         {
             worldIn.setBlockToAir(pos);

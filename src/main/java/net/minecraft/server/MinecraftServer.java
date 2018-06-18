@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +37,9 @@ import java.util.concurrent.FutureTask;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+
+import jline.console.ConsoleReader;
+import joptsimple.OptionSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.command.CommandBase;
@@ -150,6 +154,17 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.CLIENT)
     private boolean worldIconSet;
     private static MinecraftServer minecraftServer;
+    public List<WorldServer> worldServerList = new ArrayList<>();
+    public org.bukkit.craftbukkit.CraftServer server;
+    public OptionSet options;
+    public org.bukkit.command.ConsoleCommandSender console;
+    public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
+    public ConsoleReader reader;
+    public static int currentTick = (int) (System.currentTimeMillis() / 50);
+    public final Thread primaryThread;
+    public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
+    public int autosavePeriod;
+    // CraftBukkit end
 
     public MinecraftServer(File anvilFileIn, Proxy proxyIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
     {

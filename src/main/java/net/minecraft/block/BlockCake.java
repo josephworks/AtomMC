@@ -71,7 +71,16 @@ public class BlockCake extends Block
         else
         {
             player.addStat(StatList.CAKE_SLICES_EATEN);
-            player.getFoodStats().addStats(2, 0.1F);
+            // player.getFoodStats().addStats(2, 0.1F);
+            int oldFoodLevel = player.getFoodStats().foodLevel;
+
+            org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callFoodLevelChangeEvent(player, 2 + oldFoodLevel);
+
+            if (!event.isCancelled()) {
+                player.getFoodStats().addStats(event.getFoodLevel() - oldFoodLevel, 0.1F);
+            }
+
+            ((EntityPlayer) player).getBukkitEntity().sendHealthUpdate();
             int i = ((Integer)state.getValue(BITES)).intValue();
 
             if (i < 6)

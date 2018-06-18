@@ -194,37 +194,38 @@ public class PlayerAdvancements
         }
     }
 
-    public boolean grantCriterion(Advancement p_192750_1_, String p_192750_2_)
+    public boolean grantCriterion(Advancement advancement, String p_192750_2_)
     {
         // Forge: don't grant advancements for fake players
         if (this.player instanceof net.minecraftforge.common.util.FakePlayer) return false;
 
         boolean flag = false;
-        AdvancementProgress advancementprogress = this.getProgress(p_192750_1_);
+        AdvancementProgress advancementprogress = this.getProgress(advancement);
         boolean flag1 = advancementprogress.isDone();
 
         if (advancementprogress.grantCriterion(p_192750_2_))
         {
-            this.unregisterListeners(p_192750_1_);
-            this.progressChanged.add(p_192750_1_);
+            this.unregisterListeners(advancement);
+            this.progressChanged.add(advancement);
             flag = true;
 
             if (!flag1 && advancementprogress.isDone())
             {
-                p_192750_1_.getRewards().apply(this.player);
+                this.player.world.getServer().getPluginManager().callEvent(new org.bukkit.event.player.PlayerAdvancementDoneEvent(this.player.getBukkitEntity(), advancement.bukkit));
+                advancement.getRewards().apply(this.player);
 
-                if (p_192750_1_.getDisplay() != null && p_192750_1_.getDisplay().shouldAnnounceToChat() && this.player.world.getGameRules().getBoolean("announceAdvancements"))
+                if (advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && this.player.world.getGameRules().getBoolean("announceAdvancements"))
                 {
-                    this.server.getPlayerList().sendMessage(new TextComponentTranslation("chat.type.advancement." + p_192750_1_.getDisplay().getFrame().getName(), new Object[] {this.player.getDisplayName(), p_192750_1_.getDisplayText()}));
+                    this.server.getPlayerList().sendMessage(new TextComponentTranslation("chat.type.advancement." + advancement.getDisplay().getFrame().getName(), new Object[] {this.player.getDisplayName(), advancement.getDisplayText()}));
                 }
 
-                net.minecraftforge.common.ForgeHooks.onAdvancement(this.player, p_192750_1_);
+                net.minecraftforge.common.ForgeHooks.onAdvancement(this.player, advancement);
             }
         }
 
         if (advancementprogress.isDone())
         {
-            this.ensureVisibility(p_192750_1_);
+            this.ensureVisibility(advancement);
         }
 
         return flag;

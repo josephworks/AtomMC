@@ -20,6 +20,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class BlockRedstoneTorch extends BlockTorch
 {
@@ -119,10 +120,23 @@ public class BlockRedstoneTorch extends BlockTorch
             list.remove(0);
         }
 
+        org.bukkit.plugin.PluginManager manager = worldIn.getServer().getPluginManager();
+        org.bukkit.block.Block block = worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+        int oldCurrent = this.isOn ? 15 : 0;
+
+        BlockRedstoneEvent event = new BlockRedstoneEvent(block, oldCurrent, oldCurrent);
+
         if (this.isOn)
         {
             if (flag)
             {
+                if (oldCurrent != 0) {
+                    event.setNewCurrent(0);
+                    manager.callEvent(event);
+                    if (event.getNewCurrent() != 0) {
+                        return;
+                    }
+                }
                 worldIn.setBlockState(pos, Blocks.UNLIT_REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
 
                 if (this.isBurnedOut(worldIn, pos, true))
@@ -143,6 +157,13 @@ public class BlockRedstoneTorch extends BlockTorch
         }
         else if (!flag && !this.isBurnedOut(worldIn, pos, false))
         {
+            if (oldCurrent != 15) {
+                event.setNewCurrent(15);
+                manager.callEvent(event);
+                if (event.getNewCurrent() != 15) {
+                    return;
+                }
+            }
             worldIn.setBlockState(pos, Blocks.REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
         }
     }

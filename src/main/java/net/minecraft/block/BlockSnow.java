@@ -131,6 +131,9 @@ public class BlockSnow extends Block
     {
         if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 11)
         {
+            if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()), Blocks.AIR).isCancelled()) {
+                return;
+            }
             worldIn.setBlockToAir(pos);
         }
     }

@@ -11,6 +11,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class BlockRailPowered extends BlockRailBase
 {
@@ -194,6 +195,11 @@ public class BlockRailPowered extends BlockRailBase
 
         if (flag1 != flag)
         {
+            int power = state.getValue(POWERED) ? 15 : 0;
+            int newPower = CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), power, 15 - power).getNewCurrent();
+            if (newPower == power) {
+                return;
+            }
             worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(flag1)), 3);
             worldIn.notifyNeighborsOfStateChange(pos.down(), this, false);
 

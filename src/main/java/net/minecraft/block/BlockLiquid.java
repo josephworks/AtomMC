@@ -284,15 +284,17 @@ public abstract class BlockLiquid extends Block
 
                 if (integer.intValue() == 0)
                 {
-                    worldIn.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState());
-                    this.triggerMixEffects(worldIn, pos);
+                    if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(worldIn, pos, Blocks.OBSIDIAN.getDefaultState(), null)) {
+                        this.triggerMixEffects(worldIn, pos);
+                    }
                     return true;
                 }
 
                 if (integer.intValue() <= 4)
                 {
-                    worldIn.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState());
-                    this.triggerMixEffects(worldIn, pos);
+                    if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(worldIn, pos, Blocks.COBBLESTONE.getDefaultState(), null)) {
+                        this.triggerMixEffects(worldIn, pos);
+                    }
                     return true;
                 }
             }

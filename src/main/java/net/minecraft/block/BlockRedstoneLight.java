@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class BlockRedstoneLight extends Block
 {
@@ -30,10 +31,16 @@ public class BlockRedstoneLight extends Block
         {
             if (this.isOn && !worldIn.isBlockPowered(pos))
             {
+                if (CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), 15, 0).getNewCurrent() != 0) {
+                    return;
+                }
                 worldIn.setBlockState(pos, Blocks.REDSTONE_LAMP.getDefaultState(), 2);
             }
             else if (!this.isOn && worldIn.isBlockPowered(pos))
             {
+                if (CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), 0, 15).getNewCurrent() != 15) {
+                    return;
+                }
                 worldIn.setBlockState(pos, Blocks.LIT_REDSTONE_LAMP.getDefaultState(), 2);
             }
         }
@@ -49,6 +56,9 @@ public class BlockRedstoneLight extends Block
             }
             else if (!this.isOn && worldIn.isBlockPowered(pos))
             {
+                if (CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), 0, 15).getNewCurrent() != 15) {
+                    return;
+                }
                 worldIn.setBlockState(pos, Blocks.LIT_REDSTONE_LAMP.getDefaultState(), 2);
             }
         }
@@ -60,6 +70,9 @@ public class BlockRedstoneLight extends Block
         {
             if (this.isOn && !worldIn.isBlockPowered(pos))
             {
+                if (CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), 15, 0).getNewCurrent() != 0) {
+                    return;
+                }
                 worldIn.setBlockState(pos, Blocks.REDSTONE_LAMP.getDefaultState(), 2);
             }
         }

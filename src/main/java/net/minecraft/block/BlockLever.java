@@ -22,6 +22,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class BlockLever extends Block
 {
@@ -162,6 +163,17 @@ public class BlockLever extends Block
         }
         else
         {
+            boolean powered = state.getValue(POWERED);
+            org.bukkit.block.Block block = worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+            int old = (powered) ? 15 : 0;
+            int current = (!powered) ? 15 : 0;
+
+            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(block, old, current);
+            worldIn.getServer().getPluginManager().callEvent(eventRedstone);
+
+            if ((eventRedstone.getNewCurrent() > 0) == powered) {
+                return true;
+            }
             state = state.cycleProperty(POWERED);
             worldIn.setBlockState(pos, state, 3);
             float f = ((Boolean)state.getValue(POWERED)).booleanValue() ? 0.6F : 0.5F;
