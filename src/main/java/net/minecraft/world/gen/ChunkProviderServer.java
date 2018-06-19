@@ -26,7 +26,9 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
+// TODO: This class needs serious testing.
 public class ChunkProviderServer implements IChunkProvider
 {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -83,6 +85,11 @@ public class ChunkProviderServer implements IChunkProvider
         return chunk;
     }
 
+    // Is it copy of method above?
+    public Chunk getChunkIfLoaded(int x, int z) {
+        return id2ChunkMap.get(ChunkPos.asLong(x, z));
+    }
+
     @Nullable
     public Chunk loadChunk(int x, int z)
     {
@@ -106,7 +113,8 @@ public class ChunkProviderServer implements IChunkProvider
                 {
                 this.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
                 chunk.onLoad();
-                chunk.populate(this, this.chunkGenerator);
+                // TODO: Recheck if everything is alright here
+                chunk.populateCB(this, this.chunkGenerator, false);
                 }
 
                 loadingChunks.remove(pos);
@@ -266,11 +274,14 @@ public class ChunkProviderServer implements IChunkProvider
 
                     if (chunk != null && chunk.unloadQueued)
                     {
-                        chunk.onUnload();
-                        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.asLong(chunk.x, chunk.z), chunk);
-                        this.saveChunkData(chunk);
-                        this.saveChunkExtraData(chunk);
-                        this.id2ChunkMap.remove(olong);
+//                        chunk.onUnload();
+//                        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.asLong(chunk.x, chunk.z), chunk);
+//                        this.saveChunkData(chunk);
+//                        this.saveChunkExtraData(chunk);
+//                        this.id2ChunkMap.remove(olong);
+                        if (!unloadChunk(chunk, true)) {
+                            continue;
+                        }
                         ++i;
                     }
                 }
@@ -282,6 +293,37 @@ public class ChunkProviderServer implements IChunkProvider
         }
 
         return false;
+    }
+
+    public boolean unloadChunk(Chunk chunk, boolean save) {
+        ChunkUnloadEvent event = new ChunkUnloadEvent(chunk.bukkitChunk, save);
+        this.world.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+        save = event.isSaveChunk();
+
+        // Update neighbor counts
+        for (int x = -2; x < 3; x++) {
+            for (int z = -2; z < 3; z++) {
+                if (x == 0 && z == 0) {
+                    continue;
+                }
+
+                Chunk neighbor = this.getChunkIfLoaded(chunk.x + x, chunk.z + z);
+                if (neighbor != null) {
+                    neighbor.setNeighborUnloaded(-x, -z);
+                    chunk.setNeighborUnloaded(x, z);
+                }
+            }
+        }
+        // Moved from unloadChunks above
+        chunk.onUnload();
+        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.asLong(chunk.x, chunk.z), chunk);
+        this.saveChunkData(chunk);
+        this.saveChunkExtraData(chunk);
+        this.id2ChunkMap.remove(chunk.chunkKey);
+        return true;
     }
 
     public boolean canSave()

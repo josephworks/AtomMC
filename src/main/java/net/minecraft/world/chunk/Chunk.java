@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSand;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,6 +18,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.PacketBuffer;
@@ -40,6 +42,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Server;
 
 public class Chunk implements net.minecraftforge.common.capabilities.ICapabilityProvider
 {
@@ -69,6 +72,35 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
     private final ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue;
     public boolean unloadQueued;
 
+    // CraftBukkit start - Neighbor loaded cache for chunk lighting and entity ticking
+    private int neighbors = 0x1 << 12;
+    public long chunkKey;
+
+    public boolean areNeighborsLoaded(final int radius) {
+        switch (radius) {
+            case 2:
+                return this.neighbors == Integer.MAX_VALUE >> 6;
+            case 1:
+                final int mask =
+                        //       x        z   offset          x        z   offset          x         z   offset
+                        (0x1 << (1 * 5 +  1 + 12)) | (0x1 << (0 * 5 +  1 + 12)) | (0x1 << (-1 * 5 +  1 + 12)) |
+                        (0x1 << (1 * 5 +  0 + 12)) | (0x1 << (0 * 5 +  0 + 12)) | (0x1 << (-1 * 5 +  0 + 12)) |
+                        (0x1 << (1 * 5 + -1 + 12)) | (0x1 << (0 * 5 + -1 + 12)) | (0x1 << (-1 * 5 + -1 + 12));
+                return (this.neighbors & mask) == mask;
+            default:
+                throw new UnsupportedOperationException(String.valueOf(radius));
+        }
+    }
+
+    public void setNeighborLoaded(final int x, final int z) {
+        this.neighbors |= 0x1 << (x * 5 + 12 + z);
+    }
+
+    public void setNeighborUnloaded(final int x, final int z) {
+        this.neighbors &= ~(0x1 << (x * 5 + 12 + z));
+    }
+    // CraftBukkit end
+
     public Chunk(World worldIn, int x, int z)
     {
         this.storageArrays = new ExtendedBlockStorage[16];
@@ -92,7 +124,12 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         Arrays.fill(this.precipitationHeightMap, -999);
         Arrays.fill(this.blockBiomeArray, (byte) - 1);
         capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
+        this.bukkitChunk = new org.bukkit.craftbukkit.CraftChunk(this);
+        this.chunkKey = ChunkPos.asLong(this.x, this.z);
     }
+
+    public org.bukkit.Chunk bukkitChunk;
+    public boolean mustSave;
 
     public Chunk(World worldIn, ChunkPrimer primer, int x, int z)
     {
@@ -608,6 +645,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
                     }
                 }
 
+                // CraftBukkit - Don't place while processing the BlockPlaceEvent, unless it's a BlockContainer. Prevents blocks such as TNT from activating when cancelled.
                 // If capturing blocks, only run block physics for TE's. Non-TE's are handled in ForgeHooks.onPlaceItemIntoWorld
                 if (!this.world.isRemote && block1 != block && (!this.world.captureBlockSnapshots || block.hasTileEntity(state)))
                 {
@@ -783,7 +821,13 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
     @Nullable
     public TileEntity getTileEntity(BlockPos pos, EnumCreateEntityType p_177424_2_)
     {
-        TileEntity tileentity = this.tileEntities.get(pos);
+        TileEntity tileentity = null;
+        if (world.captureBlockStates) {
+            tileentity = world.capturedTileEntities.get(pos);
+        }
+        if (tileentity == null) {
+            tileentity = this.tileEntities.get(pos);
+        }
 
         if (tileentity != null && tileentity.isInvalid())
         {
@@ -832,6 +876,11 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
             tileEntityIn.validate();
             this.tileEntities.put(pos, tileEntityIn);
+        } else {
+            System.out.println("Attempted to place a tile entity (" + tileEntityIn + ") at " + tileEntityIn.getPos().getX() + "," + tileEntityIn.getPos().getY() + "," + tileEntityIn.getPos().getZ()
+                    + " (" + org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(getBlockState(pos).getBlock()) + ") where there was no entity tile!");
+            System.out.println("Chunk coordinates: " + (this.x * 16) + "," + (this.z * 16));
+            new Exception().printStackTrace();
         }
     }
 
@@ -872,6 +921,9 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
         for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists)
         {
+            // Do not pass along players, as doing so can get them stuck outside of time.
+            // (which for example disables inventory icon updates and prevents block breaking)
+            classinheritancemultimap.removeIf(entity -> entity instanceof EntityPlayer);
             this.world.unloadEntities(classinheritancemultimap);
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
@@ -999,6 +1051,63 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         }
     }
 
+    public void populateCB(IChunkProvider chunkProvider, IChunkGenerator chunkGenrator, boolean newChunk)
+    {
+        Server server = world.getServer();
+        if (server != null) {
+            /*
+             * If it's a new world, the first few chunks are generated inside
+             * the World constructor. We can't reliably alter that, so we have
+             * no way of creating a CraftWorld/CraftServer at that point.
+             */
+            server.getPluginManager().callEvent(new org.bukkit.event.world.ChunkLoadEvent(bukkitChunk, newChunk));
+        }
+
+        // Update neighbor counts
+        for (int x = -2; x < 3; x++) {
+            for (int z = -2; z < 3; z++) {
+                if (x == 0 && z == 0) {
+                    continue;
+                }
+
+                Chunk neighbor = getWorld().getChunkIfLoaded(this.x + x, this.z + z);
+                if (neighbor != null) {
+                    neighbor.setNeighborLoaded(-x, -z);
+                    setNeighborLoaded(x, z);
+                }
+            }
+        }
+        Chunk chunk = chunkProvider.getLoadedChunk(this.x, this.z - 1);
+        Chunk chunk1 = chunkProvider.getLoadedChunk(this.x + 1, this.z);
+        Chunk chunk2 = chunkProvider.getLoadedChunk(this.x, this.z + 1);
+        Chunk chunk3 = chunkProvider.getLoadedChunk(this.x - 1, this.z);
+
+        if (chunk1 != null && chunk2 != null && chunkProvider.getLoadedChunk(this.x + 1, this.z + 1) != null)
+        {
+            this.populate(chunkGenrator);
+        }
+
+        if (chunk3 != null && chunk2 != null && chunkProvider.getLoadedChunk(this.x - 1, this.z + 1) != null)
+        {
+            chunk3.populate(chunkGenrator);
+        }
+
+        if (chunk != null && chunk1 != null && chunkProvider.getLoadedChunk(this.x + 1, this.z - 1) != null)
+        {
+            chunk.populate(chunkGenrator);
+        }
+
+        if (chunk != null && chunk3 != null)
+        {
+            Chunk chunk4 = chunkProvider.getLoadedChunk(this.x - 1, this.z - 1);
+
+            if (chunk4 != null)
+            {
+                chunk4.populate(chunkGenrator);
+            }
+        }
+    }
+
     protected void populate(IChunkGenerator generator)
     {
         if (populating != null && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
@@ -1015,6 +1124,26 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         {
             this.checkLight();
             generator.populate(this.x, this.z);
+            BlockSand.fallInstantly = true;
+            Random random = new Random();
+            random.setSeed(world.getSeed());
+            long xRand = random.nextLong() / 2L * 2L + 1L;
+            long zRand = random.nextLong() / 2L * 2L + 1L;
+            random.setSeed((long) this.x * xRand + (long) this.z * zRand ^ world.getSeed());
+
+            org.bukkit.World world = this.world.getWorld();
+            if (world != null) {
+                this.world.populating = true;
+                try {
+                    for (org.bukkit.generator.BlockPopulator populator : world.getPopulators()) {
+                        populator.populate(world, random, bukkitChunk);
+                    }
+                } finally {
+                    this.world.populating = false;
+                }
+            }
+            BlockSand.fallInstantly = false;
+            this.world.getServer().getPluginManager().callEvent(new org.bukkit.event.world.ChunkPopulateEvent(bukkitChunk));
             net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.x, this.z, this.world, generator, this.world.getChunkProvider());
             this.markDirty();
         }
