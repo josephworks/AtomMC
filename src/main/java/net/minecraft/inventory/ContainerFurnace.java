@@ -7,6 +7,8 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
 public class ContainerFurnace extends Container
 {
@@ -16,12 +18,16 @@ public class ContainerFurnace extends Container
     private int furnaceBurnTime;
     private int currentItemBurnTime;
 
+    private CraftInventoryView bukkitEntity = null;
+    private InventoryPlayer player;
+
     public ContainerFurnace(InventoryPlayer playerInventory, IInventory furnaceInventory)
     {
         this.tileFurnace = furnaceInventory;
         this.addSlotToContainer(new Slot(furnaceInventory, 0, 56, 17));
         this.addSlotToContainer(new SlotFurnaceFuel(furnaceInventory, 1, 56, 53));
         this.addSlotToContainer(new SlotFurnaceOutput(playerInventory.player, furnaceInventory, 2, 116, 35));
+        this.player = playerInventory;
 
         for (int i = 0; i < 3; ++i)
         {
@@ -86,6 +92,7 @@ public class ContainerFurnace extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
+        if (!this.checkReachable) return true;
         return this.tileFurnace.isUsableByPlayer(playerIn);
     }
 
@@ -159,5 +166,16 @@ public class ContainerFurnace extends Container
         }
 
         return itemstack;
+    }
+
+    @Override
+    public CraftInventoryView getBukkitView() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+
+        CraftInventoryFurnace inventory = new CraftInventoryFurnace((TileEntityFurnace) this.tileFurnace);
+        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
+        return bukkitEntity;
     }
 }

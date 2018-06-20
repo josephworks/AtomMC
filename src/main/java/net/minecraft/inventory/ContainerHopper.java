@@ -3,14 +3,20 @@ package net.minecraft.inventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
 public class ContainerHopper extends Container
 {
     private final IInventory hopperInventory;
 
+    private CraftInventoryView bukkitEntity = null;
+    private InventoryPlayer player;
+
     public ContainerHopper(InventoryPlayer playerInventory, IInventory hopperInventoryIn, EntityPlayer player)
     {
         this.hopperInventory = hopperInventoryIn;
+        this.player = playerInventory;
         hopperInventoryIn.openInventory(player);
         int i = 51;
 
@@ -35,6 +41,7 @@ public class ContainerHopper extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
+        if (!this.checkReachable) return true;
         return this.hopperInventory.isUsableByPlayer(playerIn);
     }
 
@@ -77,5 +84,16 @@ public class ContainerHopper extends Container
     {
         super.onContainerClosed(playerIn);
         this.hopperInventory.closeInventory(playerIn);
+    }
+
+    @Override
+    public CraftInventoryView getBukkitView() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+
+        CraftInventory inventory = new CraftInventory(this.hopperInventory);
+        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
+        return bukkitEntity;
     }
 }

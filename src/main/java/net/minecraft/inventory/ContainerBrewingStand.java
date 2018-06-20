@@ -12,6 +12,8 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.inventory.CraftInventoryBrewer;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
 public class ContainerBrewingStand extends Container
 {
@@ -20,8 +22,12 @@ public class ContainerBrewingStand extends Container
     private int prevBrewTime;
     private int prevFuel;
 
+    private CraftInventoryView bukkitEntity = null;
+    private InventoryPlayer player;
+
     public ContainerBrewingStand(InventoryPlayer playerInventory, IInventory tileBrewingStandIn)
     {
+        this.player = playerInventory;
         this.tileBrewingStand = tileBrewingStandIn;
         this.addSlotToContainer(new Potion(tileBrewingStandIn, 0, 56, 51));
         this.addSlotToContainer(new Potion(tileBrewingStandIn, 1, 79, 58));
@@ -80,6 +86,7 @@ public class ContainerBrewingStand extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
+        if (!this.checkReachable) return true;
         return this.tileBrewingStand.isUsableByPlayer(playerIn);
     }
 
@@ -242,4 +249,15 @@ public class ContainerBrewingStand extends Container
                 return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack);
             }
         }
+
+    @Override
+    public CraftInventoryView getBukkitView() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+
+        CraftInventoryBrewer inventory = new CraftInventoryBrewer(this.tileBrewingStand);
+        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
+        return bukkitEntity;
+    }
 }

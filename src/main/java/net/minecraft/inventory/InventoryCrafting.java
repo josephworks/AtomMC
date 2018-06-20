@@ -3,10 +3,17 @@ package net.minecraft.inventory;
 import net.minecraft.client.util.RecipeItemHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryType;
+
+import java.util.List;
 
 public class InventoryCrafting implements IInventory
 {
@@ -14,6 +21,53 @@ public class InventoryCrafting implements IInventory
     private final int inventoryWidth;
     private final int inventoryHeight;
     private final Container eventHandler;
+
+    // CraftBukkit start - add fields
+    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
+    public IRecipe currentRecipe;
+    public IInventory resultInventory;
+    private EntityPlayer owner;
+    private int maxStack = MAX_STACK;
+
+    public List<ItemStack> getContents() {
+        return this.stackList;
+    }
+
+    public void onOpen(CraftHumanEntity who) {
+        transaction.add(who);
+    }
+
+    public InventoryType getInvType() {
+        return stackList.size() == 4 ? InventoryType.CRAFTING : InventoryType.WORKBENCH;
+    }
+
+    public void onClose(CraftHumanEntity who) {
+        transaction.remove(who);
+    }
+
+    public List<HumanEntity> getViewers() {
+        return transaction;
+    }
+
+    public org.bukkit.inventory.InventoryHolder getOwner() {
+        return (owner == null) ? null : owner.getBukkitEntity();
+    }
+
+    public void setMaxStackSize(int size) {
+        maxStack = size;
+        resultInventory.setMaxStackSize(size);
+    }
+
+    @Override
+    public Location getLocation() {
+        return owner.getBukkitEntity().getLocation();
+    }
+
+    public InventoryCrafting(Container container, int i, int j, EntityPlayer player) {
+        this(container, i, j);
+        this.owner = player;
+    }
+    // CraftBukkit end
 
     public InventoryCrafting(Container eventHandlerIn, int width, int height)
     {

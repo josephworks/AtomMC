@@ -3,14 +3,20 @@ package net.minecraft.inventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
 public class ContainerShulkerBox extends Container
 {
     private final IInventory inventory;
 
+    private CraftInventoryView bukkitEntity;
+    private InventoryPlayer player;
+
     public ContainerShulkerBox(InventoryPlayer p_i47266_1_, IInventory p_i47266_2_, EntityPlayer p_i47266_3_)
     {
         this.inventory = p_i47266_2_;
+        this.player = p_i47266_1_;
         p_i47266_2_.openInventory(p_i47266_3_);
         int i = 3;
         int j = 9;
@@ -81,5 +87,15 @@ public class ContainerShulkerBox extends Container
     {
         super.onContainerClosed(playerIn);
         this.inventory.closeInventory(playerIn);
+    }
+
+    @Override
+    public CraftInventoryView getBukkitView() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+
+        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), new CraftInventory(this.inventory), this);
+        return bukkitEntity;
     }
 }
