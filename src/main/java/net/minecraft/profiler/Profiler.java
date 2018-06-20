@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Profiler
 {
+    // TODO: Implement ENABLED
+    public static final boolean ENABLED = Boolean.getBoolean("enableDebugMethodProfiler"); // CraftBukkit - disable unless specified in JVM arguments
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<String> sectionList = Lists.<String>newArrayList();
     private final List<Long> timestampList = Lists.<Long>newArrayList();
