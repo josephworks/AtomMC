@@ -96,7 +96,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
-    private final ISaveFormat anvilConverterForAnvilFile;
+    public ISaveFormat anvilConverterForAnvilFile;
     private final Snooper usageSnooper = new Snooper("server", this, getCurrentTimeMillis());
     public final File anvilFile;
     private final List<ITickable> tickables = Lists.<ITickable>newArrayList();
@@ -105,7 +105,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     private final NetworkSystem networkSystem;
     private final ServerStatusResponse statusResponse = new ServerStatusResponse();
     private final Random random = new Random();
-    private final DataFixer dataFixer;
+    public final DataFixer dataFixer;
     @SideOnly(Side.SERVER)
     private String hostname;
     private int serverPort = -1;
