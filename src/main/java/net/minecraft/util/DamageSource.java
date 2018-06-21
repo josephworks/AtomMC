@@ -45,6 +45,17 @@ public class DamageSource
     private boolean explosion;
     public String damageType;
 
+    private boolean sweep;
+
+    public boolean isSweep() {
+        return sweep;
+    }
+
+    public DamageSource sweep() {
+        this.sweep = true;
+        return this;
+    }
+
     public static DamageSource causeMobDamage(EntityLivingBase mob)
     {
         return new EntityDamageSource("mob", mob);

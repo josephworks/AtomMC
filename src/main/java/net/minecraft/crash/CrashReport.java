@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.gen.layer.IntCache;
+import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.IOUtils;
@@ -116,6 +117,7 @@ public class CrashReport
                 return IntCache.getCacheSizes();
             }
         });
+        this.systemDetailsCategory.addDetail("CraftBukkit Information", (ICrashReportDetail) new org.bukkit.craftbukkit.CraftCrashReport());
         net.minecraftforge.fml.common.FMLCommonHandler.instance().enhanceCrashReport(this, this.systemDetailsCategory);
     }
 

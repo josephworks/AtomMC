@@ -29,8 +29,11 @@ public class FunctionManager implements ITickable
     private FunctionObject gameLoopFunction;
     private final ArrayDeque<QueuedCommand> commandQueue = new ArrayDeque<QueuedCommand>();
     private boolean isExecuting = false;
-    private final ICommandSender gameLoopFunctionSender = new ICommandSender()
-    {
+    private final ICommandSender gameLoopFunctionSender = new CustomFunctionListener();
+
+    public class CustomFunctionListener implements ICommandSender {
+
+        public org.bukkit.command.CommandSender sender = new org.bukkit.craftbukkit.command.CraftFunctionCommandSender(this);
         public String getName()
         {
             return FunctionManager.this.currentGameLoopFunctionId;
@@ -41,7 +44,7 @@ public class FunctionManager implements ITickable
         }
         public World getEntityWorld()
         {
-            return FunctionManager.this.server.worlds[0];
+            return FunctionManager.this.server.worldServerList.get(0);
         }
         public MinecraftServer getServer()
         {
@@ -69,7 +72,7 @@ public class FunctionManager implements ITickable
 
     public int getMaxCommandChainLength()
     {
-        return this.server.worlds[0].getGameRules().getInt("maxCommandChainLength");
+        return this.server.worldServerList.get(0).getGameRules().getInt("maxCommandChainLength");
     }
 
     public Map<ResourceLocation, FunctionObject> getFunctions()
@@ -79,7 +82,7 @@ public class FunctionManager implements ITickable
 
     public void update()
     {
-        String s = this.server.worlds[0].getGameRules().getString("gameLoopFunction");
+        String s = this.server.worldServerList.get(0).getGameRules().getString("gameLoopFunction");
 
         if (!s.equals(this.currentGameLoopFunctionId))
         {
