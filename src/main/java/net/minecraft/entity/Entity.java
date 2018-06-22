@@ -182,6 +182,16 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public boolean updateBlocked;
 
+    // CraftBukkit start
+    public boolean valid;
+    public org.bukkit.projectiles.ProjectileSource projectileSource; // For projectiles only
+    public boolean forceExplosionKnockback; // SPIGOT-949
+
+    public float getBukkitYaw() {
+        return this.rotationYaw;
+    }
+    // CraftBukkit end
+
     public Entity(World worldIn)
     {
         this.entityId = nextEntityID++;

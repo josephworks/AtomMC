@@ -1042,6 +1042,13 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         nbttaglist.appendTag(nbttagcompound);
     }
 
+    @Deprecated
+    public void setItem(Item item) {
+        // TODO: Implement this
+//        this.item = item;
+//        this.setData(this.getData()); // CraftBukkit - Set data again to ensure it is filtered properly
+    }
+
     public ITextComponent getTextComponent()
     {
         TextComponentString textcomponentstring = new TextComponentString(this.getDisplayName());

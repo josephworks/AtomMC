@@ -23,6 +23,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 
 public class ItemBucket extends Item
 {
@@ -145,6 +147,10 @@ public class ItemBucket extends Item
 
     public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn)
     {
+        return tryPlaceContainedLiquid(player, worldIn, posIn, null, posIn, null);
+    }
+
+    public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn, EnumFacing enumdirection, BlockPos clicked, ItemStack itemstack) {
         if (this.containedBlock == Blocks.AIR)
         {
             return false;
@@ -162,6 +168,14 @@ public class ItemBucket extends Item
             }
             else
             {
+                if (player != null) {
+                    PlayerBucketEmptyEvent event = CraftEventFactory.callPlayerBucketEmptyEvent(player, clicked.getX(), clicked.getY(), clicked.getZ(), enumdirection, itemstack);
+                    if (event.isCancelled()) {
+                        // TODO: inventory not updated
+                        return false;
+                    }
+                }
+
                 if (worldIn.provider.doesWaterVaporize() && this.containedBlock == Blocks.FLOWING_WATER)
                 {
                     int l = posIn.getX();
