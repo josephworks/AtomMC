@@ -3,6 +3,8 @@ package net.minecraft.entity.boss.dragon.phase;
 import net.minecraft.entity.boss.EntityDragon;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.craftbukkit.entity.CraftEnderDragon;
+import org.bukkit.event.entity.EnderDragonChangePhaseEvent;
 
 public class PhaseManager
 {
@@ -25,6 +27,17 @@ public class PhaseManager
             {
                 this.phase.removeAreaEffect();
             }
+
+            EnderDragonChangePhaseEvent event = new EnderDragonChangePhaseEvent(
+                    (CraftEnderDragon) this.dragon.getBukkitEntity(),
+                    (this.phase == null) ? null : CraftEnderDragon.getBukkitPhase(this.phase.getType()),
+                    CraftEnderDragon.getBukkitPhase(phaseIn)
+            );
+            this.dragon.world.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+            phaseIn = CraftEnderDragon.getMinecraftPhase(event.getNewPhase());
 
             this.phase = this.getPhase(phaseIn);
 
