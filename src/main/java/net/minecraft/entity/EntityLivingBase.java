@@ -2,6 +2,8 @@ package net.minecraft.entity;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -152,6 +154,14 @@ public abstract class EntityLivingBase extends Entity
     private BlockPos prevBlockpos;
     private DamageSource lastDamageSource;
     private long lastDamageStamp;
+
+    public int expToDrop;
+    public int maxAirTicks = 300;
+    boolean forceDrops;
+    ArrayList<org.bukkit.inventory.ItemStack> drops = new ArrayList<>();
+    public org.bukkit.craftbukkit.attribute.CraftAttributeMap craftAttributes;
+    public boolean collides = true;
+    public boolean canPickUpLoot;
 
     public void onKillCommand()
     {
@@ -2923,6 +2933,11 @@ public abstract class EntityLivingBase extends Entity
 
             return true;
         }
+    }
+
+    @Override
+    public float getBukkitYaw() {
+        return getRotationYawHead();
     }
 
     public boolean canBeHitWithPotion()

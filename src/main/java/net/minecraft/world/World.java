@@ -297,7 +297,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         }
     }
 
-    protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
+    public abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
 
     public Chunk getChunkFromBlockCoords(BlockPos pos)
     {

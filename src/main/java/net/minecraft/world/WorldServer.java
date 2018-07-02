@@ -105,9 +105,12 @@ public class WorldServer extends World implements IThreadListener
     protected Set<ChunkPos> doneChunks = new java.util.HashSet<ChunkPos>();
     public List<Teleporter> customTeleporters = new ArrayList<Teleporter>();
 
+    public final int dimension;
+
     public WorldServer(MinecraftServer server, ISaveHandler saveHandlerIn, WorldInfo info, int dimensionId, Profiler profilerIn)
     {
         super(saveHandlerIn, info, net.minecraftforge.common.DimensionManager.createProviderFor(dimensionId), profilerIn, false);
+        this.dimension = dimensionId;
         this.mcServer = server;
         this.entityTracker = new EntityTracker(this);
         this.playerChunkMap = new PlayerChunkMap(this);
@@ -346,7 +349,7 @@ public class WorldServer extends World implements IThreadListener
         this.worldInfo.setSpawnZ(j);
     }
 
-    protected boolean isChunkLoaded(int x, int z, boolean allowEmpty)
+    public boolean isChunkLoaded(int x, int z, boolean allowEmpty)
     {
         return this.getChunkProvider().chunkExists(x, z);
     }
