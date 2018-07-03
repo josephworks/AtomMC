@@ -1759,4 +1759,8 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
             }
         }
     }
+
+    public final boolean isDisconnected() {
+        return !this.player.joining && !this.netManager.isChannelOpen();
+    }
 }

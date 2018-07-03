@@ -10,7 +10,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +23,8 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
     protected Block spawnableBlock = Blocks.GRASS;
     private int inLove;
     private UUID playerInLove;
+
+    public ItemStack breedItem; // CraftBukkit - Add breedItem variable
 
     public EntityAnimal(World worldIn)
     {
@@ -63,6 +64,8 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
         }
     }
 
+    /* CraftBukkit start
+    // Function disabled as it has no special function anymore after setSitting is disabled.
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
         if (this.isEntityInvulnerable(source))
@@ -75,6 +78,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
             return super.attackEntityFrom(source, amount);
         }
     }
+    // CraftBukkit end */
 
     public float getBlockPathWeight(BlockPos pos)
     {
@@ -174,6 +178,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
             this.playerInLove = player.getUniqueID();
         }
 
+        this.breedItem = player.inventory.getCurrentItem();
         this.world.setEntityState(this, (byte)18);
     }
 

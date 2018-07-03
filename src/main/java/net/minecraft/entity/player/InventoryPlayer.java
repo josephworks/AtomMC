@@ -65,6 +65,23 @@ public class InventoryPlayer implements IInventory
         return stack1.getItem() == stack2.getItem() && (!stack1.getHasSubtypes() || stack1.getMetadata() == stack2.getMetadata()) && ItemStack.areItemStackTagsEqual(stack1, stack2);
     }
 
+    // CraftBukkit start - Watch method above! :D
+    public int canHold(ItemStack itemstack) {
+        int remains = itemstack.getCount();
+        for (int i = 0; i < this.mainInventory.size(); ++i) {
+            ItemStack itemstack1 = this.getStackInSlot(i);
+            if (itemstack1.isEmpty()) return itemstack.getCount();
+
+            // Taken from firstPartial(ItemStack)
+            if (!itemstack1.isEmpty() && itemstack1.getItem() == itemstack.getItem() && itemstack1.isStackable() && itemstack1.getCount() < itemstack1.getMaxStackSize() && itemstack1.getCount() < this.getInventoryStackLimit() && (!itemstack1.getHasSubtypes() || itemstack1.getMetadata() == itemstack.getMetadata()) && ItemStack.areItemStackTagsEqual(itemstack1, itemstack)) {
+                remains -= (itemstack1.getMaxStackSize() < this.getInventoryStackLimit() ? itemstack1.getMaxStackSize() : this.getInventoryStackLimit()) - itemstack1.getCount();
+            }
+            if (remains <= 0) return itemstack.getCount();
+        }
+        return itemstack.getCount() - remains;
+    }
+    // CraftBukkit end
+
     public int getFirstEmptyStack()
     {
         for (int i = 0; i < this.mainInventory.size(); ++i)

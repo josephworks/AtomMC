@@ -2,6 +2,9 @@ package net.minecraft.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.entity.LivingEntity;
 
 public class EntityAreaEffectCloud extends Entity
 {
@@ -125,6 +130,22 @@ public class EntityAreaEffectCloud extends Entity
             this.updateFixedColor();
         }
     }
+
+    // CraftBukkit start accessor methods
+    public void refreshEffects() {
+        if (!this.colorSet) {
+            this.getDataManager().set(EntityAreaEffectCloud.COLOR, PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, (Collection) this.effects)));
+        }
+    }
+
+    public String getType() {
+        return (PotionType.REGISTRY.getNameForObject(this.potion)).toString();
+    }
+
+    public void setType(String string) {
+        setPotion(PotionType.REGISTRY.getObject(new ResourceLocation(string)));
+    }
+    // CraftBukkit end
 
     public int getColor()
     {
@@ -326,6 +347,7 @@ public class EntityAreaEffectCloud extends Entity
 
                     if (!list.isEmpty())
                     {
+                        List<LivingEntity> entities = new ArrayList<>();
                         for (EntityLivingBase entitylivingbase : list)
                         {
                             if (!this.reapplicationDelayMap.containsKey(entitylivingbase) && entitylivingbase.canBeHitWithPotion())
@@ -336,6 +358,15 @@ public class EntityAreaEffectCloud extends Entity
 
                                 if (d2 <= (double)(f * f))
                                 {
+                                    entities.add((LivingEntity) entitylivingbase.getBukkitEntity());
+                                }
+                            }
+                        }
+                        org.bukkit.event.entity.AreaEffectCloudApplyEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callAreaEffectCloudApplyEvent(this, entities);
+                        if (true) { // Preserve NMS spacing and bracket count for smallest diff
+                            for (LivingEntity entity : event.getAffectedEntities()) {
+                                if (entity instanceof CraftLivingEntity) {
+                                    EntityLivingBase entitylivingbase = ((CraftLivingEntity) entity).getHandle();
                                     this.reapplicationDelayMap.put(entitylivingbase, Integer.valueOf(this.ticksExisted + this.reapplicationDelay));
 
                                     for (PotionEffect potioneffect : potions)

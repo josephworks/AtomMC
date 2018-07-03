@@ -31,13 +31,18 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Rotations;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.CraftEquipmentSlot;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class EntityArmorStand extends EntityLivingBase
 {
@@ -94,6 +99,13 @@ public class EntityArmorStand extends EntityLivingBase
         this(worldIn);
         this.setPosition(posX, posY, posZ);
     }
+
+    // CraftBukkit start - SPIGOT-3607, SPIGOT-3637
+    @Override
+    public float getBukkitYaw() {
+        return this.rotationYaw;
+    }
+    // CraftBukkit end
 
     protected final void setSize(float width, float height)
     {
@@ -457,6 +469,19 @@ public class EntityArmorStand extends EntityLivingBase
         {
             if (!itemstack.isEmpty() || (this.disabledSlots & 1 << p_184795_2_.getSlotIndex() + 16) == 0)
             {
+                org.bukkit.inventory.ItemStack armorStandItem = CraftItemStack.asCraftMirror(itemstack);
+                org.bukkit.inventory.ItemStack playerHeldItem = CraftItemStack.asCraftMirror(p_184795_3_);
+
+                Player bukkitPlayer = (Player) player.getBukkitEntity();
+                ArmorStand self = (ArmorStand) this.getBukkitEntity();
+
+                EquipmentSlot slot = CraftEquipmentSlot.getSlot(p_184795_2_);
+                PlayerArmorStandManipulateEvent armorStandManipulateEvent = new PlayerArmorStandManipulateEvent(bukkitPlayer, self, playerHeldItem, armorStandItem, slot);
+                this.world.getServer().getPluginManager().callEvent(armorStandManipulateEvent);
+
+                if (armorStandManipulateEvent.isCancelled()) {
+                    return;
+                }
                 if (player.capabilities.isCreativeMode && itemstack.isEmpty() && !p_184795_3_.isEmpty())
                 {
                     ItemStack itemstack2 = p_184795_3_.copy();
@@ -484,11 +509,14 @@ public class EntityArmorStand extends EntityLivingBase
 
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+        if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount)) {
+            return false;
+        }
         if (!this.world.isRemote && !this.isDead)
         {
             if (DamageSource.OUT_OF_WORLD.equals(source))
             {
-                this.setDead();
+                this.onKillCommand();
                 return false;
             }
             else if (!this.isEntityInvulnerable(source) && !this.canInteract && !this.hasMarker())
@@ -496,7 +524,7 @@ public class EntityArmorStand extends EntityLivingBase
                 if (source.isExplosion())
                 {
                     this.dropContents();
-                    this.setDead();
+                    this.onKillCommand();
                     return false;
                 }
                 else if (DamageSource.IN_FIRE.equals(source))
@@ -541,7 +569,7 @@ public class EntityArmorStand extends EntityLivingBase
                         {
                             this.playBrokenSound();
                             this.playParticles();
-                            this.setDead();
+                            this.onKillCommand();
                             return false;
                         }
                         else
@@ -557,7 +585,7 @@ public class EntityArmorStand extends EntityLivingBase
                             {
                                 this.dropBlock();
                                 this.playParticles();
-                                this.setDead();
+                                this.onKillCommand();
                             }
 
                             return false;
@@ -623,7 +651,7 @@ public class EntityArmorStand extends EntityLivingBase
         if (f <= 0.5F)
         {
             this.dropContents();
-            this.setDead();
+            this.onKillCommand();
         }
         else
         {
@@ -633,7 +661,8 @@ public class EntityArmorStand extends EntityLivingBase
 
     private void dropBlock()
     {
-        Block.spawnAsEntity(this.world, new BlockPos(this), new ItemStack(Items.ARMOR_STAND));
+//        Block.spawnAsEntity(this.world, new BlockPos(this), new ItemStack(Items.ARMOR_STAND));
+        drops.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(new ItemStack(Items.ARMOR_STAND))); // CraftBukkit - add to drops
         this.dropContents();
     }
 
@@ -647,7 +676,8 @@ public class EntityArmorStand extends EntityLivingBase
 
             if (!itemstack.isEmpty())
             {
-                Block.spawnAsEntity(this.world, (new BlockPos(this)).up(), itemstack);
+//                Block.spawnAsEntity(this.world, (new BlockPos(this)).up(), itemstack);
+                drops.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(itemstack)); // CraftBukkit - add to drops
                 this.handItems.set(i, ItemStack.EMPTY);
             }
         }
@@ -658,7 +688,8 @@ public class EntityArmorStand extends EntityLivingBase
 
             if (!itemstack1.isEmpty())
             {
-                Block.spawnAsEntity(this.world, (new BlockPos(this)).up(), itemstack1);
+//                Block.spawnAsEntity(this.world, (new BlockPos(this)).up(), itemstack1);
+                drops.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(itemstack1)); // CraftBukkit - add to drops
                 this.armorItems.set(j, ItemStack.EMPTY);
             }
         }
@@ -791,6 +822,7 @@ public class EntityArmorStand extends EntityLivingBase
 
     public void onKillCommand()
     {
+        org.bukkit.craftbukkit.event.CraftEventFactory.callEntityDeathEvent(this, drops); // CraftBukkit - call event
         this.setDead();
     }
 

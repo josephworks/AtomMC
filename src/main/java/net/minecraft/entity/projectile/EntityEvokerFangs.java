@@ -136,7 +136,9 @@ public class EntityEvokerFangs extends Entity
         {
             if (entitylivingbase == null)
             {
+                org.bukkit.craftbukkit.event.CraftEventFactory.entityDamage = this;
                 p_190551_1_.attackEntityFrom(DamageSource.MAGIC, 6.0F);
+                org.bukkit.craftbukkit.event.CraftEventFactory.entityDamage = null;
             }
             else
             {

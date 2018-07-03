@@ -47,6 +47,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 public class EntityEnderman extends EntityMob
 {
@@ -97,10 +98,21 @@ public class EntityEnderman extends EntityMob
 
     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn)
     {
-        super.setAttackTarget(entitylivingbaseIn);
+        // CraftBukkit start - fire event
+        setAttackTarget(entitylivingbaseIn, EntityTargetEvent.TargetReason.UNKNOWN, true);
+    }
+
+    @Override
+    public boolean setAttackTarget(@Nullable EntityLivingBase entityliving, org.bukkit.event.entity.EntityTargetEvent.TargetReason reason, boolean fireEvent) {
+        if (!super.setAttackTarget(entityliving, reason, fireEvent)) {
+            return false;
+        }
+        entityliving = getAttackTarget();
+        // CraftBukkit end
+        // super.setAttackTarget(entitylivingbaseIn);
         IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
 
-        if (entitylivingbaseIn == null)
+        if (entityliving == null)
         {
             this.targetChangeTime = 0;
             this.dataManager.set(SCREAMING, Boolean.valueOf(false));
@@ -116,6 +128,7 @@ public class EntityEnderman extends EntityMob
                 iattributeinstance.applyModifier(ATTACKING_SPEED_BOOST);
             }
         }
+        return true;
     }
 
     protected void entityInit()
@@ -524,8 +537,11 @@ public class EntityEnderman extends EntityMob
 
                 if (iblockstate2 != null && this.canPlaceBlock(world, blockpos, iblockstate2.getBlock(), iblockstate, iblockstate1))
                 {
-                    world.setBlockState(blockpos, iblockstate2, 3);
-                    this.enderman.setHeldBlockState((IBlockState)null);
+                    // CraftBukkit start - Place event
+                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockpos, this.enderman.getHeldBlockState().getBlock(), this.enderman.getHeldBlockState().getBlock().getMetaFromState(this.enderman.getHeldBlockState())).isCancelled()) {
+                        world.setBlockState(blockpos, iblockstate2, 3);
+                        this.enderman.setHeldBlockState((IBlockState) null);
+                    }
                 }
             }
 
@@ -590,8 +606,14 @@ public class EntityEnderman extends EntityMob
 
                 if (EntityEnderman.CARRIABLE_BLOCKS.contains(block) && flag)
                 {
-                    this.enderman.setHeldBlockState(iblockstate);
-                    world.setBlockToAir(blockpos);
+                    // this.enderman.setHeldBlockState(iblockstate);
+                    // world.setBlockToAir(blockpos);
+                    // CraftBukkit start - Pickup event
+                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.enderman, this.enderman.world.getWorld().getBlockAt(blockpos.getX(), blockpos.getY(), blockpos.getZ()), org.bukkit.Material.AIR).isCancelled()) {
+                        this.enderman.setHeldBlockState(iblockstate);
+                        world.setBlockToAir(blockpos);
+                    }
+                    // CraftBukkit end
                 }
             }
         }

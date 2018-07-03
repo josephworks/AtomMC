@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 
@@ -78,6 +79,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public abstract class EntityLivingBase extends Entity
 {
@@ -157,8 +160,8 @@ public abstract class EntityLivingBase extends Entity
 
     public int expToDrop;
     public int maxAirTicks = 300;
-    boolean forceDrops;
-    ArrayList<org.bukkit.inventory.ItemStack> drops = new ArrayList<>();
+    public boolean forceDrops;
+    public ArrayList<org.bukkit.inventory.ItemStack> drops = new ArrayList<>();
     public org.bukkit.craftbukkit.attribute.CraftAttributeMap craftAttributes;
     public boolean collides = true;
     public boolean canPickUpLoot;
@@ -1363,7 +1366,7 @@ public abstract class EntityLivingBase extends Entity
     {
         if (!source.isUnblockable())
         {
-            this.damageArmor(damage);
+            // this.damageArmor(damage); // CraftBukkit - Moved into damageEntity_CB(DamageSource, float)
             damage = CombatRules.getDamageAfterAbsorb(damage, (float)this.getTotalArmorValue(), (float)this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue());
         }
 
@@ -1425,6 +1428,143 @@ public abstract class EntityLivingBase extends Entity
                 this.setAbsorptionAmount(this.getAbsorptionAmount() - damageAmount);
             }
         }
+    }
+
+    protected boolean damageEntity_CB(final DamageSource damagesource, float f) { // void -> boolean, add final
+        if (!this.isEntityInvulnerable(damagesource)) {
+            final boolean human = this instanceof EntityPlayer;
+            float originalDamage = f;
+            Function<Double, Double> hardHat = new Function<Double, Double>() {
+                @Override
+                public Double apply(Double f) {
+                    if ((damagesource == DamageSource.ANVIL || damagesource == DamageSource.FALLING_BLOCK) && !EntityLivingBase.this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
+                        return -(f - (f * 0.75F));
+
+                    }
+                    return -0.0;
+                }
+            };
+            float hardHatModifier = hardHat.apply((double) f).floatValue();
+            f += hardHatModifier;
+
+            Function<Double, Double> blocking = new Function<Double, Double>() {
+                @Override
+                public Double apply(Double f) {
+                    return -((EntityLivingBase.this.canBlockDamageSource(damagesource)) ? f : 0.0);
+                }
+            };
+            float blockingModifier = blocking.apply((double) f).floatValue();
+            f += blockingModifier;
+
+            Function<Double, Double> armor = new Function<Double, Double>() {
+                @Override
+                public Double apply(Double f) {
+                    return -(f - EntityLivingBase.this.applyArmorCalculations(damagesource, f.floatValue()));
+                }
+            };
+            float armorModifier = armor.apply((double) f).floatValue();
+            f += armorModifier;
+
+            Function<Double, Double> resistance = new Function<Double, Double>() {
+                @Override
+                public Double apply(Double f) {
+                    if (!damagesource.isDamageAbsolute() && EntityLivingBase.this.isPotionActive(MobEffects.RESISTANCE) && damagesource != DamageSource.OUT_OF_WORLD) {
+                        int i = (EntityLivingBase.this.getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() + 1) * 5;
+                        int j = 25 - i;
+                        float f1 = f.floatValue() * (float) j;
+                        return -(f - (f1 / 25.0F));
+                    }
+                    return -0.0;
+                }
+            };
+            float resistanceModifier = resistance.apply((double) f).floatValue();
+            f += resistanceModifier;
+
+            Function<Double, Double> magic = new Function<Double, Double>() {
+                @Override
+                public Double apply(Double f) {
+                    return -(f - EntityLivingBase.this.applyPotionDamageCalculations(damagesource, f.floatValue()));
+                }
+            };
+            float magicModifier = magic.apply((double) f).floatValue();
+            f += magicModifier;
+
+            Function<Double, Double> absorption = new Function<Double, Double>() {
+                @Override
+                public Double apply(Double f) {
+                    return -(Math.max(f - Math.max(f - EntityLivingBase.this.getAbsorptionAmount(), 0.0F), 0.0F));
+                }
+            };
+            float absorptionModifier = absorption.apply((double) f).floatValue();
+
+            EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(this, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
+            if (event.isCancelled()) {
+                return false;
+            }
+
+            f = (float) event.getFinalDamage();
+
+            // Apply damage to helmet
+            if ((damagesource == DamageSource.ANVIL || damagesource == DamageSource.FALLING_BLOCK) && this.getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null) {
+                this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).damageItem((int) (event.getDamage() * 4.0F + this.rand.nextFloat() * event.getDamage() * 2.0F), this);
+            }
+
+            // Apply damage to armor
+            if (!damagesource.isUnblockable()) {
+                float armorDamage = (float) (event.getDamage() + event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) + event.getDamage(EntityDamageEvent.DamageModifier.HARD_HAT));
+                this.damageArmor(armorDamage);
+            }
+
+            // Apply blocking code // PAIL: steal from above
+            if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0) {
+                this.damageShield((float) -event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING));
+                Entity entity = damagesource.getImmediateSource();
+
+                if (entity instanceof EntityLivingBase) {
+                    this.blockUsingShield((EntityLivingBase) entity);
+                }
+            }
+
+            absorptionModifier = (float) -event.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION);
+            this.setAbsorptionAmount(Math.max(this.getAbsorptionAmount() - absorptionModifier, 0.0F));
+            if (f > 0 || !human) {
+                if (human) {
+                    // PAIL: Be sure to drag all this code from the EntityPlayer subclass each update.
+                    ((EntityPlayer) this).addExhaustion(damagesource.getHungerDamage());
+                    if (f < 3.4028235E37F) {
+                        ((EntityPlayer) this).addStat(StatList.DAMAGE_TAKEN, Math.round(f * 10.0F));
+                    }
+                }
+                // CraftBukkit end
+                float f2 = this.getHealth();
+
+                this.setHealth(f2 - f);
+                this.getCombatTracker().trackDamage(damagesource, f2, f);
+                // CraftBukkit start
+                if (!human) {
+                    this.setAbsorptionAmount(this.getAbsorptionAmount() - f);
+                }
+
+                return true;
+            } else {
+                // Duplicate triggers if blocking
+                if (event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) < 0) {
+                    if (this instanceof EntityPlayerMP) {
+                        CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((EntityPlayerMP) this, damagesource, f, originalDamage, true);
+                    }
+
+                    if (damagesource.getTrueSource() instanceof EntityPlayerMP) {
+                        CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((EntityPlayerMP) damagesource.getTrueSource(), this, damagesource, f, originalDamage, true);
+                    }
+
+                    return false;
+                } else {
+                    return originalDamage > 0;
+                }
+                // CraftBukkit end
+            }
+        }
+        return false; // CraftBukkit
     }
 
     public CombatTracker getCombatTracker()

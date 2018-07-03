@@ -78,6 +78,9 @@ public class EntityChicken extends EntityAnimal
 
     public void onLivingUpdate()
     {
+        if (this.isChickenJockey()) {
+            this.persistenceRequired = !this.canDespawn();
+        }
         super.onLivingUpdate();
         this.oFlap = this.wingRotation;
         this.oFlapSpeed = this.destPos;
@@ -101,7 +104,9 @@ public class EntityChicken extends EntityAnimal
         if (!this.world.isRemote && !this.isChild() && !this.isChickenJockey() && --this.timeUntilNextEgg <= 0)
         {
             this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+            this.forceDrops = true;
             this.dropItem(Items.EGG, 1);
+            this.forceDrops = false;
             this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
         }
     }

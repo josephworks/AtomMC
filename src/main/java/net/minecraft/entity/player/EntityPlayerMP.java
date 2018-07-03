@@ -113,6 +113,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.ILootContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 {
@@ -152,6 +153,17 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     public boolean isChangingQuantityOnly;
     public int ping;
     public boolean queuedEndExit;
+
+    public String displayName;
+    public ITextComponent listName;
+    public org.bukkit.Location compassTarget;
+    public int newExp = 0;
+    public int newLevel = 0;
+    public int newTotalExp = 0;
+    public boolean keepLevel = false;
+    public double maxHealthCache;
+    public boolean joining = true;
+    public boolean sentListPacket = false;
 
     public EntityPlayerMP(MinecraftServer server, WorldServer worldIn, GameProfile profile, PlayerInteractionManager interactionManagerIn)
     {
@@ -1468,5 +1480,10 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     public Vec3d getEnteredNetherPosition()
     {
         return this.enteredNetherPosition;
+    }
+
+    @Override
+    public CraftPlayer getBukkitEntity() {
+        return (CraftPlayer) super.getBukkitEntity();
     }
 }

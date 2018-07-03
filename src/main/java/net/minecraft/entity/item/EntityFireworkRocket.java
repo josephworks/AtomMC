@@ -23,6 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class EntityFireworkRocket extends Entity
 {
@@ -187,8 +188,10 @@ public class EntityFireworkRocket extends Entity
 
         if (!this.world.isRemote && this.fireworkAge > this.lifetime)
         {
-            this.world.setEntityState(this, (byte)17);
-            this.dealExplosionDamage();
+            if (!org.bukkit.craftbukkit.event.CraftEventFactory.callFireworkExplodeEvent(this).isCancelled()) {
+                this.world.setEntityState(this, (byte) 17);
+                this.dealExplosionDamage();
+            }
             this.setDead();
         }
     }
@@ -209,7 +212,9 @@ public class EntityFireworkRocket extends Entity
         {
             if (this.boostedEntity != null)
             {
+                CraftEventFactory.entityDamage = this;
                 this.boostedEntity.attackEntityFrom(DamageSource.FIREWORKS, (float)(5 + nbttaglist.tagCount() * 2));
+                CraftEventFactory.entityDamage = null;
             }
 
             double d0 = 5.0D;
@@ -235,7 +240,9 @@ public class EntityFireworkRocket extends Entity
                     if (flag)
                     {
                         float f1 = f * (float)Math.sqrt((5.0D - (double)this.getDistance(entitylivingbase)) / 5.0D);
+                        CraftEventFactory.entityDamage = this;
                         entitylivingbase.attackEntityFrom(DamageSource.FIREWORKS, f1);
+                        CraftEventFactory.entityDamage = null;
                     }
                 }
             }
