@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.passive.EntityLlama;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityLlamaSpit extends Entity implements IProjectile
 {
-    public EntityLlama owner;
+    public EntityLivingBase owner; // CraftBukkit - type EntityLlama -> EntityLivingBase
     private NBTTagCompound ownerNbt;
 
     public EntityLlamaSpit(World worldIn)
@@ -211,6 +212,7 @@ public class EntityLlamaSpit extends Entity implements IProjectile
 
     public void onHit(RayTraceResult p_190536_1_)
     {
+        org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, p_190536_1_);
         if (p_190536_1_.entityHit != null && this.owner != null)
         {
             p_190536_1_.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.owner).setProjectile(), 1.0F);

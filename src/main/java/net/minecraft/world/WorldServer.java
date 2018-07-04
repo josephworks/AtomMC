@@ -1301,11 +1301,18 @@ public class WorldServer extends World implements IThreadListener
 
     public void spawnParticle(EnumParticleTypes particleType, boolean longDistance, double xCoord, double yCoord, double zCoord, int numberOfParticles, double xOffset, double yOffset, double zOffset, double particleSpeed, int... particleArguments)
     {
+        // CraftBukkit - visibility api support
+        sendParticles(null, particleType, longDistance, xCoord, yCoord, zCoord, numberOfParticles, xOffset, yOffset, zOffset, particleSpeed, particleArguments);
+    }
+
+    public void sendParticles(@Nullable EntityPlayerMP sender, EnumParticleTypes particleType, boolean longDistance, double xCoord, double yCoord, double zCoord, int numberOfParticles, double xOffset, double yOffset, double zOffset, double particleSpeed, int... particleArguments) {
+        // CraftBukkit end
         SPacketParticles spacketparticles = new SPacketParticles(particleType, longDistance, (float)xCoord, (float)yCoord, (float)zCoord, (float)xOffset, (float)yOffset, (float)zOffset, (float)particleSpeed, numberOfParticles, particleArguments);
 
         for (int i = 0; i < this.playerEntities.size(); ++i)
         {
             EntityPlayerMP entityplayermp = (EntityPlayerMP)this.playerEntities.get(i);
+            if (sender != null && !entityplayermp.getBukkitEntity().canSee(sender.getBukkitEntity())) continue;
             this.sendPacketWithinDistance(entityplayermp, longDistance, xCoord, yCoord, zCoord, spacketparticles);
         }
     }

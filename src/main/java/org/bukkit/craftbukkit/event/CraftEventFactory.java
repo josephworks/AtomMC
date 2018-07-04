@@ -417,7 +417,7 @@ public class CraftEventFactory {
         return !event.isCancelled();
     }
 
-    public static EntityDeathEvent callEntityDeathEvent(EntityLiving victim) {
+    public static EntityDeathEvent callEntityDeathEvent(EntityLivingBase victim) {
         return callEntityDeathEvent(victim, new ArrayList<org.bukkit.inventory.ItemStack>(0));
     }
 

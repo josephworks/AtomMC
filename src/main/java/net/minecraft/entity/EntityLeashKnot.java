@@ -4,8 +4,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockFence;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketEntityAttach;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class EntityLeashKnot extends EntityHanging
 {
@@ -104,6 +107,10 @@ public class EntityLeashKnot extends EntityHanging
             {
                 if (entityliving.getLeashed() && entityliving.getLeashHolder() == player)
                 {
+                    if (CraftEventFactory.callPlayerLeashEntityEvent(entityliving, this, player).isCancelled()) {
+                        ((EntityPlayerMP) player).connection.sendPacket(new SPacketEntityAttach(entityliving, entityliving.getLeashHolder()));
+                        continue;
+                    }
                     entityliving.setLeashHolder(this, true);
                     flag = true;
                 }
@@ -111,16 +118,24 @@ public class EntityLeashKnot extends EntityHanging
 
             if (!flag)
             {
-                this.setDead();
-
-                if (player.capabilities.isCreativeMode)
-                {
+                // CraftBukkit start - Move below
+                // this.setDead();
+                if (true || player.capabilities.isCreativeMode) { // CraftBukkit - Process for non-creative as well
+                boolean die = true;
                     for (EntityLiving entityliving1 : list)
                     {
                         if (entityliving1.getLeashed() && entityliving1.getLeashHolder() == this)
                         {
-                            entityliving1.clearLeashed(true, false);
+                            // entityliving1.clearLeashed(true, false);
+                            if (CraftEventFactory.callPlayerUnleashEntityEvent(entityliving1, player).isCancelled()) {
+                                die = false;
+                                continue;
+                            }
+                            entityliving1.clearLeashed(true, !player.capabilities.isCreativeMode); // false -> survival mode boolean
                         }
+                    }
+                    if (die) {
+                        this.setDead();
                     }
                 }
             }

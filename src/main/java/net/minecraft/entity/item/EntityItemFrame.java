@@ -63,6 +63,9 @@ public class EntityItemFrame extends EntityHanging
         {
             if (!this.world.isRemote)
             {
+                if (org.bukkit.craftbukkit.event.CraftEventFactory.handleNonLivingEntityDamageEvent(this, source, amount, false) || this.isDead) {
+                    return true;
+                }
                 this.dropItemOrSelf(source.getTrueSource(), false);
                 this.playSound(SoundEvents.ENTITY_ITEMFRAME_REMOVE_ITEM, 1.0F, 1.0F);
                 this.setDisplayedItem(ItemStack.EMPTY);
