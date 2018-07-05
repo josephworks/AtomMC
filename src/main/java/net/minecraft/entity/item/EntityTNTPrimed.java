@@ -10,6 +10,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
 
 public class EntityTNTPrimed extends Entity
 {
@@ -17,6 +18,9 @@ public class EntityTNTPrimed extends Entity
     @Nullable
     private EntityLivingBase tntPlacedBy;
     private int fuse;
+
+    public float yield = 4;
+    public boolean isIncendiary = false;
 
     public EntityTNTPrimed(World worldIn)
     {
@@ -84,12 +88,14 @@ public class EntityTNTPrimed extends Entity
 
         if (this.fuse <= 0)
         {
-            this.setDead();
+            // CraftBukkit start - Need to reverse the order of the explosion and the entity death so we have a location for the event
+            // this.setDead();
 
             if (!this.world.isRemote)
             {
                 this.explode();
             }
+            this.setDead();
         }
         else
         {
@@ -100,8 +106,15 @@ public class EntityTNTPrimed extends Entity
 
     private void explode()
     {
-        float f = 4.0F;
-        this.world.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, 4.0F, true);
+        // float f = 4.0F;
+        // this.world.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, 4.0F, true);
+        org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
+        ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this));
+        server.getPluginManager().callEvent(event);
+
+        if (!event.isCancelled()) {
+            this.world.newExplosion(this, this.posX, this.posY + (double) (this.height / 16.0F), this.posZ, event.getRadius(), event.getFire(), true);
+        }
     }
 
     protected void writeEntityToNBT(NBTTagCompound compound)

@@ -146,6 +146,24 @@ public class EntityTippedArrow extends EntityArrow
         }
     }
 
+    // CraftBukkit start accessor methods
+    public void refreshEffects() {
+        this.getDataManager().set(EntityTippedArrow.COLOR, PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, this.customPotionEffects)));
+    }
+
+    public String getType() {
+        return PotionType.REGISTRY.getNameForObject(this.potion).toString();
+    }
+
+    public void setType(String string) {
+        this.potion = PotionType.REGISTRY.getObject(new ResourceLocation(string));
+        this.dataManager.set(EntityTippedArrow.COLOR, PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, this.customPotionEffects)));
+    }
+
+    public boolean isTipped() {
+        return !(this.customPotionEffects.isEmpty() && this.potion == PotionTypes.EMPTY);
+    }
+
     public int getColor()
     {
         return ((Integer)this.dataManager.get(COLOR)).intValue();

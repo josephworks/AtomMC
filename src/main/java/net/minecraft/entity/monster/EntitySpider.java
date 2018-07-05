@@ -173,7 +173,8 @@ public class EntitySpider extends EntityMob
             EntitySkeleton entityskeleton = new EntitySkeleton(this.world);
             entityskeleton.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
             entityskeleton.onInitialSpawn(difficulty, (IEntityLivingData)null);
-            this.world.spawnEntity(entityskeleton);
+            // this.world.spawnEntity(entityskeleton);
+            this.world.spawnEntity(entityskeleton, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.JOCKEY);
             entityskeleton.startRiding(this);
         }
 

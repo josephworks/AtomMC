@@ -198,7 +198,7 @@ public class EntityTracker
         }
         else if (entityIn instanceof EntityAreaEffectCloud)
         {
-            this.track(entityIn, 160, Integer.MAX_VALUE, true);
+            this.track(entityIn, 160, 10 /*Integer.MAX_VALUE*/, true); // CraftBukkit
         }
         else if (entityIn instanceof EntityEnderCrystal)
         {

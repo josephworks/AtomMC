@@ -18,6 +18,7 @@ public class EntityLargeFireball extends EntityFireball
     public EntityLargeFireball(World worldIn)
     {
         super(worldIn);
+        // TODO: Maybe we should use net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent instead of this?
         isIncendiary = this.world.getGameRules().getBoolean("mobGriefing");
     }
 
@@ -30,6 +31,7 @@ public class EntityLargeFireball extends EntityFireball
     public EntityLargeFireball(World worldIn, EntityLivingBase shooter, double accelX, double accelY, double accelZ)
     {
         super(worldIn, shooter, accelX, accelY, accelZ);
+        // TODO: Maybe we should use net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent instead of this?
         isIncendiary = this.world.getGameRules().getBoolean("mobGriefing");
     }
 

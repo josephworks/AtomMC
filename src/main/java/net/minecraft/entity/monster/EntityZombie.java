@@ -51,6 +51,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 public class EntityZombie extends EntityMob
 {
@@ -215,7 +219,13 @@ public class EntityZombie extends EntityMob
 
                 if (flag)
                 {
-                    this.setFire(8);
+                    // this.setFire(8);
+                    EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), 8);
+                    this.world.getServer().getPluginManager().callEvent(event);
+
+                    if (!event.isCancelled()) {
+                        this.setFire(event.getDuration());
+                    }
                 }
             }
         }
@@ -270,8 +280,8 @@ public class EntityZombie extends EntityMob
 
                         if (!this.world.isAnyPlayerWithinRangeAt((double)i1, (double)j1, (double)k1, 7.0D) && this.world.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie) && this.world.getCollisionBoxes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty() && !this.world.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
                         {
-                            this.world.spawnEntity(entityzombie);
-                            if (entitylivingbase != null) entityzombie.setAttackTarget(entitylivingbase);
+                            this.world.spawnEntity(entityzombie, CreatureSpawnEvent.SpawnReason.REINFORCEMENTS);
+                            if (entitylivingbase != null) entityzombie.setAttackTarget(entitylivingbase, EntityTargetEvent.TargetReason.REINFORCEMENT_TARGET, true);
                             entityzombie.onInitialSpawn(this.world.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
                             this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
                             entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
@@ -299,7 +309,13 @@ public class EntityZombie extends EntityMob
 
             if (this.getHeldItemMainhand().isEmpty() && this.isBurning() && this.rand.nextFloat() < f * 0.3F)
             {
-                entityIn.setFire(2 * (int)f);
+                // entityIn.setFire(2 * (int)f);
+                EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this.getBukkitEntity(), entityIn.getBukkitEntity(), 2 * (int) f); // PAIL: fixme
+                this.world.getServer().getPluginManager().callEvent(event);
+
+                if (!event.isCancelled()) {
+                    entityIn.setFire(event.getDuration());
+                }
             }
         }
 
@@ -416,7 +432,7 @@ public class EntityZombie extends EntityMob
                 entityzombievillager.setAlwaysRenderNameTag(entityvillager.getAlwaysRenderNameTag());
             }
 
-            this.world.spawnEntity(entityzombievillager);
+            this.world.spawnEntity(entityzombievillager, CreatureSpawnEvent.SpawnReason.INFECTION);
             this.world.playEvent((EntityPlayer)null, 1026, new BlockPos(this), 0);
         }
     }
@@ -475,7 +491,7 @@ public class EntityZombie extends EntityMob
                     entitychicken1.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
                     entitychicken1.onInitialSpawn(difficulty, (IEntityLivingData)null);
                     entitychicken1.setChickenJockey(true);
-                    this.world.spawnEntity(entitychicken1);
+                    this.world.spawnEntity(entitychicken1, CreatureSpawnEvent.SpawnReason.MOUNT);
                     this.startRiding(entitychicken1);
                 }
             }
@@ -543,7 +559,7 @@ public class EntityZombie extends EntityMob
 
     public void onDeath(DamageSource cause)
     {
-        super.onDeath(cause);
+        // super.onDeath(cause); // CraftBukkit - moved down
 
         if (cause.getTrueSource() instanceof EntityCreeper)
         {
@@ -560,6 +576,7 @@ public class EntityZombie extends EntityMob
                 }
             }
         }
+        super.onDeath(cause);
     }
 
     protected ItemStack getSkullDrop()

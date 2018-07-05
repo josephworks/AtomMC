@@ -35,6 +35,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 public class EntityVex extends EntityMob
 {
@@ -316,7 +317,8 @@ public class EntityVex extends EntityMob
 
         public void startExecuting()
         {
-            EntityVex.this.setAttackTarget(EntityVex.this.owner.getAttackTarget());
+            // EntityVex.this.setAttackTarget(EntityVex.this.owner.getAttackTarget());
+            EntityVex.this.setAttackTarget(EntityVex.this.owner.getAttackTarget(), EntityTargetEvent.TargetReason.OWNER_ATTACKED_TARGET, true);
             super.startExecuting();
         }
     }

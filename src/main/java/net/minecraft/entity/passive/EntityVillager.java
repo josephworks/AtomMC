@@ -92,6 +92,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftVillager;
+import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe;
+import org.bukkit.entity.Villager;
+import org.bukkit.event.entity.VillagerAcquireTradeEvent;
+import org.bukkit.event.entity.VillagerReplenishTradeEvent;
 
 public class EntityVillager extends EntityAgeable implements INpc, IMerchant
 {
@@ -104,13 +110,13 @@ public class EntityVillager extends EntityAgeable implements INpc, IMerchant
     @Nullable
     private EntityPlayer buyingPlayer;
     @Nullable
-    private MerchantRecipeList buyingList;
+    public MerchantRecipeList buyingList;
     private int timeUntilReset;
     private boolean needsInitilization;
     private boolean isWillingToMate;
     public int wealth;
     private java.util.UUID lastBuyingPlayer;
-    private int careerId;
+    public int careerId;
     private int careerLevel;
     private boolean isLookingForHome;
     private boolean areAdditionalTasksSet;
@@ -125,7 +131,7 @@ public class EntityVillager extends EntityAgeable implements INpc, IMerchant
     public EntityVillager(World worldIn, int professionId)
     {
         super(worldIn);
-        this.villagerInventory = new InventoryBasic("Items", false, 8);
+        this.villagerInventory = new InventoryBasic("Items", false, 8, (CraftVillager) this.getBukkitEntity());
         this.setProfession(professionId);
         this.setSize(0.6F, 1.95F);
         ((PathNavigateGround)this.getNavigator()).setBreakDoors(true);
@@ -224,7 +230,13 @@ public class EntityVillager extends EntityAgeable implements INpc, IMerchant
                     {
                         if (merchantrecipe.isRecipeDisabled())
                         {
-                            merchantrecipe.increaseMaxTradeUses(this.rand.nextInt(6) + this.rand.nextInt(6) + 2);
+                            // merchantrecipe.increaseMaxTradeUses(this.rand.nextInt(6) + this.rand.nextInt(6) + 2);
+                            int bonus = this.rand.nextInt(6) + this.rand.nextInt(6) + 2;
+                            VillagerReplenishTradeEvent event = new VillagerReplenishTradeEvent((Villager) this.getBukkitEntity(), merchantrecipe.asBukkit(), bonus);
+                            Bukkit.getPluginManager().callEvent(event);
+                            if (!event.isCancelled()) {
+                                merchantrecipe.increaseMaxTradeUses(event.getBonus());
+                            }
                         }
                     }
 
@@ -679,7 +691,20 @@ public class EntityVillager extends EntityAgeable implements INpc, IMerchant
         {
             for (ITradeList entityvillager$itradelist : trades)
             {
-                entityvillager$itradelist.addMerchantRecipe(this, this.buyingList, this.rand);
+                // CraftBukkit start
+                // this is a hack. this must be done because otherwise, if
+                // mojang adds a new type of villager merchant option, it will need to
+                // have event handling added manually. this is better than having to do that.
+                MerchantRecipeList list = new MerchantRecipeList();
+                entityvillager$itradelist.addMerchantRecipe(this, list /*this.buyingList*/, this.rand);
+                for (MerchantRecipe recipe : list) {
+                    VillagerAcquireTradeEvent event = new VillagerAcquireTradeEvent((Villager) getBukkitEntity(), recipe.asBukkit());
+                    Bukkit.getPluginManager().callEvent(event);
+                    if (!event.isCancelled()) {
+                        this.buyingList.add(CraftMerchantRecipe.fromBukkit(event.getRecipe()).toMinecraft());
+                    }
+                }
+                // CraftBukkit end
             }
         }
     }

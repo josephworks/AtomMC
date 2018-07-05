@@ -13,9 +13,9 @@ public class CraftCreature extends CraftLivingEntity implements Creature {
     public void setTarget(LivingEntity target) {
         EntityCreature entity = getHandle();
         if (target == null) {
-            entity.setGoalTarget(null, null, false);
+            entity.setAttackTarget(null, null, false);
         } else if (target instanceof CraftLivingEntity) {
-            entity.setGoalTarget(((CraftLivingEntity) target).getHandle(), null, false);
+            entity.setAttackTarget(((CraftLivingEntity) target).getHandle(), null, false);
         }
     }
 

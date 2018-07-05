@@ -35,6 +35,7 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.loot.LootTableList;
+import org.bukkit.event.entity.SlimeSplitEvent;
 
 public class EntitySlime extends EntityLiving implements IMob
 {
@@ -204,6 +205,16 @@ public class EntitySlime extends EntityLiving implements IMob
         {
             int j = 2 + this.rand.nextInt(3);
 
+            SlimeSplitEvent event = new SlimeSplitEvent((org.bukkit.entity.Slime) this.getBukkitEntity(), j);
+            this.world.getServer().getPluginManager().callEvent(event);
+
+            if (!event.isCancelled() && event.getCount() > 0) {
+                j = event.getCount();
+            } else {
+                super.setDead();
+                return;
+            }
+
             for (int k = 0; k < j; ++k)
             {
                 float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
@@ -222,7 +233,7 @@ public class EntitySlime extends EntityLiving implements IMob
 
                 entityslime.setSlimeSize(i / 2, true);
                 entityslime.setLocationAndAngles(this.posX + (double)f, this.posY + 0.5D, this.posZ + (double)f1, this.rand.nextFloat() * 360.0F, 0.0F);
-                this.world.spawnEntity(entityslime);
+                this.world.spawnEntity(entityslime, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SLIME_SPLIT);
             }
         }
 

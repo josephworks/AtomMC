@@ -63,7 +63,7 @@ public class EntityWitherSkeleton extends AbstractSkeleton
 
     public void onDeath(DamageSource cause)
     {
-        super.onDeath(cause);
+        // super.onDeath(cause); // CraftBukkit - down
 
         if (cause.getTrueSource() instanceof EntityCreeper)
         {
@@ -75,6 +75,7 @@ public class EntityWitherSkeleton extends AbstractSkeleton
                 this.entityDropItem(new ItemStack(Items.SKULL, 1, 1), 0.0F);
             }
         }
+        super.onDeath(cause); // CraftBukkit - moved from above
     }
 
     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)

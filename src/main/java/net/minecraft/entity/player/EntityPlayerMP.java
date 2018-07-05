@@ -142,7 +142,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     public final PlayerInteractionManager interactionManager;
     public double managedPosX;
     public double managedPosZ;
-    private final List<Integer> entityRemoveQueue = Lists.<Integer>newLinkedList();
+    public final List<Integer> entityRemoveQueue = Lists.<Integer>newLinkedList();
     private final PlayerAdvancements advancements;
     private final StatisticsManagerServer statsFile;
     private float lastHealthScore = Float.MIN_VALUE;
