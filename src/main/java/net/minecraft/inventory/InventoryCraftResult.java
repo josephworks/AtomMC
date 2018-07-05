@@ -8,11 +8,40 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.entity.HumanEntity;
 
 public class InventoryCraftResult implements IInventory
 {
     private final NonNullList<ItemStack> stackResult = NonNullList.<ItemStack>withSize(1, ItemStack.EMPTY);
     private IRecipe recipeUsed;
+
+    private int maxStack = MAX_STACK;
+
+    public java.util.List<ItemStack> getContents() {
+        return this.stackResult;
+    }
+
+    public org.bukkit.inventory.InventoryHolder getOwner() {
+        return null; // Result slots don't get an owner
+    }
+
+    // Don't need a transaction; the InventoryCrafting keeps track of it for us
+    public void onOpen(CraftHumanEntity who) {}
+    public void onClose(CraftHumanEntity who) {}
+    public java.util.List<HumanEntity> getViewers() {
+        return new java.util.ArrayList<HumanEntity>();
+    }
+
+    public void setMaxStackSize(int size) {
+        maxStack = size;
+    }
+
+    @Override
+    public Location getLocation() {
+        return null;
+    }
 
     public int getSizeInventory()
     {
@@ -69,7 +98,7 @@ public class InventoryCraftResult implements IInventory
 
     public int getInventoryStackLimit()
     {
-        return 64;
+        return maxStack;
     }
 
     public void markDirty()

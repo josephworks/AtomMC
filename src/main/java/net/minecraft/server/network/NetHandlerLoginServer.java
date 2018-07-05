@@ -49,6 +49,8 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
     private SecretKey secretKey;
     private EntityPlayerMP player;
 
+    public String hostname = "";
+
     public NetHandlerLoginServer(MinecraftServer serverIn, NetworkManager networkManagerIn)
     {
         this.server = serverIn;
