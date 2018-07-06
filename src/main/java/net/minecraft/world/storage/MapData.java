@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +16,8 @@ import net.minecraft.network.play.server.SPacketMaps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.map.CraftMapView;
 
 public class MapData extends WorldSavedData
 {
@@ -29,9 +32,15 @@ public class MapData extends WorldSavedData
     private final Map<EntityPlayer, MapInfo> playersHashMap = Maps.<EntityPlayer, MapInfo>newHashMap();
     public Map<String, MapDecoration> mapDecorations = Maps.<String, MapDecoration>newLinkedHashMap();
 
+    public final CraftMapView mapView;
+    private CraftServer server;
+    private UUID uniqueId = null;
+
     public MapData(String mapname)
     {
         super(mapname);
+        mapView = new CraftMapView(this);
+        server = (CraftServer) org.bukkit.Bukkit.getServer();
     }
 
     public void calculateMapCenter(double x, double z, int mapScale)

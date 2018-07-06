@@ -11,6 +11,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 
 public class ItemHangingEntity extends Item
 {
@@ -35,6 +37,16 @@ public class ItemHangingEntity extends Item
             {
                 if (!worldIn.isRemote)
                 {
+                    Player who = (player == null) ? null : (Player) player.getBukkitEntity();
+                    org.bukkit.block.Block blockClicked = worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+                    org.bukkit.block.BlockFace blockFace = org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(facing);
+
+                    HangingPlaceEvent event = new HangingPlaceEvent((org.bukkit.entity.Hanging) entityhanging.getBukkitEntity(), who, blockClicked, blockFace);
+                    worldIn.getServer().getPluginManager().callEvent(event);
+
+                    if (event.isCancelled()) {
+                        return EnumActionResult.FAIL;
+                    }
                     entityhanging.playPlaceSound();
                     worldIn.spawnEntity(entityhanging);
                 }

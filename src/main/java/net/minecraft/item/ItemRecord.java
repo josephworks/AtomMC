@@ -44,6 +44,7 @@ public class ItemRecord extends Item
         {
             if (!worldIn.isRemote)
             {
+                if (true) return EnumActionResult.SUCCESS; // CraftBukkit - handled in ItemStack
                 ItemStack itemstack = player.getHeldItem(hand);
                 ((BlockJukebox)Blocks.JUKEBOX).insertRecord(worldIn, pos, iblockstate, itemstack);
                 worldIn.playEvent((EntityPlayer)null, 1010, pos, Item.getIdFromItem(this));

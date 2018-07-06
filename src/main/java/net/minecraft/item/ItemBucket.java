@@ -24,7 +24,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 
 public class ItemBucket extends Item
 {
@@ -74,17 +76,27 @@ public class ItemBucket extends Item
 
                     if (material == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
                     {
+                        PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent(playerIn, blockpos.getX(), blockpos.getY(), blockpos.getZ(), null, itemstack, Items.WATER_BUCKET);
+
+                        if (event.isCancelled()) {
+                            return new ActionResult<>(EnumActionResult.FAIL, itemstack);
+                        }
                         worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
                         playerIn.addStat(StatList.getObjectUseStats(this));
                         playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
-                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.WATER_BUCKET));
+                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.WATER_BUCKET, event.getItemStack()));
                     }
                     else if (material == Material.LAVA && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
                     {
+                        PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent(playerIn, blockpos.getX(), blockpos.getY(), blockpos.getZ(), null, itemstack, Items.LAVA_BUCKET);
+
+                        if (event.isCancelled()) {
+                            return new ActionResult<>(EnumActionResult.FAIL, itemstack);
+                        }
                         playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL_LAVA, 1.0F, 1.0F);
                         worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
                         playerIn.addStat(StatList.getObjectUseStats(this));
-                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.LAVA_BUCKET));
+                        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.LAVA_BUCKET, event.getItemStack()));
                     }
                     else
                     {
@@ -101,7 +113,7 @@ public class ItemBucket extends Item
                 {
                     return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                 }
-                else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1))
+                else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1, raytraceresult.sideHit, blockpos, itemstack))
                 {
                     if (playerIn instanceof EntityPlayerMP)
                     {
@@ -138,6 +150,34 @@ public class ItemBucket extends Item
                 if (!player.inventory.addItemStackToInventory(new ItemStack(fullBucket)))
                 {
                     player.dropItem(new ItemStack(fullBucket), false);
+                }
+
+                return emptyBuckets;
+            }
+        }
+    }
+
+    // CraftBukkit - added ob.ItemStack result - TODO: Is this... the right way to handle this?
+    private ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket, org.bukkit.inventory.ItemStack result)
+    {
+        if (player.capabilities.isCreativeMode)
+        {
+            return emptyBuckets;
+        }
+        else
+        {
+            emptyBuckets.shrink(1);
+
+            if (emptyBuckets.isEmpty())
+            {
+                // return new ItemStack(fullBucket);
+                return CraftItemStack.asNMSCopy(result);
+            }
+            else
+            {
+                if (!player.inventory.addItemStackToInventory(CraftItemStack.asNMSCopy(result)))
+                {
+                    player.dropItem(CraftItemStack.asNMSCopy(result), false);
                 }
 
                 return emptyBuckets;
