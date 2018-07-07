@@ -869,4 +869,12 @@ public class WorldInfo
     {
         return this.versionName;
     }
+
+    // CraftBukkit start - Check if the name stored in NBT is the correct one
+    public void checkName(String name) {
+        if (!this.levelName.equals(name)) {
+            this.levelName = name;
+        }
+    }
+    // CraftBukkit end
 }

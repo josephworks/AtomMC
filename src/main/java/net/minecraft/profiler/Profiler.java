@@ -13,17 +13,18 @@ import org.apache.logging.log4j.Logger;
 
 public class Profiler
 {
-    // TODO: Implement ENABLED
     public static final boolean ENABLED = Boolean.getBoolean("enableDebugMethodProfiler"); // CraftBukkit - disable unless specified in JVM arguments
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<String> sectionList = Lists.<String>newArrayList();
     private final List<Long> timestampList = Lists.<Long>newArrayList();
+    // TODO: Should we use profilingEnabled instead of ENABLED?
     public boolean profilingEnabled;
     private String profilingSection = "";
     private final Map<String, Long> profilingMap = Maps.<String, Long>newHashMap();
 
     public void clearProfiling()
     {
+        if (!ENABLED) return;
         this.profilingMap.clear();
         this.profilingSection = "";
         this.sectionList.clear();
@@ -31,6 +32,7 @@ public class Profiler
 
     public void startSection(String name)
     {
+        if (!ENABLED) return;
         if (this.profilingEnabled)
         {
             if (!this.profilingSection.isEmpty())
@@ -46,6 +48,7 @@ public class Profiler
 
     public void func_194340_a(Supplier<String> p_194340_1_)
     {
+        if (!ENABLED) return;
         if (this.profilingEnabled)
         {
             this.startSection(p_194340_1_.get());
@@ -54,6 +57,7 @@ public class Profiler
 
     public void endSection()
     {
+        if (!ENABLED) return;
         if (this.profilingEnabled)
         {
             long i = System.nanoTime();
@@ -81,7 +85,7 @@ public class Profiler
 
     public List<Result> getProfilingData(String profilerName)
     {
-        if (!this.profilingEnabled)
+        if (!ENABLED || !this.profilingEnabled)
         {
             return Collections.<Result>emptyList();
         }
@@ -148,12 +152,14 @@ public class Profiler
 
     public void endStartSection(String name)
     {
+        if (!ENABLED) return;
         this.endSection();
         this.startSection(name);
     }
 
     public String getNameOfLastSection()
     {
+        if (!ENABLED) return "[DISABLED]";
         return this.sectionList.isEmpty() ? "[UNKNOWN]" : (String)this.sectionList.get(this.sectionList.size() - 1);
     }
 

@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe;
 
 public class MerchantRecipe
 {
@@ -14,6 +15,17 @@ public class MerchantRecipe
     public int toolUses;
     public int maxTradeUses;
     public boolean rewardsExp;
+
+    private CraftMerchantRecipe bukkitHandle;
+
+    public CraftMerchantRecipe asBukkit() {
+        return (bukkitHandle == null) ? bukkitHandle = new CraftMerchantRecipe(this) : bukkitHandle;
+    }
+
+    public MerchantRecipe(ItemStack itemstack, ItemStack itemstack1, ItemStack itemstack2, int i, int j, CraftMerchantRecipe bukkit) {
+        this(itemstack, itemstack1, itemstack2, i, j);
+        this.bukkitHandle = bukkit;
+    }
 
     public MerchantRecipe(NBTTagCompound tagCompound)
     {
