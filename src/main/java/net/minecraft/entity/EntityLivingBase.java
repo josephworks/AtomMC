@@ -160,7 +160,7 @@ public abstract class EntityLivingBase extends Entity
     protected double interpTargetPitch;
     public boolean potionsNeedUpdate = true;
     public EntityLivingBase revengeTarget;
-    private int revengeTimer;
+    public int revengeTimer;
     private EntityLivingBase lastAttackedEntity;
     private int lastAttackedEntityTime;
     private float landMovementFactor;

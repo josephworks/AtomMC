@@ -51,7 +51,7 @@ public class EntityAIDefendVillage extends EntityAITarget
 
     public void startExecuting()
     {
-        this.irongolem.setAttackTarget(this.villageAgressorTarget);
+        this.irongolem.setAttackTarget(this.villageAgressorTarget, org.bukkit.event.entity.EntityTargetEvent.TargetReason.DEFEND_VILLAGE, true);
         super.startExecuting();
     }
 }

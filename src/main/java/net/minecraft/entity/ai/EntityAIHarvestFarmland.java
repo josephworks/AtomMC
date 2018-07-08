@@ -61,7 +61,9 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
 
             if (this.currentTask == 0 && block instanceof BlockCrops && ((BlockCrops)block).isMaxAge(iblockstate))
             {
-                world.destroyBlock(blockpos, true);
+                if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.villager, blockpos, Blocks.AIR, 0).isCancelled()) {
+                    world.destroyBlock(blockpos, true);
+                }
             }
             else if (this.currentTask == 1 && iblockstate.getMaterial() == Material.AIR)
             {
@@ -74,25 +76,35 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
 
                     if (!itemstack.isEmpty())
                     {
+                        Block planted = null;
                         if (itemstack.getItem() == Items.WHEAT_SEEDS)
                         {
-                            world.setBlockState(blockpos, Blocks.WHEAT.getDefaultState(), 3);
+                            // world.setBlockState(blockpos, Blocks.WHEAT.getDefaultState(), 3);
+                            planted = Blocks.WHEAT;
                             flag = true;
                         }
                         else if (itemstack.getItem() == Items.POTATO)
                         {
-                            world.setBlockState(blockpos, Blocks.POTATOES.getDefaultState(), 3);
+                            // world.setBlockState(blockpos, Blocks.POTATOES.getDefaultState(), 3);
+                            planted = Blocks.POTATOES;
                             flag = true;
                         }
                         else if (itemstack.getItem() == Items.CARROT)
                         {
-                            world.setBlockState(blockpos, Blocks.CARROTS.getDefaultState(), 3);
+                            // world.setBlockState(blockpos, Blocks.CARROTS.getDefaultState(), 3);
+                            planted = Blocks.CARROTS;
                             flag = true;
                         }
                         else if (itemstack.getItem() == Items.BEETROOT_SEEDS)
                         {
-                            world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
+                            // world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
+                            planted = Blocks.BEETROOTS;
                             flag = true;
+                        }
+                        if (planted != null && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.villager, blockpos, planted, 0).isCancelled()) {
+                            world.setBlockState(blockpos, planted.getDefaultState(), 3);
+                        } else {
+                            flag = false;
                         }
                     }
 

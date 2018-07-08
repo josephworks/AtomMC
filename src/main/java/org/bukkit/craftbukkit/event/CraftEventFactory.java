@@ -1069,7 +1069,7 @@ public class CraftEventFactory {
         return event;
     }
 
-    public static EntityBreedEvent callEntityBreedEvent(EntityLiving child, EntityLiving mother, EntityLiving father, EntityLiving breeder, ItemStack bredWith, int experience) {
+    public static EntityBreedEvent callEntityBreedEvent(EntityLivingBase child, EntityLivingBase mother, EntityLivingBase father, EntityLivingBase breeder, ItemStack bredWith, int experience) {
         LivingEntity breederEntity = (LivingEntity) (breeder == null ? null : breeder.getBukkitEntity());
         CraftItemStack bredWithStack = bredWith == null ? null : CraftItemStack.asCraftMirror(bredWith).clone();
 
