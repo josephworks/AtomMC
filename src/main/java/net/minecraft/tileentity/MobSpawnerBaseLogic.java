@@ -27,13 +27,13 @@ public abstract class MobSpawnerBaseLogic
     private WeightedSpawnerEntity spawnData = new WeightedSpawnerEntity();
     private double mobRotation;
     private double prevMobRotation;
-    private int minSpawnDelay = 200;
-    private int maxSpawnDelay = 800;
-    private int spawnCount = 4;
+    public int minSpawnDelay = 200;
+    public int maxSpawnDelay = 800;
+    public int spawnCount = 4;
     private Entity cachedEntity;
-    private int maxNearbyEntities = 6;
-    private int activatingRangeFromPlayer = 16;
-    private int spawnRange = 4;
+    public int maxNearbyEntities = 6;
+    public int activatingRangeFromPlayer = 16;
+    public int spawnRange = 4;
 
     @Nullable
     public ResourceLocation getEntityId()
@@ -47,6 +47,7 @@ public abstract class MobSpawnerBaseLogic
         if (id != null)
         {
             this.spawnData.getNbt().setString("id", id.toString());
+            this.potentialSpawns.clear(); // CraftBukkit - SPIGOT-3496, MC-92282
         }
     }
 
@@ -132,7 +133,7 @@ public abstract class MobSpawnerBaseLogic
                             ((EntityLiving)entity).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData)null);
                         }
 
-                        AnvilChunkLoader.spawnEntity(entity, world);
+                        AnvilChunkLoader.spawnEntity(entity, world, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER);
                         world.playEvent(2004, blockpos, 0);
 
                         if (entityliving != null)

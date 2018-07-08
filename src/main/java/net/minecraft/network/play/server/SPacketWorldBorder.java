@@ -4,6 +4,7 @@ import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
+import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,8 +28,12 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
     public SPacketWorldBorder(WorldBorder border, Action actionIn)
     {
         this.action = actionIn;
-        this.centerX = border.getCenterX();
-        this.centerZ = border.getCenterZ();
+        // CraftBukkit start - multiply out nether border
+        // this.centerX = border.getCenterX();
+        // this.centerZ = border.getCenterZ();
+        this.centerX = border.getCenterX() * (border.world.provider instanceof WorldProviderHell ? 8 : 1);
+        this.centerZ = border.getCenterZ() * (border.world.provider instanceof WorldProviderHell ? 8 : 1);
+        // CraftBukkit end
         this.diameter = border.getDiameter();
         this.targetSize = border.getTargetSize();
         this.timeUntilTarget = border.getTimeUntilTarget();

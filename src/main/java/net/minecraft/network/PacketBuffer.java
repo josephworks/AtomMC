@@ -25,11 +25,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.client.CPacketCloseWindow;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 
 public class PacketBuffer extends ByteBuf
 {
@@ -287,9 +289,9 @@ public class PacketBuffer extends ByteBuf
             {
                 CompressedStreamTools.write(nbt, new ByteBufOutputStream(this));
             }
-            catch (IOException ioexception)
+            catch (Exception exception) // CraftBukkit - IOException -> Exception
             {
-                throw new EncoderException(ioexception);
+                throw new EncoderException(exception);
             }
         }
 
@@ -359,6 +361,8 @@ public class PacketBuffer extends ByteBuf
             int k = this.readShort();
             ItemStack itemstack = new ItemStack(Item.getItemById(i), j, k);
             itemstack.setTagCompound(this.readCompoundTag());
+            if (itemstack.getTagCompound() != null)
+                CraftItemStack.setItemMeta(itemstack, CraftItemStack.getItemMeta(itemstack));
             return itemstack;
         }
     }

@@ -1545,10 +1545,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         return worldServerList.get(0).getGameRules().getBoolean("sendCommandFeedback");
     }
 
-    // TODO: Is this safe to replace for CraftBukkit?
     public MinecraftServer getServer()
     {
-        // return this;
+        return this;
+    }
+
+    @Nullable
+    @Deprecated
+    public static MinecraftServer getServerCB()
+    {
         return (Bukkit.getServer() instanceof CraftServer) ? ((CraftServer) Bukkit.getServer()).getServer() : null;
     }
 
