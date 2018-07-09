@@ -7,7 +7,7 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 
 public class CPacketResourcePackStatus implements Packet<INetHandlerPlayServer>
 {
-    private Action action;
+    public Action action;
 
     public CPacketResourcePackStatus()
     {

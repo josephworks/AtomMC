@@ -1816,7 +1816,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     }
 
     @Override
-    protected boolean isMovementBlocked() {
+    public boolean isMovementBlocked() {
         return super.isMovementBlocked() || !getBukkitEntity().isOnline();
     }
 
