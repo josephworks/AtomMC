@@ -1,5 +1,6 @@
 package net.minecraft.entity.player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,9 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.entity.HumanEntity;
 
 public class InventoryPlayer implements IInventory
 {
@@ -37,6 +41,9 @@ public class InventoryPlayer implements IInventory
     public EntityPlayer player;
     private ItemStack itemStack;
     private int timesChanged;
+
+    public List<HumanEntity> transaction = new java.util.ArrayList<>();
+    private int maxStack = MAX_STACK;
 
     public InventoryPlayer(EntityPlayer playerIn)
     {
@@ -740,7 +747,7 @@ public class InventoryPlayer implements IInventory
 
     public int getInventoryStackLimit()
     {
-        return 64;
+        return maxStack;
     }
 
     public boolean canHarvestBlock(IBlockState state)
@@ -817,6 +824,9 @@ public class InventoryPlayer implements IInventory
 
     public ItemStack getItemStack()
     {
+        if (this.itemStack.isEmpty()) {
+            this.setItemStack(ItemStack.EMPTY);
+        }
         return this.itemStack;
     }
 
@@ -917,5 +927,43 @@ public class InventoryPlayer implements IInventory
         {
             helper.accountStack(this.offHandInventory.get(0));
         }
+    }
+
+    public List<ItemStack> getContents() {
+        List<ItemStack> combined = new ArrayList<>(mainInventory.size() + armorInventory.size() + offHandInventory.size());
+        for (List<net.minecraft.item.ItemStack> sub : this.allInventories) {
+            combined.addAll(sub);
+        }
+
+        return combined;
+    }
+
+    public List<ItemStack> getArmorContents() {
+        return this.armorInventory;
+    }
+
+    public void onOpen(CraftHumanEntity who) {
+        transaction.add(who);
+    }
+
+    public void onClose(CraftHumanEntity who) {
+        transaction.remove(who);
+    }
+
+    public List<HumanEntity> getViewers() {
+        return transaction;
+    }
+
+    public org.bukkit.inventory.InventoryHolder getOwner() {
+        return this.player.getBukkitEntity();
+    }
+
+    public void setMaxStackSize(int size) {
+        maxStack = size;
+    }
+
+    @Override
+    public Location getLocation() {
+        return player.getBukkitEntity().getLocation();
     }
 }
