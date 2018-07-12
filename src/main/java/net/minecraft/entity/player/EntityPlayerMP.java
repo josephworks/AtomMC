@@ -160,7 +160,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     private boolean chatColours = true;
     private long playerLastActiveTime = System.currentTimeMillis();
     private Entity spectatingEntity;
-    private boolean invulnerableDimensionChange;
+    public boolean invulnerableDimensionChange;
     private boolean seenCredits;
     private final RecipeBookServer recipeBook = new RecipeBookServer();
     private Vec3d levitationStartPos;
@@ -222,6 +222,27 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.displayName = this.getName();
         this.canPickUpLoot = true;
         this.maxHealthCache = this.getMaxHealth();
+    }
+
+    public final BlockPos getSpawnPoint(MinecraftServer minecraftserver, WorldServer worldserver) {
+        BlockPos blockposition = worldserver.getSpawnPoint();
+
+        if (worldserver.provider.hasSkyLight() && worldserver.getWorldInfo().getGameType() != GameType.ADVENTURE) {
+            int i = Math.max(0, minecraftserver.getSpawnRadius(worldserver));
+            int j = MathHelper.floor(worldserver.getWorldBorder().getClosestDistance((double) blockposition.getX(), (double) blockposition.getZ()));
+
+            if (j < i) {
+                i = j;
+            }
+
+            if (j <= 1) {
+                i = 1;
+            }
+
+            blockposition = worldserver.getTopSolidOrLiquidBlock(blockposition.add(this.rand.nextInt(i * 2 + 1) - i, 0, this.rand.nextInt(i * 2 + 1) - i));
+        }
+
+        return blockposition;
     }
 
     public void readEntityFromNBT(NBTTagCompound compound)
