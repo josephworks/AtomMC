@@ -4,19 +4,20 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.village.VillageCollection;
 import net.minecraft.world.border.IBorderListener;
-import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.storage.DerivedWorldInfo;
 import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 
 public class WorldServerMulti extends WorldServer
 {
     private final WorldServer delegate;
     private IBorderListener borderListener;
 
-    public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn)
+    // CraftBukkit start - Add WorldData, Environment and ChunkGenerator arguments
+    public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn, WorldInfo worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen)
     {
-        super(server, saveHandlerIn, new DerivedWorldInfo(delegate.getWorldInfo()), dimensionId, profilerIn);
+        super(server, saveHandlerIn, worldData, dimensionId, profilerIn, env, gen);
         this.delegate = delegate;
+        /* CraftBukkit start
         this.borderListener = new IBorderListener()
         {
             public void onSizeChanged(WorldBorder border, double newSize)
@@ -49,6 +50,7 @@ public class WorldServerMulti extends WorldServer
             }
         };
         this.delegate.getWorldBorder().addListener(this.borderListener);
+        // CraftBukkit end */
     }
 
     protected void saveLevel() throws MinecraftException
@@ -77,7 +79,8 @@ public class WorldServerMulti extends WorldServer
         }
 
         this.initCapabilities();
-        return this;
+        // return this;
+        return super.init(); // CraftBukkit
     }
 
 

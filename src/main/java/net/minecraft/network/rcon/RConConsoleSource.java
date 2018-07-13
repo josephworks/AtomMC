@@ -22,6 +22,10 @@ public class RConConsoleSource implements ICommandSender
         return "Rcon";
     }
 
+    public void sendMessage(String message) {
+        this.buffer.append(message);
+    }
+
     public void sendMessage(ITextComponent component)
     {
         this.buffer.append(component.getUnformattedText());

@@ -1,6 +1,10 @@
 package net.minecraft.world.chunk.storage;
 
 import com.google.common.collect.Maps;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
+
+import javax.annotation.Nullable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -92,10 +96,31 @@ public class RegionFileCache
         return regionfile.getChunkDataInputStream(chunkX & 31, chunkZ & 31);
     }
 
+    @Nullable
+    public static synchronized NBTTagCompound getChunkInputStreamCB(File worldDir, int chunkX, int chunkZ) throws IOException
+    {
+        RegionFile regionfile = createOrLoadRegionFile(worldDir, chunkX, chunkZ);
+        DataInputStream datainputstream = regionfile.getChunkDataInputStream(chunkX & 31, chunkZ & 31);
+
+        if (datainputstream == null) {
+            return null;
+        }
+
+        return CompressedStreamTools.read(datainputstream);
+    }
+
     public static DataOutputStream getChunkOutputStream(File worldDir, int chunkX, int chunkZ)
     {
         RegionFile regionfile = createOrLoadRegionFile(worldDir, chunkX, chunkZ);
         return regionfile.getChunkDataOutputStream(chunkX & 31, chunkZ & 31);
+    }
+
+    public static synchronized void getChunkOutputStream(File worldDir, int chunkX, int chunkZ, NBTTagCompound nbttagcompound) throws IOException
+    {
+        RegionFile regionfile = createOrLoadRegionFile(worldDir, chunkX, chunkZ);
+        DataOutputStream dataoutputstream = regionfile.getChunkDataOutputStream(chunkX & 31, chunkZ & 31);
+        CompressedStreamTools.write(nbttagcompound, dataoutputstream);
+        dataoutputstream.close();
     }
 
     public static boolean chunkExists(File worldDir, int chunkX, int chunkZ)

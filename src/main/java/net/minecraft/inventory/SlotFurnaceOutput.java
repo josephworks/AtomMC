@@ -4,7 +4,10 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.math.MathHelper;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
 
 public class SlotFurnaceOutput extends Slot
 {
@@ -68,6 +71,16 @@ public class SlotFurnaceOutput extends Slot
                 }
 
                 i = j;
+            }
+
+            Player player = (Player) this.player.getBukkitEntity();
+            TileEntityFurnace furnace = ((TileEntityFurnace) this.inventory);
+            org.bukkit.block.Block block = this.player.world.getWorld().getBlockAt(furnace.getPos().getX(), furnace.getPos().getY(), furnace.getPos().getZ());
+
+            if (removeCount != 0) {
+                FurnaceExtractEvent event = new FurnaceExtractEvent(player, block, org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(stack.getItem()), removeCount, i);
+                this.player.world.getServer().getPluginManager().callEvent(event);
+                i = event.getExpToDrop();
             }
 
             while (i > 0)

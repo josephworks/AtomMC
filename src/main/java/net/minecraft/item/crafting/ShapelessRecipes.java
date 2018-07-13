@@ -11,6 +11,8 @@ import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.inventory.CraftShapelessRecipe;
 import org.bukkit.inventory.Recipe;
 
 public class ShapelessRecipes extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
@@ -143,7 +145,15 @@ public class ShapelessRecipes extends net.minecraftforge.registries.IForgeRegist
 
     @Override
     public Recipe toBukkitRecipe() {
-        throw new UnsupportedOperationException("Not supported yet!");
+        CraftItemStack result = CraftItemStack.asCraftMirror(this.recipeOutput);
+        CraftShapelessRecipe recipe = new CraftShapelessRecipe(result, this);
+        for (Ingredient list : this.recipeItems) {
+            if (list != null) {
+                net.minecraft.item.ItemStack stack = list.matchingStacks[0];
+                recipe.addIngredient(org.bukkit.craftbukkit.util.CraftMagicNumbers.getMaterial(stack.getItem()), (list.matchingStacks.length) > 1 ? 32767 : stack.getMetadata());
+            }
+        }
+        return recipe;
     }
 
     @Override

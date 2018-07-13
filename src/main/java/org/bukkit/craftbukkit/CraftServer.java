@@ -299,7 +299,6 @@ public final class CraftServer implements Server {
     }
 
     public boolean getPermissionOverride(ICommandSender listener) {
-        net.minecraft.entity.Entity
         while (listener instanceof CommandSenderWrapper) {
             listener = ((CommandSenderWrapper) listener).delegate;
         }
