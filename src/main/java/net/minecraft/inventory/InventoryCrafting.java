@@ -20,7 +20,7 @@ public class InventoryCrafting implements IInventory
     private final NonNullList<ItemStack> stackList;
     private final int inventoryWidth;
     private final int inventoryHeight;
-    private final Container eventHandler;
+    public final Container eventHandler;
 
     // CraftBukkit start - add fields
     public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();

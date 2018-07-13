@@ -15,8 +15,11 @@ import net.minecraft.item.ItemStack;
 public class FurnaceRecipes
 {
     private static final FurnaceRecipes SMELTING_BASE = new FurnaceRecipes();
-    public final Map<ItemStack, ItemStack> smeltingList = Maps.<ItemStack, ItemStack>newHashMap();
+    public Map<ItemStack, ItemStack> smeltingList = Maps.<ItemStack, ItemStack>newHashMap();
     private final Map<ItemStack, Float> experienceList = Maps.<ItemStack, Float>newHashMap();
+
+    public Map<ItemStack,ItemStack> customRecipes = Maps.newHashMap();
+    public Map<ItemStack,Float> customExperience = Maps.newHashMap();
 
     public static FurnaceRecipes instance()
     {
@@ -101,6 +104,11 @@ public class FurnaceRecipes
         this.addSmeltingRecipe(new ItemStack(Blocks.STAINED_HARDENED_CLAY, 1, EnumDyeColor.BLACK.getMetadata()), new ItemStack(Blocks.BLACK_GLAZED_TERRACOTTA), 0.1F);
     }
 
+    public void registerRecipe(ItemStack itemstack, ItemStack itemstack1, float f) {
+        this.customRecipes.put(itemstack, itemstack1);
+        this.customExperience.put(itemstack, f);
+    }
+
     public void addSmeltingRecipeForBlock(Block input, ItemStack stack, float experience)
     {
         this.addSmelting(Item.getItemFromBlock(input), stack, experience);
@@ -118,8 +126,17 @@ public class FurnaceRecipes
         this.experienceList.put(stack, Float.valueOf(experience));
     }
 
+    // TODO: Test this
     public ItemStack getSmeltingResult(ItemStack stack)
     {
+        for (Entry<ItemStack, ItemStack> entry : this.customRecipes.entrySet())
+        {
+            if (this.compareItemStacks(stack, entry.getKey()))
+            {
+                return entry.getValue();
+            }
+        }
+
         for (Entry<ItemStack, ItemStack> entry : this.smeltingList.entrySet())
         {
             if (this.compareItemStacks(stack, entry.getKey()))
@@ -141,10 +158,19 @@ public class FurnaceRecipes
         return this.smeltingList;
     }
 
+    // TODO: Test this
     public float getSmeltingExperience(ItemStack stack)
     {
         float ret = stack.getItem().getSmeltingExperience(stack);
         if (ret != -1) return ret;
+
+        for (Entry<ItemStack, Float> entry : this.customExperience.entrySet())
+        {
+            if (this.compareItemStacks(stack, entry.getKey()))
+            {
+                return ((Float)entry.getValue()).floatValue();
+            }
+        }
 
         for (Entry<ItemStack, Float> entry : this.experienceList.entrySet())
         {

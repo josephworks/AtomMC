@@ -9,7 +9,9 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import org.bukkit.inventory.Recipe;
 
 public class ShapelessRecipes extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
 {
@@ -17,6 +19,8 @@ public class ShapelessRecipes extends net.minecraftforge.registries.IForgeRegist
     public final NonNullList<Ingredient> recipeItems;
     private final String group;
     private final boolean isSimple;
+
+    public ResourceLocation key;
 
     public ShapelessRecipes(String group, ItemStack output, NonNullList<Ingredient> ingredients)
     {
@@ -135,5 +139,15 @@ public class ShapelessRecipes extends net.minecraftforge.registries.IForgeRegist
     public boolean canFit(int width, int height)
     {
         return width * height >= this.recipeItems.size();
+    }
+
+    @Override
+    public Recipe toBukkitRecipe() {
+        throw new UnsupportedOperationException("Not supported yet!");
+    }
+
+    @Override
+    public void setKey(ResourceLocation key) {
+        this.key = key;
     }
 }

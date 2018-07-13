@@ -19,6 +19,7 @@ import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import org.bukkit.inventory.Recipe;
 
 public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements net.minecraftforge.common.crafting.IShapedRecipe
 {
@@ -27,6 +28,8 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
     public final NonNullList<Ingredient> recipeItems;
     private final ItemStack recipeOutput;
     private final String group;
+
+    public ResourceLocation key;
 
     public ShapedRecipes(String group, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result)
     {
@@ -371,6 +374,16 @@ public class ShapedRecipes extends net.minecraftforge.registries.IForgeRegistryE
             int j = useCount ? JsonUtils.getInt(p_192405_0_, "count", 1) : 1;
             return new ItemStack(item, j, i);
         }
+    }
+
+    @Override
+    public Recipe toBukkitRecipe() {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
+    @Override
+    public void setKey(ResourceLocation key) {
+        this.key = key;
     }
 
     //================================================ FORGE START ================================================
