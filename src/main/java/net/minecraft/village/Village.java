@@ -83,7 +83,7 @@ public class Village implements net.minecraftforge.common.capabilities.ICapabili
             {
                 EntityIronGolem entityirongolem = new EntityIronGolem(this.world);
                 entityirongolem.setPosition(vec3d.x, vec3d.y, vec3d.z);
-                this.world.spawnEntity(entityirongolem);
+                this.world.spawnEntity(entityirongolem, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE);
                 ++this.numIronGolems;
             }
         }

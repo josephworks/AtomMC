@@ -47,7 +47,7 @@ public class PlayerProfileCache
     private static boolean onlineMode;
     private final Map<String, ProfileEntry> usernameToProfileEntryMap = Maps.<String, ProfileEntry>newHashMap();
     private final Map<UUID, ProfileEntry> uuidToProfileEntryMap = Maps.<UUID, ProfileEntry>newHashMap();
-    private final Deque<GameProfile> gameProfiles = Lists.<GameProfile>newLinkedList();
+    private final Deque<GameProfile> gameProfiles = new java.util.concurrent.LinkedBlockingDeque<>();
     private final GameProfileRepository profileRepo;
     protected final Gson gson;
     private final File usercacheFile;
