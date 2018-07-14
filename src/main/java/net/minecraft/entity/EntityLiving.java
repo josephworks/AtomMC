@@ -757,7 +757,7 @@ public abstract class EntityLiving extends EntityLivingBase
         return true;
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return true;
     }
