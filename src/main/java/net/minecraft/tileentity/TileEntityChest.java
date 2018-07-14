@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -22,6 +23,10 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.entity.HumanEntity;
+
+import java.util.List;
 
 public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 {
@@ -37,6 +42,9 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     private int ticksSinceSync;
     private BlockChest.Type cachedChestType;
 
+    public List<HumanEntity> transaction = new java.util.ArrayList<>();
+    private int maxStack = MAX_STACK;
+
     public TileEntityChest()
     {
     }
@@ -44,6 +52,26 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     public TileEntityChest(BlockChest.Type typeIn)
     {
         this.cachedChestType = typeIn;
+    }
+
+    public List<ItemStack> getContents() {
+        return this.chestContents;
+    }
+
+    public void onOpen(CraftHumanEntity who) {
+        transaction.add(who);
+    }
+
+    public void onClose(CraftHumanEntity who) {
+        transaction.remove(who);
+    }
+
+    public List<HumanEntity> getViewers() {
+        return transaction;
+    }
+
+    public void setMaxStackSize(int size) {
+        maxStack = size;
     }
 
     public int getSizeInventory()
@@ -109,7 +137,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
     public int getInventoryStackLimit()
     {
-        return 64;
+        return maxStack;
     }
 
     public void updateContainingBlockInfo()
@@ -325,8 +353,18 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
                 this.numPlayersUsing = 0;
             }
 
+            int oldPower = Math.max(0, Math.min(15, this.numPlayersUsing)); // CraftBukkit - Get power before new viewer is added
+
             ++this.numPlayersUsing;
+            if (this.world == null) return;
             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
+            if (this.getBlockType() == Blocks.TRAPPED_CHEST) {
+                int newPower = Math.max(0, Math.min(15, this.numPlayersUsing));
+
+                if (oldPower != newPower) {
+                    org.bukkit.craftbukkit.event.CraftEventFactory.callRedstoneChange(world, pos.getX(), pos.getY(), pos.getZ(), oldPower, newPower);
+                }
+            }
             this.world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
 
             if (this.getChestType() == BlockChest.Type.TRAP)

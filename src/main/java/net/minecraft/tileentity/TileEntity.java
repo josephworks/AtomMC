@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.inventory.InventoryHolder;
 
 public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
@@ -530,5 +531,13 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         register("command_block", TileEntityCommandBlock.class);
         register("shulker_box", TileEntityShulkerBox.class);
         register("bed", TileEntityBed.class);
+    }
+
+    @Nullable
+    public InventoryHolder getOwner() {
+        if (world == null) return null;
+        org.bukkit.block.BlockState state = world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()).getState();
+        if (state instanceof InventoryHolder) return (InventoryHolder) state;
+        return null;
     }
 }

@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
@@ -24,6 +25,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class TileEntityEndGateway extends TileEntityEndPortal implements ITickable
 {
@@ -171,6 +176,22 @@ public class TileEntityEndGateway extends TileEntityEndPortal implements ITickab
             if (this.exitPortal != null)
             {
                 BlockPos blockpos = this.exactTeleport ? this.exitPortal : this.findExitPosition();
+                if (entityIn instanceof EntityPlayerMP) {
+                    org.bukkit.craftbukkit.entity.CraftPlayer player = (CraftPlayer) entityIn.getBukkitEntity();
+                    org.bukkit.Location location = new Location(world.getWorld(), (double) blockpos.getX() + 0.5D, (double) blockpos.getY() + 0.5D, (double) blockpos.getZ() + 0.5D);
+                    location.setPitch(player.getLocation().getPitch());
+                    location.setYaw(player.getLocation().getYaw());
+
+                    PlayerTeleportEvent teleEvent = new PlayerTeleportEvent(player, player.getLocation(), location, PlayerTeleportEvent.TeleportCause.END_GATEWAY);
+                    Bukkit.getPluginManager().callEvent(teleEvent);
+                    if (teleEvent.isCancelled()) {
+                        return;
+                    }
+
+                    ((EntityPlayerMP) entityIn).connection.teleport(teleEvent.getTo());
+                    this.triggerCooldown(); // CraftBukkit - call at end of method
+                    return;
+                }
                 entityIn.setPositionAndUpdate((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D);
             }
 

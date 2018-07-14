@@ -25,6 +25,9 @@ public class TileEntityCommandBlock extends TileEntity
     private boolean sendToClient;
     private final CommandBlockBaseLogic commandBlockLogic = new CommandBlockBaseLogic()
     {
+        {
+            sender = new org.bukkit.craftbukkit.command.CraftBlockCommandSender(this);
+        }
         public BlockPos getPosition()
         {
             return TileEntityCommandBlock.this.pos;

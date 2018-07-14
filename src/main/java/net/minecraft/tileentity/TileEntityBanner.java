@@ -34,6 +34,9 @@ public class TileEntityBanner extends TileEntity implements IWorldNameable
         if (nbttagcompound != null && nbttagcompound.hasKey("Patterns", 9))
         {
             this.patterns = nbttagcompound.getTagList("Patterns", 10).copy();
+            while (this.patterns.tagCount() > 20) {
+                this.patterns.removeTag(20);
+            }
         }
 
         this.baseColor = p_175112_2_ ? getColor(stack) : ItemBanner.getBaseColor(stack);
@@ -88,6 +91,9 @@ public class TileEntityBanner extends TileEntity implements IWorldNameable
 
         this.baseColor = EnumDyeColor.byDyeDamage(compound.getInteger("Base"));
         this.patterns = compound.getTagList("Patterns", 10);
+        while (this.patterns.tagCount() > 20) {
+            this.patterns.removeTag(20);
+        }
         this.patternList = null;
         this.colorList = null;
         this.patternResourceLocation = null;

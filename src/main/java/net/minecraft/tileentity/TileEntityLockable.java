@@ -71,4 +71,10 @@ public abstract class TileEntityLockable extends TileEntity implements ILockable
     {
         return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
+
+    @Override
+    public org.bukkit.Location getLocation() {
+        if (world == null) return null;
+        return new org.bukkit.Location(world.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+    }
 }
