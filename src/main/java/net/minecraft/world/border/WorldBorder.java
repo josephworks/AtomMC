@@ -210,6 +210,7 @@ public class WorldBorder
 
     public void addListener(IBorderListener listener)
     {
+        if (listeners.contains(listener)) return;
         this.listeners.add(listener);
     }
 

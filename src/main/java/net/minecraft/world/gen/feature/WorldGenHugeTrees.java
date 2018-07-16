@@ -59,7 +59,7 @@ public abstract class WorldGenHugeTrees extends WorldGenAbstractTree
                 {
                     for (int l = -j; l <= j && flag; ++l)
                     {
-                        if (leavesPos.getY() + i < 0 || leavesPos.getY() + i >= 256 || !this.isReplaceable(worldIn,leavesPos.add(k, i, l)))
+                        if (leavesPos.getY() + i < 0 || leavesPos.getY() + i >= 256 || (!this.isReplaceable(worldIn,leavesPos.add(k, i, l)) && worldIn.getBlockState(leavesPos.add(k, i, l)).getBlock() != Blocks.SAPLING)) // CraftBukkit - ignore our own saplings
                         {
                             flag = false;
                         }

@@ -6,7 +6,10 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ICrashReportDetail;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketServerDifficulty;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
@@ -22,6 +25,9 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.Bukkit;
+import org.bukkit.event.weather.ThunderChangeEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 public class WorldInfo
 {
@@ -514,6 +520,14 @@ public class WorldInfo
 
     public void setThundering(boolean thunderingIn)
     {
+        org.bukkit.World world = Bukkit.getWorld(getWorldName());
+        if (world != null) {
+            ThunderChangeEvent thunder = new ThunderChangeEvent(world, thunderingIn);
+            Bukkit.getServer().getPluginManager().callEvent(thunder);
+            if (thunder.isCancelled()) {
+                return;
+            }
+        }
         this.thundering = thunderingIn;
     }
 
@@ -534,6 +548,14 @@ public class WorldInfo
 
     public void setRaining(boolean isRaining)
     {
+        org.bukkit.World world = Bukkit.getWorld(getWorldName());
+        if (world != null) {
+            WeatherChangeEvent weather = new WeatherChangeEvent(world, isRaining);
+            Bukkit.getServer().getPluginManager().callEvent(weather);
+            if (weather.isCancelled()) {
+                return;
+            }
+        }
         this.raining = isRaining;
     }
 
@@ -715,6 +737,10 @@ public class WorldInfo
     public void setDifficulty(EnumDifficulty newDifficulty)
     {
         net.minecraftforge.common.ForgeHooks.onDifficultyChange(newDifficulty, this.difficulty);
+        SPacketServerDifficulty packet = new SPacketServerDifficulty(this.getDifficulty(), this.isDifficultyLocked());
+        for (EntityPlayerMP player :(java.util.List<EntityPlayerMP>) (java.util.List) world.playerEntities) {
+            player.connection.sendPacket(packet);
+        }
         this.difficulty = newDifficulty;
     }
 
