@@ -17,6 +17,7 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameType;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
@@ -66,6 +67,8 @@ public class WorldInfo
     private final Map<Integer, NBTTagCompound> dimensionData = Maps.newHashMap();
     private GameRules gameRules = new GameRules();
     private Map<String, net.minecraft.nbt.NBTBase> additionalProperties;
+
+    public WorldServer world;
 
     protected WorldInfo()
     {

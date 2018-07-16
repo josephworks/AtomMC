@@ -1342,10 +1342,10 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     public boolean spawnEntity(Entity entityIn)
     {
         // CraftBukkit start - Used for entities other than creatures
-        return addEntity(entityIn, CreatureSpawnEvent.SpawnReason.DEFAULT);
+        return spawnEntity(entityIn, CreatureSpawnEvent.SpawnReason.DEFAULT);
     }
 
-    public boolean addEntity(Entity entity, CreatureSpawnEvent.SpawnReason spawnReason) { // Changed signature, added SpawnReason
+    public boolean spawnEntity(Entity entity, CreatureSpawnEvent.SpawnReason spawnReason) {
         if (entity == null) return false;
 
         org.bukkit.event.Cancellable event = null;

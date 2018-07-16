@@ -565,10 +565,20 @@ public abstract class WorldProvider
 
     public void resetRainAndThunder()
     {
-        world.worldInfo.setRainTime(0);
         world.worldInfo.setRaining(false);
-        world.worldInfo.setThunderTime(0);
+        // CraftBukkit start
+        // If we stop due to everyone sleeping we should reset the weather duration to some other random value.
+        // Not that everyone ever manages to get the whole server to sleep at the same time....
+        if (!world.worldInfo.isRaining()) {
+            world.worldInfo.setRainTime(0);
+        }
+        // If we stop due to everyone sleeping we should reset the weather duration to some other random value.
+        // Not that everyone ever manages to get the whole server to sleep at the same time....
         world.worldInfo.setThundering(false);
+        if (!world.worldInfo.isThundering()) {
+            world.worldInfo.setThunderTime(0);
+        }
+        // CraftBukkit end
     }
 
     public boolean canDoLightning(net.minecraft.world.chunk.Chunk chunk)
