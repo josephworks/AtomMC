@@ -6327,7 +6327,7 @@ FD: net/minecraft/entity/EntityLiving/attackTarget vq/bv
 FD: net/minecraft/entity/EntityLiving/senses vq/bw
 FD: net/minecraft/entity/EntityLiving/inventoryHands vq/bx
 FD: net/minecraft/entity/EntityLiving/inventoryArmor vq/by
-FD: net/minecraft/entity/EntityLiving/canPickUpLoot vq/bz
+FD: net/minecraft/entity/EntityLivingBase/canPickUpLoot vp/canPickUpLoot
 FD: net/minecraft/entity/EnumCreatureType/MONSTER vr/a
 FD: net/minecraft/entity/EnumCreatureType/CREATURE vr/b
 FD: net/minecraft/entity/EnumCreatureType/AMBIENT vr/c

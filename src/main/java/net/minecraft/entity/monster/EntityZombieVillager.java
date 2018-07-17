@@ -19,6 +19,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -37,6 +38,8 @@ public class EntityZombieVillager extends EntityZombie
     private static final DataParameter<Integer> PROFESSION = EntityDataManager.<Integer>createKey(EntityZombieVillager.class, DataSerializers.VARINT);
     private int conversionTime;
     private UUID converstionStarter;
+
+    private int lastTick = MinecraftServer.currentTick;
 
     public EntityZombieVillager(World worldIn)
     {
@@ -110,6 +113,11 @@ public class EntityZombieVillager extends EntityZombie
         if (!this.world.isRemote && this.isConverting())
         {
             int i = this.getConversionProgress();
+            // CraftBukkit start - Use wall time instead of ticks for villager conversion
+            int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
+            this.lastTick = MinecraftServer.currentTick;
+            i *= elapsedTicks;
+            // CraftBukkit end
             this.conversionTime -= i;
 
             if (this.conversionTime <= 0)
@@ -145,7 +153,7 @@ public class EntityZombieVillager extends EntityZombie
         }
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return !this.isConverting();
     }
@@ -203,7 +211,7 @@ public class EntityZombieVillager extends EntityZombie
             entityvillager.setAlwaysRenderNameTag(this.getAlwaysRenderNameTag());
         }
 
-        this.world.spawnEntity(entityvillager);
+        this.world.spawnEntity(entityvillager, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CURED);
 
         if (this.converstionStarter != null)
         {

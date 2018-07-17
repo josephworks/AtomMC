@@ -8,6 +8,8 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+
+import joptsimple.OptionSet;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ThreadLanServerPing;
@@ -17,12 +19,14 @@ import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.profiler.Snooper;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.PropertyManager;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.CryptManager;
 import net.minecraft.util.HttpUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameType;
+import net.minecraft.world.MinecraftException;
 import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerDemo;
@@ -48,7 +52,7 @@ public class IntegratedServer extends MinecraftServer
 
     public IntegratedServer(Minecraft clientIn, String folderNameIn, String worldNameIn, WorldSettings worldSettingsIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
     {
-        super(new File(clientIn.mcDataDir, "saves"), clientIn.getProxy(), clientIn.getDataFixer(), authServiceIn, sessionServiceIn, profileRepoIn, profileCacheIn);
+        super(null, clientIn.getProxy(), clientIn.getDataFixer(), authServiceIn, sessionServiceIn, profileRepoIn, profileCacheIn);
         this.setServerOwner(clientIn.getSession().getUsername());
         this.setFolderName(folderNameIn);
         this.setWorldName(worldNameIn);
@@ -58,6 +62,11 @@ public class IntegratedServer extends MinecraftServer
         this.setPlayerList(new IntegratedPlayerList(this));
         this.mc = clientIn;
         this.worldSettings = this.isDemo() ? WorldServerDemo.DEMO_WORLD_SETTINGS : worldSettingsIn;
+    }
+
+    @Override
+    public PropertyManager getPropertyManager() {
+        return null;
     }
 
     public ServerCommandManager createCommandManager()
@@ -369,7 +378,11 @@ public class IntegratedServer extends MinecraftServer
 
     public void stopServer()
     {
-        super.stopServer();
+        try {
+            super.stopServer();
+        } catch (MinecraftException e) {
+            e.printStackTrace();
+        }
 
         if (this.lanServerPing != null)
         {

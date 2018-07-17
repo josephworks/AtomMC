@@ -44,7 +44,7 @@ public class TileEntityNote extends TileEntity
         {
             IBlockState iblockstate = worldIn.getBlockState(posIn.down());
             Material material = iblockstate.getMaterial();
-            int i = 0;
+            byte i = 0;
 
             if (material == Material.ROCK)
             {
@@ -93,7 +93,11 @@ public class TileEntityNote extends TileEntity
                 i = 9;
             }
 
-            worldIn.addBlockEvent(posIn, Blocks.NOTEBLOCK, i, this.note);
+            // worldIn.addBlockEvent(posIn, Blocks.NOTEBLOCK, i, this.note);
+            org.bukkit.event.block.NotePlayEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callNotePlayEvent(this.world, posIn.getX(), posIn.getY(), posIn.getZ(), i, this.note);
+            if (!event.isCancelled()) {
+                worldIn.addBlockEvent(posIn, Blocks.NOTEBLOCK, event.getInstrument().getType(), event.getNote().getId());
+            }
         }
     }
 }

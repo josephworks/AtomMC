@@ -119,7 +119,7 @@ public class EntityIronGolem extends EntityGolem
     {
         if (entityIn instanceof IMob && !(entityIn instanceof EntityCreeper) && this.getRNG().nextInt(20) == 0)
         {
-            this.setAttackTarget((EntityLivingBase)entityIn);
+            this.setAttackTarget((EntityLivingBase)entityIn, org.bukkit.event.entity.EntityTargetLivingEntityEvent.TargetReason.COLLISION, true);
         }
 
         super.collideWithEntity(entityIn);

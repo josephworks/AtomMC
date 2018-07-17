@@ -1,12 +1,18 @@
 package net.minecraft.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
 public class ContainerChest extends Container
 {
     private final IInventory lowerChestInventory;
     private final int numRows;
+
+    private CraftInventoryView bukkitEntity = null;
+    private InventoryPlayer player;
 
     public ContainerChest(IInventory playerInventory, IInventory chestInventory, EntityPlayer player)
     {
@@ -14,6 +20,9 @@ public class ContainerChest extends Container
         this.numRows = chestInventory.getSizeInventory() / 9;
         chestInventory.openInventory(player);
         int i = (this.numRows - 4) * 18;
+
+        // TODO: Should we check to make sure it really is an InventoryPlayer?
+        this.player = (InventoryPlayer) playerInventory;
 
         for (int j = 0; j < this.numRows; ++j)
         {
@@ -39,6 +48,7 @@ public class ContainerChest extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
+        if (!this.checkReachable) return true;
         return this.lowerChestInventory.isUsableByPlayer(playerIn);
     }
 
@@ -86,5 +96,24 @@ public class ContainerChest extends Container
     public IInventory getLowerChestInventory()
     {
         return this.lowerChestInventory;
+    }
+
+    @Override
+    public CraftInventoryView getBukkitView() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+
+        CraftInventory inventory;
+        if (this.lowerChestInventory instanceof InventoryPlayer) {
+            inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryPlayer((InventoryPlayer) this.lowerChestInventory);
+        } else if (this.lowerChestInventory instanceof InventoryLargeChest) {
+            inventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) this.lowerChestInventory);
+        } else {
+            inventory = new CraftInventory(this.lowerChestInventory);
+        }
+
+        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
+        return bukkitEntity;
     }
 }

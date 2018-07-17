@@ -5,14 +5,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityEnderChest;
+import org.bukkit.Location;
+import org.bukkit.inventory.InventoryHolder;
 
 public class InventoryEnderChest extends InventoryBasic
 {
     private TileEntityEnderChest associatedChest;
 
-    public InventoryEnderChest()
+    private final EntityPlayer owner;
+
+    public InventoryEnderChest(EntityPlayer owner)
     {
         super("container.enderchest", false, 27);
+        this.owner = owner;
     }
 
     public void setChestTileEntity(TileEntityEnderChest chestTileEntity)
@@ -84,4 +89,14 @@ public class InventoryEnderChest extends InventoryBasic
         super.closeInventory(player);
         this.associatedChest = null;
     }
+
+    public InventoryHolder getBukkitOwner() {
+        return owner.getBukkitEntity();
+    }
+
+    @Override
+    public Location getLocation() {
+        return new Location(this.associatedChest.getWorld().getWorld(), this.associatedChest.getPos().getX(), this.associatedChest.getPos().getY(), this.associatedChest.getPos().getZ());
+    }
+
 }

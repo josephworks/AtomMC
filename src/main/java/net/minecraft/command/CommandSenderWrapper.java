@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class CommandSenderWrapper implements ICommandSender
 {
-    private final ICommandSender delegate;
+    public final ICommandSender delegate;
     @Nullable
     private final Vec3d positionVector;
     @Nullable

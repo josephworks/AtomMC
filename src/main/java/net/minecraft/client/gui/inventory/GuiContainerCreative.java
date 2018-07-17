@@ -40,6 +40,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.inventory.InventoryView;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -1040,6 +1041,11 @@ public class GuiContainerCreative extends InventoryEffectRenderer
             public boolean canScroll()
             {
                 return this.itemList.size() > 45;
+            }
+
+            @Override
+            public InventoryView getBukkitView() {
+                return null;
             }
 
             public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)

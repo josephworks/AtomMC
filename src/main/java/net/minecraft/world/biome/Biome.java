@@ -49,6 +49,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public abstract class Biome extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Biome>
 {
@@ -475,7 +476,8 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
             return;
         }
 
-        world.setBlockState(pos, flower.state, 3);
+//        world.setBlockState(pos, flower.state, 3);
+        CraftEventFactory.handleBlockGrowEvent(world, pos.getX(), pos.getY(), pos.getZ(), flower.state.getBlock(), flower.state.getBlock().getMetaFromState(flower.state));
     }
 
     /* ========================================= FORGE END ======================================*/

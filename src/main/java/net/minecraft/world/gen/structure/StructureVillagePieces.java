@@ -1781,7 +1781,7 @@ public class StructureVillagePieces
                             entityzombievillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
                             entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), (IEntityLivingData)null);
                             entityzombievillager.enablePersistence();
-                            worldIn.spawnEntity(entityzombievillager);
+                            worldIn.spawnEntity(entityzombievillager, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN);
                         }
                         else
                         {
@@ -1789,7 +1789,7 @@ public class StructureVillagePieces
                             entityvillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
                             entityvillager.setProfession(this.chooseForgeProfession(i, entityvillager.getProfessionForge()));
                             entityvillager.finalizeMobSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), (IEntityLivingData)null, false);
-                            worldIn.spawnEntity(entityvillager);
+                            worldIn.spawnEntity(entityvillager, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN);
                         }
                     }
                 }

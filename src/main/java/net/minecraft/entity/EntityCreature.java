@@ -7,6 +7,7 @@ import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.bukkit.event.entity.EntityUnleashEvent;
 
 public abstract class EntityCreature extends EntityLiving
 {
@@ -93,6 +94,7 @@ public abstract class EntityCreature extends EntityLiving
             {
                 if (f > 10.0F)
                 {
+                    this.world.getServer().getPluginManager().callEvent(new EntityUnleashEvent(this.getBukkitEntity(), EntityUnleashEvent.UnleashReason.DISTANCE));
                     this.clearLeashed(true, true);
                 }
 
@@ -103,6 +105,7 @@ public abstract class EntityCreature extends EntityLiving
 
             if (f > 10.0F)
             {
+                this.world.getServer().getPluginManager().callEvent(new EntityUnleashEvent(this.getBukkitEntity(), EntityUnleashEvent.UnleashReason.DISTANCE));
                 this.clearLeashed(true, true);
                 this.tasks.disableControlFlag(1);
             }

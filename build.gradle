@@ -26,6 +26,10 @@ repositories {
         name = 'sponge'
         url = 'https://repo.spongepowered.org/maven'
     }
+    maven {
+        name = 'spigotmc-public'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
 }
 
 group = 'org.atom'
@@ -39,7 +43,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0'
     testCompile 'org.opentest4j:opentest4j:1.0.0'
-    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile project(':LegacyLauncher') // Use fixed LegacyLauncher for test running
     testCompile 'org.mockito:mockito-core:2.18.3'
     compile 'com.google.code.findbugs:jsr305:3.0.1'
@@ -86,6 +90,7 @@ dependencies {
     compile('org.spongepowered:mixin:0.7.8-SNAPSHOT') {
         exclude module: 'launchwrapper'
     }
+    compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
 }
 
 jar {

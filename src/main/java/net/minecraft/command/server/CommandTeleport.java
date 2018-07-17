@@ -91,7 +91,7 @@ public class CommandTeleport extends CommandBase
             }
 
             teleportingEntity.dismountRidingEntity();
-            ((EntityPlayerMP)teleportingEntity).connection.setPlayerLocation(argX.getResult(), argY.getResult(), argZ.getResult(), f, f1, set);
+            ((EntityPlayerMP)teleportingEntity).connection.setPlayerLocation(argX.getResult(), argY.getResult(), argZ.getResult(), f, f1, set, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND);
             teleportingEntity.setRotationYawHead(f);
         }
         else

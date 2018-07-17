@@ -31,6 +31,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class BlockRedstoneWire extends Block
 {
@@ -219,6 +220,12 @@ public class BlockRedstoneWire extends Block
             j = k;
         }
 
+        if (i != j) {
+            BlockRedstoneEvent event = new BlockRedstoneEvent(worldIn.getWorld().getBlockAt(pos1.getX(), pos1.getY(), pos1.getZ()), i, j);
+            worldIn.getServer().getPluginManager().callEvent(event);
+            j = event.getNewCurrent();
+        }
+
         if (i != j)
         {
             state = state.withProperty(POWER, Integer.valueOf(j));
@@ -318,7 +325,7 @@ public class BlockRedstoneWire extends Block
         }
     }
 
-    private int getMaxCurrentStrength(World worldIn, BlockPos pos, int strength)
+    public int getMaxCurrentStrength(World worldIn, BlockPos pos, int strength)
     {
         if (worldIn.getBlockState(pos).getBlock() != this)
         {

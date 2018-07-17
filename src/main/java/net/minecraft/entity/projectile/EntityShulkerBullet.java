@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -77,7 +78,28 @@ public class EntityShulkerBullet extends Entity
         this.target = targetIn;
         this.direction = EnumFacing.UP;
         this.selectNextMoveDirection(p_i46772_4_);
+        projectileSource = (org.bukkit.entity.LivingEntity) ownerIn.getBukkitEntity();
     }
+
+    // CraftBukkit start
+    public EntityLivingBase getShooter() {
+        return this.owner;
+    }
+
+    public void setShooter(EntityLivingBase e) {
+        this.owner = e;
+    }
+
+    public Entity getTarget() {
+        return this.target;
+    }
+
+    public void setTarget(Entity e) {
+        this.target = e;
+        this.direction = EnumFacing.UP;
+        this.selectNextMoveDirection(EnumFacing.Axis.X);
+    }
+    // CraftBukkit end
 
     protected void writeEntityToNBT(NBTTagCompound compound)
     {
@@ -382,6 +404,7 @@ public class EntityShulkerBullet extends Entity
 
     protected void bulletHit(RayTraceResult result)
     {
+        org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, result);
         if (result.entityHit == null)
         {
             ((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX, this.posY, this.posZ, 2, 0.2D, 0.2D, 0.2D, 0.0D);

@@ -10,7 +10,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.yggdrasil.ProfileNotFoundException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -22,6 +21,8 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.PropertyManager;
@@ -135,9 +136,10 @@ public class PreYggdrasilConverter
                 {
                     userlistbans.readSavedFile();
                 }
-                catch (FileNotFoundException filenotfoundexception)
+                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacktrace
+                catch (IOException filenotfoundexception)
                 {
-                    LOGGER.warn("Could not load existing file {}", userlistbans.getSaveFile().getName(), filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", userlistbans.getSaveFile().getName());
                 }
             }
 
@@ -211,9 +213,10 @@ public class PreYggdrasilConverter
                 {
                     userlistipbans.readSavedFile();
                 }
-                catch (FileNotFoundException filenotfoundexception)
+                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacktrace
+                catch (IOException filenotfoundexception)
                 {
-                    LOGGER.warn("Could not load existing file {}", userlistipbans.getSaveFile().getName(), filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", userlistipbans.getSaveFile().getName());
                 }
             }
 
@@ -261,9 +264,10 @@ public class PreYggdrasilConverter
                 {
                     userlistops.readSavedFile();
                 }
-                catch (FileNotFoundException filenotfoundexception)
+                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacktrace
+                catch (IOException filenotfoundexception)
                 {
-                    LOGGER.warn("Could not load existing file {}", userlistops.getSaveFile().getName(), filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", userlistops.getSaveFile().getName());
                 }
             }
 
@@ -322,9 +326,10 @@ public class PreYggdrasilConverter
                 {
                     userlistwhitelist.readSavedFile();
                 }
-                catch (FileNotFoundException filenotfoundexception)
+                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacktrace
+                catch (IOException filenotfoundexception)
                 {
-                    LOGGER.warn("Could not load existing file {}", userlistwhitelist.getSaveFile().getName(), filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", userlistwhitelist.getSaveFile().getName());
                 }
             }
 
@@ -434,6 +439,29 @@ public class PreYggdrasilConverter
                     {
                         File file5 = new File(file1, p_152743_2_ + ".dat");
                         File file6 = new File(p_152743_1_, p_152743_3_ + ".dat");
+                        // CraftBukkit start - Use old file name to seed lastKnownName
+                        NBTTagCompound root = null;
+
+                        try {
+                            root = CompressedStreamTools.readCompressed(new java.io.FileInputStream(file1));
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                        }
+
+                        if (root != null) {
+                            if (!root.hasKey("bukkit")) {
+                                root.setTag("bukkit", new NBTTagCompound());
+                            }
+                            NBTTagCompound data = root.getCompoundTag("bukkit");
+                            data.setString("lastKnownName", p_152743_2_);
+
+                            try {
+                                CompressedStreamTools.writeCompressed(root, new java.io.FileOutputStream(file2));
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                        }
+                        // CraftBukkit end
                         PreYggdrasilConverter.mkdir(p_152743_1_);
 
                         if (!file5.renameTo(file6))
@@ -589,7 +617,7 @@ public class PreYggdrasilConverter
     private static File getPlayersDirectory(PropertyManager properties)
     {
         String s = properties.getStringProperty("level-name", "world");
-        File file1 = new File(s);
+        File file1 = new File(MinecraftServer.getServerCB().server.getWorldContainer(), s); // CraftBukkit - Respect container setting
         return new File(file1, "players");
     }
 

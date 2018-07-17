@@ -32,13 +32,16 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.entity.Fish;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerFishEvent;
 
 public class EntityFishHook extends Entity
 {
     private static final DataParameter<Integer> DATA_HOOKED_ENTITY = EntityDataManager.<Integer>createKey(EntityFishHook.class, DataSerializers.VARINT);
     private boolean inGround;
     private int ticksInGround;
-    private EntityPlayer angler;
+    public EntityPlayer angler;
     private int ticksInAir;
     private int ticksCatchable;
     private int ticksCaughtDelay;
@@ -356,6 +359,7 @@ public class EntityFishHook extends Entity
 
         if (raytraceresult != null && raytraceresult.typeOfHit != RayTraceResult.Type.MISS)
         {
+            org.bukkit.craftbukkit.event.CraftEventFactory.callProjectileHitEvent(this, raytraceresult);
             if (raytraceresult.typeOfHit == RayTraceResult.Type.ENTITY)
             {
                 this.caughtEntity = raytraceresult.entityHit;
@@ -397,6 +401,8 @@ public class EntityFishHook extends Entity
             {
                 this.ticksCaughtDelay = 0;
                 this.ticksCatchableDelay = 0;
+                PlayerFishEvent playerFishEvent = new PlayerFishEvent((Player) this.angler.getBukkitEntity(), null, (Fish) this.getBukkitEntity(), PlayerFishEvent.State.FAILED_ATTEMPT);
+                this.world.getServer().getPluginManager().callEvent(playerFishEvent);
             }
             else
             {
@@ -433,6 +439,11 @@ public class EntityFishHook extends Entity
             }
             else
             {
+                PlayerFishEvent playerFishEvent = new PlayerFishEvent((Player) this.angler.getBukkitEntity(), null, (Fish) this.getBukkitEntity(), PlayerFishEvent.State.BITE);
+                this.world.getServer().getPluginManager().callEvent(playerFishEvent);
+                if (playerFishEvent.isCancelled()) {
+                    return;
+                }
                 this.motionY = (double)(-0.4F * MathHelper.nextFloat(this.rand, 0.6F, 1.0F));
                 this.playSound(SoundEvents.ENTITY_BOBBER_SPLASH, 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
                 double d3 = this.getEntityBoundingBox().minY + 0.5D;
@@ -509,6 +520,11 @@ public class EntityFishHook extends Entity
             net.minecraftforge.event.entity.player.ItemFishedEvent event = null;
             if (this.caughtEntity != null)
             {
+                PlayerFishEvent playerFishEvent = new PlayerFishEvent((Player) this.angler.getBukkitEntity(), this.caughtEntity.getBukkitEntity(), (Fish) this.getBukkitEntity(), PlayerFishEvent.State.CAUGHT_ENTITY);
+                this.world.getServer().getPluginManager().callEvent(playerFishEvent);
+                if (playerFishEvent.isCancelled()) {
+                    return 0;
+                }
                 this.bringInHookedEntity();
                 this.world.setEntityState(this, (byte)31);
                 i = this.caughtEntity instanceof EntityItem ? 3 : 5;
@@ -529,6 +545,13 @@ public class EntityFishHook extends Entity
                 for (ItemStack itemstack : result)
                 {
                     EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY, this.posZ, itemstack);
+                    PlayerFishEvent playerFishEvent = new PlayerFishEvent((Player) this.angler.getBukkitEntity(), entityitem.getBukkitEntity(), (Fish) this.getBukkitEntity(), PlayerFishEvent.State.CAUGHT_FISH);
+                    playerFishEvent.setExpToDrop(this.rand.nextInt(6) + 1);
+                    this.world.getServer().getPluginManager().callEvent(playerFishEvent);
+
+                    if (playerFishEvent.isCancelled()) {
+                        return 0;
+                    }
                     double d0 = this.angler.posX - this.posX;
                     double d1 = this.angler.posY - this.posY;
                     double d2 = this.angler.posZ - this.posZ;
@@ -538,7 +561,12 @@ public class EntityFishHook extends Entity
                     entityitem.motionY = d1 * 0.1D + (double)MathHelper.sqrt(d3) * 0.08D;
                     entityitem.motionZ = d2 * 0.1D;
                     this.world.spawnEntity(entityitem);
-                    this.angler.world.spawnEntity(new EntityXPOrb(this.angler.world, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D, this.rand.nextInt(6) + 1));
+                    // this.angler.world.spawnEntity(new EntityXPOrb(this.angler.world, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D, this.rand.nextInt(6) + 1));
+                    // CraftBukkit start - this.random.nextInt(6) + 1 -> playerFishEvent.getExpToDrop()
+                    if (playerFishEvent.getExpToDrop() > 0) {
+                        this.angler.world.spawnEntity(new EntityXPOrb(this.angler.world, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D, playerFishEvent.getExpToDrop()));
+                    }
+                    // CraftBukkit end
                     Item item = itemstack.getItem();
 
                     if (item == Items.FISH || item == Items.COOKED_FISH)
@@ -552,7 +580,20 @@ public class EntityFishHook extends Entity
 
             if (this.inGround)
             {
+                PlayerFishEvent playerFishEvent = new PlayerFishEvent((Player) this.angler.getBukkitEntity(), null, (Fish) this.getBukkitEntity(), PlayerFishEvent.State.IN_GROUND);
+                this.world.getServer().getPluginManager().callEvent(playerFishEvent);
+
+                if (playerFishEvent.isCancelled()) {
+                    return 0;
+                }
                 i = 2;
+            }
+            if (i == 0) {
+                PlayerFishEvent playerFishEvent = new PlayerFishEvent((Player) this.angler.getBukkitEntity(), null, (Fish) this.getBukkitEntity(), PlayerFishEvent.State.FAILED_ATTEMPT);
+                this.world.getServer().getPluginManager().callEvent(playerFishEvent);
+                if (playerFishEvent.isCancelled()) {
+                    return 0;
+                }
             }
 
             this.setDead();

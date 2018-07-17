@@ -59,7 +59,9 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
                     {
                     if (j == 15)
                     {
-                        worldIn.setBlockState(pos.up(), this.getDefaultState());
+//                        worldIn.setBlockState(pos.up(), this.getDefaultState());
+                        BlockPos upPos = pos.up();
+                        org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(worldIn, upPos.getX(), upPos.getY(), upPos.getZ(), this, 0);
                         worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(0)), 4);
                     }
                     else

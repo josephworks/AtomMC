@@ -102,7 +102,7 @@ public class EntityAIFindEntityNearest extends EntityAIBase
 
     public void startExecuting()
     {
-        this.mob.setAttackTarget(this.target);
+        this.mob.setAttackTarget(this.target, org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY, true);
         super.startExecuting();
     }
 

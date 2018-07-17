@@ -24,6 +24,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
@@ -45,6 +46,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.entity.SheepRegrowWoolEvent;
+import org.bukkit.inventory.InventoryView;
 
 public class EntitySheep extends EntityAnimal implements net.minecraftforge.common.IShearable
 {
@@ -54,6 +57,11 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         public boolean canInteractWith(EntityPlayer playerIn)
         {
             return false;
+        }
+
+        @Override
+        public InventoryView getBukkitView() {
+            return null; // TODO: O.O
         }
     }, 2, 1);
     private static final Map<EnumDyeColor, float[]> DYE_TO_RGB = Maps.newEnumMap(EnumDyeColor.class);
@@ -79,6 +87,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         this.setSize(0.9F, 1.3F);
         this.inventoryCrafting.setInventorySlotContents(0, new ItemStack(Items.DYE));
         this.inventoryCrafting.setInventorySlotContents(1, new ItemStack(Items.DYE));
+        this.inventoryCrafting.resultInventory = new InventoryCraftResult(); // CraftBukkit - add result slot for event
     }
 
     protected void initEntityAI()
@@ -185,6 +194,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         }
     }
 
+    // TODO: Implement PlayerShearEntityEvent
     public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
         ItemStack itemstack = player.getHeldItem(hand);
@@ -198,7 +208,9 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
 
                 for (int j = 0; j < i; ++j)
                 {
+                    this.forceDrops = true;
                     EntityItem entityitem = this.entityDropItem(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()), 1.0F);
+                    this.forceDrops = false;
                     entityitem.motionY += (double)(this.rand.nextFloat() * 0.05F);
                     entityitem.motionX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
                     entityitem.motionZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
@@ -348,6 +360,10 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
 
     public void eatGrassBonus()
     {
+        SheepRegrowWoolEvent event = new SheepRegrowWoolEvent((org.bukkit.entity.Sheep) this.getBukkitEntity());
+        this.world.getServer().getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) return;
         this.setSheared(false);
 
         if (this.isChild())

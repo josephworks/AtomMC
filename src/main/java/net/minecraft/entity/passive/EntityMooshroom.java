@@ -30,6 +30,7 @@ public class EntityMooshroom extends EntityCow implements net.minecraftforge.com
         EntityLiving.registerFixesMob(fixer, EntityMooshroom.class);
     }
 
+    // TODO: Implement PlayerShearEntityEvent
     public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
         ItemStack itemstack = player.getHeldItem(hand);

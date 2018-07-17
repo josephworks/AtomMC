@@ -66,7 +66,7 @@ public class BlockJukebox extends BlockContainer
         }
     }
 
-    private void dropRecord(World worldIn, BlockPos pos, IBlockState state)
+    public void dropRecord(World worldIn, BlockPos pos, IBlockState state)
     {
         if (!worldIn.isRemote)
         {
@@ -193,6 +193,10 @@ public class BlockJukebox extends BlockContainer
 
             public void setRecord(ItemStack recordStack)
             {
+                // CraftBukkit start - There can only be one
+                if (!recordStack.isEmpty()) {
+                    recordStack.setCount(1);
+                }
                 this.record = recordStack;
                 this.markDirty();
             }

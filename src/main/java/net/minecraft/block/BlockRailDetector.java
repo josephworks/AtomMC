@@ -22,6 +22,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class BlockRailDetector extends BlockRailBase
 {
@@ -100,6 +101,13 @@ public class BlockRailDetector extends BlockRailBase
         if (!list.isEmpty())
         {
             flag1 = true;
+        }
+
+        if (flag != flag1) {
+            org.bukkit.block.Block block = worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(block, flag ? 15 : 0, flag1 ? 15 : 0);
+            worldIn.getServer().getPluginManager().callEvent(eventRedstone);
+            flag1 = eventRedstone.getNewCurrent() > 0;
         }
 
         if (flag1 && !flag)

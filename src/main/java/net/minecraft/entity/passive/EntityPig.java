@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class EntityPig extends EntityAnimal
 {
@@ -188,7 +189,7 @@ public class EntityPig extends EntityAnimal
 
     public void onDeath(DamageSource cause)
     {
-        super.onDeath(cause);
+        // super.onDeath(cause); // CraftBukkit - Moved to end
 
         if (!this.world.isRemote)
         {
@@ -197,6 +198,7 @@ public class EntityPig extends EntityAnimal
                 this.dropItem(Items.SADDLE, 1);
             }
         }
+        super.onDeath(cause);
     }
 
     @Nullable
@@ -227,6 +229,9 @@ public class EntityPig extends EntityAnimal
         if (!this.world.isRemote && !this.isDead)
         {
             EntityPigZombie entitypigzombie = new EntityPigZombie(this.world);
+            if (CraftEventFactory.callPigZapEvent(this, lightningBolt, entitypigzombie).isCancelled()) {
+                return;
+            }
             entitypigzombie.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
             entitypigzombie.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch);
             entitypigzombie.setNoAI(this.isAIDisabled());
@@ -237,7 +242,7 @@ public class EntityPig extends EntityAnimal
                 entitypigzombie.setAlwaysRenderNameTag(this.getAlwaysRenderNameTag());
             }
 
-            this.world.spawnEntity(entitypigzombie);
+            this.world.spawnEntity(entitypigzombie, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING);
             this.setDead();
         }
     }

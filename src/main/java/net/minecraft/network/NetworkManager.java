@@ -300,7 +300,9 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
     {
         if (this.channel.isOpen())
         {
-            this.channel.close().awaitUninterruptibly();
+            // We can't wait as this may be called from an event loop.
+            // this.channel.close().awaitUninterruptibly();
+            this.channel.close();
             this.terminationReason = message;
         }
     }

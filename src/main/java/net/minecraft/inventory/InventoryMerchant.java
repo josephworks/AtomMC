@@ -1,6 +1,7 @@
 package net.minecraft.inventory;
 
 import net.minecraft.entity.IMerchant;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -9,6 +10,12 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.entity.CraftVillager;
+import org.bukkit.entity.HumanEntity;
+
+import java.util.List;
 
 public class InventoryMerchant implements IInventory
 {
@@ -16,7 +23,39 @@ public class InventoryMerchant implements IInventory
     private final NonNullList<ItemStack> slots = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
     private final EntityPlayer player;
     private MerchantRecipe currentRecipe;
-    private int currentRecipeIndex;
+    public int currentRecipeIndex;
+
+    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
+    private int maxStack = MAX_STACK;
+
+    public List<ItemStack> getContents() {
+        return this.slots;
+    }
+
+    public void onOpen(CraftHumanEntity who) {
+        transaction.add(who);
+    }
+
+    public void onClose(CraftHumanEntity who) {
+        transaction.remove(who);
+    }
+
+    public List<HumanEntity> getViewers() {
+        return transaction;
+    }
+
+    public void setMaxStackSize(int i) {
+        maxStack = i;
+    }
+
+    public org.bukkit.inventory.InventoryHolder getOwner() {
+        return (merchant instanceof EntityVillager) ? (CraftVillager) ((EntityVillager) this.merchant).getBukkitEntity() : null;
+    }
+
+    @Override
+    public Location getLocation() {
+        return (merchant instanceof EntityVillager) ? ((EntityVillager) this.merchant).getBukkitEntity().getLocation() : null;
+    }
 
     public InventoryMerchant(EntityPlayer thePlayerIn, IMerchant theMerchantIn)
     {
@@ -110,7 +149,7 @@ public class InventoryMerchant implements IInventory
 
     public int getInventoryStackLimit()
     {
-        return 64;
+        return maxStack;
     }
 
     public boolean isUsableByPlayer(EntityPlayer player)

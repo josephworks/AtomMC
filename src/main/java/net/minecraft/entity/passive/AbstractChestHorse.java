@@ -72,7 +72,7 @@ public abstract class AbstractChestHorse extends AbstractHorse
 
     public void onDeath(DamageSource cause)
     {
-        super.onDeath(cause);
+        // super.onDeath(cause); // CraftBukkit - moved down
 
         if (this.hasChest())
         {
@@ -81,8 +81,10 @@ public abstract class AbstractChestHorse extends AbstractHorse
                 this.dropItem(Item.getItemFromBlock(Blocks.CHEST), 1);
             }
 
-            this.setChested(false);
+            // this.setChested(false); // CraftBukkit - moved down
         }
+        super.onDeath(cause);
+        this.setChested(false);
     }
 
     public static void registerFixesAbstractChestHorse(DataFixer fixer, Class<?> entityClass)

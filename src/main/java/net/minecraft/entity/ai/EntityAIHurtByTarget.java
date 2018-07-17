@@ -28,7 +28,7 @@ public class EntityAIHurtByTarget extends EntityAITarget
 
     public void startExecuting()
     {
-        this.taskOwner.setAttackTarget(this.taskOwner.getRevengeTarget());
+        this.taskOwner.setAttackTarget(this.taskOwner.getRevengeTarget(), org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_ENTITY, true);
         this.target = this.taskOwner.getAttackTarget();
         this.revengeTimerOld = this.taskOwner.getRevengeTimer();
         this.unseenMemoryTicks = 300;
@@ -70,6 +70,6 @@ public class EntityAIHurtByTarget extends EntityAITarget
 
     protected void setEntityAttackTarget(EntityCreature creatureIn, EntityLivingBase entityLivingBaseIn)
     {
-        creatureIn.setAttackTarget(entityLivingBaseIn);
+        creatureIn.setAttackTarget(entityLivingBaseIn, org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_NEARBY_ENTITY, true);
     }
 }

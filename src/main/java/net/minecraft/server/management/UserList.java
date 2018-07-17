@@ -156,6 +156,10 @@ public class UserList<K, V extends UserListEntry<K>>
         return this.values;
     }
 
+    public Collection<V> getValuesCB() {
+        return this.values.values();
+    }
+
     public void writeChanges() throws IOException
     {
         Collection<V> collection = this.values.values();

@@ -15,6 +15,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public abstract class BlockRedstoneDiode extends BlockHorizontal
 {
@@ -59,10 +60,16 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
 
             if (this.isRepeaterPowered && !flag)
             {
+                if (CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), 15, 0).getNewCurrent() != 0) {
+                    return;
+                }
                 worldIn.setBlockState(pos, this.getUnpoweredState(state), 2);
             }
             else if (!this.isRepeaterPowered)
             {
+                if (CraftEventFactory.callRedstoneChange(worldIn, pos.getX(), pos.getY(), pos.getZ(), 0, 15).getNewCurrent() != 15) {
+                    return;
+                }
                 worldIn.setBlockState(pos, this.getPoweredState(state), 2);
 
                 if (!flag)

@@ -50,6 +50,8 @@ public class ItemLilyPad extends ItemColored
 
                 if (iblockstate.getMaterial() == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1))
                 {
+                    // CraftBukkit start - special case for handling block placement with water lilies
+                    org.bukkit.block.BlockState blockstate = org.bukkit.craftbukkit.block.CraftBlockState.getBlockState(worldIn, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
                     // special case for handling block placement with water lilies
                     net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, blockpos1);
                     worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState());
@@ -60,6 +62,12 @@ public class ItemLilyPad extends ItemColored
                     }
 
                     worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState(), 11);
+
+                    org.bukkit.event.block.BlockPlaceEvent placeEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPlaceEvent(worldIn, playerIn, handIn, blockstate, blockpos.getX(), blockpos.getY(), blockpos.getZ());
+                    if (placeEvent != null && (placeEvent.isCancelled() || !placeEvent.canBuild())) {
+                        blockstate.update(true, false);
+                        return new ActionResult<>(EnumActionResult.PASS, itemstack);
+                    }
 
                     if (playerIn instanceof EntityPlayerMP)
                     {

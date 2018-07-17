@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -32,7 +31,6 @@ import net.minecraft.entity.passive.EntityParrot;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.projectile.EntityFishHook;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -42,7 +40,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemElytra;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -92,6 +89,16 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.entity.CraftItem;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.Vector;
 
 @SuppressWarnings("incomplete-switch")
 public abstract class EntityPlayer extends EntityLivingBase
@@ -109,10 +116,10 @@ public abstract class EntityPlayer extends EntityLivingBase
     protected static final DataParameter<NBTTagCompound> LEFT_SHOULDER_ENTITY = EntityDataManager.<NBTTagCompound>createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
     protected static final DataParameter<NBTTagCompound> RIGHT_SHOULDER_ENTITY = EntityDataManager.<NBTTagCompound>createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
     public InventoryPlayer inventory = new InventoryPlayer(this);
-    protected InventoryEnderChest enderChest = new InventoryEnderChest();
+    protected InventoryEnderChest enderChest = new InventoryEnderChest(this); // CraftBukkit - add "this" to constructor
     public Container inventoryContainer;
     public Container openContainer;
-    protected FoodStats foodStats = new FoodStats();
+    protected FoodStats foodStats = new FoodStats(this); // CraftBukkit - add "this" to constructor
     protected int flyToggleTimer;
     public float prevCameraYaw;
     public float cameraYaw;
@@ -123,9 +130,9 @@ public abstract class EntityPlayer extends EntityLivingBase
     public double chasingPosX;
     public double chasingPosY;
     public double chasingPosZ;
-    protected boolean sleeping;
+    public boolean sleeping;
     public BlockPos bedLocation;
-    private int sleepTimer;
+    public int sleepTimer;
     public float renderOffsetX;
     @SideOnly(Side.CLIENT)
     public float renderOffsetY;
@@ -146,6 +153,10 @@ public abstract class EntityPlayer extends EntityLivingBase
     private final CooldownTracker cooldownTracker = this.createCooldownTracker();
     @Nullable
     public EntityFishHook fishEntity;
+
+    public boolean fauxSleeping;
+    public String spawnWorld = "";
+    public int oldLevel = -1;
 
     protected CooldownTracker createCooldownTracker()
     {
@@ -408,7 +419,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         return SoundCategory.PLAYERS;
     }
 
-    protected int getFireImmuneTicks()
+    public int getFireImmuneTicks()
     {
         return 20;
     }
@@ -499,7 +510,8 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             if (this.getHealth() < this.getMaxHealth() && this.ticksExisted % 20 == 0)
             {
-                this.heal(1.0F);
+                // CraftBukkit - added regain reason of "REGEN" for filtering purposes.
+                this.heal(1.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.REGEN);
             }
 
             if (this.foodStats.needFood() && this.ticksExisted % 10 == 0)
@@ -527,7 +539,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         this.setAIMoveSpeed((float)iattributeinstance.getAttributeValue());
         float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        float f1 = (float)(Math.atan(-this.motionY * 0.20000000298023224D) * 15.0D);
+        float f1 = (float) (org.bukkit.craftbukkit.TrigMath.atan(-this.motionY * 0.20000000298023224D) * 15.0D);
 
         if (f > 0.1F)
         {
@@ -691,6 +703,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     @Nullable
     public EntityItem dropItem(boolean dropAll)
     {
+        // Called only when dropped by Q or CTRL-Q
         ItemStack stack = inventory.getCurrentItem();
 
         if (stack.isEmpty())
@@ -749,6 +762,30 @@ public abstract class EntityPlayer extends EntityLivingBase
                 entityitem.motionY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
                 entityitem.motionZ += Math.sin((double)f3) * (double)f2;
             }
+
+            // CraftBukkit start - fire PlayerDropItemEvent
+            Player player = (Player) this.getBukkitEntity();
+            CraftItem drop = new CraftItem(this.world.getServer(), entityitem);
+
+            PlayerDropItemEvent event = new PlayerDropItemEvent(player, drop);
+            this.world.getServer().getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                org.bukkit.inventory.ItemStack cur = player.getInventory().getItemInHand();
+                if (traceItem && (cur == null || cur.getAmount() == 0)) {
+                    // The complete stack was dropped
+                    player.getInventory().setItemInHand(drop.getItemStack());
+                } else if (traceItem && cur.isSimilar(drop.getItemStack()) && cur.getAmount() < cur.getMaxStackSize() && drop.getItemStack().getAmount() == 1) {
+                    // Only one item is dropped
+                    cur.setAmount(cur.getAmount() + 1);
+                    player.getInventory().setItemInHand(cur);
+                } else {
+                    // Fallback
+                    player.getInventory().addItem(drop.getItemStack());
+                }
+                return null;
+            }
+            // CraftBukkit end
 
             ItemStack itemstack = this.dropItemAndGetStack(entityitem);
 
@@ -893,6 +930,11 @@ public abstract class EntityPlayer extends EntityLivingBase
             this.wakeUpPlayer(true, true, false);
         }
 
+        this.spawnWorld = compound.getString("SpawnWorld");
+        if ("".equals(spawnWorld)) {
+            this.spawnWorld = this.world.getServer().getWorlds().get(0).getName();
+        }
+
         if (compound.hasKey("SpawnX", 99) && compound.hasKey("SpawnY", 99) && compound.hasKey("SpawnZ", 99))
         {
             this.spawnPos = new BlockPos(compound.getInteger("SpawnX"), compound.getInteger("SpawnY"), compound.getInteger("SpawnZ"));
@@ -987,6 +1029,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             compound.setTag("ShoulderEntityRight", this.getRightShoulderEntity());
         }
+        compound.setString("SpawnWorld", spawnWorld); // CraftBukkit - fixes bed spawns for multiworld worlds
     }
 
     public boolean attackEntityFrom(DamageSource source, float amount)
@@ -1015,13 +1058,13 @@ public abstract class EntityPlayer extends EntityLivingBase
                     this.wakeUpPlayer(true, true, false);
                 }
 
-                this.spawnShoulderEntities();
+                // this.spawnShoulderEntities(); // CraftBukkit - moved down
 
                 if (source.isDifficultyScaled())
                 {
                     if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL)
                     {
-                        amount = 0.0F;
+                        return false; // CraftBukkit - f = 0.0f -> return false
                     }
 
                     if (this.world.getDifficulty() == EnumDifficulty.EASY)
@@ -1035,7 +1078,14 @@ public abstract class EntityPlayer extends EntityLivingBase
                     }
                 }
 
-                return amount == 0.0F ? false : super.attackEntityFrom(source, amount);
+                // return amount == 0.0F ? false : super.attackEntityFrom(source, amount);
+                // CraftBukkit start - Don't filter out 0 damage
+                boolean damaged = super.attackEntityFrom(source, amount);
+                if (damaged) {
+                    this.spawnShoulderEntities();
+                }
+                return damaged;
+                // CraftBukkit end
             }
         }
     }
@@ -1052,17 +1102,29 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     public boolean canAttackPlayer(EntityPlayer other)
     {
-        Team team = this.getTeam();
-        Team team1 = other.getTeam();
-
-        if (team == null)
-        {
-            return true;
+        // Team team = this.getTeam();
+        // Team team1 = other.getTeam();
+        // CraftBukkit start - Change to check OTHER player's scoreboard team according to API
+        // To summarize this method's logic, it's "Can parameter hurt this"
+        org.bukkit.scoreboard.Team team;
+        if (other instanceof EntityPlayerMP) {
+            EntityPlayerMP thatPlayer = (EntityPlayerMP) other;
+            team = thatPlayer.getBukkitEntity().getScoreboard().getPlayerTeam(thatPlayer.getBukkitEntity());
+            if (team == null || team.allowFriendlyFire()) {
+                return true;
+            }
+        } else {
+            // This should never be called, but is implemented anyway
+            org.bukkit.OfflinePlayer thisPlayer = other.world.getServer().getOfflinePlayer(other.getName());
+            team = other.world.getServer().getScoreboardManager().getMainScoreboard().getPlayerTeam(thisPlayer);
+            if (team == null || team.allowFriendlyFire()) {
+                return true;
+            }
         }
-        else
-        {
-            return !team.isSameTeam(team1) ? true : team.getAllowFriendlyFire();
+        if (this instanceof EntityPlayerMP) {
+            return !team.hasPlayer(((EntityPlayerMP) this).getBukkitEntity());
         }
+        return !team.hasPlayer(this.world.getServer().getOfflinePlayer(this.getName()));
     }
 
     protected void damageArmor(float damage)
@@ -1115,12 +1177,21 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     protected void damageEntity(DamageSource damageSrc, float damageAmount)
     {
+        this.damageEntity_CB(damageSrc, damageAmount);
+    }
+
+    // TODO: Check if Cauldron way is correct
+    protected boolean damageEntity_CB(DamageSource damageSrc, float damageAmount)
+    {
+        if (true) {
+            return super.damageEntity_CB(damageSrc, damageAmount);
+        }
         if (!this.isEntityInvulnerable(damageSrc))
         {
             damageAmount = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, damageSrc, damageAmount);
-            if (damageAmount <= 0) return;
+            if (damageAmount <= 0) return false;
             damageAmount = net.minecraftforge.common.ISpecialArmor.ArmorProperties.applyArmor(this, inventory.armorInventory, damageSrc, damageAmount);
-            if (damageAmount <= 0) return;
+            if (damageAmount <= 0) return false;
             damageAmount = this.applyPotionDamageCalculations(damageSrc, damageAmount);
             float f = damageAmount;
             damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
@@ -1140,6 +1211,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                 }
             }
         }
+        return false;
     }
 
     public void openEditSign(TileEntitySign signTile)
@@ -1317,8 +1389,17 @@ public abstract class EntityPlayer extends EntityLivingBase
 
                         if (j > 0 && !targetEntity.isBurning())
                         {
-                            flag4 = true;
-                            targetEntity.setFire(1);
+                            // flag4 = true;
+                            // targetEntity.setFire(1);
+                            // CraftBukkit start - Call a combust event when somebody hits with a fire enchanted item
+                            EntityCombustByEntityEvent combustEvent = new EntityCombustByEntityEvent(this.getBukkitEntity(), targetEntity.getBukkitEntity(), 1);
+                            org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
+
+                            if (!combustEvent.isCancelled()) {
+                                flag4 = true;
+                                targetEntity.setFire(combustEvent.getDuration());
+                            }
+                            // CraftBukkit end
                         }
                     }
 
@@ -1353,8 +1434,10 @@ public abstract class EntityPlayer extends EntityLivingBase
                             {
                                 if (entitylivingbase != this && entitylivingbase != targetEntity && !this.isOnSameTeam(entitylivingbase) && this.getDistanceSq(entitylivingbase) < 9.0D)
                                 {
-                                    entitylivingbase.knockBack(this, 0.4F, (double)MathHelper.sin(this.rotationYaw * 0.017453292F), (double)(-MathHelper.cos(this.rotationYaw * 0.017453292F)));
-                                    entitylivingbase.attackEntityFrom(DamageSource.causePlayerDamage(this), f3);
+                                    // CraftBukkit start - Only apply knockback if the damage hits
+                                    if (entitylivingbase.attackEntityFrom(DamageSource.causePlayerDamage(this).sweep(), f3)) {
+                                        entitylivingbase.knockBack(this, 0.4F, (double) MathHelper.sin(this.rotationYaw * 0.017453292F), (double) (-MathHelper.cos(this.rotationYaw * 0.017453292F)));
+                                    }
                                 }
                             }
 
@@ -1364,11 +1447,28 @@ public abstract class EntityPlayer extends EntityLivingBase
 
                         if (targetEntity instanceof EntityPlayerMP && targetEntity.velocityChanged)
                         {
-                            ((EntityPlayerMP)targetEntity).connection.sendPacket(new SPacketEntityVelocity(targetEntity));
-                            targetEntity.velocityChanged = false;
-                            targetEntity.motionX = d1;
-                            targetEntity.motionY = d2;
-                            targetEntity.motionZ = d3;
+                            // CraftBukkit start - Add Velocity Event
+                            boolean cancelled = false;
+                            Player player = (Player) targetEntity.getBukkitEntity();
+                            org.bukkit.util.Vector velocity = new Vector( d1, d2, d3 );
+
+                            PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
+                            world.getServer().getPluginManager().callEvent(event);
+
+                            if (event.isCancelled()) {
+                                cancelled = true;
+                            } else if (!velocity.equals(event.getVelocity())) {
+                                player.setVelocity(event.getVelocity());
+                            }
+
+                            if (!cancelled) {
+                                ((EntityPlayerMP) targetEntity).connection.sendPacket(new SPacketEntityVelocity(targetEntity));
+                                targetEntity.velocityChanged = false;
+                                targetEntity.motionX = d1;
+                                targetEntity.motionY = d2;
+                                targetEntity.motionZ = d3;
+                            }
+                            // CraftBukkit end
                         }
 
                         if (flag2)
@@ -1434,7 +1534,15 @@ public abstract class EntityPlayer extends EntityLivingBase
 
                             if (j > 0)
                             {
-                                targetEntity.setFire(j * 4);
+                                // targetEntity.setFire(j * 4);
+                                // CraftBukkit start - Call a combust event when somebody hits with a fire enchanted item
+                                EntityCombustByEntityEvent combustEvent = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), j * 4);
+                                org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
+
+                                if (!combustEvent.isCancelled()) {
+                                    entity.setFire(combustEvent.getDuration());
+                                }
+                                // CraftBukkit end
                             }
 
                             if (this.world instanceof WorldServer && f5 > 2.0F)
@@ -1454,6 +1562,11 @@ public abstract class EntityPlayer extends EntityLivingBase
                         {
                             targetEntity.extinguish();
                         }
+                        // CraftBukkit start - resync on cancelled event
+                        if (this instanceof EntityPlayerMP) {
+                            ((EntityPlayerMP) this).getBukkitEntity().updateInventory();
+                        }
+                        // CraftBukkit end
                     }
                 }
             }
@@ -1572,6 +1685,20 @@ public abstract class EntityPlayer extends EntityLivingBase
             this.dismountRidingEntity();
         }
 
+        // CraftBukkit start - fire PlayerBedEnterEvent
+        if (this.getBukkitEntity() instanceof Player) {
+            Player player = (Player) this.getBukkitEntity();
+            org.bukkit.block.Block bed = this.world.getWorld().getBlockAt(bedLocation.getX(), bedLocation.getY(), bedLocation.getZ());
+
+            PlayerBedEnterEvent event = new PlayerBedEnterEvent(player, bed);
+            this.world.getServer().getPluginManager().callEvent(event);
+
+            if (event.isCancelled()) {
+                return SleepResult.OTHER_PROBLEM;
+            }
+        }
+        // CraftBukkit end
+
         this.spawnShoulderEntities();
         this.setSize(0.2F, 0.2F);
 
@@ -1650,6 +1777,23 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             this.world.updateAllPlayersSleepingFlag();
         }
+
+        // CraftBukkit start - fire PlayerBedLeaveEvent
+        if (this.getBukkitEntity() instanceof Player) {
+            Player player = (Player) this.getBukkitEntity();
+
+            org.bukkit.block.Block bed;
+            BlockPos blockposition = this.bedLocation;
+            if (blockposition != null) {
+                bed = this.world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
+            } else {
+                bed = this.world.getWorld().getBlockAt(player.getLocation());
+            }
+
+            PlayerBedLeaveEvent event = new PlayerBedLeaveEvent(player, bed);
+            this.world.getServer().getPluginManager().callEvent(event);
+        }
+        // CraftBukkit end
 
         this.sleepTimer = immediately ? 0 : 100;
 
@@ -1757,11 +1901,13 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             this.spawnPos = pos;
             this.spawnForced = forced;
+            this.spawnWorld = this.world.worldInfo.getWorldName();
         }
         else
         {
             this.spawnPos = null;
             this.spawnForced = false;
+            this.spawnWorld = "";
         }
     }
 
@@ -1820,7 +1966,10 @@ public abstract class EntityPlayer extends EntityLivingBase
             this.motionY = d3 * 0.6D;
             this.jumpMovementFactor = f;
             this.fallDistance = 0.0F;
-            this.setFlag(7, false);
+            // this.setFlag(7, false);
+            if (getFlag(7) && !org.bukkit.craftbukkit.event.CraftEventFactory.callToggleGlideEvent(this, false).isCancelled()) {
+                this.setFlag(7, false);
+            }
         }
         else
         {
@@ -2225,10 +2374,16 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     protected void spawnShoulderEntities()
     {
-        this.spawnShoulderEntity(this.getLeftShoulderEntity());
-        this.setLeftShoulderEntity(new NBTTagCompound());
-        this.spawnShoulderEntity(this.getRightShoulderEntity());
-        this.setRightShoulderEntity(new NBTTagCompound());
+        // this.spawnShoulderEntity(this.getLeftShoulderEntity());
+        // this.setLeftShoulderEntity(new NBTTagCompound());
+        // this.spawnShoulderEntity(this.getRightShoulderEntity());
+        // this.setRightShoulderEntity(new NBTTagCompound());
+        if (this.spawnShoulderEntity_CB(this.getLeftShoulderEntity())) {
+            this.setLeftShoulderEntity(new NBTTagCompound());
+        }
+        if (this.spawnShoulderEntity_CB(this.getRightShoulderEntity())) {
+            this.setRightShoulderEntity(new NBTTagCompound());
+        }
     }
 
     private void spawnShoulderEntity(@Nullable NBTTagCompound p_192026_1_)
@@ -2245,6 +2400,23 @@ public abstract class EntityPlayer extends EntityLivingBase
             entity.setPosition(this.posX, this.posY + 0.699999988079071D, this.posZ);
             this.world.spawnEntity(entity);
         }
+    }
+
+    private boolean spawnShoulderEntity_CB(@Nullable NBTTagCompound p_192026_1_) // CraftBukkit void->boolean
+    {
+        if (!this.world.isRemote && !p_192026_1_.hasNoTags())
+        {
+            Entity entity = EntityList.createEntityFromNBT(p_192026_1_, this.world);
+
+            if (entity instanceof EntityTameable)
+            {
+                ((EntityTameable)entity).setOwnerId(this.entityUniqueID);
+            }
+
+            entity.setPosition(this.posX, this.posY + 0.699999988079071D, this.posZ);
+            return this.world.spawnEntity(entity, CreatureSpawnEvent.SpawnReason.SHOULDER_ENTITY);
+        }
+        return true;
     }
 
     @SideOnly(Side.CLIENT)
@@ -2481,7 +2653,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         return (NBTTagCompound)this.dataManager.get(LEFT_SHOULDER_ENTITY);
     }
 
-    protected void setLeftShoulderEntity(NBTTagCompound tag)
+    public void setLeftShoulderEntity(NBTTagCompound tag)
     {
         this.dataManager.set(LEFT_SHOULDER_ENTITY, tag);
     }
@@ -2491,7 +2663,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         return (NBTTagCompound)this.dataManager.get(RIGHT_SHOULDER_ENTITY);
     }
 
-    protected void setRightShoulderEntity(NBTTagCompound tag)
+    public void setRightShoulderEntity(NBTTagCompound tag)
     {
         this.dataManager.set(RIGHT_SHOULDER_ENTITY, tag);
     }
@@ -2762,5 +2934,10 @@ public abstract class EntityPlayer extends EntityLivingBase
         TOO_FAR_AWAY,
         OTHER_PROBLEM,
         NOT_SAFE;
+    }
+
+    @Override
+    public CraftHumanEntity getBukkitEntity() {
+        return (CraftHumanEntity) super.getBukkitEntity();
     }
 }

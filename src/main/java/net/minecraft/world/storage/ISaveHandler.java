@@ -30,4 +30,6 @@ public interface ISaveHandler
     File getMapFileFromName(String mapName);
 
     TemplateManager getStructureTemplateManager();
+
+    java.util.UUID getUUID(); // CraftBukkit
 }

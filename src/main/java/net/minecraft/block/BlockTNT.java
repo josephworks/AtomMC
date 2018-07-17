@@ -115,6 +115,9 @@ public class BlockTNT extends Block
 
             if (entityarrow.isBurning())
             {
+                if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entityarrow, pos, Blocks.AIR, 0).isCancelled()) {
+                    return;
+                }
                 this.explode(worldIn, pos, worldIn.getBlockState(pos).withProperty(EXPLODE, Boolean.valueOf(true)), entityarrow.shootingEntity instanceof EntityLivingBase ? (EntityLivingBase)entityarrow.shootingEntity : null);
                 worldIn.setBlockToAir(pos);
             }

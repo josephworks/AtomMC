@@ -106,9 +106,9 @@ public class EntityOcelot extends EntityTameable
         }
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
-        return !this.isTamed() && this.ticksExisted > 2400;
+        return !this.isTamed() /*&& this.ticksExisted > 2400*/; // CraftBukkit
     }
 
     protected void applyEntityAttributes()
@@ -189,7 +189,8 @@ public class EntityOcelot extends EntityTameable
         {
             if (this.aiSit != null)
             {
-                this.aiSit.setSitting(false);
+                // CraftBukkit - moved into EntityLiving.damageEntity(DamageSource, float)
+                // this.aiSit.setSitting(false);
             }
 
             return super.attackEntityFrom(source, amount);
@@ -222,7 +223,8 @@ public class EntityOcelot extends EntityTameable
 
             if (!this.world.isRemote)
             {
-                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player))
+                // CraftBukkit - added event call and isCancelled check
+                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTameEvent(this, player).isCancelled())
                 {
                     this.setTamedBy(player);
                     this.setTameSkin(1 + this.world.rand.nextInt(3));
@@ -368,7 +370,7 @@ public class EntityOcelot extends EntityTameable
                 EntityOcelot entityocelot = new EntityOcelot(this.world);
                 entityocelot.setLocationAndAngles(this.posX, this.posY, this.posZ, this.rotationYaw, 0.0F);
                 entityocelot.setGrowingAge(-24000);
-                this.world.spawnEntity(entityocelot);
+                this.world.spawnEntity(entityocelot, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.OCELOT_BABY);
             }
         }
 

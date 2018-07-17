@@ -1,15 +1,23 @@
 package net.minecraft.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
 public class ContainerDispenser extends Container
 {
     private final IInventory dispenserInventory;
+    private CraftInventoryView bukkitEntity = null;
+    private InventoryPlayer player;
 
     public ContainerDispenser(IInventory playerInventory, IInventory dispenserInventoryIn)
     {
         this.dispenserInventory = dispenserInventoryIn;
+
+        // TODO: Should we check to make sure it really is an InventoryPlayer?
+        this.player = (InventoryPlayer) playerInventory;
 
         for (int i = 0; i < 3; ++i)
         {
@@ -35,6 +43,7 @@ public class ContainerDispenser extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
+        if (!this.checkReachable) return true;
         return this.dispenserInventory.isUsableByPlayer(playerIn);
     }
 
@@ -78,5 +87,16 @@ public class ContainerDispenser extends Container
         }
 
         return itemstack;
+    }
+
+    @Override
+    public CraftInventoryView getBukkitView() {
+        if (bukkitEntity != null) {
+            return bukkitEntity;
+        }
+
+        CraftInventory inventory = new CraftInventory(this.dispenserInventory);
+        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
+        return bukkitEntity;
     }
 }

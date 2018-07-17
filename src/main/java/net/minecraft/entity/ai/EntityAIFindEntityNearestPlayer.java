@@ -133,7 +133,7 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
 
     public void startExecuting()
     {
-        this.entityLiving.setAttackTarget(this.entityTarget);
+        this.entityLiving.setAttackTarget(this.entityTarget, org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
         super.startExecuting();
     }
 

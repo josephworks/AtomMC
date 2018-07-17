@@ -51,6 +51,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 public class EntityWolf extends EntityTameable
 {
@@ -114,6 +116,22 @@ public class EntityWolf extends EntityTameable
 
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
     }
+
+    // CraftBukkit - add overriden version
+    @Override
+    public boolean setAttackTarget(@Nullable EntityLivingBase entityliving, org.bukkit.event.entity.EntityTargetEvent.TargetReason reason, boolean fire) {
+        if (!super.setAttackTarget(entityliving, reason, fire)) {
+            return false;
+        }
+        entityliving = getAttackTarget();
+        if (entityliving == null) {
+            this.setAngry(false);
+        } else if (!this.isTamed()) {
+            this.setAngry(true);
+        }
+        return true;
+    }
+    // CraftBukkit end
 
     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn)
     {
@@ -336,7 +354,8 @@ public class EntityWolf extends EntityTameable
 
             if (this.aiSit != null)
             {
-                this.aiSit.setSitting(false);
+                // CraftBukkit - moved into EntityLiving.damageEntity_CB(DamageSource, float)
+                // this.aiSit.setSitting(false);
             }
 
             if (entity != null && !(entity instanceof EntityPlayer) && !(entity instanceof EntityArrow))
@@ -395,7 +414,7 @@ public class EntityWolf extends EntityTameable
                             itemstack.shrink(1);
                         }
 
-                        this.heal((float)itemfood.getHealAmount(itemstack));
+                        this.heal((float)itemfood.getHealAmount(itemstack), org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING);
                         return true;
                     }
                 }
@@ -422,7 +441,7 @@ public class EntityWolf extends EntityTameable
                 this.aiSit.setSitting(!this.isSitting());
                 this.isJumping = false;
                 this.navigator.clearPath();
-                this.setAttackTarget((EntityLivingBase)null);
+                this.setAttackTarget((EntityLivingBase)null, EntityTargetEvent.TargetReason.FORGOT_TARGET, true);
             }
         }
         else if (itemstack.getItem() == Items.BONE && !this.isAngry())
@@ -434,13 +453,15 @@ public class EntityWolf extends EntityTameable
 
             if (!this.world.isRemote)
             {
-                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player))
+                if (this.rand.nextInt(3) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player) && !CraftEventFactory.callEntityTameEvent(this, player).isCancelled())
                 {
                     this.setTamedBy(player);
                     this.navigator.clearPath();
                     this.setAttackTarget((EntityLivingBase)null);
                     this.aiSit.setSitting(true);
-                    this.setHealth(20.0F);
+                    // CraftBukkit - 20.0 -> getMaxHealth()
+                    // this.setHealth(20.0F);
+                    this.setHealth(this.getMaxHealth());
                     this.playTameEffect(true);
                     this.world.setEntityState(this, (byte)7);
                 }

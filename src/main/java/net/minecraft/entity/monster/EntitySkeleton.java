@@ -56,7 +56,7 @@ public class EntitySkeleton extends AbstractSkeleton
 
     public void onDeath(DamageSource cause)
     {
-        super.onDeath(cause);
+        // super.onDeath(cause); // CraftBukkit - moved down
 
         if (cause.getTrueSource() instanceof EntityCreeper)
         {
@@ -68,6 +68,7 @@ public class EntitySkeleton extends AbstractSkeleton
                 this.entityDropItem(new ItemStack(Items.SKULL, 1, 0), 0.0F);
             }
         }
+        super.onDeath(cause); // CraftBukkit - moved from above
     }
 
     protected EntityArrow getArrow(float p_190726_1_)

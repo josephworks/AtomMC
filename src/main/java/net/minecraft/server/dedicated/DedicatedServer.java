@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
@@ -43,10 +44,16 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
+import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.craftbukkit.LoggerOutputStream;
+import org.bukkit.craftbukkit.util.Waitable;
+import org.bukkit.event.server.RemoteServerCommandEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 
 @SideOnly(Side.SERVER)
 public class DedicatedServer extends MinecraftServer implements IServer
@@ -55,18 +62,19 @@ public class DedicatedServer extends MinecraftServer implements IServer
     private static final Pattern RESOURCE_PACK_SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     public final List<PendingCommand> pendingCommandList = Collections.<PendingCommand>synchronizedList(Lists.newArrayList());
     private RConThreadQuery rconQueryThread;
-    private final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
+    public final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
     private RConThreadMain rconThread;
-    private PropertyManager settings;
+    public PropertyManager settings;
     private ServerEula eula;
     private boolean canSpawnStructures;
     private GameType gameType;
     private boolean guiIsEnabled;
     public static boolean allowPlayerLogins = false;
 
-    public DedicatedServer(File anvilFileIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
+    // CraftBukkit start - Signature changed
+    public DedicatedServer(joptsimple.OptionSet options, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn)
     {
-        super(anvilFileIn, Proxy.NO_PROXY, dataFixerIn, authServiceIn, sessionServiceIn, profileRepoIn, profileCacheIn);
+        super(options, Proxy.NO_PROXY, dataFixerIn, authServiceIn, sessionServiceIn, profileRepoIn, profileCacheIn);
         Thread thread = new Thread("Server Infinisleeper")
         {
             {
@@ -96,15 +104,24 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             public void run()
             {
+                if (!org.bukkit.craftbukkit.Main.useConsole) {
+                    return;
+                }
+                jline.console.ConsoleReader bufferedreader = reader;
                 if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
-                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+//                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 String s4;
 
-                try
-                {
-                    while (!DedicatedServer.this.isServerStopped() && DedicatedServer.this.isServerRunning() && (s4 = bufferedreader.readLine()) != null)
-                    {
-                        DedicatedServer.this.addPendingCommand(s4, DedicatedServer.this);
+                try {
+                    while (!isServerStopped() && isServerRunning()) {
+                        if (org.bukkit.craftbukkit.Main.useJline) {
+                            s4 = bufferedreader.readLine(">", null);
+                        } else {
+                            s4 = bufferedreader.readLine();
+                        }
+                        if (s4 != null && s4.trim().length() > 0) { // Trim to filter lines which are just spaces
+                            addPendingCommand(s4, DedicatedServer.this);
+                        }
                     }
                 }
                 catch (IOException ioexception1)
@@ -113,6 +130,28 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 }
             }
         };
+
+        // CraftBukkit start - TODO: handle command-line logging arguments
+        java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
+        global.setUseParentHandlers(false);
+        for (java.util.logging.Handler handler : global.getHandlers()) {
+            global.removeHandler(handler);
+        }
+        global.addHandler(new org.bukkit.craftbukkit.util.ForwardLogHandler());
+
+        final org.apache.logging.log4j.core.Logger logger = ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger());
+        for (org.apache.logging.log4j.core.Appender appender : logger.getAppenders().values()) {
+            if (appender instanceof org.apache.logging.log4j.core.appender.ConsoleAppender) {
+                logger.removeAppender(appender);
+            }
+        }
+
+        new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
+
+        System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
+        System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
+        // CraftBukkit end
+
         thread.setDaemon(true);
         thread.start();
         LOGGER.info("Starting minecraft server version 1.12.2");
@@ -125,7 +164,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStart(this);
 
         LOGGER.info("Loading properties");
-        this.settings = new PropertyManager(new File("server.properties"));
+        this.settings =  new PropertyManager(this.options); // CraftBukkit - CLI argument support
         this.eula = new ServerEula(new File("eula.txt"));
 
         if (!this.eula.hasAcceptedEULA())
@@ -197,6 +236,10 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 return false;
             }
 
+            this.setPlayerList(new DedicatedPlayerList(this));
+            server.loadPlugins();
+            server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
+
             if (!this.isServerInOnlineMode())
             {
                 LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
@@ -217,7 +260,8 @@ public class DedicatedServer extends MinecraftServer implements IServer
             else
             {
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStarted();
-                this.setPlayerList(new DedicatedPlayerList(this));
+                this.anvilConverterForAnvilFile = new AnvilSaveConverter(server.getWorldContainer(), this.dataFixer); // CraftBukkit - moved from MinecraftServer constructor
+//                this.setPlayerList(new DedicatedPlayerList(this));
                 long j = System.nanoTime();
 
                 if (this.getFolderName() == null)
@@ -274,7 +318,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
                 if (this.settings.hasProperty("announce-player-achievements"))
                 {
-                    this.worlds[0].getGameRules().setOrCreateGameRule("announceAdvancements", this.settings.getBooleanProperty("announce-player-achievements", true) ? "true" : "false");
+                    this.worldServerList.get(0).getGameRules().setOrCreateGameRule("announceAdvancements", this.settings.getBooleanProperty("announce-player-achievements", true) ? "true" : "false");
                     this.settings.removeProperty("announce-player-achievements");
                     this.settings.saveProperties();
                 }
@@ -286,11 +330,19 @@ public class DedicatedServer extends MinecraftServer implements IServer
                     this.rconQueryThread.startThread();
                 }
 
-                if (this.settings.getBooleanProperty("enable-rcon", false))
-                {
+                if (this.settings.getBooleanProperty("enable-rcon", false)) {
                     LOGGER.info("Starting remote control listener");
                     this.rconThread = new RConThreadMain(this);
                     this.rconThread.startThread();
+                    this.remoteConsole = new org.bukkit.craftbukkit.command.CraftRemoteConsoleCommandSender(this.rconConsoleSource);
+                }
+
+                if (this.server.getBukkitSpawnRadius() > -1) {
+                    DedicatedServer.LOGGER.info("'settings.spawn-radius' in bukkit.yml has been moved to 'spawn-protection' in server.properties. I will move your config for you.");
+                    this.settings.serverProperties.remove("spawn-protection");
+                    this.settings.getIntProperty("spawn-protection", this.server.getBukkitSpawnRadius());
+                    this.server.removeBukkitSpawnRadius();
+                    this.settings.saveProperties();
                 }
 
                 if (this.getMaxTickTime() > 0L)
@@ -429,7 +481,15 @@ public class DedicatedServer extends MinecraftServer implements IServer
         while (!this.pendingCommandList.isEmpty())
         {
             PendingCommand pendingcommand = this.pendingCommandList.remove(0);
-            this.getCommandManager().executeCommand(pendingcommand.sender, pendingcommand.command);
+            // CraftBukkit start - ServerCommand for preprocessing
+            ServerCommandEvent event = new ServerCommandEvent(console, pendingcommand.command);
+            server.getPluginManager().callEvent(event);
+            if (event.isCancelled()) continue;
+            pendingcommand = new PendingCommand(event.getCommand(), pendingcommand.sender);
+
+            // this.getCommandManager().executeCommand(pendingcommand.sender, pendingcommand.command); // Called in dispatchServerCommand
+            server.dispatchServerCommand(console, pendingcommand);
+            // CraftBukkit end
         }
     }
 
@@ -683,13 +743,66 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public String getPlugins()
     {
-        return "";
+        // CraftBukkit start - Whole method
+        StringBuilder result = new StringBuilder();
+        org.bukkit.plugin.Plugin[] plugins = server.getPluginManager().getPlugins();
+
+        result.append(server.getName());
+        result.append(" on Bukkit ");
+        result.append(server.getBukkitVersion());
+
+        if (plugins.length > 0 && server.getQueryPlugins()) {
+            result.append(": ");
+
+            for (int i = 0; i < plugins.length; i++) {
+                if (i > 0) {
+                    result.append("; ");
+                }
+
+                result.append(plugins[i].getDescription().getName());
+                result.append(" ");
+                result.append(plugins[i].getDescription().getVersion().replaceAll(";", ","));
+            }
+        }
+
+        return result.toString();
+        // CraftBukkit end
     }
 
-    public String handleRConCommand(String command)
+    // CraftBukkit start - fire RemoteServerCommandEvent
+    public String handleRConCommand(final String command)
     {
-        this.rconConsoleSource.resetLog();
-        this.commandManager.executeCommand(this.rconConsoleSource, command);
-        return this.rconConsoleSource.getLogContents();
+        Waitable<String> waitable = new Waitable<String>() {
+            @Override
+            protected String evaluate() {
+                rconConsoleSource.resetLog();
+                // Event changes start
+                RemoteServerCommandEvent event = new RemoteServerCommandEvent(remoteConsole, command);
+                server.getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    return "";
+                }
+                // Event change end
+                PendingCommand serverCommand = new PendingCommand(event.getCommand(), rconConsoleSource);
+                server.dispatchServerCommand(remoteConsole, serverCommand);
+                return rconConsoleSource.getLogContents();
+            }
+        };
+        processQueue.add(waitable);
+        try {
+            return waitable.get();
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw new RuntimeException("Exception processing rcon command " + command, e.getCause());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Maintain interrupted state
+            throw new RuntimeException("Interrupted processing rcon command " + command, e);
+        }
+    }
+    // CraftBukkit end
+
+    // TODO: Check if it's useless
+    @Override
+    public PropertyManager getPropertyManager() {
+        return this.settings;
     }
 }

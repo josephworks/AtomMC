@@ -79,14 +79,14 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
         if (nbttagcompound == null)
         {
-            DataInputStream datainputstream = RegionFileCache.getChunkInputStream(this.chunkSaveLocation, x, z);
+            NBTTagCompound nbtTagCompound = RegionFileCache.getChunkInputStreamCB(this.chunkSaveLocation, x, z);
 
-            if (datainputstream == null)
+            if (nbtTagCompound == null)
             {
                 return null;
             }
 
-            nbttagcompound = this.fixer.process(FixTypes.CHUNK, CompressedStreamTools.read(datainputstream));
+            nbttagcompound = this.fixer.process(FixTypes.CHUNK, nbtTagCompound);
         }
 
         return this.checkedReadChunkFromNBT__Async(worldIn, x, z, nbttagcompound);
@@ -237,9 +237,10 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
     private void writeChunkData(ChunkPos pos, NBTTagCompound compound) throws IOException
     {
-        DataOutputStream dataoutputstream = RegionFileCache.getChunkOutputStream(this.chunkSaveLocation, pos.x, pos.z);
-        CompressedStreamTools.write(compound, dataoutputstream);
-        dataoutputstream.close();
+        // DataOutputStream dataoutputstream = RegionFileCache.getChunkOutputStream(this.chunkSaveLocation, pos.x, pos.z);
+        // CompressedStreamTools.write(compound, dataoutputstream);
+        // dataoutputstream.close();
+        RegionFileCache.getChunkOutputStream(this.chunkSaveLocation, pos.x, pos.z, compound);
     }
 
     public void saveExtraChunkData(World worldIn, Chunk chunkIn) throws IOException
@@ -608,8 +609,11 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
     public static void spawnEntity(Entity entityIn, World worldIn)
     {
-        if (worldIn.spawnEntity(entityIn) && entityIn.isBeingRidden())
-        {
+        spawnEntity(entityIn, worldIn, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
+    }
+
+    public static void spawnEntity(Entity entityIn, World worldIn, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
+        if (worldIn.spawnEntity(entityIn, reason) && entityIn.isBeingRidden()) {
             for (Entity entity : entityIn.getPassengers())
             {
                 spawnEntity(entity, worldIn);

@@ -221,6 +221,9 @@ public class EntitySilverfish extends EntityMob
 
                     if (BlockSilverfish.canContainSilverfish(iblockstate))
                     {
+                        if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.entity, blockpos, Blocks.MONSTER_EGG, Block.getIdFromBlock(BlockSilverfish.getBlockById(iblockstate.getBlock().getMetaFromState(iblockstate)))).isCancelled()) {
+                            return;
+                        }
                         world.setBlockState(blockpos, Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.forModelBlock(iblockstate)), 3);
                         this.entity.spawnExplosionParticle();
                         this.entity.setDead();
@@ -273,6 +276,9 @@ public class EntitySilverfish extends EntityMob
 
                                 if (iblockstate.getBlock() == Blocks.MONSTER_EGG)
                                 {
+                                    if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.silverfish, blockpos1, Blocks.AIR, 0).isCancelled()) {
+                                        continue;
+                                    }
                                     if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this.silverfish))
                                     {
                                         world.destroyBlock(blockpos1, true);

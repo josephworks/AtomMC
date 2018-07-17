@@ -5,6 +5,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
@@ -18,6 +19,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.entity.EntityCombustEvent;
 
 public class ItemBow extends Item
 {
@@ -134,7 +136,18 @@ public class ItemBow extends Item
 
                         if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, stack) > 0)
                         {
-                            entityarrow.setFire(100);
+                            // entityarrow.setFire(100);
+                            EntityCombustEvent event = new EntityCombustEvent(entityarrow.getBukkitEntity(), 100);
+                            entityarrow.world.getServer().getPluginManager().callEvent(event);
+
+                            if (!event.isCancelled()) {
+                                entityarrow.setFire(event.getDuration());
+                            }
+                        }
+                        org.bukkit.event.entity.EntityShootBowEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityShootBowEvent(entityplayer, itemstack, entityarrow, f);
+                        if (event.isCancelled()) {
+                            event.getProjectile().remove();
+                            return;
                         }
 
                         stack.damageItem(1, entityplayer);
@@ -144,7 +157,15 @@ public class ItemBow extends Item
                             entityarrow.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
                         }
 
-                        worldIn.spawnEntity(entityarrow);
+                        // worldIn.spawnEntity(entityarrow);
+                        if (event.getProjectile() == entityarrow.getBukkitEntity()) {
+                            if (!worldIn.spawnEntity(entityarrow)) {
+                                if (entityplayer instanceof EntityPlayerMP) {
+                                    ((EntityPlayerMP) entityplayer).getBukkitEntity().updateInventory();
+                                }
+                                return;
+                            }
+                        }
                     }
 
                     worldIn.playSound((EntityPlayer)null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);

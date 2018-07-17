@@ -7,9 +7,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.bukkit.craftbukkit.command.ProxiedNativeCommandSender;
 
 public class CommandExecuteAt extends CommandBase
 {
@@ -73,12 +75,13 @@ public class CommandExecuteAt extends CommandBase
             }
 
             String s = buildString(args, i);
-            ICommandSender icommandsender = CommandSenderWrapper.create(sender).withEntity(entity, new Vec3d(d0, d1, d2)).withSendCommandFeedback(server.worlds[0].getGameRules().getBoolean("commandBlockOutput"));
+            ICommandSender icommandsender = CommandSenderWrapper.create(sender).withEntity(entity, new Vec3d(d0, d1, d2)).withSendCommandFeedback(server.worldServerList.get(0).getGameRules().getBoolean("commandBlockOutput"));
             ICommandManager icommandmanager = server.getCommandManager();
 
             try
             {
-                int j = icommandmanager.executeCommand(icommandsender, s);
+                org.bukkit.command.CommandSender bukkitSender = CommandBlockBaseLogic.unwrapSender(sender);
+                int j = CommandBlockBaseLogic.executeCommand(icommandsender, new ProxiedNativeCommandSender(icommandsender, bukkitSender, entity.getBukkitEntity()), s);
 
                 if (j < 1)
                 {
@@ -87,6 +90,9 @@ public class CommandExecuteAt extends CommandBase
             }
             catch (Throwable var23)
             {
+                if (var23 instanceof CommandException) {
+                    throw (CommandException) var23;
+                }
                 throw new CommandException("commands.execute.failed", new Object[] {s, entity.getName()});
             }
         }

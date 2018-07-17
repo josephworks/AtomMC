@@ -19,6 +19,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class BlockCactus extends Block implements net.minecraftforge.common.IPlantable
 {
@@ -56,8 +57,9 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
                 {
                 if (j == 15)
                 {
-                    worldIn.setBlockState(blockpos, this.getDefaultState());
+                    // worldIn.setBlockState(blockpos, this.getDefaultState());
                     IBlockState iblockstate = state.withProperty(AGE, Integer.valueOf(0));
+                    CraftEventFactory.handleBlockGrowEvent(worldIn, blockpos.getX(), blockpos.getY(), blockpos.getZ(), this, 0);
                     worldIn.setBlockState(pos, iblockstate, 4);
                     iblockstate.neighborChanged(worldIn, blockpos, this, pos);
                 }
@@ -123,7 +125,9 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
 
     public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, IBlockState state, Entity entityIn)
     {
+        CraftEventFactory.blockDamage = worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
         entityIn.attackEntityFrom(DamageSource.CACTUS, 1.0F);
+        CraftEventFactory.blockDamage = null;
     }
 
     public IBlockState getStateFromMeta(int meta)

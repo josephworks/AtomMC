@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
 
 public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.minecraftforge.common.IShearable
 {
@@ -101,7 +102,9 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.
 
             if (this.world.getBiome(new BlockPos(i, 0, k)).getTemperature(new BlockPos(i, j, k)) > 1.0F)
             {
-                this.attackEntityFrom(DamageSource.ON_FIRE, 1.0F);
+                // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
+                // this.attackEntityFrom(DamageSource.ON_FIRE, 1.0F);
+                this.attackEntityFrom(CraftEventFactory.MELTING, 1.0F);
             }
 
             if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this))
@@ -118,7 +121,8 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.
 
                 if (this.world.getBlockState(blockpos).getMaterial() == Material.AIR && this.world.getBiome(blockpos).getTemperature(blockpos) < 0.8F && Blocks.SNOW_LAYER.canPlaceBlockAt(this.world, blockpos))
                 {
-                    this.world.setBlockState(blockpos, Blocks.SNOW_LAYER.getDefaultState());
+                    // this.world.setBlockState(blockpos, Blocks.SNOW_LAYER.getDefaultState());
+                    org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this.world, blockpos, Blocks.SNOW_LAYER.getDefaultState(), this);
                 }
             }
         }
@@ -148,6 +152,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.
         return 1.7F;
     }
 
+    // TODO: Implement PlayerShearEntityEvent
     protected boolean processInteract(EntityPlayer player, EnumHand hand)
     {
         ItemStack itemstack = player.getHeldItem(hand);

@@ -12,6 +12,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 
 public class ItemLead extends Item
 {
@@ -55,6 +56,17 @@ public class ItemLead extends Item
                 if (entityleashknot == null)
                 {
                     entityleashknot = EntityLeashKnot.createKnot(worldIn, fence);
+                    HangingPlaceEvent event = new HangingPlaceEvent((org.bukkit.entity.Hanging) entityleashknot.getBukkitEntity(), player != null ? (org.bukkit.entity.Player) player.getBukkitEntity() : null, worldIn.getWorld().getBlockAt(i, j, k), org.bukkit.block.BlockFace.SELF);
+                    worldIn.getServer().getPluginManager().callEvent(event);
+
+                    if (event.isCancelled()) {
+                        entityleashknot.setDead();
+                        return false;
+                    }
+                }
+
+                if (org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerLeashEntityEvent(entityliving, entityleashknot, player).isCancelled()) {
+                    continue;
                 }
 
                 entityliving.setLeashHolder(entityleashknot, true);

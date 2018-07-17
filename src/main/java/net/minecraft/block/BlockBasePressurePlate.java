@@ -14,6 +14,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.bukkit.event.block.BlockRedstoneEvent;
 
 public abstract class BlockBasePressurePlate extends Block
 {
@@ -124,6 +125,17 @@ public abstract class BlockBasePressurePlate extends Block
         int i = this.computeRedstoneStrength(worldIn, pos);
         boolean flag = oldRedstoneStrength > 0;
         boolean flag1 = i > 0;
+
+        org.bukkit.World bworld = worldIn.getWorld();
+        org.bukkit.plugin.PluginManager manager = worldIn.getServer().getPluginManager();
+
+        if (flag != flag1) {
+            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(bworld.getBlockAt(pos.getX(), pos.getY(), pos.getZ()), oldRedstoneStrength, i);
+            manager.callEvent(eventRedstone);
+
+            flag1 = eventRedstone.getNewCurrent() > 0;
+            i = eventRedstone.getNewCurrent();
+        }
 
         if (oldRedstoneStrength != i)
         {

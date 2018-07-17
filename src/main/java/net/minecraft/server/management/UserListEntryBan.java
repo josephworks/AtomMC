@@ -24,7 +24,7 @@ public abstract class UserListEntryBan<T> extends UserListEntry<T>
 
     protected UserListEntryBan(T valueIn, JsonObject json)
     {
-        super(valueIn, json);
+        super(checkExpiry(valueIn, json), json);
         Date date;
 
         try
@@ -74,5 +74,29 @@ public abstract class UserListEntryBan<T> extends UserListEntry<T>
         data.addProperty("source", this.bannedBy);
         data.addProperty("expires", this.banEndDate == null ? "forever" : DATE_FORMAT.format(this.banEndDate));
         data.addProperty("reason", this.reason);
+    }
+
+    public String getSource() {
+        return this.bannedBy;
+    }
+
+    public Date getCreated() {
+        return this.banStartDate;
+    }
+
+    private static <T> T checkExpiry(T object, JsonObject jsonobject) {
+        Date expires = null;
+
+        try {
+            expires = jsonobject.has("expires") ? DATE_FORMAT.parse(jsonobject.get("expires").getAsString()) : null;
+        } catch (ParseException ex) {
+            // Guess we don't have a date
+        }
+
+        if (expires == null || expires.after(new Date())) {
+            return object;
+        } else {
+            return null;
+        }
     }
 }

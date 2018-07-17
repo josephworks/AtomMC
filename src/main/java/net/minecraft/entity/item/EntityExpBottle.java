@@ -40,8 +40,15 @@ public class EntityExpBottle extends EntityThrowable
     {
         if (!this.world.isRemote)
         {
-            this.world.playEvent(2002, new BlockPos(this), PotionUtils.getPotionColor(PotionTypes.WATER));
+            // CraftBukkit - moved to after event
+            // this.world.playEvent(2002, new BlockPos(this), PotionUtils.getPotionColor(PotionTypes.WATER));
             int i = 3 + this.world.rand.nextInt(5) + this.world.rand.nextInt(5);
+
+            org.bukkit.event.entity.ExpBottleEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callExpBottleEvent(this, i);
+            i = event.getExperience();
+            if (event.getShowEffect()) {
+                this.world.playEvent(2002, new BlockPos(this), PotionUtils.getPotionColor(PotionTypes.WATER));
+            }
 
             while (i > 0)
             {

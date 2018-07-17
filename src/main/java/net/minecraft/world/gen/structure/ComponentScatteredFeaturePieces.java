@@ -773,7 +773,7 @@ public class ComponentScatteredFeaturePieces
                             entitywitch.enablePersistence();
                             entitywitch.setLocationAndAngles((double)l + 0.5D, (double)i1, (double)k + 0.5D, 0.0F, 0.0F);
                             entitywitch.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(l, i1, k)), (IEntityLivingData)null);
-                            worldIn.spawnEntity(entitywitch);
+                            worldIn.spawnEntity(entitywitch, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN);
                         }
                     }
 

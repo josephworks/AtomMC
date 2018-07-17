@@ -16,6 +16,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.player.PlayerFishEvent;
 
 public class ItemFishingRod extends Item
 {
@@ -74,7 +75,7 @@ public class ItemFishingRod extends Item
         }
         else
         {
-            worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+            // worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F)); // CraftBukkit - moved down
 
             if (!worldIn.isRemote)
             {
@@ -92,6 +93,15 @@ public class ItemFishingRod extends Item
                 {
                     entityfishhook.setLuck(k);
                 }
+
+                PlayerFishEvent playerFishEvent = new PlayerFishEvent((org.bukkit.entity.Player) playerIn.getBukkitEntity(), null, (org.bukkit.entity.Fish) entityfishhook.getBukkitEntity(), PlayerFishEvent.State.FISHING);
+                worldIn.getServer().getPluginManager().callEvent(playerFishEvent);
+
+                if (playerFishEvent.isCancelled()) {
+                    playerIn.fishEntity = null;
+                    return new ActionResult<>(EnumActionResult.PASS, itemstack);
+                }
+                worldIn.playSound(null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
                 worldIn.spawnEntity(entityfishhook);
             }

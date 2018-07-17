@@ -29,6 +29,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class BlockDoor extends Block
 {
@@ -223,17 +224,27 @@ public class BlockDoor extends Block
             }
             else
             {
-                boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(blockpos1);
+                org.bukkit.World bworld = worldIn.getWorld();
+                org.bukkit.block.Block bukkitBlock = bworld.getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+                org.bukkit.block.Block blockTop = bworld.getBlockAt(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
 
-                if (blockIn != this && (flag || blockIn.getDefaultState().canProvidePower()) && flag != ((Boolean)iblockstate1.getValue(POWERED)).booleanValue())
-                {
-                    worldIn.setBlockState(blockpos1, iblockstate1.withProperty(POWERED, Boolean.valueOf(flag)), 2);
+                int power = bukkitBlock.getBlockPower();
+                int powerTop = blockTop.getBlockPower();
+                if (powerTop > power) power = powerTop;
+                int oldPower = iblockstate1.getValue(BlockDoor.POWERED) ? 15 : 0;
 
-                    if (flag != ((Boolean)state.getValue(OPEN)).booleanValue())
+                if (oldPower == 0 ^ power == 0) {
+                    BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(bukkitBlock, oldPower, power);
+                    worldIn.getServer().getPluginManager().callEvent(eventRedstone);
+
+                    boolean flag2 = eventRedstone.getNewCurrent() > 0;
+                    worldIn.setBlockState(blockpos1, iblockstate1.withProperty(POWERED, Boolean.valueOf(flag2)), 2);
+
+                    if (flag2 != state.getValue(OPEN))
                     {
-                        worldIn.setBlockState(pos, state.withProperty(OPEN, Boolean.valueOf(flag)), 2);
+                        worldIn.setBlockState(pos, state.withProperty(OPEN, Boolean.valueOf(flag2)), 2);
                         worldIn.markBlockRangeForRenderUpdate(pos, pos);
-                        worldIn.playEvent((EntityPlayer)null, flag ? this.getOpenSound() : this.getCloseSound(), pos, 0);
+                        worldIn.playEvent(null, flag2 ? this.getOpenSound() : this.getCloseSound(), pos, 0);
                     }
                 }
             }

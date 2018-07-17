@@ -40,7 +40,9 @@ public class BlockMagma extends Block
     {
         if (!entityIn.isImmuneToFire() && entityIn instanceof EntityLivingBase && !EnchantmentHelper.hasFrostWalkerEnchantment((EntityLivingBase)entityIn))
         {
+            org.bukkit.craftbukkit.event.CraftEventFactory.blockDamage = worldIn.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
             entityIn.attackEntityFrom(DamageSource.HOT_FLOOR, 1.0F);
+            org.bukkit.craftbukkit.event.CraftEventFactory.blockDamage = null;
         }
 
         super.onEntityWalk(worldIn, pos, entityIn);

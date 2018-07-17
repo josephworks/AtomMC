@@ -53,7 +53,7 @@ public class EntityTracker
     private static final Logger LOGGER = LogManager.getLogger();
     private final WorldServer world;
     private final Set<EntityTrackerEntry> entries = Sets.<EntityTrackerEntry>newHashSet();
-    private final IntHashMap<EntityTrackerEntry> trackedEntityHashTable = new IntHashMap<EntityTrackerEntry>();
+    public final IntHashMap<EntityTrackerEntry> trackedEntityHashTable = new IntHashMap<EntityTrackerEntry>();
     private int maxTrackingDistanceThreshold;
 
     public EntityTracker(WorldServer theWorldIn)
@@ -198,7 +198,7 @@ public class EntityTracker
         }
         else if (entityIn instanceof EntityAreaEffectCloud)
         {
-            this.track(entityIn, 160, Integer.MAX_VALUE, true);
+            this.track(entityIn, 160, 10 /*Integer.MAX_VALUE*/, true); // CraftBukkit
         }
         else if (entityIn instanceof EntityEnderCrystal)
         {
