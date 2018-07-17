@@ -273,7 +273,7 @@ public class CraftWorld implements World {
     }
 
     public Chunk[] getLoadedChunks() {
-        Object[] chunks = world.getChunkProvider().chunks.values().toArray();
+        Object[] chunks = world.getChunkProvider().id2ChunkMap.values().toArray();
         Chunk[] craftChunks = new CraftChunk[chunks.length];
 
         for (int i = 0; i < chunks.length; i++) {
@@ -355,7 +355,7 @@ public class CraftWorld implements World {
             world.getChunkProvider().id2ChunkMap.put(chunkKey, chunk);
 
             chunk.onLoad();
-            chunk.populate(world.getChunkProvider(), world.getChunkProvider().chunkGenerator, true);
+            chunk.populateCB(world.getChunkProvider(), world.getChunkProvider().chunkGenerator, true);
 
             refreshChunk(x, z);
         }
@@ -586,7 +586,7 @@ public class CraftWorld implements World {
                 int flag = ((CraftBlockState)blockstate).getFlag();
                 delegate.setTypeIdAndData(x, y, z, typeId, data);
                 net.minecraft.block.state.IBlockState newBlock = world.getBlockState(position);
-                world.notifyAndUpdatePhysics(position, null, oldBlock, newBlock, flag);
+                world.markAndNotifyBlock(position, null, oldBlock, newBlock, flag);
             }
             world.capturedBlockStates.clear();
             return true;
@@ -738,7 +738,7 @@ public class CraftWorld implements World {
     }
 
     public double getTemperature(int x, int z) {
-        return this.world.getBiome(new BlockPos(x, 0, z)).getTemperature();
+        return this.world.getBiome(new BlockPos(x, 0, z)).getDefaultTemperature();
     }
 
     public double getHumidity(int x, int z) {
@@ -1007,8 +1007,8 @@ public class CraftWorld implements World {
         Validate.notNull(material, "Material cannot be null");
         Validate.isTrue(material.isBlock(), "Material must be a block");
 
-        EntityFallingBlock entity = new EntityFallingBlock(world, location.getX(), location.getY(), location.getZ(), CraftMagicNumbers.getBlock(material).fromLegacyData(data));
-        entity.ticksLived = 1;
+        EntityFallingBlock entity = new EntityFallingBlock(world, location.getX(), location.getY(), location.getZ(), CraftMagicNumbers.getBlock(material).getDefaultState());
+        entity.ticksExisted = 1;
 
         world.spawnEntity(entity, SpawnReason.CUSTOM);
         return (FallingBlock) entity.getBukkitEntity();
@@ -1264,8 +1264,8 @@ public class CraftWorld implements World {
                 net.minecraft.block.Block nmsBlock = CraftMagicNumbers.getBlock(block.getRelative(dir));
                 if (nmsBlock.getDefaultState().getMaterial().isSolid() || BlockRedstoneDiode.isDiode(nmsBlock.getDefaultState())) {
                     boolean taken = false;
-                    AxisAlignedBB bb = EntityHanging.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).opposite(), width, height);
-                    List<net.minecraft.entity.Entity> list = (List<net.minecraft.entity.Entity>) world.getEntities(null, bb);
+                    AxisAlignedBB bb = EntityHanging.calculateBoundingBox(null, pos, CraftBlock.blockFaceToNotch(dir).getOpposite(), width, height);
+                    List<net.minecraft.entity.Entity> list = (List<net.minecraft.entity.Entity>) world.getEntitiesWithinAABB(null, bb);
                     for (Iterator<net.minecraft.entity.Entity> it = list.iterator(); !taken && it.hasNext();) {
                         net.minecraft.entity.Entity e = it.next();
                         if (e instanceof EntityHanging) {
@@ -1543,7 +1543,7 @@ public class CraftWorld implements World {
         double y = loc.getY();
         double z = loc.getZ();
 
-        getHandle().a(null, x, y, z, CraftSound.getSoundEffect(CraftSound.getSound(sound)), SoundCategory.valueOf(category.name()), volume, pitch); // PAIL: rename
+        getHandle().playSound(null, x, y, z, CraftSound.getSoundEffect(CraftSound.getSound(sound)), SoundCategory.valueOf(category.name()), volume, pitch); // PAIL: rename
     }
 
     @Override

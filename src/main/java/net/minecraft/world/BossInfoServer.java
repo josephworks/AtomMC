@@ -92,7 +92,7 @@ public class BossInfoServer extends BossInfo
         }
     }
 
-    private void sendUpdate(SPacketUpdateBossInfo.Operation operationIn)
+    public void sendUpdate(SPacketUpdateBossInfo.Operation operationIn)
     {
         if (this.visible)
         {

@@ -106,7 +106,7 @@ public class EntityOcelot extends EntityTameable
         }
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return !this.isTamed() /*&& this.ticksExisted > 2400*/; // CraftBukkit
     }

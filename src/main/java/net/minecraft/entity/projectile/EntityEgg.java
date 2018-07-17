@@ -100,7 +100,6 @@ public class EntityEgg extends EntityThrowable
                         world.getWorld().addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG);
                     }
                 }
-                }
             }
 
             this.world.setEntityState(this, (byte)3);

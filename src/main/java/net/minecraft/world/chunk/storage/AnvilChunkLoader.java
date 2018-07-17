@@ -609,8 +609,11 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
     public static void spawnEntity(Entity entityIn, World worldIn)
     {
-        if (worldIn.spawnEntity(entityIn) && entityIn.isBeingRidden())
-        {
+        spawnEntity(entityIn, worldIn, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
+    }
+
+    public static void spawnEntity(Entity entityIn, World worldIn, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
+        if (worldIn.spawnEntity(entityIn, reason) && entityIn.isBeingRidden()) {
             for (Entity entity : entityIn.getPassengers())
             {
                 spawnEntity(entity, worldIn);

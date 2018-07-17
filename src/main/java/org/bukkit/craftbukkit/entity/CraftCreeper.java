@@ -43,12 +43,12 @@ public class CraftCreeper extends CraftMonster implements Creeper {
     public void setMaxFuseTicks(int ticks) {
         Preconditions.checkArgument(ticks >= 0, "ticks < 0");
 
-        getHandle().maxFuseTicks = ticks;
+        getHandle().fuseTime = ticks;
     }
 
     @Override
     public int getMaxFuseTicks() {
-        return getHandle().maxFuseTicks;
+        return getHandle().fuseTime;
     }
 
     @Override

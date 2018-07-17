@@ -49,6 +49,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import org.bukkit.inventory.Recipe;
 
 public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IShapedRecipe
 {
@@ -253,5 +254,15 @@ public class ShapedOreRecipe extends IForgeRegistryEntry.Impl<IRecipe> implement
 
         ItemStack result = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), context);
         return new ShapedOreRecipe(group.isEmpty() ? null : new ResourceLocation(group), result, primer);
+    }
+
+    @Override
+    public Recipe toBukkitRecipe() {
+        throw new UnsupportedOperationException("Cannot get bukkit-recipe from ShapedOreRecipe!");
+    }
+
+    @Override
+    public void setKey(ResourceLocation key) {
+
     }
 }

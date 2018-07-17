@@ -231,7 +231,7 @@ public abstract class Container
                     ItemStack oldCursor = inventoryplayer.getItemStack();
                     inventoryplayer.setItemStack(CraftItemStack.asNMSCopy(newcursor));
 
-                    InventoryDragEvent event = new InventoryDragEvent(view, (newcursor.getType() != org.bukkit.Material.AIR ? newcursor : null), CraftItemStack.asBukkitCopy(oldCursor), this.dragType == 1, eventmap);
+                    InventoryDragEvent event = new InventoryDragEvent(view, (newcursor.getType() != org.bukkit.Material.AIR ? newcursor : null), CraftItemStack.asBukkitCopy(oldCursor), this.dragMode == 1, eventmap);
                     player.world.getServer().getPluginManager().callEvent(event);
 
                     // Whether or not a change was made to the inventory that requires an update.

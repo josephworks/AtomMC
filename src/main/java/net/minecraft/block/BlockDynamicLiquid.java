@@ -164,7 +164,7 @@ public class BlockDynamicLiquid extends BlockLiquid
                 worldIn.getServer().getPluginManager().callEvent(event);
 
                 if (!event.isCancelled()) {
-                    this.tryFlowInto(worldIn, pos.offset(enumfacing1), worldIn.getBlockState(pos.offset(enumfacing1)), k);
+                    this.tryFlowInto(worldIn, pos.offset(enumfacing1), worldIn.getBlockState(pos.offset(enumfacing1)), k1);
                 }
             }
         }

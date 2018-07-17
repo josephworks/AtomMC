@@ -122,7 +122,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
         return 120;
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return false;
     }

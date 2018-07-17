@@ -22,7 +22,7 @@ public class EntitySmallFireball extends EntityFireball
     {
         super(worldIn, shooter, accelX, accelY, accelZ);
         this.setSize(0.3125F, 0.3125F);
-        if (this.shootingEntity != null && this.shootingEntity instanceof EntityLiving)
+        if (this.shootingEntity != null && this.shootingEntity instanceof EntityLiving) {
             // TODO: Maybe we should use net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent instead of this?{
             isIncendiary = this.world.getGameRules().getBoolean("mobGriefing");
         }

@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
@@ -202,6 +203,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             }
         }
         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
+        this.serverThread = primaryThread = new Thread(this, "Server thread"); // Moved from main
     }
 
     public abstract PropertyManager getPropertyManager();
@@ -265,6 +267,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     {
         this.convertMapIfNeeded(saveName);
         this.setUserMessage("menu.loadingLevel");
+        this.worlds = new WorldServer[3];
         /*
         // ISaveHandler isavehandler = this.anvilConverterForAnvilFile.getSaveLoader(saveName, true);
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
@@ -346,9 +349,21 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         worldsettings.setGeneratorOptions(generatorOptions);
         WorldServer world;
 
-        WorldServer overWorld = (WorldServer)(isDemo() ? new WorldServerDemo(this, new AnvilSaveHandler(server.getWorldContainer(), worldNameIn , true, this.dataFixer), worldinfo, 0, profiler).init() : new WorldServer(this, new AnvilSaveHandler(server.getWorldContainer(), worldNameIn , true, this.dataFixer), worldinfo, 0, profiler).init());
-
-        for (int dim : net.minecraftforge.common.DimensionManager.getStaticDimensionIDs())
+        // WorldServer overWorld = (WorldServer)(isDemo() ? new WorldServerDemo(this, new AnvilSaveHandler(server.getWorldContainer(), worldNameIn , true, this.dataFixer), worldinfo, 0, profiler).init() : new WorldServer(this, new AnvilSaveHandler(server.getWorldContainer(), worldNameIn , true, this.dataFixer), worldinfo, 0, profiler).init());
+        // TODO: Reimplement this!
+        Integer[] dimIds = net.minecraftforge.common.DimensionManager.getStaticDimensionIDs();
+        Arrays.sort(dimIds, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                // Zero-dimension must always be the first in array!
+                if (o1 == 0) {
+                    return -1;
+                } else {
+                    return Math.max(o1, o2);
+                }
+            }
+        });
+        for (int dim : dimIds)
         {
             // World validation
             if (dim != 0) {
@@ -419,7 +434,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     worlddata = new WorldInfo(worldsettings, name);
                 }
                 worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, org.bukkit.World.Environment.getEnvironment(dim), gen).b();
+                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, org.bukkit.World.Environment.getEnvironment(dim), gen).init();
             }
             this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
             world.addEventListener(new ServerWorldEventHandler(this, world));
@@ -433,7 +448,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(world));
         }
 
-        this.playerList.setPlayerManager(new WorldServer[]{ overWorld });
+        this.playerList.setPlayerManager(this.worlds);
         this.setDifficultyForAllWorlds(this.getDifficulty());
         this.initialWorldChunkLoad();
     }
@@ -554,7 +569,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     private boolean hasStopped = false;
     private final Object stopLock = new Object();
 
-    public void stopServer()
+    public void stopServer() throws MinecraftException
     {
         // CraftBukkit start - prevent double stopping on multiple threads
         synchronized(stopLock) {
@@ -1658,10 +1673,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     }
 
     @SideOnly(Side.SERVER)
-    public static void main(final OptionSet options) // CraftBukkit - replaces main(String[] astring)
+    public static void main(String[] args)
     {
+        OptionSet options = org.bukkit.craftbukkit.Main.main(args);
+        if (options == null)
+            return;
         Bootstrap.register();
-
         try
         {
             /* CraftBukkit start - Replace everything

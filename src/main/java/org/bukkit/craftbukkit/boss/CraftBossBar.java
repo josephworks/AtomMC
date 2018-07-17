@@ -2,7 +2,8 @@ package org.bukkit.craftbukkit.boss;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketUpdateBossInfo;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import org.bukkit.boss.BarColor;
@@ -60,20 +61,20 @@ public class CraftBossBar implements BossBar {
     }
 
     private void updateFlags() {
-        handle.a(hasFlag(BarFlag.DARKEN_SKY));
-        handle.b(hasFlag(BarFlag.PLAY_BOSS_MUSIC));
-        handle.c(hasFlag(BarFlag.CREATE_FOG));
+        handle.setDarkenSky(hasFlag(BarFlag.DARKEN_SKY));
+        handle.setPlayEndBossMusic(hasFlag(BarFlag.PLAY_BOSS_MUSIC));
+        handle.setCreateFog(hasFlag(BarFlag.CREATE_FOG));
     }
 
     @Override
     public String getTitle() {
-        return CraftChatMessage.fromComponent(handle.e());
+        return CraftChatMessage.fromComponent(handle.getName());
     }
 
     @Override
     public void setTitle(String title) {
-        handle.title = CraftChatMessage.fromString(title, true)[0];
-        handle.sendUpdate(PacketPlayOutBoss.Action.UPDATE_NAME);
+        handle.name = CraftChatMessage.fromString(title, true)[0];
+        handle.sendUpdate(SPacketUpdateBossInfo.Operation.UPDATE_NAME);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class CraftBossBar implements BossBar {
     public void setColor(BarColor color) {
         this.color = color;
         handle.color = convertColor(color);
-        handle.sendUpdate(PacketPlayOutBoss.Action.UPDATE_STYLE);
+        handle.sendUpdate(SPacketUpdateBossInfo.Operation.UPDATE_STYLE);
     }
 
     @Override
@@ -96,8 +97,8 @@ public class CraftBossBar implements BossBar {
     @Override
     public void setStyle(BarStyle style) {
         this.style = style;
-        handle.style = convertStyle(style);
-        handle.sendUpdate(PacketPlayOutBoss.Action.UPDATE_STYLE);
+        handle.overlay = convertStyle(style);
+        handle.sendUpdate(SPacketUpdateBossInfo.Operation.UPDATE_STYLE);
     }
 
     @Override
@@ -120,12 +121,12 @@ public class CraftBossBar implements BossBar {
     @Override
     public void setProgress(double progress) {
     	Preconditions.checkArgument(progress >= 0.0 && progress <= 1.0, "Progress must be between 0.0 and 1.0 (%s)", progress);
-        handle.setProgress((float) progress);
+        handle.setPercent((float) progress);
     }
 
     @Override
     public double getProgress() {
-        return handle.getProgress();
+        return handle.getPercent();
     }
 
     @Override
@@ -141,7 +142,7 @@ public class CraftBossBar implements BossBar {
     @Override
     public List<Player> getPlayers() {
         ImmutableList.Builder<Player> players = ImmutableList.builder();
-        for (EntityPlayer p : handle.getPlayers()) {
+        for (EntityPlayerMP p : handle.getPlayers()) {
             players.add(p.getBukkitEntity());
         }
         return players.build();

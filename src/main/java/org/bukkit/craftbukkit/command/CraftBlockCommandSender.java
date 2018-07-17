@@ -18,7 +18,7 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
     }
 
     public Block getBlock() {
-        return block.getWorld().getWorld().getBlockAt(block.getPosition().getX(), block.getPosition().getY(), block.getPosition().getZ());
+        return block.getEntityWorld().getWorld().getBlockAt(block.getPosition().getX(), block.getPosition().getY(), block.getPosition().getZ());
     }
 
     public void sendMessage(String message) {

@@ -6,10 +6,10 @@ import net.minecraft.util.text.ITextComponent;
 public abstract class BossInfo
 {
     private final UUID uniqueId;
-    protected ITextComponent name;
-    protected float percent;
-    protected Color color;
-    protected Overlay overlay;
+    public ITextComponent name;
+    public float percent;
+    public Color color;
+    public Overlay overlay;
     protected boolean darkenSky;
     protected boolean playEndBossMusic;
     protected boolean createFog;

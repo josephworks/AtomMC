@@ -179,7 +179,7 @@ public class EntityChicken extends EntityAnimal
         compound.setInteger("EggLayTime", this.timeUntilNextEgg);
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return this.isChickenJockey() && !this.isBeingRidden();
     }

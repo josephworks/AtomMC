@@ -322,7 +322,7 @@ public class Bootstrap
                 }
 
                 EntitySmallFireball fireball = new EntitySmallFireball(world, d0, d1, d2, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
-                fireball.projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((TileEntityDispenser) source.getTileEntity());
+                fireball.projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((TileEntityDispenser) source.getBlockTileEntity());
 
 //                stack.shrink(1);
                 return stack;

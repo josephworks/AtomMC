@@ -2895,7 +2895,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 if (blockposition != null) {
                     exit = new Location(exitWorld.getWorld(), blockposition.getX(), blockposition.getY(), blockposition.getZ());
                 } else {
-                    exit = minecraftserver.getPlayerList().transferEntityToWorld(enter, minecraftserver.getWorld(dimensionIn));
+                    exit = minecraftserver.getPlayerList().calculateTarget(enter, minecraftserver.getWorld(dimensionIn));
                 }
             }
             else {
@@ -2979,7 +2979,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             // worldserver.updateEntityWithOptionalForce(this, false); // Handled in repositionEntity
             // CraftBukkit start - Ensure chunks are loaded in case TravelAgent is not used which would initially cause chunks to load during find/create
             // minecraftserver.getPlayerList().changeWorld(this, j, worldserver, worldserver1);
-            worldserver1.getMinecraftServer().getPlayerList().transferEntityToWorld(this, exit, portal);
+            worldserver1.getMinecraftServer().getPlayerList().repositionEntity(this, exit, portal);
             this.world.profiler.endStartSection("reloading");
             Entity entity = EntityList.newEntity(this.getClass(), worldserver1);
 

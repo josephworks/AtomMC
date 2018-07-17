@@ -66,7 +66,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
         Validate.notNull(sender, "Sender cannot be null");
         Validate.notNull(args, "Arguments cannot be null");
         Validate.notNull(alias, "Alias cannot be null");
-        return (List<String>) vanillaCommand.getTabCompletions(MinecraftServer.getServer(), getListener(sender), args, (location) == null ? null : new BlockPos(location.getX(), location.getY(), location.getZ()));
+        return (List<String>) vanillaCommand.getTabCompletions(MinecraftServer.getServerCB(), getListener(sender), args, (location) == null ? null : new BlockPos(location.getX(), location.getY(), location.getZ()));
     }
 
     public static CommandSender lastSender = null; // Nasty :(
@@ -77,18 +77,18 @@ public final class VanillaCommandWrapper extends BukkitCommand {
         int j = 0;
         // Some commands use the worldserver variable but we leave it full of null values,
         // so we must temporarily populate it with the world of the commandsender
-        WorldServer[] prev = MinecraftServer.getServer().worldServer;
-        MinecraftServer server = MinecraftServer.getServer();
-        server.worldServer = new WorldServer[server.worlds.size()];
-        server.worldServer[0] = (WorldServer) icommandlistener.getWorld();
+        WorldServer[] prev = MinecraftServer.getServerCB().worlds;
+        MinecraftServer server = MinecraftServer.getServerCB();
+        server.worlds = new WorldServer[server.worldServerList.size()];
+        server.worlds[0] = (WorldServer) icommandlistener.getEntityWorld();
         int bpos = 0;
-        for (int pos = 1; pos < server.worldServer.length; pos++) {
-            WorldServer world = server.worlds.get(bpos++);
-            if (server.worldServer[0] == world) {
+        for (int pos = 1; pos < server.worlds.length; pos++) {
+            WorldServer world = server.worldServerList.get(bpos++);
+            if (server.worlds[0] == world) {
                 pos--;
                 continue;
             }
-            server.worldServer[pos] = world;
+            server.worlds[pos] = world;
         }
 
         try {
@@ -150,7 +150,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
             }
         } finally {
             icommandlistener.setCommandStat(CommandResultStats.Type.SUCCESS_COUNT, j);
-            MinecraftServer.getServer().worldServer = prev;
+            MinecraftServer.getServerCB().worlds = prev;
         }
         return j;
     }
@@ -166,7 +166,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
             return ((EntityMinecartCommandBlock) ((CraftMinecartCommand) sender).getHandle()).getCommandBlockLogic();
         }
         if (sender instanceof RemoteConsoleCommandSender) {
-            return ((DedicatedServer)MinecraftServer.getServer()).remoteControlCommandListener;
+            return ((DedicatedServer)MinecraftServer.getServerCB()).rconConsoleSource;
         }
         if (sender instanceof ConsoleCommandSender) {
             return ((CraftServer) sender.getServer()).getServer();

@@ -115,7 +115,7 @@ public class Teleporter implements net.minecraftforge.common.util.ITeleporter
             return false;
         }
 
-        Location exit = new Location(this.world.getWorld(), found.getX(), found.getY(), found.getZ(), rotationYaw entityIn.rotationPitch);
+        Location exit = new Location(this.world.getWorld(), found.getX(), found.getY(), found.getZ(), rotationYaw, entityIn.rotationPitch);
         Vector velocity = entityIn.getBukkitEntity().getVelocity();
         this.adjustExit(entityIn, exit, velocity);
         entityIn.setLocationAndAngles(exit.getX(), exit.getY(), exit.getZ(), exit.getYaw(), exit.getPitch());
@@ -189,7 +189,7 @@ public class Teleporter implements net.minecraftforge.common.util.ITeleporter
         BlockPos object = new BlockPos(position.getBlockX(), position.getBlockY(), position.getBlockZ());
         float f33 = position.getYaw();
 
-        if (this.world.getWorld().getEnvironment() == org.bukkit.World.Environment.THE_END || entityIn.getBukkitEntity().getWorld().getEnvironment() == org.bukkit.World.Environment.THE_END || entity.getPortalOffset() == null) {
+        if (this.world.getWorld().getEnvironment() == org.bukkit.World.Environment.THE_END || entityIn.getBukkitEntity().getWorld().getEnvironment() == org.bukkit.World.Environment.THE_END || entityIn.getLastPortalVec() == null) {
             // entity.setPositionRotation((double) i, (double) j, (double) k, entity.yaw, 0.0F);
             // entity.motX = entity.motY = entity.motZ = 0.0D;
             position.setPitch(0.0F);

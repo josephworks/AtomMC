@@ -20,7 +20,7 @@ public class Main {
     public static boolean useJline = true;
     public static boolean useConsole = true;
 
-    public static void main(String[] args) {
+    public static OptionSet main(String[] args) {
         // Todo: Installation script
         OptionParser parser = new OptionParser() {
             {
@@ -135,14 +135,12 @@ public class Main {
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (options.has("v")) {
-            System.out.println(CraftServer.class.getPackage().getImplementationVersion());
         } else {
             // Do you love Java using + and ! as string based identifiers? I sure do!
             String path = new File(".").getAbsolutePath();
             if (path.contains("!") || path.contains("+")) {
                 System.err.println("Cannot run server in a directory with ! or + in the pathname. Please rename the affected folders and try again.");
-                return;
+                return null;
             }
 
             try {
@@ -183,11 +181,13 @@ public class Main {
                 }
 
                 System.out.println("Loading libraries, please wait...");
-                MinecraftServer.main(options);
+                // MinecraftServer.main(options);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+            return options;
         }
+        return null;
     }
 
     private static List<String> asList(String... params) {

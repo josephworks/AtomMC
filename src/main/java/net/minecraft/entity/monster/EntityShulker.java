@@ -420,7 +420,7 @@ public class EntityShulker extends EntityGolem implements IMob
                     {
                         if (this.world.isBlockNormalCube(blockpos1.offset(enumfacing), false))
                         {
-                            EntityTeleportEvent teleport = new EntityTeleportEvent(this.getBukkitEntity(), this.getBukkitEntity().getLocation(), new Location(this.world.getWorld(), blockposition1.getX(), blockposition1.getY(), blockposition1.getZ()));
+                            EntityTeleportEvent teleport = new EntityTeleportEvent(this.getBukkitEntity(), this.getBukkitEntity().getLocation(), new Location(this.world.getWorld(), blockpos1.getX(), blockpos1.getY(), blockpos1.getZ()));
                             this.world.getServer().getPluginManager().callEvent(teleport);
                             if (!teleport.isCancelled()) {
                                 Location to = teleport.getTo();

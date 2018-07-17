@@ -124,10 +124,10 @@ public class ItemWrittenBook extends Item
                         // CraftBukkit start
                         // Some commands use the worldserver variable but we leave it full of null values,
                         // so we must temporarily populate it with the world of the commandsender
-                        WorldServer[] prev = MinecraftServer.getServer().worldServer;
-                        MinecraftServer server = MinecraftServer.getServer();
+                        WorldServer[] prev = MinecraftServer.getServerCB().worlds;
+                        MinecraftServer server = MinecraftServer.getServerCB();
                         server.worlds = new WorldServer[server.worldServerList.size()];
-                        server.worlds[0] = (WorldServer) player.getWorld();
+                        server.worlds[0] = (WorldServer) player.getEntityWorld();
                         int bpos = 0;
                         for (int pos = 1; pos < server.worlds.length; pos++) {
                             WorldServer world = server.worldServerList.get(bpos++);
@@ -149,7 +149,7 @@ public class ItemWrittenBook extends Item
                             itextcomponent = new TextComponentString(s);
                         }
                         finally {
-                            MinecraftServer.getServer().worldServer = prev;
+                            MinecraftServer.getServerCB().worlds = prev;
                         }
 
                         nbttaglist.set(i, new NBTTagString(ITextComponent.Serializer.componentToJson(itextcomponent)));

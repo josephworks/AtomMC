@@ -62,7 +62,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     private static final Pattern RESOURCE_PACK_SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     public final List<PendingCommand> pendingCommandList = Collections.<PendingCommand>synchronizedList(Lists.newArrayList());
     private RConThreadQuery rconQueryThread;
-    private final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
+    public final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
     private RConThreadMain rconThread;
     public PropertyManager settings;
     private ServerEula eula;

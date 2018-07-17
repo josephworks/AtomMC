@@ -151,6 +151,26 @@ public class WorldServer extends World implements IThreadListener
         net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, mcServer);
     }
 
+    public WorldServer(MinecraftServer server, ISaveHandler saveHandlerIn, WorldInfo info, int dimensionId, Profiler profilerIn)
+    {
+        super(saveHandlerIn, info, net.minecraftforge.common.DimensionManager.createProviderFor(dimensionId), profilerIn, false);
+        this.mcServer = server;
+        this.entityTracker = new EntityTracker(this);
+        this.playerChunkMap = new PlayerChunkMap(this);
+        this.dimension = dimensionId;
+        // Guarantee the dimension ID was not reset by the provider
+        int providerDim = this.provider.getDimension();
+        this.provider.setWorld(this);
+        this.provider.setDimension(providerDim);
+        this.chunkProvider = this.createChunkProvider();
+        perWorldStorage = new MapStorage(new net.minecraftforge.common.WorldSpecificSaveHandler(this, saveHandlerIn));
+        this.worldTeleporter = new Teleporter(this);
+        this.calculateInitialSkylight();
+        this.calculateInitialWeather();
+        this.getWorldBorder().setSize(server.getMaxWorldSize());
+        net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, mcServer);
+    }
+
     public World init()
     {
         this.mapStorage = new MapStorage(this.saveHandler);

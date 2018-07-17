@@ -34,7 +34,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 public class ContainerEnchantment extends Container
 {
     public IInventory tableInventory;
-    private final World worldPointer;
+    private World worldPointer;
     private final BlockPos position;
     private final Random rand;
     public int xpSeed;
@@ -241,7 +241,7 @@ public class ContainerEnchantment extends Container
                         offers[j] = (enchantment != null) ? new EnchantmentOffer(enchantment, this.worldClue[j], this.enchantLevels[j]) : null;
                     }
 
-                    PrepareItemEnchantEvent event = new PrepareItemEnchantEvent(player, this.getBukkitView(), this.worldPointer.getWorld().getBlockAt(position.getX(), position.getY(), position.getZ()), item, offers, worldClue);
+                    PrepareItemEnchantEvent event = new PrepareItemEnchantEvent(player, this.getBukkitView(), this.worldPointer.getWorld().getBlockAt(position.getX(), position.getY(), position.getZ()), item, offers, (int) power);
                     event.setCancelled(!itemstack.isItemEnchantable());
                     this.worldPointer.getServer().getPluginManager().callEvent(event);
 
@@ -413,7 +413,7 @@ public class ContainerEnchantment extends Container
         super.onContainerClosed(playerIn);
         // CraftBukkit Start - If an enchantable was opened from a null location, set the world to the player's world, preventing a crash
         if (this.worldPointer == null) {
-            this.worldPointer = playerIn.getWorld();
+            this.worldPointer = playerIn.getEntityWorld();
         }
         // CraftBukkit end
         if (!this.worldPointer.isRemote)

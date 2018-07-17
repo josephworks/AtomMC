@@ -104,12 +104,12 @@ public class CraftCreatureSpawner extends CraftBlockEntityState<TileEntityMobSpa
 
     @Override
     public int getRequiredPlayerRange() {
-        return this.getSnapshot().getSpawnerBaseLogic().requiredPlayerRange;
+        return this.getSnapshot().getSpawnerBaseLogic().activatingRangeFromPlayer;
     }
 
     @Override
     public void setRequiredPlayerRange(int requiredPlayerRange) {
-        this.getSnapshot().getSpawnerBaseLogic().requiredPlayerRange = requiredPlayerRange;
+        this.getSnapshot().getSpawnerBaseLogic().activatingRangeFromPlayer = requiredPlayerRange;
     }
 
     @Override

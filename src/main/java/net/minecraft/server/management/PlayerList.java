@@ -293,23 +293,23 @@ public abstract class PlayerList
         {
             public void onSizeChanged(WorldBorder border, double newSize)
             {
-                PlayerList.this.sendPacketToAllPlayers(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_SIZE), border.world);
+                PlayerList.this.sendAll(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_SIZE), border.world);
             }
             public void onTransitionStarted(WorldBorder border, double oldSize, double newSize, long time)
             {
-                PlayerList.this.sendPacketToAllPlayers(new SPacketWorldBorder(border, SPacketWorldBorder.Action.LERP_SIZE), border.world);
+                PlayerList.this.sendAll(new SPacketWorldBorder(border, SPacketWorldBorder.Action.LERP_SIZE), border.world);
             }
             public void onCenterChanged(WorldBorder border, double x, double z)
             {
-                PlayerList.this.sendPacketToAllPlayers(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_CENTER), border.world);
+                PlayerList.this.sendAll(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_CENTER), border.world);
             }
             public void onWarningTimeChanged(WorldBorder border, int newTime)
             {
-                PlayerList.this.sendPacketToAllPlayers(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_WARNING_TIME), border.world);
+                PlayerList.this.sendAll(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_WARNING_TIME), border.world);
             }
             public void onWarningDistanceChanged(WorldBorder border, int newDistance)
             {
-                PlayerList.this.sendPacketToAllPlayers(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_WARNING_BLOCKS), border.world);
+                PlayerList.this.sendAll(new SPacketWorldBorder(border, SPacketWorldBorder.Action.SET_WARNING_BLOCKS), border.world);
             }
             public void onDamageAmountChanged(WorldBorder border, double newAmount)
             {
@@ -1015,10 +1015,11 @@ public abstract class PlayerList
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, i, dimensionIn);
     }
 
-    // TODO: Implement CraftBukkit's calculateTarget somewhere here
     public void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn)
     {
-        transferEntityToWorld(entityIn, lastDimension, oldWorldIn, toWorldIn, toWorldIn.getDefaultTeleporter());
+        // transferEntityToWorld(entityIn, lastDimension, oldWorldIn, toWorldIn, toWorldIn.getDefaultTeleporter());
+        Location exit = this.calculateTarget(entityIn.getBukkitEntity().getLocation(), toWorldIn);
+        this.repositionEntity(entityIn, exit, true);
     }
 
     // TODO: Remove (1.13)
@@ -1103,6 +1104,169 @@ public abstract class PlayerList
         }
 
         entityIn.setWorld(toWorldIn);
+    }
+
+    // Copy of original transferEntityToWorld(Entity, int, WorldServer, WorldServer) method with only location calculation logic
+    public Location calculateTarget(Location enter, World target) {
+        WorldServer worldserver = ((CraftWorld) enter.getWorld()).getHandle();
+        WorldServer worldserver1 = ((CraftWorld) target.getWorld()).getHandle();
+        int i = worldserver.dimension;
+
+        double y = enter.getY();
+        float yaw = enter.getYaw();
+        float pitch = enter.getPitch();
+        double d0 = enter.getX();
+        double d1 = enter.getZ();
+        double d2 = 8.0D;
+        /*
+        double d0 = entity.locX;
+        double d1 = entity.locZ;
+        double d2 = 8.0D;
+        float f = entity.yaw;
+        */
+
+        worldserver.profiler.startSection("moving");
+        if (worldserver1.dimension == -1) {
+            d0 = MathHelper.clamp(d0 / d2, worldserver1.getWorldBorder().minX()+ 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
+            d1 = MathHelper.clamp(d1 / d2, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
+            /*
+            entity.setPositionRotation(d0, entity.locY, d1, entity.yaw, entity.pitch);
+            if (entity.isAlive()) {
+                worldserver.entityJoinedWorld(entity, false);
+            }
+            */
+        } else if (worldserver1.dimension == 0) {
+            d0 = MathHelper.clamp(d0 * d2, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
+            d1 = MathHelper.clamp(d1 * d2, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
+            /*
+            entity.setPositionRotation(d0, entity.locY, d1, entity.yaw, entity.pitch);
+            if (entity.isAlive()) {
+                worldserver.entityJoinedWorld(entity, false);
+            }
+            */
+        } else {
+            BlockPos blockposition;
+
+            if (i == 1) {
+                // use default NORMAL world spawn instead of target
+                worldserver1 = this.mcServer.worldServerList.get(0);
+                blockposition = worldserver1.getSpawnPoint();
+            } else {
+                blockposition = worldserver1.getSpawnCoordinate();
+            }
+
+            d0 = (double) blockposition.getX();
+            y = (double) blockposition.getY();
+            d1 = (double) blockposition.getZ();
+            /*
+            entity.setPositionRotation(d0, entity.locY, d1, 90.0F, 0.0F);
+            if (entity.isAlive()) {
+                worldserver.entityJoinedWorld(entity, false);
+            }
+            */
+        }
+
+        worldserver.profiler.endSection();
+        if (i != 1) {
+            worldserver.profiler.startSection("placing");
+            d0 = (double) MathHelper.clamp((int) d0, -29999872, 29999872);
+            d1 = (double) MathHelper.clamp((int) d1, -29999872, 29999872);
+            /*
+            if (entity.isAlive()) {
+                entity.setPositionRotation(d0, entity.locY, d1, entity.yaw, entity.pitch);
+                worldserver1.getTravelAgent().a(entity, f);
+                worldserver1.addEntity(entity);
+                worldserver1.entityJoinedWorld(entity, false);
+            }
+            */
+
+            worldserver.profiler.endSection();
+        }
+
+        // entity.spawnIn(worldserver1);
+        return new Location(worldserver1.getWorld(), d0, y, d1, yaw, pitch);
+    }
+
+    // copy of original transferEntityToWorld(Entity, int, WorldServer, WorldServer) method with only entity repositioning logic
+    public void repositionEntity(Entity entity, Location exit, boolean portal) {
+        WorldServer worldserver = (WorldServer) entity.world;
+        WorldServer worldserver1 = ((CraftWorld) exit.getWorld()).getHandle();
+        int i = worldserver.dimension;
+
+        /*
+        double d0 = entity.locX;
+        double d1 = entity.locZ;
+        double d2 = 8.0D;
+        float f = entity.yaw;
+        */
+
+        worldserver.profiler.startSection("moving");
+        entity.setLocationAndAngles(exit.getX(), exit.getY(), exit.getZ(), exit.getYaw(), exit.getPitch());
+        if (entity.isEntityAlive()) {
+            worldserver.updateEntityWithOptionalForce(entity, false);
+        }
+        /*
+        if (entity.dimension == -1) {
+            d0 = MathHelper.a(d0 / 8.0D, worldserver1.getWorldBorder().b() + 16.0D, worldserver1.getWorldBorder().d() - 16.0D);
+            d1 = MathHelper.a(d1 / 8.0D, worldserver1.getWorldBorder().c() + 16.0D, worldserver1.getWorldBorder().e() - 16.0D);
+            entity.setPositionRotation(d0, entity.locY, d1, entity.yaw, entity.pitch);
+            if (entity.isAlive()) {
+                worldserver.entityJoinedWorld(entity, false);
+            }
+        } else if (entity.dimension == 0) {
+            d0 = MathHelper.a(d0 * 8.0D, worldserver1.getWorldBorder().b() + 16.0D, worldserver1.getWorldBorder().d() - 16.0D);
+            d1 = MathHelper.a(d1 * 8.0D, worldserver1.getWorldBorder().c() + 16.0D, worldserver1.getWorldBorder().e() - 16.0D);
+            entity.setPositionRotation(d0, entity.locY, d1, entity.yaw, entity.pitch);
+            if (entity.isAlive()) {
+                worldserver.entityJoinedWorld(entity, false);
+            }
+        } else {
+            BlockPosition blockposition;
+
+            if (i == 1) {
+                // use default NORMAL world spawn instead of target
+                worldserver1 = this.server.worlds.get(0);
+                blockposition = worldserver1.getSpawn();
+            } else {
+                blockposition = worldserver1.getDimensionSpawn();
+            }
+
+            d0 = (double) blockposition.getX();
+            entity.locY = (double) blockposition.getY();
+            d1 = (double) blockposition.getZ();
+            entity.setPositionRotation(d0, entity.locY, d1, 90.0F, 0.0F);
+            if (entity.isAlive()) {
+                worldserver.entityJoinedWorld(entity, false);
+            }
+        }
+        */
+
+        worldserver.profiler.endSection();
+        if (i != 1) {
+            worldserver.profiler.startSection("placing");
+            /*
+            d0 = (double) MathHelper.clamp((int) d0, -29999872, 29999872);
+            d1 = (double) MathHelper.clamp((int) d1, -29999872, 29999872);
+            */
+            if (entity.isEntityAlive()) {
+                // entity.setPositionRotation(d0, entity.locY, d1, entity.yaw, entity.pitch);
+                // worldserver1.getTravelAgent().a(entity, f);
+                if (portal) {
+                    Vector velocity = entity.getBukkitEntity().getVelocity();
+                    worldserver1.getDefaultTeleporter().adjustExit(entity, exit, velocity);
+                    entity.setLocationAndAngles(exit.getX(), exit.getY(), exit.getZ(), exit.getYaw(), exit.getPitch());
+                    if (entity.motionX != velocity.getX() || entity.motionY != velocity.getY() || entity.motionZ != velocity.getZ()) {
+                        entity.getBukkitEntity().setVelocity(velocity);
+                    }
+                }
+                // worldserver1.addEntity(entity);
+                worldserver1.updateEntityWithOptionalForce(entity, false);
+            }
+
+            worldserver.profiler.endSection();
+        }
+
+        entity.setWorld(worldserver1);
     }
 
     public void onTick()

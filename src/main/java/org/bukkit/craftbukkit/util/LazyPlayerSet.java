@@ -24,7 +24,7 @@ public class LazyPlayerSet extends LazyHashSet<Player> {
         }
         List<EntityPlayerMP> players = server.getPlayerList().getPlayers();
         HashSet<Player> reference = new HashSet<Player>(players.size());
-        for (EntityPlayer player : players) {
+        for (EntityPlayerMP player : players) {
             reference.add(player.getBukkitEntity());
         }
         return reference;

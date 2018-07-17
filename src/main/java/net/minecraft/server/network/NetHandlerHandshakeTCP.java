@@ -38,7 +38,7 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
                 // CraftBukkit start - Connection throttle
                 try {
                     long currentTime = System.currentTimeMillis();
-                    long connectionThrottle = MinecraftServer.getServer().server.getConnectionThrottle();
+                    long connectionThrottle = MinecraftServer.getServerCB().server.getConnectionThrottle();
                     InetAddress address = ((java.net.InetSocketAddress) this.networkManager.getRemoteAddress()).getAddress();
 
                     synchronized (throttleTracker) {

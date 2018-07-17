@@ -76,6 +76,7 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraft.world.storage.loot.LootTableManager;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.Bukkit;
@@ -127,7 +128,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     protected final ISaveHandler saveHandler;
     public WorldInfo worldInfo;
     protected boolean findingSpawnPoint;
-    protected MapStorage mapStorage;
+    public MapStorage mapStorage;
     public VillageCollection villageCollection;
     protected LootTableManager lootTable;
     protected AdvancementManager advancementManager;
@@ -237,6 +238,25 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         });
         this.getServer().addWorld(this.world);
         // CraftBukkit end
+    }
+
+    protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client)
+    {
+        this.world = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).getWorld() : null;
+        this.eventListeners = Lists.newArrayList(this.pathListener);
+        this.calendar = Calendar.getInstance();
+        this.worldScoreboard = new Scoreboard();
+        this.spawnHostileMobs = true;
+        this.spawnPeacefulMobs = true;
+        this.lightUpdateBlockList = new int[32768];
+        this.saveHandler = saveHandlerIn;
+        this.profiler = profilerIn;
+        this.worldInfo = info;
+        this.provider = providerIn;
+        this.isRemote = client;
+        this.worldBorder = providerIn.createWorldBorder();
+        perWorldStorage = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).mapStorage : new MapStorage(null);
+        this.mapStorage = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).mapStorage : new MapStorage(null);
     }
 
     public World init()

@@ -51,7 +51,7 @@ public class AdvancementManager
         }
     }).registerTypeAdapter(AdvancementRewards.class, new AdvancementRewards.Deserializer()).registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new EnumTypeAdapterFactory()).create();
     public static final AdvancementList ADVANCEMENT_LIST = new AdvancementList();
-    private final File advancementsDir;
+    public final File advancementsDir;
     private boolean hasErrored;
 
     public AdvancementManager(@Nullable File advancementsDirIn)

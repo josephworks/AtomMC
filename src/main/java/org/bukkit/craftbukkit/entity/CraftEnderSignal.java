@@ -30,32 +30,32 @@ public class CraftEnderSignal extends CraftEntity implements EnderSignal {
 
     @Override
     public Location getTargetLocation() {
-        return new Location(getWorld(), getHandle().a, getHandle().b, getHandle().c, getHandle().rotationYaw, getHandle().rotationPitch); // PAIL rename targetX, targetY, targetZ
+        return new Location(getWorld(), getHandle().targetX, getHandle().targetY, getHandle().targetZ, getHandle().rotationYaw, getHandle().rotationPitch);
     }
 
     @Override
     public void setTargetLocation(Location location) {
         Preconditions.checkArgument(getWorld().equals(location.getWorld()), "Cannot target EnderSignal across worlds");
-        getHandle().a(new BlockPos(location.getX(), location.getY(), location.getZ()));
+        getHandle().moveTowards(new BlockPos(location.getX(), location.getY(), location.getZ()));
     }
 
     @Override
     public boolean getDropItem() {
-        return getHandle().e; // PAIL rename getDropItem
+        return getHandle().shatterOrDrop;
     }
 
     @Override
     public void setDropItem(boolean shouldDropItem) {
-        getHandle().e = shouldDropItem; // PAIL rename getDropItem
+        getHandle().shatterOrDrop = shouldDropItem;
     }
 
     @Override
     public int getDespawnTimer() {
-        return getHandle().d; // PAIL rename despawnTimer
+        return getHandle().despawnTimer;
     }
 
     @Override
     public void setDespawnTimer(int time) {
-        getHandle().d = time; // PAIL rename despawnTimer
+        getHandle().despawnTimer = time;
     }
 }

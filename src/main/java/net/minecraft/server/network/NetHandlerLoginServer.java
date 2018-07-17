@@ -124,7 +124,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
 
         // String s = this.server.getPlayerList().allowUserToConnect(this.networkManager.getRemoteAddress(), this.loginGameProfile);
         // CraftBukkit start - fire PlayerLoginEvent
-        EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.loginGameProfile, hostname);
+        EntityPlayerMP s = this.server.getPlayerList().allowUserToConnect(this, this.loginGameProfile, hostname);
 
         if (s == null)
         {

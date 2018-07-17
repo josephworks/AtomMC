@@ -153,7 +153,7 @@ public class EntityZombieVillager extends EntityZombie
         }
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return !this.isConverting();
     }

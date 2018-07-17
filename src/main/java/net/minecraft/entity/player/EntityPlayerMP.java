@@ -547,7 +547,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
             }
 
             if (this.oldLevel != this.experienceLevel) {
-                CraftEventFactory.callPlayerLevelChangeEvent(this.world.getServer().getPlayer((EntityPlayer) this), this.oldLevel, this.experienceLevel);
+                CraftEventFactory.callPlayerLevelChangeEvent(this.world.getServer().getPlayer(this), this.oldLevel, this.experienceLevel);
                 this.oldLevel = this.experienceLevel;
             }
             // CraftBukkit end

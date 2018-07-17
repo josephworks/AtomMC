@@ -232,7 +232,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
     }
 
     public static int executeCommand(ICommandSender sender, org.bukkit.command.CommandSender bSender, String command) throws CommandException {
-        org.bukkit.command.SimpleCommandMap commandMap = sender.getWorld().getServer().getCommandMap();
+        org.bukkit.command.SimpleCommandMap commandMap = sender.getEntityWorld().getServer().getCommandMap();
         Joiner joiner = Joiner.on(" ");
         if (command.startsWith("/")) {
             command = command.substring(1);
@@ -261,7 +261,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
 
         // Handle vanilla commands;
         org.bukkit.command.Command commandBlockCommand = commandMap.getCommand(args[0]);
-        if (sender.getWorld().getServer().getCommandBlockOverride(args[0])) {
+        if (sender.getEntityWorld().getServer().getCommandBlockOverride(args[0])) {
             commandBlockCommand = commandMap.getCommand("minecraft:" + args[0]);
         }
         if (commandBlockCommand instanceof VanillaCommandWrapper) {
@@ -271,7 +271,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
             }
             String as[] = command.split(" ");
             as = VanillaCommandWrapper.dropFirstArgument(as);
-            if (!sender.getWorld().getServer().getPermissionOverride(sender) && !((VanillaCommandWrapper) commandBlockCommand).testPermission(bSender)) {
+            if (!sender.getEntityWorld().getServer().getPermissionOverride(sender) && !((VanillaCommandWrapper) commandBlockCommand).testPermission(bSender)) {
                 return 0;
             }
             return ((VanillaCommandWrapper) commandBlockCommand).dispatchVanillaCommand(bSender, sender, as);
@@ -285,10 +285,10 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
         commands.add(args);
 
         // Find positions of command block syntax, if any
-        WorldServer[] prev = MinecraftServer.getServer().worldServer;
-        MinecraftServer server = MinecraftServer.getServer();
+        WorldServer[] prev = MinecraftServer.getServerCB().worlds;
+        MinecraftServer server = MinecraftServer.getServerCB();
         server.worlds = new WorldServer[server.worldServerList.size()];
-        server.worlds[0] = (WorldServer) sender.getWorld();
+        server.worlds[0] = (WorldServer) sender.getEntityWorld();
         int bpos = 0;
         for (int pos = 1; pos < server.worlds.length; pos++) {
             WorldServer world = server.worldServerList.get(bpos++);
@@ -312,7 +312,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
                 }
             }
         } finally {
-            MinecraftServer.getServer().worldServer = prev;
+            MinecraftServer.getServerCB().worlds = prev;
         }
 
         int completed = 0;
@@ -325,12 +325,12 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
                 }
             } catch (Throwable exception) {
                 if (sender.getCommandSenderEntity() instanceof EntityMinecartCommandBlock) {
-                    MinecraftServer.getServer().server.getLogger().log(Level.WARNING, String.format("MinecartCommandBlock at (%d,%d,%d) failed to handle command", sender.getPosition().getX(), sender.getPosition().getY(), sender.getPosition().getZ()), exception);
+                    MinecraftServer.getServerCB().server.getLogger().log(Level.WARNING, String.format("MinecartCommandBlock at (%d,%d,%d) failed to handle command", sender.getPosition().getX(), sender.getPosition().getY(), sender.getPosition().getZ()), exception);
                 } else if (sender instanceof CommandBlockBaseLogic) {
                     CommandBlockBaseLogic listener = (CommandBlockBaseLogic) sender;
-                    MinecraftServer.getServer().server.getLogger().log(Level.WARNING, String.format("CommandBlock at (%d,%d,%d) failed to handle command", listener.getPosition().getX(), listener.getPosition().getY(), listener.getPosition().getZ()), exception);
+                    MinecraftServer.getServerCB().server.getLogger().log(Level.WARNING, String.format("CommandBlock at (%d,%d,%d) failed to handle command", listener.getPosition().getX(), listener.getPosition().getY(), listener.getPosition().getZ()), exception);
                 } else {
-                    MinecraftServer.getServer().server.getLogger().log(Level.WARNING, String.format("Unknown CommandBlock failed to handle command"), exception);
+                    MinecraftServer.getServerCB().server.getLogger().log(Level.WARNING, String.format("Unknown CommandBlock failed to handle command"), exception);
                 }
             }
         }
@@ -344,7 +344,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
 
         if (players != null) {
             for (EntityPlayer player : players) {
-                if (player.world != sender.getWorld()) {
+                if (player.world != sender.getEntityWorld()) {
                     continue;
                 }
                 String[] command = args.clone();

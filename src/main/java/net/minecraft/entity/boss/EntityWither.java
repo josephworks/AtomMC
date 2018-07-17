@@ -270,7 +270,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                 }
                 // this.world.playBroadcastSound(1023, new BlockPos(this), 0);
                 int viewDistance = ((WorldServer) this.world).getServer().getViewDistance() * 16;
-                for (EntityPlayerMP player : (List<EntityPlayerMP>) MinecraftServer.getServer().getPlayerList().players) {
+                for (EntityPlayerMP player : (List<EntityPlayerMP>) MinecraftServer.getServerCB().getPlayerList().getPlayers()) {
                     double deltaX = this.posX - player.posX;
                     double deltaZ = this.posZ - player.posZ;
                     double distanceSquared = deltaX * deltaX + deltaZ * deltaZ;

@@ -32,7 +32,7 @@ public abstract class EntityWaterMob extends EntityLiving implements IAnimals
         return 120;
     }
 
-    protected boolean canDespawn()
+    public boolean canDespawn()
     {
         return true;
     }

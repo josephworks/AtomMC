@@ -1107,7 +1107,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
             }
 
             if (data.hasKey("newExp")) {
-                EntityPlayer handle = getHandle();
+                EntityPlayerMP handle = getHandle();
                 handle.newExp = data.getInteger("newExp");
                 handle.newTotalExp = data.getInteger("newTotalExp");
                 handle.newLevel = data.getInteger("newLevel");
@@ -1123,7 +1123,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         }
 
         NBTTagCompound data = nbttagcompound.getCompoundTag("bukkit");
-        EntityPlayer handle = getHandle();
+        EntityPlayerMP handle = getHandle();
         data.setInteger("newExp", handle.newExp);
         data.setInteger("newTotalExp", handle.newTotalExp);
         data.setInteger("newLevel", handle.newLevel);

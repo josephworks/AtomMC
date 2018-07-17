@@ -1521,7 +1521,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                         NetHandlerPlayServer.this.serverController.console.sendMessage(message);
                         if (((LazyPlayerSet) queueEvent.getRecipients()).isLazy()) {
                             for (Object player : NetHandlerPlayServer.this.serverController.getPlayerList().getPlayers()) {
-                                ((EntityPlayer) player).sendMessage(CraftChatMessage.fromString(message));
+                                ((EntityPlayerMP) player).sendMessage(CraftChatMessage.fromString(message));
                             }
                         } else {
                             for (Player player : queueEvent.getRecipients()) {
@@ -1551,7 +1551,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 serverController.console.sendMessage(s);
                 if (((LazyPlayerSet) event.getRecipients()).isLazy()) {
                     for (Object recipient : serverController.getPlayerList().getPlayers()) {
-                        ((EntityPlayer) recipient).sendMessage(CraftChatMessage.fromString(s));
+                        ((EntityPlayerMP) recipient).sendMessage(CraftChatMessage.fromString(s));
                     }
                 } else {
                     for (Player recipient : event.getRecipients()) {
@@ -2874,7 +2874,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
             try {
                 byte[] data = new byte[packetIn.getBufferData().readableBytes()];
                 packetIn.getBufferData().readBytes(data);
-                server.getMessenger().dispatchIncomingMessage(player.getBukkitEntity(), packetIn.a(), data);
+                server.getMessenger().dispatchIncomingMessage(player.getBukkitEntity(), packetIn.getChannelName(), data);
             } catch (Exception ex) {
                 NetHandlerPlayServer.LOGGER.error("Couldn\'t dispatch custom payload", ex);
                 this.disconnect("Invalid custom payload!");
