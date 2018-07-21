@@ -28,6 +28,7 @@ import java.security.Permission;
  * @author cpw
  *
  */
+// TODO: Modify this class with Mixin for testing
 public class FMLSecurityManager extends SecurityManager {
     @Override
     public void checkPermission(Permission perm)
@@ -44,7 +45,8 @@ public class FMLSecurityManager extends SecurityManager {
                     || "net.minecraft.server.dedicated.ServerHangWatchdog".equals(callingClass)
                     || ( "net.minecraft.client.Minecraft".equals(callingClass) && "net.minecraft.client.Minecraft".equals(callingParent))
                     || ("net.minecraft.server.dedicated.DedicatedServer".equals(callingClass) && "net.minecraft.server.MinecraftServer".equals(callingParent))
-                    || "com.intellij.rt.execution.junit.JUnitStarter".equals(callingClass)) // JUnitStarter is needed for test running
+                    || "com.intellij.rt.execution.junit.JUnitStarter".equals(callingClass) // JUnitStarter is needed for test running
+                    || "worker.org.gradle.process.internal.worker.GradleWorkerMain".equals(callingClass)) // GradleWorkerMain is needed for test running from Gradle test task
                     )
             {
                 throw new ExitTrappedException();

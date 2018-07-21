@@ -8,6 +8,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RunWith(MinecraftServerRunner.class)
 public class BaseTest {
 
-    private MinecraftServer minecraftServer = MinecraftServer.getMinecraftServer();
+    private MinecraftServer minecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
 
     protected MinecraftServer getMinecraftServer() {
         return minecraftServer;

@@ -3,12 +3,12 @@ package org.bukkit.craftbukkit.inventory;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -19,16 +19,11 @@ public class ItemFactoryTest extends AbstractTestingBase {
 
     @Test
     public void testKnownAttributes() throws Throwable {
-        final ZipInputStream nmsZipStream = new ZipInputStream(CommandBase.class/* Magic class that isn't imported! */.getProtectionDomain().getCodeSource().getLocation().openStream());
-        final Collection<String> names = new HashSet<String>();
-        for (ZipEntry clazzEntry; (clazzEntry = nmsZipStream.getNextEntry()) != null; ) {
-            final String entryName = clazzEntry.getName();
-            if (!(entryName.endsWith(".class") && entryName.startsWith("net/minecraft/server/"))) {
-                continue;
-            }
-
-            final Class<?> clazz = Class.forName(entryName.substring(0, entryName.length() - ".class".length()).replace('/', '.'));
-            assertThat(entryName, clazz, is(not(nullValue())));
+        final Collection<String> names = new HashSet<>();
+        File classesDirectory = new File(CommandBase.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        Collection<Class> allClassFiles = getMinecraftServerClasses(getAllClassesFilesFromDir(classesDirectory));
+        for (Class clazz : allClassFiles) {
+            assertThat(clazz.getName(), clazz, is(not(nullValue())));
             for (final Field field : clazz.getDeclaredFields()) {
                 if (IAttribute.class.isAssignableFrom(field.getType()) && Modifier.isStatic(field.getModifiers())) {
                     field.setAccessible(true);
@@ -38,9 +33,39 @@ public class ItemFactoryTest extends AbstractTestingBase {
                 }
             }
         }
-
-        nmsZipStream.close();
-
         assertThat("Extra values detected", CraftItemFactory.KNOWN_NBT_ATTRIBUTE_NAMES, is(names));
+    }
+
+    private Collection<File> getAllClassesFilesFromDir(File directory) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            throw new IllegalStateException("File " + directory.getName() + " does not exist or is not a directory!");
+        }
+        Collection<File> allClasses = new HashSet<>();
+        for (File fileInDir : directory.listFiles()) {
+            if (fileInDir.isDirectory()) {
+                allClasses.addAll(this.getAllClassesFilesFromDir(fileInDir));
+            } else if (fileInDir.getName().endsWith(".class")){
+                allClasses.add(fileInDir);
+            }
+        }
+        return allClasses;
+    }
+
+    private Collection<Class> getMinecraftServerClasses(Collection<File> files) {
+        Collection<Class> minecraftClasses = new ArrayList<>();
+        String essentialClassPathElement = File.separator + "net" + File.separator + "minecraft" + File.separator;
+        files.stream().filter(file -> file.getPath().contains(essentialClassPathElement)).forEach(minecraftClassFile -> {
+            String absoluteClassPath = minecraftClassFile.getPath().replace(File.separator, ".");
+            int from = absoluteClassPath.indexOf("net.minecraft.");
+            int to = absoluteClassPath.length() - ".class".length();
+            Class serverClass;
+            try {
+                serverClass = Class.forName(absoluteClassPath.substring(from, to));
+            } catch (ClassNotFoundException | ExceptionInInitializerError | NoClassDefFoundError ignoreClientClass) {
+                return;
+            }
+            minecraftClasses.add(serverClass);
+        });
+        return minecraftClasses;
     }
 }

@@ -33,6 +33,7 @@ public final class CraftItemFactory implements ItemFactory {
             .add("generic.luck")
             .add("horse.jumpStrength")
             .add("zombie.spawnReinforcements")
+            .add("generic.reachDistance")
             .build();
     }
 

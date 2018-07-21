@@ -35,7 +35,7 @@ public class PerMaterialTest extends AbstractTestingBase {
 
     @BeforeClass
     public static void getFireValues() {
-        fireValues = Util.getInternalState(BlockFire.class, Blocks.FIRE, "flameChances");
+        fireValues = Util.getInternalState(BlockFire.class, Blocks.FIRE, "encouragements");
     }
 
     @Parameters(name= "{index}: {0}")
@@ -54,7 +54,7 @@ public class PerMaterialTest extends AbstractTestingBase {
         if (material == Material.AIR) {
             assertFalse(material.isSolid());
         } else if (material.isBlock()) {
-            assertThat(material.isSolid(), is(CraftMagicNumbers.getBlock(material).getDefaultState().getMaterial().isSolid()));
+            assertThat(material.isSolid(), is(CraftMagicNumbers.getBlock(material).getDefaultState().getMaterial().blocksMovement()));
         } else {
             assertFalse(material.isSolid());
         }

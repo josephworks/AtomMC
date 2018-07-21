@@ -1267,6 +1267,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     @Deprecated
     public void setItem(Item item) {
         this.item = item;
+        // Update delegate as well
+        this.delegate = item.delegate;
         this.setItemDamage(this.getItemDamage()); // CraftBukkit - Set data again to ensure it is filtered properly
     }
 
