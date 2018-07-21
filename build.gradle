@@ -34,7 +34,10 @@ repositories {
 }
 
 group = 'org.atom'
-version = versioning { full { it.tag ?: it.branch + '-' + it.abbreviated } }.info.full
+version = versioning {
+    full { it.tag ?: it.branch + '-' + it.abbreviated }
+    branchEnv = ['CI_BUILD_REF_NAME', 'GIT_LOCAL_BRANCH']
+}.info.full
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
