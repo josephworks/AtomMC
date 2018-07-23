@@ -483,7 +483,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                         this.outputPercentRemaining("Preparing spawn area", i * 100 / 625);
                         jk = j2;
                     }
-                    ++i1;
+                    ++i;
                     worldserver.getChunkProvider().provideChunk(blockposition.getX() + l1 >> 4, blockposition.getZ() + i2 >> 4);
                 }
             }
