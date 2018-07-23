@@ -61,7 +61,7 @@ public class ItemFactoryTest extends AbstractTestingBase {
             Class serverClass;
             try {
                 serverClass = Class.forName(absoluteClassPath.substring(from, to));
-            } catch (ClassNotFoundException | ExceptionInInitializerError | NoClassDefFoundError ignoreClientClass) {
+            } catch (Throwable ignoreClientClass) {
                 return;
             }
             minecraftClasses.add(serverClass);
