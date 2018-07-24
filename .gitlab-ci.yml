@@ -1,7 +1,7 @@
 image: gradle:alpine
 build:
     script:
-        - gradle build
+        - gradle build --rerun-tasks
         - gradle dumpLibs
     artifacts:
         paths:
