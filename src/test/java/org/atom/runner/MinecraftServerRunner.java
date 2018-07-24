@@ -23,8 +23,8 @@ public class MinecraftServerRunner extends BlockJUnit4ClassRunner {
     static {
         Launch.main(new String[]{
                 "--tweakClass", FMLServerTweaker.class.getCanonicalName(),
-                // "--mixin", MixinTweaker.class.getCanonicalName(),
-                // "--mixin", "mixins.atom.test.json",
+                "--tweakClass", MixinTweaker.class.getCanonicalName(),
+                "--mixin", "mixins.atom.test.json",
                 "nogui",
         });
         LaunchClassLoader lcl = Launch.classLoader;

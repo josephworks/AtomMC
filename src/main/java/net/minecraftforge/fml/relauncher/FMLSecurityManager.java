@@ -28,7 +28,7 @@ import java.security.Permission;
  * @author cpw
  *
  */
-// TODO: Modify this class with Mixin for testing
+
 public class FMLSecurityManager extends SecurityManager {
     @Override
     public void checkPermission(Permission perm)

@@ -118,6 +118,8 @@ public class Main {
                 acceptsAll(asList("v", "version"), "Show the CraftBukkit Version");
 
                 acceptsAll(asList("demo"), "Demo mode");
+
+                acceptsAll(asList("mixin"), "This argument is needed for proper Mixin Framework work in the test env");
             }
         };
 
