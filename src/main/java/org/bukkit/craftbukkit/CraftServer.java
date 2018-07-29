@@ -1571,7 +1571,7 @@ public final class CraftServer implements Server {
     }
 
     public List<String> tabComplete(net.minecraft.command.ICommandSender sender, String message, BlockPos pos, boolean forceCommand) {
-        if (!(sender instanceof EntityPlayer)) {
+        if (!(sender instanceof EntityPlayerMP)) {
             return ImmutableList.of();
         }
 
