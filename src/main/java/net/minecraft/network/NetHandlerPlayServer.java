@@ -1282,16 +1282,11 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         LOGGER.info("{} lost connection: {}", this.player.getName(), reason.getUnformattedText());
         // CraftBukkit start - Replace vanilla quit message handling with our own.
         /*
-        this.minecraftServer.aD();
-        ChatMessage chatmessage = new ChatMessage("multiplayer.player.left", new Object[] { this.player.getScoreboardDisplayName()});
-
-        chatmessage.getChatModifier().setColor(EnumChatFormat.YELLOW);
-        this.minecraftServer.getPlayerList().sendMessage(chatmessage);
-        */
-        this.serverController.refreshStatusNextTick();
         TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("multiplayer.player.left", new Object[] {this.player.getDisplayName()});
         textcomponenttranslation.getStyle().setColor(TextFormatting.YELLOW);
         this.serverController.getPlayerList().sendMessage(textcomponenttranslation);
+        */
+        this.serverController.refreshStatusNextTick();
         this.player.mountEntityAndWakeUp();
         // this.serverController.getPlayerList().playerLoggedOut(this.player);
         String quitMessage = this.serverController.getPlayerList().playerLoggedOut(this.player);

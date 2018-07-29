@@ -203,7 +203,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             }
         }
         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
-        this.serverThread = primaryThread = new Thread(this, "Server thread"); // Moved from main
+        this.serverThread = primaryThread = new Thread(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER, this, "Server thread"); // Moved from main
     }
 
     public abstract PropertyManager getPropertyManager();
