@@ -265,6 +265,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions)
     {
+        ServerCommandManager vanillaCommandManager = (ServerCommandManager) this.getCommandManager();
+        vanillaCommandManager.registerVanillaCommands();
         this.convertMapIfNeeded(saveName);
         this.setUserMessage("menu.loadingLevel");
         this.worlds = new WorldServer[3];

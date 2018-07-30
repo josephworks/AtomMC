@@ -93,6 +93,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.craftbukkit.boss.CraftBossBar;
+import org.bukkit.craftbukkit.command.CraftSimpleCommandMap;
 import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.generator.CraftChunkData;
@@ -181,6 +182,7 @@ public final class CraftServer implements Server {
     private final Logger logger = Logger.getLogger("Minecraft");
     private final ServicesManager servicesManager = new SimpleServicesManager();
     private final CraftScheduler scheduler = new CraftScheduler();
+    private final CraftSimpleCommandMap craftCommandMap = new CraftSimpleCommandMap(this);
     private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
     private final SimpleHelpMap helpMap = new SimpleHelpMap(this);
     private final StandardMessenger messenger = new StandardMessenger();
@@ -212,6 +214,10 @@ public final class CraftServer implements Server {
     private boolean unrestrictedAdvancements;
     private final List<CraftPlayer> playerView;
     public int reloadCount;
+
+    public CraftSimpleCommandMap getCraftCommandMap() {
+        return this.craftCommandMap;
+    }
 
     private final class BooleanWrapper {
         private boolean value = true;
@@ -385,7 +391,7 @@ public final class CraftServer implements Server {
     }
 
     private void setVanillaCommands() {
-        Map<String, ICommand> commands = new ServerCommandManager(console).getCommands();
+        Map<String, ICommand> commands = console.getCommandManager().getCommands();
         for (ICommand cmd : commands.values()) {
             commandMap.register("minecraft", new VanillaCommandWrapper((CommandBase) cmd, I18n.translateToLocal(cmd.getUsage(null))));
         }
@@ -651,7 +657,7 @@ public final class CraftServer implements Server {
         }
         try {
             this.playerCommandState = true;
-            return dispatchCommand(sender, serverCommand.command);
+            return this.dispatchCommand(sender, serverCommand.command);
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Unexpected exception while parsing console command \"" + serverCommand.command + '"', ex);
             return false;
@@ -666,6 +672,19 @@ public final class CraftServer implements Server {
         Validate.notNull(commandLine, "CommandLine cannot be null");
 
         if (commandMap.dispatch(sender, commandLine)) {
+            return true;
+        }
+
+        if (sender instanceof ConsoleCommandSender) {
+            craftCommandMap.setVanillaConsoleSender(this.console);
+        }
+
+        return this.dispatchVanillaCommand(sender, commandLine);
+    }
+
+    // used to process vanilla commands
+    public boolean dispatchVanillaCommand(CommandSender sender, String commandLine) {
+        if (craftCommandMap.dispatch(sender, commandLine)) {
             return true;
         }
 
