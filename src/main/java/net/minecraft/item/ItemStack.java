@@ -139,9 +139,6 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         if (MinecraftServer.getServerCB() != null) {
             this.setItemDamage(meta);
         }
-        if (convert) {
-            this.convertStack();
-        }
         // CraftBukkit end
 
         if (this.itemDamage < 0)
@@ -151,6 +148,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         this.updateEmptyState();
         this.forgeInit();
+        if (convert)
+            this.convertStack();
     }
 
     private void updateEmptyState()
