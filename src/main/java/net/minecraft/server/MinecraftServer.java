@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -42,6 +44,7 @@ import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
@@ -1096,8 +1099,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos, boolean hasTargetBlock)
     {
-        /* CraftBukkit start - Allow tab-completion of Bukkit commands
-        List<String> list = Lists.<String>newArrayList();
+        Set<String> completionsSet = Sets.newHashSet(server.tabComplete(sender, input, pos, hasTargetBlock));
         boolean flag = input.startsWith("/");
 
         if (flag)
@@ -1114,11 +1116,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             {
                 if (CommandBase.doesStringStartWith(s2, s1))
                 {
-                    list.add(s1);
+                    completionsSet.add(s1);
                 }
             }
-
-            return list;
         }
         else
         {
@@ -1131,19 +1131,18 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 {
                     if (flag1 && !hasTargetBlock)
                     {
-                        list.add("/" + s);
+                        completionsSet.add("/" + s);
                     }
                     else
                     {
-                        list.add(s);
+                        completionsSet.add(s);
                     }
                 }
             }
-
-            return list;
         }
-        */
-        return server.tabComplete(sender, input, pos, hasTargetBlock);
+        List<String> finalCompletionsList = new ArrayList<>(completionsSet);
+        Collections.sort(finalCompletionsList);
+        return finalCompletionsList;
     }
 
     public boolean isAnvilFileSet()
