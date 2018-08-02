@@ -111,6 +111,7 @@ task reobfuscate(type: ReobfuscateTask) {
 
 task shrinkJar(type: ShrinkJarTask) {
     dependsOn(tasks.reobfuscate)
+    outputs.upToDateWhen { false }
     inputJar = (File) tasks.reobfuscate.outputJar
 }
 
