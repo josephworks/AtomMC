@@ -1693,6 +1693,15 @@ public abstract class PlayerList
         this.sendMessage(component, true);
     }
 
+    @Nullable
+    public StatisticsManagerServer getPlayerStatsFile(EntityPlayer playerIn) {
+        if (playerIn instanceof EntityPlayerMP) {
+            return this.getPlayerStatsFile((EntityPlayerMP) playerIn);
+        } else {
+            return null;
+        }
+    }
+
     public StatisticsManagerServer getPlayerStatsFile(EntityPlayerMP playerIn)
     {
         UUID uuid = playerIn.getUniqueID();
