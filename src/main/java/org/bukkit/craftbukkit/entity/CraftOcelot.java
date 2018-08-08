@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit.entity;
 
 import net.minecraft.entity.passive.EntityOcelot;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Ocelot;

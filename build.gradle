@@ -95,7 +95,8 @@ dependencies {
     compile('org.spongepowered:mixin:0.7.8-SNAPSHOT') {
         exclude module: 'launchwrapper'
     }
-    compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    compile files('src/main/resources/bukkit-1.12.2-R0.1-SNAPSHOT.jar')
+    compile 'org.yaml:snakeyaml:1.21'
 }
 
 jar {

@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFactory;

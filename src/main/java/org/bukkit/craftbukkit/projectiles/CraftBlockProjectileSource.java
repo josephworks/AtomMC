@@ -23,7 +23,7 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.MathHelper;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
