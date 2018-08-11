@@ -80,6 +80,7 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.MinecraftException;
 import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerDemo;
 import net.minecraft.world.WorldServerMulti;
@@ -89,6 +90,7 @@ import net.minecraft.world.chunk.storage.AnvilSaveHandler;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.Validate;
@@ -377,7 +379,16 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 }
             }
 
-            String worldType = org.bukkit.World.Environment.getEnvironment(dim).toString().toLowerCase();
+            String worldType;
+            org.bukkit.World.Environment worldEnvironment = org.bukkit.World.Environment.getEnvironment(dim);
+            if (worldEnvironment == null) {
+                WorldProvider provider = DimensionManager.createProviderFor(dim);
+                worldType = provider.getClass().getSimpleName().toLowerCase();
+                worldType = worldType.replace("worldprovider", "");
+                worldType = worldType.replace("provider", "");
+            } else {
+                worldType = worldEnvironment.toString().toLowerCase();
+            }
             String name = (dim == 0) ? saveName : saveName + "_" + worldType;
             org.bukkit.generator.ChunkGenerator gen = this.server.getGenerator(name);
 
@@ -391,7 +402,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 if (this.isDemo()) {
                     world = (WorldServer) (new WorldServerDemo(this, idatamanager, worlddata, dim, this.profiler)).init();
                 } else {
-                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, org.bukkit.World.Environment.getEnvironment(dim), gen)).init();
+                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, worldEnvironment, gen)).init();
                 }
 
                 world.initialize(worldsettings);
@@ -439,7 +450,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     worlddata = new WorldInfo(worldsettings, name);
                 }
                 worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, org.bukkit.World.Environment.getEnvironment(dim), gen).init();
+                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, worldEnvironment, gen).init();
             }
             this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
             world.addEventListener(new ServerWorldEventHandler(this, world));
