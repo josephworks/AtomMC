@@ -5,11 +5,12 @@ import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.init.Blocks;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Minecart;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-public abstract class CraftMinecart extends CraftVehicle implements Minecart {
+public class CraftMinecart extends CraftVehicle implements Minecart {
     public CraftMinecart(CraftServer server, EntityMinecart entity) {
         super(server, entity);
     }
@@ -83,5 +84,10 @@ public abstract class CraftMinecart extends CraftVehicle implements Minecart {
 
     public int getDisplayBlockOffset() {
         return getHandle().getDisplayTileOffset();
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.MINECART;
     }
 }

@@ -141,6 +141,7 @@ import net.minecraft.world.gen.feature.WorldGenSwamp;
 import net.minecraft.world.gen.feature.WorldGenTaiga1;
 import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.BlockChangeDelegate;
 import org.bukkit.Bukkit;
@@ -483,7 +484,26 @@ public class CraftWorld implements World {
     }
 
     public Entity spawnEntity(Location loc, EntityType entityType) {
+        if (EntityRegistry.entityClassMap.get(entityType.getName()) != null) {
+            net.minecraft.entity.Entity entity = null;
+            entity = getEntity(EntityRegistry.entityClassMap.get(entityType.getName()), world);
+            if (entity != null) {
+                entity.setLocationAndAngles(loc.getX(), loc.getY(), loc.getZ(), 0, 0);
+                world.spawnEntity(entity, SpawnReason.CUSTOM);
+                return entity.getBukkitEntity();
+            }
+        }
         return spawn(loc, entityType.getEntityClass());
+    }
+
+    private net.minecraft.entity.Entity getEntity(Class<? extends net.minecraft.entity.Entity> aClass, WorldServer world) {
+        EntityLiving entity = null;
+        try {
+            entity = (net.minecraft.entity.EntityLiving) aClass.getConstructor(new Class[] { net.minecraft.world.World.class }).newInstance(new Object[] { world });
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return entity;
     }
 
     public LightningStrike strikeLightning(Location loc) {
