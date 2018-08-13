@@ -21,6 +21,9 @@ package net.minecraftforge.fml.common.registry;
 
 import java.util.Iterator;
 import java.util.List;
+
+import com.google.common.collect.Maps;
+import net.minecraftforge.fml.common.Loader;
 import org.apache.logging.log4j.Level;
 
 import net.minecraft.entity.Entity;
@@ -36,6 +39,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.internal.FMLMessage.EntitySpawnMessage;
 
+import java.util.Map;
 import java.util.function.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
@@ -126,6 +130,9 @@ public class EntityRegistry
     private ListMultimap<ModContainer, EntityRegistration> entityRegistrations = ArrayListMultimap.create();
     private BiMap<Class<? extends Entity>, EntityRegistration> entityClassRegistrations = HashBiMap.create();
 
+    public static Map<Class<? extends Entity>, String> entityTypeMap = Maps.newHashMap(); // used by CraftCustomEntity
+    public static Map<String, Class<? extends Entity>> entityClassMap = Maps.newHashMap(); // user by CraftWorld
+
     public static EntityRegistry instance()
     {
         return INSTANCE;
@@ -149,6 +156,7 @@ public class EntityRegistry
     public static void registerModEntity(ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
     {
         instance().doModEntityRegistration(registryName, entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
+        registerBukkitType(entityClass, entityName);
     }
 
     /**
@@ -169,6 +177,7 @@ public class EntityRegistry
     {
         instance().doModEntityRegistration(registryName, entityClass, entityName, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
         EntityRegistry.registerEgg(registryName, eggPrimary, eggSecondary);
+        registerBukkitType(entityClass, entityName);
     }
 
     private void doModEntityRegistration(ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
@@ -368,5 +377,24 @@ public class EntityRegistry
     {
         this.entityClassRegistrations.put(entity, registration);
         this.entityRegistrations.put(registration.container, registration);
+    }
+
+    private static void registerBukkitType(Class<? extends Entity> entityClass, String entityName) {
+        ModContainer activeModContainer = Loader.instance().activeModContainer();
+        String modId = "unknown";
+        // fixup bad entity names from mods
+        if (entityName.contains(".")) {
+            if ((entityName.indexOf(".") + 1) < entityName.length())
+                entityName = entityName.substring(entityName.indexOf(".") + 1, entityName.length());
+        }
+        entityName = entityName.replace("entity", "");
+        if (entityName.startsWith("ent"))
+            entityName = entityName.replace("ent", "");
+        entityName = entityName.replaceAll("[^A-Za-z0-9]", ""); // remove all non-digits/alphanumeric
+        if (activeModContainer != null)
+            modId = activeModContainer.getModId();
+        entityName = modId + "-" + entityName;
+        entityTypeMap.put(entityClass, entityName);
+        entityClassMap.put(entityName, entityClass);
     }
 }
