@@ -129,6 +129,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
@@ -2879,5 +2880,9 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
     public final boolean isDisconnected() {
         return !this.player.joining && !this.netManager.isChannelOpen();
+    }
+
+    public CraftServer getCraftServer() {
+        return this.server;
     }
 }
