@@ -26,6 +26,7 @@ public interface IBakedModel
 
     ItemOverrideList getOverrides();
 
+    default boolean isAmbientOcclusion(IBlockState state) { return isAmbientOcclusion(); }
     /*
      * Returns the pair of the model for the given perspective, and the matrix
      * that should be applied to the GL state before rendering it (matrix may be null).

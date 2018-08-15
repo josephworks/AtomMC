@@ -88,7 +88,7 @@ public class SimpleBakedModel implements IBakedModel
 
             public Builder(IBlockState state, IBakedModel model, TextureAtlasSprite texture, BlockPos pos)
             {
-                this(model.isAmbientOcclusion(), model.isGui3d(), model.getItemCameraTransforms(), model.getOverrides());
+                this(model.isAmbientOcclusion(state), model.isGui3d(), model.getItemCameraTransforms(), model.getOverrides());
                 this.builderTexture = model.getParticleTexture();
                 long i = MathHelper.getPositionRandom(pos);
 
