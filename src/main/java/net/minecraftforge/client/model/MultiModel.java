@@ -155,6 +155,11 @@ public final class MultiModel implements IModel
         }
 
         @Override
+        public boolean isAmbientOcclusion(IBlockState state) {
+            return internalBase.isAmbientOcclusion(state);
+        }
+
+        @Override
         public boolean isGui3d()
         {
             return internalBase.isGui3d();
