@@ -18,7 +18,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.PacketBuffer;
@@ -923,7 +923,11 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         {
             // Do not pass along players, as doing so can get them stuck outside of time.
             // (which for example disables inventory icon updates and prevents block breaking)
-            classinheritancemultimap.removeIf(entity -> entity instanceof EntityPlayer);
+            for (Entity entity : classinheritancemultimap) {
+                if (entity instanceof EntityPlayerMP) {
+                    classinheritancemultimap.remove(entity);
+                }
+            }
             this.world.unloadEntities(classinheritancemultimap);
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
