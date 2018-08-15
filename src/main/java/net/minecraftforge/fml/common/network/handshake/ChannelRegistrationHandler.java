@@ -32,7 +32,6 @@ import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.collect.ImmutableSet;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLProxyPacket> {
     @Override
@@ -46,17 +45,6 @@ public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLP
             msg.payload().readBytes(data);
             String channels = new String(data, StandardCharsets.UTF_8);
             String[] split = channels.split("\0");
-            // register bukkit channels for players
-            NetworkDispatcher dispatcher = ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
-            if (msg.channel().equals("REGISTER")) {
-                for (String channel : split) {
-                    ((CraftPlayer) dispatcher.getPlayer().getBukkitEntity()).addChannel(channel);
-                }
-            } else {
-                for (String channel : split) {
-                    ((CraftPlayer) dispatcher.getPlayer().getBukkitEntity()).removeChannel(channel);
-                }
-            }
             Set<String> channelSet = ImmutableSet.copyOf(split);
             FMLCommonHandler.instance().fireNetRegistrationEvent(manager, channelSet, msg.channel(), side);
             msg.payload().release();
