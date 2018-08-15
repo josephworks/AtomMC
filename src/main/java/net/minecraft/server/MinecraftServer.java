@@ -646,6 +646,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             this.usageSnooper.stopSnooper();
         }
+
+        CommandBase.setCommandListener(null); // Forge: fix MC-128561
     }
 
     public boolean isServerRunning()
