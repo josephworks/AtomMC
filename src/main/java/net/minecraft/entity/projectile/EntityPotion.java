@@ -189,7 +189,7 @@ public class EntityPotion extends EntityThrowable
             }
         }
         org.bukkit.event.entity.PotionSplashEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPotionSplashEvent(this, affected);
-        if (!event.isCancelled() && list != null && !list.isEmpty()) { // do not process effects if there are no effects to process
+        if (!event.isCancelled() && p_190543_2_ != null && !p_190543_2_.isEmpty()) { // do not process effects if there are no effects to process
             for (LivingEntity victim : event.getAffectedEntities()) {
                 if (!(victim instanceof CraftLivingEntity)) {
                     continue;
@@ -198,10 +198,7 @@ public class EntityPotion extends EntityThrowable
                 double d1 = event.getIntensity(victim);
                 // CraftBukkit end
 
-                Iterator iterator1 = list.iterator();
-
-                while (iterator1.hasNext()) {
-                    PotionEffect mobeffect = (PotionEffect) iterator1.next();
+                for (PotionEffect mobeffect : p_190543_2_) {
                     Potion mobeffectlist = mobeffect.getPotion();
                     // CraftBukkit start - Abide by PVP settings - for players only!
                     if (!this.world.pvpMode && this.getThrower() instanceof EntityPlayer && entityliving instanceof EntityPlayer && entityliving != this.getThrower()) {
