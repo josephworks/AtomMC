@@ -1022,10 +1022,15 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.connection.sendPacket(new SPacketSignEditorOpen(signTile.getPos()));
     }
 
-    public int getNextWindowId() // CraftBukkit - void -> int
+    public int getNextWindowIdCB() // CraftBukkit - void -> int
     {
         this.currentWindowId = this.currentWindowId % 100 + 1;
         return this.currentWindowId;
+    }
+
+    public void getNextWindowId()
+    {
+        this.currentWindowId = this.currentWindowId % 100 + 1;
     }
 
     public void displayGui(IInteractionObject guiOwner)
