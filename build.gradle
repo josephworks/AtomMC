@@ -98,6 +98,7 @@ dependencies {
     compile files('src/main/resources/bukkit-1.12.2-R0.1-SNAPSHOT.jar')
     compile 'org.yaml:snakeyaml:1.21'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'commons-lang:commons-lang:2.6' // Is needed for plugin compatibility
 }
 
 jar {
