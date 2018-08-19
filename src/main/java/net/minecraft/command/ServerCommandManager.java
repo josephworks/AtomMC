@@ -40,6 +40,10 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
     public ServerCommandManager(MinecraftServer serverIn)
     {
         this.server = serverIn;
+        CommandBase.setCommandListener(this);
+    }
+
+    public void registerVanillaCommands() {
         this.registerCommand(new CommandTime());
         this.registerCommand(new CommandGameMode());
         this.registerCommand(new CommandDifficulty());
@@ -89,8 +93,7 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
         this.registerCommand(new CommandLocate());
         this.registerCommand(new CommandReload());
         this.registerCommand(new CommandFunction());
-
-        if (serverIn.isDedicatedServer())
+        if (server.isDedicatedServer())
         {
             this.registerCommand(new CommandOp());
             this.registerCommand(new CommandDeOp());

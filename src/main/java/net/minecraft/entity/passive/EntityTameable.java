@@ -223,6 +223,11 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
         return this.aiSit;
     }
 
+    public void setAISit(EntityAISit aiSit)
+    {
+        this.aiSit = aiSit;
+    }
+
     public boolean shouldAttackEntity(EntityLivingBase target, EntityLivingBase owner)
     {
         return true;

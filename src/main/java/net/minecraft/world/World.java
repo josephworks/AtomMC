@@ -3046,11 +3046,10 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         else
         {
             IBlockState iblockstate1 = this.getBlockState(pos);
-            int blockLight = iblockstate1.getBlock().getLightValue(iblockstate1, this, pos);
-            int j2 = lightType == EnumSkyBlock.SKY ? 0 : blockLight;
+            int j2 = lightType == EnumSkyBlock.SKY ? 0 : iblockstate1.getBlock().getLightValue(iblockstate1, this, pos);
             int k2 = iblockstate1.getBlock().getLightOpacity(iblockstate1, this, pos);
 
-            if (k2 >= 15 && blockLight > 0)
+            if (false) // Forge: fix MC-119932
             {
                 k2 = 1;
             }
@@ -3062,7 +3061,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
 
             if (k2 >= 15)
             {
-                return 0;
+                return j2; // Forge: fix MC-119932
             }
             else if (j2 >= 14)
             {

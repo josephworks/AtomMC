@@ -113,7 +113,7 @@ public class BlockPortal extends BlockBreakable
     {
         Size blockportal$size = new Size(worldIn, pos, EnumFacing.Axis.X);
 
-        if (blockportal$size.isValid() && blockportal$size.portalBlockCount == 0)
+        if (blockportal$size.isValid() && blockportal$size.portalBlockCount == 0 && !net.minecraftforge.event.ForgeEventFactory.onTrySpawnPortal(worldIn,pos,blockportal$size))
         {
             return blockportal$size.placePortalBlocksCB();
 //            return true;
@@ -122,7 +122,7 @@ public class BlockPortal extends BlockBreakable
         {
             Size blockportal$size1 = new Size(worldIn, pos, EnumFacing.Axis.Z);
 
-            if (blockportal$size1.isValid() && blockportal$size1.portalBlockCount == 0)
+            if (blockportal$size1.isValid() && blockportal$size1.portalBlockCount == 0 && !net.minecraftforge.event.ForgeEventFactory.onTrySpawnPortal(worldIn,pos,blockportal$size1))
             {
                 return blockportal$size1.placePortalBlocksCB();
 //                return true;

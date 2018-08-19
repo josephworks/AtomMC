@@ -23,6 +23,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentFrostWalker;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -1046,6 +1047,8 @@ public abstract class EntityLivingBase extends Entity
                 if (this instanceof EntityAnimal) {
                     ((EntityAnimal) this).resetInLove();
                     if (this instanceof EntityTameable) {
+                        if (((EntityTameable) this).getAISit() == null)
+                            ((EntityTameable) this).setAISit(new EntityAISit((EntityTameable) this));
                         ((EntityTameable) this).getAISit().setSitting(false);
                     }
                 }

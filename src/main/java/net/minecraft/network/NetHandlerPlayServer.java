@@ -1904,11 +1904,11 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                         }
                         if (packetIn.getUsedButton() == 0 || packetIn.getUsedButton() == 1) {
                             action = InventoryAction.NOTHING; // Don't want to repeat ourselves
-                            if (packetIn.getUsedButton() == -999) {
+                            if (packetIn.getSlotId() == -999) {
                                 if (!player.inventory.getItemStack().isEmpty()) {
                                     action = packetIn.getUsedButton() == 0 ? InventoryAction.DROP_ALL_CURSOR : InventoryAction.DROP_ONE_CURSOR;
                                 }
-                            } else if (packetIn.getUsedButton() < 0)  {
+                            } else if (packetIn.getSlotId() < 0)  {
                                 action = InventoryAction.NOTHING;
                             } else {
                                 Slot slot = this.player.openContainer.getSlot(packetIn.getSlotId());
@@ -1960,10 +1960,10 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                             click = ClickType.SHIFT_RIGHT;
                         }
                         if (packetIn.getUsedButton() == 0 || packetIn.getUsedButton() == 1) {
-                            if (packetIn.getUsedButton() < 0) {
+                            if (packetIn.getSlotId() < 0) {
                                 action = InventoryAction.NOTHING;
                             } else {
-                                Slot slot = this.player.openContainer.getSlot(packetIn.getUsedButton());
+                                Slot slot = this.player.openContainer.getSlot(packetIn.getSlotId());
                                 if (slot != null && slot.canTakeStack(this.player) && slot.getHasStack()) {
                                     action = InventoryAction.MOVE_TO_OTHER_INVENTORY;
                                 } else {
@@ -1975,7 +1975,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                     case SWAP:
                         if (packetIn.getUsedButton() >= 0 && packetIn.getUsedButton() < 9) {
                             click = ClickType.NUMBER_KEY;
-                            Slot clickedSlot = this.player.openContainer.getSlot(packetIn.getUsedButton());
+                            Slot clickedSlot = this.player.openContainer.getSlot(packetIn.getSlotId());
                             if (clickedSlot.canTakeStack(player)) {
                                 ItemStack hotbar = this.player.inventory.getStackInSlot(packetIn.getUsedButton());
                                 boolean canCleanSwap = hotbar.isEmpty() || (clickedSlot.inventory == player.inventory && clickedSlot.isItemValid(hotbar)); // the slot will accept the hotbar item
@@ -1998,10 +1998,10 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                     case CLONE:
                         if (packetIn.getUsedButton() == 2) {
                             click = ClickType.MIDDLE;
-                            if (packetIn.getUsedButton() == -999) {
+                            if (packetIn.getSlotId() == -999) {
                                 action = InventoryAction.NOTHING;
                             } else {
-                                Slot slot = this.player.openContainer.getSlot(packetIn.getUsedButton());
+                                Slot slot = this.player.openContainer.getSlot(packetIn.getSlotId());
                                 if (slot != null && slot.getHasStack() && player.capabilities.isCreativeMode && player.inventory.getItemStack().isEmpty()) {
                                     action = InventoryAction.CLONE_STACK;
                                 } else {
@@ -2014,10 +2014,10 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                         }
                         break;
                     case THROW:
-                        if (packetIn.getUsedButton() >= 0) {
+                        if (packetIn.getSlotId() >= 0) {
                             if (packetIn.getUsedButton() == 0) {
                                 click = ClickType.DROP;
-                                Slot slot = this.player.openContainer.getSlot(packetIn.getUsedButton());
+                                Slot slot = this.player.openContainer.getSlot(packetIn.getSlotId());
                                 if (slot != null && slot.getHasStack() && slot.canTakeStack(player) && !slot.getStack().isEmpty() && slot.getStack().getItem() != Item.getItemFromBlock(Blocks.AIR)) {
                                     action = InventoryAction.DROP_ONE_SLOT;
                                 } else {
@@ -2025,7 +2025,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                                 }
                             } else if (packetIn.getUsedButton() == 1) {
                                 click = ClickType.CONTROL_DROP;
-                                Slot slot = this.player.openContainer.getSlot(packetIn.getUsedButton());
+                                Slot slot = this.player.openContainer.getSlot(packetIn.getSlotId());
                                 if (slot != null && slot.getHasStack() && slot.canTakeStack(player) && !slot.getStack().isEmpty() && slot.getStack().getItem() != Item.getItemFromBlock(Blocks.AIR)) {
                                     action = InventoryAction.DROP_ALL_SLOT;
                                 } else {
@@ -2042,12 +2042,12 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                         }
                         break;
                     case QUICK_CRAFT:
-                        itemstack = this.player.openContainer.slotClick(packetIn.getUsedButton(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
+                        itemstack = this.player.openContainer.slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
                         break;
                     case PICKUP_ALL:
                         click = ClickType.DOUBLE_CLICK;
                         action = InventoryAction.NOTHING;
-                        if (packetIn.getUsedButton() >= 0 && !this.player.inventory.getItemStack().isEmpty()) {
+                        if (packetIn.getSlotId() >= 0 && !this.player.inventory.getItemStack().isEmpty()) {
                             ItemStack cursor = this.player.inventory.getItemStack();
                             action = InventoryAction.NOTHING;
                             // Quick check for if we have any of the item
@@ -2062,13 +2062,13 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
                 if (packetIn.getClickType() != net.minecraft.inventory.ClickType.QUICK_CRAFT) {
                     if (click == ClickType.NUMBER_KEY) {
-                        event = new InventoryClickEvent(inventory, type, packetIn.getUsedButton(), click, action, packetIn.getUsedButton());
+                        event = new InventoryClickEvent(inventory, type, packetIn.getSlotId(), click, action, packetIn.getUsedButton());
                     } else {
-                        event = new InventoryClickEvent(inventory, type, packetIn.getUsedButton(), click, action);
+                        event = new InventoryClickEvent(inventory, type, packetIn.getSlotId(), click, action);
                     }
 
                     org.bukkit.inventory.Inventory top = inventory.getTopInventory();
-                    if (packetIn.getUsedButton() == 0 && top instanceof CraftingInventory) {
+                    if (packetIn.getSlotId() == 0 && top instanceof CraftingInventory) {
                         org.bukkit.inventory.Recipe recipe = ((CraftingInventory) top).getRecipe();
                         if (recipe != null) {
                             if (click == ClickType.NUMBER_KEY) {
@@ -2089,7 +2089,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                     switch (event.getResult()) {
                         case ALLOW:
                         case DEFAULT:
-                            itemstack = this.player.openContainer.slotClick(packetIn.getUsedButton(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
+                            itemstack = this.player.openContainer.slotClick(packetIn.getSlotId(), packetIn.getUsedButton(), packetIn.getClickType(), this.player);
                             break;
                         case DENY:
                             /* Needs enum constructor in InventoryAction

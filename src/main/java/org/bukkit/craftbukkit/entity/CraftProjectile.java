@@ -3,10 +3,11 @@ package org.bukkit.craftbukkit.entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityThrowable;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Projectile;
 import org.bukkit.projectiles.ProjectileSource;
 
-public abstract class CraftProjectile extends AbstractProjectile implements Projectile {
+public class CraftProjectile extends AbstractProjectile implements Projectile {
     public CraftProjectile(CraftServer server, net.minecraft.entity.Entity entity) {
         super(server, entity);
     }
@@ -36,5 +37,10 @@ public abstract class CraftProjectile extends AbstractProjectile implements Proj
     @Override
     public String toString() {
         return "CraftProjectile";
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.UNKNOWN;
     }
 }

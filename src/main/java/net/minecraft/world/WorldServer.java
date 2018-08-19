@@ -131,7 +131,7 @@ public class WorldServer extends World implements IThreadListener
     public final int dimension;
 
     public WorldServer(MinecraftServer server, ISaveHandler saveHandlerIn, WorldInfo info, int dimensionId, Profiler methodprofiler, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) {
-        super(saveHandlerIn, info, DimensionType.getById(env.getId()).createDimension(), methodprofiler, false, gen, env);
+        super(saveHandlerIn, info, net.minecraftforge.common.DimensionManager.createProviderFor(dimensionId), methodprofiler, false, gen, env);
         this.pvpMode = server.isPVPEnabled();
         info.world = this;
         this.dimension = dimensionId;
