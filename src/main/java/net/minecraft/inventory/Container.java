@@ -2,12 +2,6 @@ package net.minecraft.inventory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -21,12 +15,26 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.atom.asm.IInventoryTransactionProvider;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
+import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class Container
 {
@@ -42,13 +50,114 @@ public abstract class Container
     private final Set<EntityPlayer> playerList = Sets.<EntityPlayer>newHashSet();
 
     public boolean checkReachable = true;
-    public abstract InventoryView getBukkitView();
+    private InventoryView bukkitView;
+    private boolean isBukkitViewCreated;
+
+    @Nullable
+    public InventoryView getBukkitView() {
+        if(!isBukkitViewCreated) {
+            isBukkitViewCreated = true;
+            bukkitView = computeBukkitView();
+            return bukkitView;
+        }
+        return bukkitView;
+    }
+
+    public void setBukkitView(InventoryView bukkitView) {
+        this.bukkitView = bukkitView;
+        isBukkitViewCreated = true;
+    }
+
+    @Nullable
+    private InventoryView computeBukkitView() {
+        Set<IInventory> uniqueInventorySet = new HashSet<>();
+        for(Slot slot : inventorySlots)
+            uniqueInventorySet.add(slot.inventory);
+        List<IInventory> inventories = new ArrayList<>(uniqueInventorySet);
+        InventoryPlayer playerInv = null;
+
+        for(Iterator<IInventory> it = inventories.iterator(); it.hasNext();) {
+            IInventory inv = it.next();
+            if(inv instanceof InventoryPlayer) {
+                playerInv = (InventoryPlayer) inv;
+                it.remove();
+                break;
+            }
+        }
+        if(playerInv == null)
+            return null;
+        CraftPlayer bukkitPlayer = (CraftPlayer) playerInv.player.getBukkitEntity();
+        Inventory craftInv;
+        if(inventories.size() != 1)
+            craftInv = Bukkit.getServer().createInventory(bukkitPlayer, InventoryType.CHEST);
+        else
+            craftInv = new CraftInventory(inventories.get(0));
+
+        return new CraftInventoryView(bukkitPlayer, craftInv, this);
+    }
+
     public void transferTo(Container other, org.bukkit.craftbukkit.entity.CraftHumanEntity player) {
         InventoryView source = this.getBukkitView(), destination = other.getBukkitView();
-        ((CraftInventory) source.getTopInventory()).getInventory().onClose(player);
-        ((CraftInventory) source.getBottomInventory()).getInventory().onClose(player);
-        ((CraftInventory) destination.getTopInventory()).getInventory().onOpen(player);
-        ((CraftInventory) destination.getBottomInventory()).getInventory().onOpen(player);
+        if (source != null) {
+            if (source.getTopInventory() instanceof CraftInventory) {
+                IInventory topInventory = ((CraftInventory) source.getTopInventory()).getInventory();
+                if (topInventory instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider topInventoryProvider = (IInventoryTransactionProvider) topInventory;
+                    if (topInventoryProvider.getViewers().contains(player))
+                        topInventoryProvider.onClose(player);
+                }
+            } else {
+                if (source.getTopInventory() instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider topInventoryProvider = (IInventoryTransactionProvider) source.getTopInventory();
+                    if (topInventoryProvider.getViewers().contains(player))
+                        topInventoryProvider.onClose(player);
+                }
+            }
+            if (source.getBottomInventory() instanceof CraftInventory) {
+                IInventory bottomInventory = ((CraftInventory) source.getBottomInventory()).getInventory();
+                if (bottomInventory instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider bottomInventoryProvider = (IInventoryTransactionProvider) bottomInventory;
+                    if (bottomInventoryProvider.getViewers().contains(player))
+                        bottomInventoryProvider.onClose(player);
+                }
+            } else {
+                if (source.getBottomInventory() instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider bottomInventoryProvider = (IInventoryTransactionProvider) source.getBottomInventory();
+                    if (bottomInventoryProvider.getViewers().contains(player))
+                        bottomInventoryProvider.onClose(player);
+                }
+            }
+        }
+        if (destination != null) {
+            if (destination.getTopInventory() instanceof CraftInventory) {
+                IInventory topInventory = ((CraftInventory) destination.getTopInventory()).getInventory();
+                if (topInventory instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider topInventoryProvider = (IInventoryTransactionProvider) topInventory;
+                    if (!topInventoryProvider.getViewers().contains(player))
+                        topInventoryProvider.onOpen(player);
+                }
+            } else {
+                if (destination.getTopInventory() instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider topInventoryProvider = (IInventoryTransactionProvider) destination.getTopInventory();
+                    if (!topInventoryProvider.getViewers().contains(player))
+                        topInventoryProvider.onOpen(player);
+                }
+            }
+            if (destination.getBottomInventory() instanceof CraftInventory) {
+                IInventory bottomInventory = ((CraftInventory) destination.getBottomInventory()).getInventory();
+                if (bottomInventory instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider bottomInventoryProvider = (IInventoryTransactionProvider) bottomInventory;
+                    if (!bottomInventoryProvider.getViewers().contains(player))
+                        bottomInventoryProvider.onOpen(player);
+                }
+            } else {
+                if (destination.getBottomInventory() instanceof IInventoryTransactionProvider) {
+                    IInventoryTransactionProvider bottomInventoryProvider = (IInventoryTransactionProvider) destination.getBottomInventory();
+                    if (!bottomInventoryProvider.getViewers().contains(player))
+                        bottomInventoryProvider.onOpen(player);
+                }
+            }
+        }
     }
 
     protected Slot addSlotToContainer(Slot slotIn)

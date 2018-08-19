@@ -3,7 +3,6 @@ package net.minecraft.inventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.IWorldNameable;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 
 public interface IInventory extends IWorldNameable {
     int getSizeInventory();
@@ -39,12 +38,6 @@ public interface IInventory extends IWorldNameable {
     void clear();
 
     java.util.List<ItemStack> getContents();
-
-    void onOpen(CraftHumanEntity who);
-
-    void onClose(CraftHumanEntity who);
-
-    java.util.List<org.bukkit.entity.HumanEntity> getViewers();
 
     org.bukkit.inventory.InventoryHolder getOwner();
 

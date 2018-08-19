@@ -9,8 +9,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-import org.bukkit.entity.HumanEntity;
 
 public class InventoryCraftResult implements IInventory
 {
@@ -25,13 +23,6 @@ public class InventoryCraftResult implements IInventory
 
     public org.bukkit.inventory.InventoryHolder getOwner() {
         return null; // Result slots don't get an owner
-    }
-
-    // Don't need a transaction; the InventoryCrafting keeps track of it for us
-    public void onOpen(CraftHumanEntity who) {}
-    public void onClose(CraftHumanEntity who) {}
-    public java.util.List<HumanEntity> getViewers() {
-        return new java.util.ArrayList<HumanEntity>();
     }
 
     public void setMaxStackSize(int size) {

@@ -25,8 +25,6 @@ import net.minecraft.world.storage.loot.ILootContainer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.InventoryHolder;
 
 public abstract class EntityMinecartContainer extends EntityMinecart implements ILockableContainer, ILootContainer
@@ -35,8 +33,6 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
     public boolean dropContentsWhenDead = true;
     private ResourceLocation lootTable;
     private long lootTableSeed;
-
-    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
     private int maxStack = MAX_STACK;
 
     public EntityMinecartContainer(World worldIn)
@@ -51,18 +47,6 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
 
     public List<ItemStack> getContents() {
         return this.minecartContainerItems;
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public InventoryHolder getOwner() {

@@ -23,8 +23,6 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-import org.bukkit.entity.HumanEntity;
 
 import java.util.List;
 
@@ -42,7 +40,6 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     private int ticksSinceSync;
     private BlockChest.Type cachedChestType;
 
-    public List<HumanEntity> transaction = new java.util.ArrayList<>();
     private int maxStack = MAX_STACK;
 
     public TileEntityChest()
@@ -56,18 +53,6 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
     public List<ItemStack> getContents() {
         return this.chestContents;
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public void setMaxStackSize(int size) {
