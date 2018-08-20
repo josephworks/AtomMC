@@ -762,7 +762,7 @@ public abstract class PlayerList
         {
             dimension = playerIn.getSpawnDimension();
         }
-        else if (!world.provider.canRespawnHere())
+        else if (location == null && !world.provider.canRespawnHere())
         {
             dimension = world.provider.getRespawnDimension(playerIn);
         }
