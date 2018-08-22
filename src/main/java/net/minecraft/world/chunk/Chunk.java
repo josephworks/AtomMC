@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSand;
@@ -923,12 +924,12 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         {
             // Do not pass along players, as doing so can get them stuck outside of time.
             // (which for example disables inventory icon updates and prevents block breaking)
-            for (Entity entity : classinheritancemultimap) {
-                if (entity instanceof EntityPlayerMP) {
-                    classinheritancemultimap.remove(entity);
-                }
-            }
-            this.world.unloadEntities(classinheritancemultimap);
+            this.world.unloadEntities(
+                    classinheritancemultimap
+                    .stream()
+                    .filter(entity -> !(entity instanceof EntityPlayerMP))
+                    .collect(Collectors.toCollection(() -> new ClassInheritanceMultiMap<>(Entity.class)))
+            );
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
     }
