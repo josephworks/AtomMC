@@ -932,7 +932,9 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         this.spawnWorld = compound.getString("SpawnWorld");
         if ("".equals(spawnWorld)) {
-            this.spawnWorld = this.world.getServer().getWorlds().get(0).getName();
+            // TODO: Check if it is correct to use primary world as a replacement for getWorlds().get(0)
+            // this.spawnWorld = this.world.getServer().getWorlds().get(0).getName();
+            this.spawnWorld = this.world.getMinecraftServer().getWorld(0).getWorld().getName();
         }
 
         if (compound.hasKey("SpawnX", 99) && compound.hasKey("SpawnY", 99) && compound.hasKey("SpawnZ", 99))

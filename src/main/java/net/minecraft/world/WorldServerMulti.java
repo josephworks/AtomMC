@@ -15,9 +15,9 @@ public class WorldServerMulti extends WorldServer
     private IBorderListener borderListener;
 
     // CraftBukkit start - Add WorldInfo, Environment and ChunkGenerator arguments
-    public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn, WorldInfo worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen)
+    public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn, WorldInfo worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, String worldName)
     {
-        super(server, saveHandlerIn, worldData, dimensionId, profilerIn, env, gen);
+        super(server, saveHandlerIn, worldData, dimensionId, profilerIn, env, gen, worldName);
         this.delegate = delegate;
         /* CraftBukkit start
         this.borderListener = new IBorderListener()

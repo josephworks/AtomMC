@@ -55,9 +55,13 @@ import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerMulti;
+import net.minecraft.world.chunk.storage.AnvilSaveHandler;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLLog;
+import org.bukkit.Bukkit;
+import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.generator.ChunkGenerator;
 
 import javax.annotation.Nullable;
 
@@ -208,11 +212,14 @@ public class DimensionManager
         {
             worlds.put(id, world);
             weakWorldMap.put(world, world);
+            if (!server.worldServerList.contains(world))
+                server.worldServerList.add(world);
             server.worldTickTimes.put(id, new long[100]);
             FMLLog.log.info("Loading dimension {} ({}) ({})", id, world.getWorldInfo().getWorldName(), world.getMinecraftServer());
         }
         else
         {
+            server.worldServerList.remove(getWorld(id));
             worlds.remove(id);
             server.worldTickTimes.remove(id);
             FMLLog.log.info("Unloading dimension {}", id);
@@ -258,8 +265,21 @@ public class DimensionManager
         MinecraftServer mcServer = overworld.getMinecraftServer();
         ISaveHandler savehandler = overworld.getSaveHandler();
         //WorldSettings worldSettings = new WorldSettings(overworld.getWorldInfo());
-
-        WorldServer world = (dim == 0 ? overworld : (WorldServer)(new WorldServerMulti(mcServer, savehandler, dim, overworld, mcServer.profiler).init()));
+        org.bukkit.World.Environment worldEnvironment = org.bukkit.World.Environment.getEnvironment(dim);
+        String name;
+        if (dim >= -1 && dim <= 1) {
+            if ((dim == -1 && !mcServer.getAllowNether()) || (dim == 1 && !mcServer.server.getAllowEnd()))
+                return;
+            name = "DIM" + dim;
+        } else {
+            WorldProvider provider = createProviderFor(dim);
+            name = provider.getSaveFolder();
+            if (name == null)
+                name = "DIM0";
+        }
+        ChunkGenerator chunkGenerator = mcServer.server.getGenerator(name);
+        ISaveHandler newSaveHandler = new AnvilSaveHandler(mcServer.server.getWorldContainer(), name, true, mcServer.dataFixer);
+        WorldServer world = (dim == 0 ? overworld : (WorldServer)(new WorldServerMulti(mcServer, newSaveHandler, dim, overworld, mcServer.profiler, overworld.getWorldInfo(), worldEnvironment, chunkGenerator, name).init()));
         world.addEventListener(new ServerWorldEventHandler(mcServer, world));
         MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(world));
         if (!mcServer.isSinglePlayer())
@@ -382,6 +402,10 @@ public class DimensionManager
             WorldServer w = worlds.get(id);
             queueIterator.remove();
             dimension.ticksWaited = 0;
+            WorldUnloadEvent worldUnloadEvent = new WorldUnloadEvent(w.getWorld());
+            Bukkit.getPluginManager().callEvent(worldUnloadEvent);
+            if (worldUnloadEvent.isCancelled())
+                continue;
             // Don't unload the world if the status changed
             if (w == null || !canUnloadWorld(w))
             {
@@ -399,6 +423,10 @@ public class DimensionManager
             finally
             {
                 MinecraftForge.EVENT_BUS.post(new WorldEvent.Unload(w));
+                if (w.dimension != 0) {
+                    w.getMinecraftServer().server.removeWorld(w.getWorld());
+                    w.getMinecraftServer().worldServerList.remove(w);
+                }
                 w.flush();
                 setWorld(id, null, w.getMinecraftServer());
             }

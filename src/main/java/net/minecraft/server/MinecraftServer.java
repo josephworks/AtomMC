@@ -382,47 +382,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 if (this.isDemo()) {
                     world = (WorldServer) (new WorldServerDemo(this, idatamanager, worlddata, dim, this.profiler)).init();
                 } else {
-                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, worldEnvironment, gen)).init();
+                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, worldEnvironment, gen, name)).init();
                 }
 
                 world.initialize(worldsettings);
                 this.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager(this, world.getScoreboard());
             } else {
-                String dimStr = "DIM" + dim;
-
-                File newWorld = new File(new File(name), dimStr);
-                File oldWorld = new File(new File(saveName), dimStr);
-
-                if ((!newWorld.isDirectory()) && (oldWorld.isDirectory())) {
-                    MinecraftServer.LOGGER.info("---- Migration of old " + worldType + " folder required ----");
-                    MinecraftServer.LOGGER.info("Unfortunately due to the way that Minecraft implemented multiworld support in 1.6, Bukkit requires that you move your " + worldType + " folder to a new location in order to operate correctly.");
-                    MinecraftServer.LOGGER.info("We will move this folder for you, but it will mean that you need to move it back should you wish to stop using Bukkit in the future.");
-                    MinecraftServer.LOGGER.info("Attempting to move " + oldWorld + " to " + newWorld + "...");
-
-                    if (newWorld.exists()) {
-                        MinecraftServer.LOGGER.warn("A file or folder already exists at " + newWorld + "!");
-                        MinecraftServer.LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
-                    } else if (newWorld.getParentFile().mkdirs()) {
-                        if (oldWorld.renameTo(newWorld)) {
-                            MinecraftServer.LOGGER.info("Success! To restore " + worldType + " in the future, simply move " + newWorld + " to " + oldWorld);
-                            // Migrate world data too.
-                            try {
-                                com.google.common.io.Files.copy(new File(new File(saveName), "level.dat"), new File(new File(name), "level.dat"));
-                                org.apache.commons.io.FileUtils.copyDirectory(new File(new File(saveName), "data"), new File(new File(name), "data"));
-                            } catch (IOException exception) {
-                                MinecraftServer.LOGGER.warn("Unable to migrate world data.");
-                            }
-                            MinecraftServer.LOGGER.info("---- Migration of old " + worldType + " folder complete ----");
-                        } else {
-                            MinecraftServer.LOGGER.warn("Could not move folder " + oldWorld + " to " + newWorld + "!");
-                            MinecraftServer.LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
-                        }
-                    } else {
-                        MinecraftServer.LOGGER.warn("Could not create path for " + newWorld + "!");
-                        MinecraftServer.LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
-                    }
-                }
-
                 ISaveHandler idatamanager = new AnvilSaveHandler(server.getWorldContainer(), name, true, this.dataFixer);
                 // world =, b0 to dimension, s1 to name, added Environment and gen
                 WorldInfo worlddata = idatamanager.loadWorldInfo();
@@ -430,7 +395,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     worlddata = new WorldInfo(worldsettings, name);
                 }
                 worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, worldEnvironment, gen).init();
+                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, worldEnvironment, gen, name).init();
             }
             this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
             world.addEventListener(new ServerWorldEventHandler(this, world));
@@ -459,8 +424,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.setUserMessage("menu.generatingTerrain");
         int j1 = 0;
         // CraftBukkit start - fire WorldLoadEvent and handle whether or not to keep the spawn in memory
-        for (int m = 0; m < worldServerList.size(); m++) {
-            WorldServer worldserver = this.worldServerList.get(m);
+        for (int m = 0; m < worlds.length; m++) {
+            WorldServer worldserver = this.worlds[m];
             MinecraftServer.LOGGER.info("Preparing start region for level " + m + " (Seed: " + worldserver.getSeed() + ")");
 
             if (!worldserver.getWorld().getKeepSpawnInMemory()) {
@@ -485,7 +450,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             }
         }
 
-        for (WorldServer world : this.worldServerList) {
+        for (WorldServer world : this.worlds) {
             this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(world.getWorld()));
         }
 
@@ -915,14 +880,14 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         net.minecraftforge.common.chunkio.ChunkIOExecutor.tick();
 
         // TODO: Check if it's OK to replace ids for worldServerList.size()
-        // Integer[] ids = net.minecraftforge.common.DimensionManager.getIDs(this.tickCounter % 200 == 0);
-        for (int x = 0; x < worldServerList.size(); x++)
+        Integer[] ids = net.minecraftforge.common.DimensionManager.getIDs(this.tickCounter % 200 == 0);
+        for (int x = 0; x < ids.length; x++)
         {
-            // int id = ids[x];
+            int id = ids[x];
             long i = System.nanoTime();
 
             // if (id == 0 || this.getAllowNether()) {
-                WorldServer worldserver = worldServerList.get(x);
+                WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
                 this.profiler.func_194340_a(() ->
                 {
                     return worldserver.getWorldInfo().getWorldName();
@@ -976,7 +941,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 this.profiler.endSection();
             // }
 
-            // worldTickTimes.get(id)[this.tickCounter % 100] = System.nanoTime() - i;
+            worldTickTimes.get(id)[this.tickCounter % 100] = System.nanoTime() - i;
         }
 
         this.profiler.endStartSection("dim_unloading");
@@ -1039,17 +1004,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             ret = net.minecraftforge.common.DimensionManager.getWorld(dimension);
         }
         return ret;
-    }
-
-    public WorldServer getWorldServer(int i) {
-        // CraftBukkit start
-        for (WorldServer world : worldServerList) {
-            if (world.dimension == i) {
-                return world;
-            }
-        }
-        return worldServerList.get(0);
-        // CraftBukkit end
     }
 
     public String getMinecraftVersion()

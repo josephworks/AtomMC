@@ -175,7 +175,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         return ((ChunkProviderServer) this.chunkProvider).getChunkIfLoaded(x, z);
     }
 
-    protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client, ChunkGenerator gen, org.bukkit.World.Environment env) {
+    protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client, ChunkGenerator gen, org.bukkit.World.Environment env, String worldName) {
         this.spigotConfig = new org.spigotmc.SpigotWorldConfig( info.getWorldName() ); // Spigot
         this.generator = gen;
         this.world = new CraftWorld((WorldServer) this, gen, env);
@@ -190,8 +190,23 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         this.lightUpdateBlockList = new int[32768];
         this.saveHandler = saveHandlerIn;
         this.profiler = profilerIn;
-        this.worldInfo = info;
+        this.worldInfo = saveHandlerIn.loadWorldInfo();
         this.provider = providerIn;
+        if (this.worldInfo == null) {
+            this.worldInfo = new WorldInfo(new WorldSettings(info), worldName);
+            this.worldInfo.world = (WorldServer) this;
+            this.worldInfo.setDimension(this.provider.getDimension());
+        } else {
+            this.worldInfo.world = (WorldServer) this;
+            if (this.worldInfo.getDimension() != 0) {
+                this.provider.setDimension(this.worldInfo.getDimension());
+            } else {
+                this.worldInfo.setDimension(this.provider.getDimension());
+            }
+        }
+        int providerId = this.provider.getDimension();
+        this.provider.setWorld(this);
+        this.provider.setDimension(providerId);
         this.isRemote = client;
         this.worldBorder = providerIn.createWorldBorder();
         perWorldStorage = new MapStorage((ISaveHandler)null);

@@ -628,7 +628,7 @@ public abstract class PlayerList
         // depending on the outcome.
         SocketAddress socketaddress = loginServer.networkManager.getRemoteAddress();
 
-        EntityPlayerMP entity = new EntityPlayerMP(mcServer, mcServer.getWorldServer(0), profile, new PlayerInteractionManager(mcServer.getWorldServer(0)));
+        EntityPlayerMP entity = new EntityPlayerMP(mcServer, mcServer.getWorld(0), profile, new PlayerInteractionManager(mcServer.getWorld(0)));
         Player player = entity.getBukkitEntity();
         PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
         if (getBannedPlayers().isBanned(profile) && !getBannedPlayers().getEntry(profile).hasBanExpired())
@@ -849,7 +849,7 @@ public abstract class PlayerList
             location = respawnEvent.getRespawnLocation();
             playerIn.reset();
         } else {
-            location.setWorld(mcServer.getWorldServer(dimension).getWorld());
+            location.setWorld(mcServer.getWorld(dimension).getWorld());
         }
 
         WorldServer worldserver = ((CraftWorld) location.getWorld()).getHandle();
