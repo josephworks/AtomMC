@@ -492,7 +492,7 @@ public abstract class PlayerList
         cserver.getPluginManager().callEvent(playerQuitEvent);
         playerIn.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
 
-        playerIn.onUpdateEntity();// SPIGOT-924
+        // playerIn.onUpdateEntity();// SPIGOT-924
         // CraftBukkit end
 
         this.writePlayerData(playerIn);
