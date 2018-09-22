@@ -6,6 +6,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 
 public class RecipeIterator implements Iterator<Recipe> {
     private final Iterator<IRecipe> recipes;
@@ -26,7 +28,11 @@ public class RecipeIterator implements Iterator<Recipe> {
     public Recipe next() {
         if (recipes.hasNext()) {
             removeFrom = recipes;
-            return recipes.next().toBukkitRecipe();
+            if (recipes.next() instanceof ShapedRecipe || recipes.next() instanceof ShapelessRecipe) {
+                return recipes.next().toBukkitRecipe();
+            } else {
+                return new CraftCustomModRecipe(recipes.next());
+            }
         } else {
             net.minecraft.item.ItemStack item;
             if (smeltingCustom.hasNext()) {
