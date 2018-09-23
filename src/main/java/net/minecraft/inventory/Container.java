@@ -385,7 +385,6 @@ public abstract class Container
                 {
                     if (dragType == 0)
                     {
-                        player.dropItem(inventoryplayer.getItemStack(), true);
                         ItemStack carried = inventoryplayer.getItemStack();
                         inventoryplayer.setItemStack(ItemStack.EMPTY);
                         player.dropItem(carried, true);
