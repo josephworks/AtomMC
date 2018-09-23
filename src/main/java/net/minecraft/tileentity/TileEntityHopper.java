@@ -29,6 +29,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.atom.inventory.util.InventoryUtils;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -238,10 +239,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
                         if (iinventory instanceof InventoryLargeChest) {
                             destinationInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) iinventory);
                         } else {
-                            destinationInventory = iinventory.getOwner().getInventory();
+                            destinationInventory = InventoryUtils.getInventoryOwner(iinventory).getInventory();
                         }
 
-                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(this.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
+                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(InventoryUtils.getInventoryOwner(this).getInventory(), oitemstack.clone(), destinationInventory, true);
                         this.getWorld().getServer().getPluginManager().callEvent(event);
                         if (event.isCancelled()) {
                             this.setInventorySlotContents(i, itemstack);
@@ -408,10 +409,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             if (inventoryIn instanceof InventoryLargeChest) {
                 sourceInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) inventoryIn);
             } else {
-                sourceInventory = inventoryIn.getOwner().getInventory();
+                sourceInventory = InventoryUtils.getInventoryOwner(inventoryIn).getInventory();
             }
 
-            InventoryMoveItemEvent event = new InventoryMoveItemEvent(sourceInventory, oitemstack.clone(), hopper.getOwner().getInventory(), false);
+            InventoryMoveItemEvent event = new InventoryMoveItemEvent(sourceInventory, oitemstack.clone(), InventoryUtils.getInventoryOwner(hopper).getInventory(), false);
 
             hopper.getWorld().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -455,7 +456,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         }
         else
         {
-            InventoryPickupItemEvent event = new InventoryPickupItemEvent(destination.getOwner().getInventory(), (org.bukkit.entity.Item) entity.getBukkitEntity());
+            InventoryPickupItemEvent event = new InventoryPickupItemEvent(InventoryUtils.getInventoryOwner(destination).getInventory(), (org.bukkit.entity.Item) entity.getBukkitEntity());
             entity.world.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;

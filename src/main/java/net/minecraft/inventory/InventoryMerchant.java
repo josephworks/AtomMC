@@ -242,4 +242,8 @@ public class InventoryMerchant implements IInventory
     {
         this.slots.clear();
     }
+
+    public EntityPlayer getPlayer() {
+        return player;
+    }
 }

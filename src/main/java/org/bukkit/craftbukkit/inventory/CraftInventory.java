@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.tileentity.TileEntityShulkerBox;
 import org.apache.commons.lang3.Validate;
 import org.atom.asm.IInventoryTransactionProvider;
+import org.atom.inventory.util.InventoryUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
@@ -479,7 +480,7 @@ public class CraftInventory implements Inventory {
     }
 
     public InventoryHolder getHolder() {
-        return inventory.getOwner();
+        return InventoryUtils.getInventoryOwner(inventory);
     }
 
     public int getMaxStackSize() {
