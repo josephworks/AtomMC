@@ -527,7 +527,7 @@ public class CraftEventFactory {
             }
             return event;
         } else if (blockDamage != null) {
-            DamageCause cause = null;
+            DamageCause cause;
             Block damager = blockDamage;
             blockDamage = null;
             if (source == DamageSource.CACTUS) {
@@ -535,7 +535,7 @@ public class CraftEventFactory {
             } else if (source == DamageSource.HOT_FLOOR) {
                 cause = DamageCause.HOT_FLOOR;
             } else {
-                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.damageType));
+                cause = DamageCause.CUSTOM;
             }
             EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
             if (!event.isCancelled()) {
@@ -543,7 +543,7 @@ public class CraftEventFactory {
             }
             return event;
         } else if (entityDamage != null) {
-            DamageCause cause = null;
+            DamageCause cause;
             CraftEntity damager = entityDamage.getBukkitEntity();
             entityDamage = null;
             if (source == DamageSource.ANVIL || source == DamageSource.FALLING_BLOCK) {
@@ -557,7 +557,7 @@ public class CraftEventFactory {
             } else if (source == DamageSource.MAGIC) {
                 cause = DamageCause.MAGIC;
             } else {
-                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager.getHandle(), source.damageType));
+                cause = DamageCause.CUSTOM;
             }
             EntityDamageEvent event = callEvent(new EntityDamageByEntityEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
             if (!event.isCancelled()) {
@@ -566,7 +566,7 @@ public class CraftEventFactory {
             return event;
         }
 
-        DamageCause cause = null;
+        DamageCause cause;
         if (source == DamageSource.IN_FIRE) {
             cause = DamageCause.FIRE;
         } else if (source == DamageSource.STARVE) {
@@ -593,13 +593,11 @@ public class CraftEventFactory {
             cause = DamageCause.CRAMMING;
         } else if (source == DamageSource.GENERIC) {
             cause = DamageCause.CUSTOM;
+        } else {
+            cause = DamageCause.CUSTOM;
         }
 
-        if (cause != null) {
-            return callEntityDamageEvent(null, entity, cause, modifiers, modifierFunctions);
-        }
-
-        throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.damageType));
+        return callEntityDamageEvent(null, entity, cause, modifiers, modifierFunctions);
     }
 
     private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, Map<DamageModifier, Double> modifiers, Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
