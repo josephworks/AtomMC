@@ -28,10 +28,11 @@ public class RecipeIterator implements Iterator<Recipe> {
     public Recipe next() {
         if (recipes.hasNext()) {
             removeFrom = recipes;
-            if (recipes.next() instanceof ShapedRecipe || recipes.next() instanceof ShapelessRecipe) {
-                return recipes.next().toBukkitRecipe();
+            IRecipe recipe = recipes.next();
+            if (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) {
+                return recipe.toBukkitRecipe();
             } else {
-                return new CraftCustomModRecipe(recipes.next());
+                return new CraftCustomModRecipe(recipe);
             }
         } else {
             net.minecraft.item.ItemStack item;
