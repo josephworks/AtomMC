@@ -311,7 +311,7 @@ public class ContainerEnchantment extends Container
                     }
                     CraftItemStack item = CraftItemStack.asCraftMirror(itemstack);
 
-                    EnchantItemEvent event = new EnchantItemEvent((Player) playerIn.getBukkitEntity(), this.getBukkitView(), this.worldPointer.getWorld().getBlockAt(position.getX(), position.getY(), position.getZ()), item, this.enchantLevels[i], enchants, i);
+                    EnchantItemEvent event = new EnchantItemEvent((Player) playerIn.getBukkitEntity(), this.getBukkitView(), this.worldPointer.getWorld().getBlockAt(position.getX(), position.getY(), position.getZ()), item, this.enchantLevels[id], enchants, id);
                     this.worldPointer.getServer().getPluginManager().callEvent(event);
 
                     int level = event.getExpLevelCost();
