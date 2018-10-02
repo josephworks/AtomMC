@@ -1155,9 +1155,11 @@ public abstract class PlayerList
                 blockposition = worldserver1.getSpawnCoordinate();
             }
 
-            d0 = (double) blockposition.getX();
-            y = (double) blockposition.getY();
-            d1 = (double) blockposition.getZ();
+            if (blockposition != null) {
+                d0 = (double) blockposition.getX();
+                y = (double) blockposition.getY();
+                d1 = (double) blockposition.getZ();
+            }
             /*
             entity.setPositionRotation(d0, entity.locY, d1, 90.0F, 0.0F);
             if (entity.isAlive()) {
