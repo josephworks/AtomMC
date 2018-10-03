@@ -919,7 +919,7 @@ public abstract class EntityLivingBase extends Entity
         if (f > 0.0F)
         {
             // this.setHealth(f + healAmount);
-            EntityRegainHealthEvent event = new EntityRegainHealthEvent(this.getBukkitEntity(), f, regainReason);
+            EntityRegainHealthEvent event = new EntityRegainHealthEvent(this.getBukkitEntity(), healAmount, regainReason);
             this.world.getServer().getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
