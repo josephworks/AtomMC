@@ -101,7 +101,7 @@ public final class WorldEntitySpawner
                 // CraftBukkit end
                 if ((!enumcreaturetype.getPeacefulCreature() || spawnPeacefulMobs) && (enumcreaturetype.getPeacefulCreature() || spawnHostileMobs) && (!enumcreaturetype.getAnimal() || spawnOnSetTickRate))
                 {
-                    int k4 = worldServerIn.countEntities(enumcreaturetype, true);
+                    int k4 = worldServerIn.countEntities(enumcreaturetype.getCreatureClass());
                     // int l4 = enumcreaturetype.getMaxNumberOfCreature() * i / MOB_COUNT_DIV;
                     int l4 = limit * i / MOB_COUNT_DIV; // CraftBukkit - use per-world limits
 
