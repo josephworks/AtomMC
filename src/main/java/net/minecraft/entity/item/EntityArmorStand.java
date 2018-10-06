@@ -989,7 +989,7 @@ public class EntityArmorStand extends EntityLivingBase
         return SoundEvents.ENTITY_ARMORSTAND_BREAK;
     }
 
-    public void onStruckByLightning(EntityLightningBolt lightningBolt)
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
     {
     }
 

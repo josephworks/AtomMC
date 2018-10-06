@@ -905,7 +905,7 @@ public class EntityVillager extends EntityAgeable implements INpc, IMerchant
         return false;
     }
 
-    public void onStruckByLightning(EntityLightningBolt lightningBolt)
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
     {
         if (!this.world.isRemote && !this.isDead)
         {
