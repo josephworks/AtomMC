@@ -2193,17 +2193,18 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
         else
         {
+            boolean bukkitCaptureDrops = false;
             // CraftBukkit start - Capture drops for death event
             if (this instanceof EntityLiving && !((EntityLiving) this).forceDrops) {
                 ((EntityLiving) this).drops.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(stack));
-                return null;
+                bukkitCaptureDrops = true;
             }
             // CraftBukkit end
             EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY + (double)offsetY, this.posZ, stack);
             entityitem.setDefaultPickupDelay();
             if (captureDrops)
                 this.capturedDrops.add(entityitem);
-            else
+            else if (!bukkitCaptureDrops)
                 this.world.spawnEntity(entityitem);
             return entityitem;
         }
