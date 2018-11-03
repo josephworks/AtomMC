@@ -45,8 +45,10 @@ import com.google.gson.JsonParseException;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -68,11 +70,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemRecord;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTippedArrow;
@@ -89,6 +93,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityNote;
+import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -96,6 +101,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -159,6 +165,8 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.block.CraftBlockState;
 
 public class ForgeHooks
 {
@@ -886,6 +894,7 @@ public class ForgeHooks
             {
                 newNBT = itemstack.getTagCompound().copy();
             }
+            org.bukkit.event.block.BlockPlaceEvent blockPlaceEvent = null;
             BlockEvent.PlaceEvent placeEvent = null;
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>)world.capturedBlockSnapshots.clone();
@@ -900,14 +909,16 @@ public class ForgeHooks
             }
             if (blockSnapshots.size() > 1)
             {
+                blockPlaceEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockMultiPlaceEvent(world, player, hand, toBlockStates(world, blockSnapshots), pos.getX(), pos.getY(), pos.getZ());
                 placeEvent = ForgeEventFactory.onPlayerMultiBlockPlace(player, blockSnapshots, side, hand);
             }
             else if (blockSnapshots.size() == 1)
             {
+                blockPlaceEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPlaceEvent(world, player, hand, toBlockState(world, blockSnapshots.get(0)), pos.getX(), pos.getY(), pos.getZ());
                 placeEvent = ForgeEventFactory.onPlayerBlockPlace(player, blockSnapshots.get(0), side, hand);
             }
 
-            if (placeEvent != null && placeEvent.isCanceled())
+            if ((placeEvent != null && placeEvent.isCanceled()) || (blockPlaceEvent != null && (blockPlaceEvent.isCancelled() || !blockPlaceEvent.canBuild())))
             {
                 ret = EnumActionResult.FAIL; // cancel placement
                 // revert back all captured blocks
@@ -928,6 +939,10 @@ public class ForgeHooks
                     itemstack.setTagCompound(newNBT);
                 }
 
+                for (Map.Entry<BlockPos, TileEntity> e : world.capturedTileEntities.entrySet()) {
+                    world.setTileEntity(e.getKey(), e.getValue());
+                }
+
                 for (BlockSnapshot snap : blockSnapshots)
                 {
                     int updateFlag = snap.getFlag();
@@ -940,12 +955,53 @@ public class ForgeHooks
 
                     world.markAndNotifyBlock(snap.getPos(), null, oldBlock, newBlock, updateFlag);
                 }
+                if (itemstack.getItem() instanceof ItemRecord) {
+                    ((BlockJukebox) Blocks.JUKEBOX).insertRecord(world, pos, world.getBlockState(pos), itemstack);
+                    world.playEvent(null, 1010, pos, Item.getIdFromItem(itemstack.getItem()));
+                    itemstack.shrink(1);
+                    player.addStat(StatList.CRAFTING_TABLE_INTERACTION);
+                }
+
+                if (itemstack.getItem() == Items.SKULL) { // Special case skulls to allow wither spawns to be cancelled
+                    BlockPos bp = pos;
+                    if (!world.getBlockState(pos).getBlock().isReplaceable(world, pos)) {
+                        if (!world.getBlockState(pos).getMaterial().isSolid()) {
+                            bp = null;
+                        } else {
+                            bp = bp.offset(side);
+                        }
+                    }
+                    if (bp != null) {
+                        TileEntity te = world.getTileEntity(bp);
+                        if (te instanceof TileEntitySkull) {
+                            Blocks.SKULL.checkWitherSpawn(world, bp, (TileEntitySkull) te);
+                        }
+                    }
+                }
+
+                // SPIGOT-1288 - play sound stripped from ItemBlock
+                if (itemstack.getItem() instanceof ItemBlock) {
+                    SoundType soundeffecttype = ((ItemBlock) itemstack.getItem()).getBlock().getSoundType();
+                    world.playSound(player, pos, soundeffecttype.getPlaceSound(), SoundCategory.BLOCKS, (soundeffecttype.getVolume() + 1.0F) / 2.0F, soundeffecttype.getPitch() * 0.8F);
+                }
                 player.addStat(StatList.getObjectUseStats(itemstack.getItem()));
             }
         }
         world.capturedBlockSnapshots.clear();
 
         return ret;
+    }
+
+    private static BlockState toBlockState(World world, BlockSnapshot blockSnapshot) {
+        return new CraftBlockState(world.getWorld().getBlockAt(blockSnapshot.getPos().getX(), blockSnapshot.getPos().getY(), blockSnapshot.getPos().getZ()), blockSnapshot.getFlag());
+    }
+
+    private static List<BlockState> toBlockStates(World world, List<BlockSnapshot> blockSnapshots) {
+        List<BlockState> blockStates = new ArrayList<>(blockSnapshots.size());
+        for (BlockSnapshot blockSnapshot : blockSnapshots) {
+            blockStates.add(new CraftBlockState(world.getWorld().getBlockAt(blockSnapshot.getPos().getX(), blockSnapshot.getPos().getY(), blockSnapshot.getPos().getZ()), blockSnapshot.getFlag()));
+        }
+        return blockStates;
     }
 
     public static boolean onAnvilChange(ContainerRepair container, @Nonnull ItemStack left, @Nonnull ItemStack right, IInventory outputSlot, String name, int baseCost)
