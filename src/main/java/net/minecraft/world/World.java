@@ -176,6 +176,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     public long ticksPerMonsterSpawns;
     public boolean populating;
     private int tickPosition;
+    public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
 
     public CraftWorld getWorld() {
         return this.world;
@@ -190,6 +191,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     }
 
     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client, ChunkGenerator gen, org.bukkit.World.Environment env) {
+        this.spigotConfig = new org.spigotmc.SpigotWorldConfig( info.getWorldName() ); // Spigot
         this.generator = gen;
         this.world = new CraftWorld((WorldServer) this, gen, env);
         this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
@@ -242,6 +244,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
 
     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client)
     {
+        this.spigotConfig = new org.spigotmc.SpigotWorldConfig( info.getWorldName() ); // Spigot
         this.world = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).getWorld() : null;
         this.eventListeners = Lists.newArrayList(this.pathListener);
         this.calendar = Calendar.getInstance();

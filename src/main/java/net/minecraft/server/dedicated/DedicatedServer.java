@@ -219,6 +219,11 @@ public class DedicatedServer extends MinecraftServer implements IServer
             {
                 this.setServerPort(this.settings.getIntProperty("server-port", 25565));
             }
+            // Spigot start
+            setPlayerList(new DedicatedPlayerList(this));
+            org.spigotmc.SpigotConfig.init((File) options.valueOf("spigot-settings"));
+            org.spigotmc.SpigotConfig.registerCommands();
+            // Spigot end
 
             LOGGER.info("Generating keypair");
             this.setKeyPair(CryptManager.generateKeyPair());
@@ -236,7 +241,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 return false;
             }
 
-            this.setPlayerList(new DedicatedPlayerList(this));
+            //  this.setPlayerList(new DedicatedPlayerList(this)); // Spigot - moved up
             server.loadPlugins();
             server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
 
