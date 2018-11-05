@@ -124,4 +124,11 @@ public class ProxiedNativeCommandSender implements ProxiedCommandSender {
         getCaller().setOp(value);
     }
 
+    // Spigot start
+    @Override
+    public Spigot spigot()
+    {
+        return getCaller().spigot();
+    }
+    // Spigot end
 }

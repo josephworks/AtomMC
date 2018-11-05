@@ -1568,4 +1568,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     public String getLocale() {
         return getHandle().language;
     }
+
+    // Spigot start
+    private final Player.Spigot spigot = new Player.Spigot()
+    {
+    };
+
+    public Player.Spigot spigot()
+    {
+        return spigot;
+    }
+    // Spigot end
 }

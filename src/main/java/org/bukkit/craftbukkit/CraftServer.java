@@ -1754,4 +1754,14 @@ public final class CraftServer implements Server {
     public UnsafeValues getUnsafe() {
         return CraftMagicNumbers.INSTANCE;
     }
+
+    private final Spigot spigot = new Spigot()
+    {
+
+    };
+
+    public Spigot spigot()
+    {
+        return spigot;
+    }
 }
