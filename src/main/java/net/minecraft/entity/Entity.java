@@ -2390,6 +2390,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     return;
                 }
             }
+            // Spigot start
+            org.spigotmc.event.entity.EntityMountEvent event = new org.spigotmc.event.entity.EntityMountEvent(passenger.getBukkitEntity(), this.getBukkitEntity());
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+            // Spigot end
             if (!this.world.isRemote && passenger instanceof EntityPlayer && !(this.getControllingPassenger() instanceof EntityPlayer))
             {
                 this.riddenByEntities.add(0, passenger);
@@ -2423,6 +2430,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     return;
                 }
             }
+            Bukkit.getPluginManager().callEvent( new org.spigotmc.event.entity.EntityDismountEvent(passenger.getBukkitEntity(), this.getBukkitEntity())); // Spigot
             this.riddenByEntities.remove(passenger);
             passenger.rideCooldown = 60;
         }
