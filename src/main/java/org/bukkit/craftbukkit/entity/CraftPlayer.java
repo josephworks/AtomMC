@@ -1572,6 +1572,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     private final Player.Spigot spigot = new Player.Spigot()
     {
         @Override
+        public boolean getCollidesWithEntities() {
+            return CraftPlayer.this.isCollidable();
+        }
+
+        @Override
+        public void setCollidesWithEntities(boolean collides) {
+            CraftPlayer.this.setCollidable(collides);
+        }
+
+        @Override
         public void sendMessage(BaseComponent component) {
             sendMessage( new BaseComponent[] { component } );
         }
