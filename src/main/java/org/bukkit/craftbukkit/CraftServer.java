@@ -174,6 +174,7 @@ import jline.console.ConsoleReader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.event.server.TabCompleteEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public final class CraftServer implements Server {
     private final String serverName = "CraftBukkit";
@@ -1764,6 +1765,20 @@ public final class CraftServer implements Server {
         public YamlConfiguration getConfig()
         {
             return org.spigotmc.SpigotConfig.config;
+        }
+
+        @Override
+        public void broadcast(BaseComponent component) {
+            for (Player player : getOnlinePlayers()) {
+                player.spigot().sendMessage(component);
+            }
+        }
+
+        @Override
+        public void broadcast(BaseComponent... components) {
+            for (Player player : getOnlinePlayers()) {
+                player.spigot().sendMessage(components);
+            }
         }
     };
 
