@@ -41,6 +41,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketChangeGameState;
@@ -420,11 +421,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     @Override
     public void playEffect(Location loc, Effect effect, int data) {
-        if (getHandle().connection == null) return;
-
-        int packetData = effect.getId();
-        SPacketEffect packet = new SPacketEffect(packetData, new BlockPos(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()), data, false);
-        getHandle().connection.sendPacket(packet);
+        spigot().playEffect(loc, effect, data, 0, 0, 0, 0, 1, 1, 64); // Spigot
     }
 
     @Override
@@ -1604,6 +1601,63 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
             }
             packet.components = components;
             getHandle().connection.sendPacket(packet);
+        }
+
+        @Override
+        public void playEffect( Location location, Effect effect, int id, int data, float offsetX, float offsetY, float offsetZ, float speed, int particleCount, int radius )
+        {
+            Validate.notNull( location, "Location cannot be null" );
+            Validate.notNull( effect, "Effect cannot be null" );
+            Validate.notNull( location.getWorld(), "World cannot be null" );
+            Packet packet;
+            if ( effect.getType() != Effect.Type.PARTICLE )
+            {
+                int packetData = effect.getId();
+                packet = new SPacketEffect( packetData, new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ() ), id, false );
+            } else
+            {
+                net.minecraft.util.EnumParticleTypes particle = null;
+                int[] extra = null;
+                for ( net.minecraft.util.EnumParticleTypes p : net.minecraft.util.EnumParticleTypes.values() )
+                {
+                    if ( effect.getName().startsWith( p.getParticleName().replace("_", "") ) )
+                    {
+                        particle = p;
+                        if ( effect.getData() != null )
+                        {
+                            if ( effect.getData().equals( org.bukkit.Material.class ) )
+                            {
+                                extra = new int[]{ id };
+                            } else
+                            {
+                                extra = new int[]{ (data << 12) | (id & 0xFFF) };
+                            }
+                        }
+                        break;
+                    }
+                }
+                if ( extra == null )
+                {
+                    extra = new int[0];
+                }
+                packet = new SPacketParticles( particle, true, (float) location.getX(), (float) location.getY(), (float) location.getZ(), offsetX, offsetY, offsetZ, speed, particleCount, extra );
+            }
+            int distance;
+            radius *= radius;
+            if ( getHandle().connection == null )
+            {
+                return;
+            }
+            if ( !location.getWorld().equals( getWorld() ) )
+            {
+                return;
+            }
+
+            distance = (int) getLocation().distanceSquared( location );
+            if ( distance <= radius )
+            {
+                getHandle().connection.sendPacket( packet );
+            }
         }
     };
 
