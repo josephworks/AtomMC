@@ -25,6 +25,7 @@ public class EntityLightningBolt extends EntityWeatherEffect
     private final boolean effectOnly;
 
     public boolean isEffect;
+    public boolean isSilent = false; // Spigot
 
     public EntityLightningBolt(World worldIn, double x, double y, double z, boolean effectOnlyIn)
     {
@@ -62,6 +63,14 @@ public class EntityLightningBolt extends EntityWeatherEffect
         }
     }
 
+    // Spigot start
+    public EntityLightningBolt(World world, double d0, double d1, double d2, boolean isEffect, boolean isSilent)
+    {
+        this( world, d0, d1, d2, isEffect );
+        this.isSilent = isSilent;
+    }
+    // Spigot end
+
     public SoundCategory getSoundCategory()
     {
         return SoundCategory.WEATHER;
@@ -71,7 +80,7 @@ public class EntityLightningBolt extends EntityWeatherEffect
     {
         super.onUpdate();
 
-        if (this.lightningState == 2)
+        if (!isSilent && this.lightningState == 2) // Spigot
         {
             // CraftBukkit start - Use relative location for far away sounds
             // this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F + this.rand.nextFloat() * 0.2F);
