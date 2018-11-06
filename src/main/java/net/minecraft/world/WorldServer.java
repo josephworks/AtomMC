@@ -394,10 +394,13 @@ public class WorldServer extends World implements IThreadListener
         long time = this.worldInfo.getWorldTotalTime();
         if (this.getGameRules().getBoolean("doMobSpawning") && this.worldInfo.getTerrainType() != WorldType.DEBUG_ALL_BLOCK_STATES && (this.spawnHostileMobs || this.spawnPeacefulMobs) && this.playerEntities.size() > 0)
         {
+            timings.mobSpawn.startTiming(); // Spigot
             // this.entitySpawner.findChunksForSpawning(this, this.spawnHostileMobs, this.spawnPeacefulMobs, this.worldInfo.getWorldTotalTime() % 400L == 0L);
             this.entitySpawner.findChunksForSpawning(this, this.spawnHostileMobs && (this.ticksPerMonsterSpawns != 0 && time % this.ticksPerMonsterSpawns == 0L), this.spawnPeacefulMobs && (this.ticksPerAnimalSpawns != 0 && time % this.ticksPerAnimalSpawns == 0L), this.worldInfo.getWorldTotalTime() % 400L == 0L);
+            timings.mobSpawn.stopTiming(); // Spigot
         }
 
+        timings.doChunkUnload.startTiming(); // Spigot
         this.profiler.endStartSection("chunkSource");
         this.chunkProvider.tick();
         int j = this.calculateSkylightSubtracted(1.0F);
@@ -414,25 +417,39 @@ public class WorldServer extends World implements IThreadListener
             this.setWorldTime(this.getWorldTime() + 1L);
         }
 
+        timings.doChunkUnload.stopTiming(); // Spigot
         this.profiler.endStartSection("tickPending");
+        timings.doTickPending.startTiming(); // Spigot
         this.tickUpdates(false);
+        timings.doTickPending.stopTiming(); // Spigot
         this.profiler.endStartSection("tickBlocks");
+        timings.doTickTiles.startTiming(); // Spigot
         this.updateBlocks();
+        timings.doTickTiles.stopTiming(); // Spigot
         this.profiler.endStartSection("chunkMap");
+        timings.doChunkMap.startTiming(); // Spigot
         this.playerChunkMap.tick();
+        timings.doChunkMap.stopTiming(); // Spigot
         this.profiler.endStartSection("village");
+        timings.doVillages.startTiming(); // Spigot
         this.villageCollection.tick();
         this.villageSiege.tick();
+        timings.doVillages.stopTiming(); // Spigot
         this.profiler.endStartSection("portalForcer");
+        timings.doPortalForcer.startTiming(); // Spigot
         this.worldTeleporter.removeStalePortalLocations(this.getTotalWorldTime());
         for (Teleporter tele : customTeleporters)
         {
             tele.removeStalePortalLocations(getTotalWorldTime());
         }
         this.profiler.endSection();
+        timings.doPortalForcer.stopTiming(); // Spigot
         this.sendQueuedBlockEvents();
+        timings.doSounds.stopTiming(); // Spigot
 
+        timings.doChunkGC.startTiming();// Spigot
         this.getWorld().processChunkGC();
+        timings.doChunkGC.stopTiming(); // Spigot
     }
 
     @Nullable

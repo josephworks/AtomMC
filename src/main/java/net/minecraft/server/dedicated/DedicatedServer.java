@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.LoggerOutputStream;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -483,6 +484,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public void executePendingCommands()
     {
+        SpigotTimings.serverCommandTimer.startTiming(); // Spigot
         while (!this.pendingCommandList.isEmpty())
         {
             PendingCommand pendingcommand = this.pendingCommandList.remove(0);
@@ -496,6 +498,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
             server.dispatchServerCommand(console, pendingcommand);
             // CraftBukkit end
         }
+        SpigotTimings.serverCommandTimer.stopTiming(); // Spigot
     }
 
     public boolean isDedicatedServer()

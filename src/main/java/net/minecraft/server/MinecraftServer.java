@@ -99,6 +99,7 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.Main;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 
 public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo
 {
@@ -838,6 +839,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void tick()
     {
+        SpigotTimings.serverTickTimer.startTiming(); // Spigot
         long i = System.nanoTime();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
         ++this.tickCounter;
@@ -871,10 +873,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
         if (autosavePeriod > 0 && this.tickCounter % autosavePeriod == 0) // CraftBukkit
         {
+            SpigotTimings.worldSaveTimer.startTiming(); // Spigot
             this.profiler.startSection("save");
             this.playerList.saveAllPlayerData();
             this.saveAllWorlds(true);
             this.profiler.endSection();
+            SpigotTimings.worldSaveTimer.stopTiming(); // Spigot
         }
 
         this.profiler.startSection("tallying");
@@ -895,11 +899,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.endSection();
         this.profiler.endSection();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
+        SpigotTimings.serverTickTimer.stopTiming(); // Spigot
+        org.spigotmc.CustomTimingsHandler.tick(); // Spigot
     }
 
     public void updateTimeLightAndEntities()
     {
+        SpigotTimings.schedulerTimer.startTiming(); // Spigot
         this.server.getScheduler().mainThreadHeartbeat(this.tickCounter); // CraftBukkit
+        SpigotTimings.schedulerTimer.stopTiming(); // Spigot
         this.profiler.startSection("jobs");
 
         synchronized (this.futureTaskQueue)
@@ -913,12 +921,17 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.endStartSection("levels");
         // CraftBukkit start
         // Run tasks that are waiting on processing
+        SpigotTimings.processQueueTimer.startTiming(); // Spigot
         while (!processQueue.isEmpty()) {
             processQueue.remove().run();
         }
+        SpigotTimings.processQueueTimer.stopTiming(); // Spigot
 
+        SpigotTimings.chunkIOTickTimer.startTiming(); // Spigot
         org.bukkit.craftbukkit.chunkio.ChunkIOExecutor.tick();
+        SpigotTimings.chunkIOTickTimer.stopTiming(); // Spigot
 
+        SpigotTimings.timeUpdateTimer.startTiming(); // Spigot
         // Send time updates to everyone, it will get the right time from the world the player is in.
         if (this.tickCounter % 20 == 0) {
             for (int i = 0; i < this.getPlayerList().getPlayers().size(); ++i) {
@@ -950,12 +963,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     this.profiler.endSection();
                 }
                 */
+                SpigotTimings.timeUpdateTimer.stopTiming(); // Spigot
                 this.profiler.startSection("tick");
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreWorldTick(worldserver);
 
                 try
                 {
+                    worldserver.timings.doTick.startTiming(); // Spigot
                     worldserver.tick();
+                    worldserver.timings.doTick.stopTiming(); // Spigot
                 }
                 catch (Throwable throwable1)
                 {
@@ -966,7 +982,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 try
                 {
+                    worldserver.timings.tickEntities.startTiming(); // Spigot
                     worldserver.updateEntities();
+                    worldserver.timings.tickEntities.stopTiming(); // Spigot
                 }
                 catch (Throwable throwable)
                 {
@@ -978,7 +996,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostWorldTick(worldserver);
                 this.profiler.endSection();
                 this.profiler.startSection("tracker");
+                worldserver.timings.tracker.startTiming(); // Spigot
                 worldserver.getEntityTracker().tick();
+                worldserver.timings.tracker.stopTiming(); // Spigot
                 this.profiler.endSection();
                 this.profiler.endSection();
             // }
@@ -989,17 +1009,25 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.endStartSection("dim_unloading");
         net.minecraftforge.common.DimensionManager.unloadWorlds(worldTickTimes);
         this.profiler.endStartSection("connection");
+        SpigotTimings.connectionTimer.startTiming(); // Spigot
         this.getNetworkSystem().networkTick();
+        SpigotTimings.connectionTimer.stopTiming(); // Spigot
         this.profiler.endStartSection("players");
+        SpigotTimings.playerListTimer.startTiming(); // Spigot
         this.playerList.onTick();
+        SpigotTimings.playerListTimer.stopTiming(); // Spigot
         this.profiler.endStartSection("commandFunctions");
+        SpigotTimings.commandFunctionsTimer.startTiming(); // Spigot
         this.getFunctionManager().update();
+        SpigotTimings.commandFunctionsTimer.stopTiming();// Spigot
         this.profiler.endStartSection("tickables");
 
+        SpigotTimings.tickablesTimer.startTiming(); // Spigot
         for (int k = 0; k < this.tickables.size(); ++k)
         {
             ((ITickable)this.tickables.get(k)).update();
         }
+        SpigotTimings.tickablesTimer.stopTiming(); // Spigot
 
         this.profiler.endSection();
     }
