@@ -1582,6 +1582,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         }
 
         @Override
+        public void respawn()
+        {
+            if ( getHealth() <= 0 && isOnline() )
+            {
+                server.getServer().getPlayerList().recreatePlayerEntity( getHandle(), 0, false );
+            }
+        }
+
+        @Override
         public void sendMessage(BaseComponent component) {
             sendMessage( new BaseComponent[] { component } );
         }
