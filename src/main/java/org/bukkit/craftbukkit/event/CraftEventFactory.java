@@ -1048,6 +1048,21 @@ public class CraftEventFactory {
         return event;
     }
 
+    /**
+     * Mob spawner event.
+     */
+    public static SpawnerSpawnEvent callSpawnerSpawnEvent(Entity spawnee, BlockPos pos) {
+        org.bukkit.craftbukkit.entity.CraftEntity entity = spawnee.getBukkitEntity();
+        BlockState state = entity.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()).getState();
+        if (!(state instanceof org.bukkit.block.CreatureSpawner)) {
+            state = null;
+        }
+
+        SpawnerSpawnEvent event = new SpawnerSpawnEvent(entity, (org.bukkit.block.CreatureSpawner) state);
+        entity.getServer().getPluginManager().callEvent(event);
+        return event;
+    }
+
     public static EntityToggleGlideEvent callToggleGlideEvent(EntityLivingBase entity, boolean gliding) {
         EntityToggleGlideEvent event = new EntityToggleGlideEvent((LivingEntity) entity.getBukkitEntity(), gliding);
         entity.world.getServer().getPluginManager().callEvent(event);

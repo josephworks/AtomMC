@@ -174,6 +174,7 @@ import jline.console.ConsoleReader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.event.server.TabCompleteEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public final class CraftServer implements Server {
     private final String serverName = "CraftBukkit";
@@ -737,6 +738,7 @@ public final class CraftServer implements Server {
             logger.log(Level.WARNING, "Failed to load banned-players.json, " + ex.getMessage());
         }
 
+        org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
         for (WorldServer world : console.worlds) {
             world.worldInfo.setDifficulty(difficulty);
             world.setAllowedSpawnTypes(monsters, animals);
@@ -751,12 +753,14 @@ public final class CraftServer implements Server {
             } else {
                 world.ticksPerMonsterSpawns = this.getTicksPerMonsterSpawns();
             }
+            world.spigotConfig.init(); // Spigot
         }
 
         pluginManager.clearPlugins();
         commandMap.clearCommands();
         resetRecipes();
         reloadData();
+        org.spigotmc.SpigotConfig.registerCommands(); // Spigot
         overrideAllCommandBlockCommands = commandsConfiguration.getStringList("command-block-overrides").contains("*");
 
         int pollCount = 0;
@@ -1753,5 +1757,33 @@ public final class CraftServer implements Server {
     @Override
     public UnsafeValues getUnsafe() {
         return CraftMagicNumbers.INSTANCE;
+    }
+
+    private final Spigot spigot = new Spigot()
+    {
+        @Override
+        public YamlConfiguration getConfig()
+        {
+            return org.spigotmc.SpigotConfig.config;
+        }
+
+        @Override
+        public void broadcast(BaseComponent component) {
+            for (Player player : getOnlinePlayers()) {
+                player.spigot().sendMessage(component);
+            }
+        }
+
+        @Override
+        public void broadcast(BaseComponent... components) {
+            for (Player player : getOnlinePlayers()) {
+                player.spigot().sendMessage(components);
+            }
+        }
+    };
+
+    public Spigot spigot()
+    {
+        return spigot;
     }
 }

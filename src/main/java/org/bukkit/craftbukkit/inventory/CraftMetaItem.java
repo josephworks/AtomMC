@@ -905,4 +905,27 @@ class CraftMetaItem implements ItemMeta, Repairable {
             return HANDLED_TAGS;
         }
     }
+
+    // Spigot start
+    private final Spigot spigot = new Spigot()
+    {
+        @Override
+        public void setUnbreakable(boolean setUnbreakable)
+        {
+            CraftMetaItem.this.setUnbreakable(setUnbreakable);
+        }
+
+        @Override
+        public boolean isUnbreakable()
+        {
+            return CraftMetaItem.this.unbreakable;
+        }
+    };
+
+    @Override
+    public Spigot spigot()
+    {
+        return spigot;
+    }
+    // Spigot end
 }

@@ -97,6 +97,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 
 public abstract class EntityLivingBase extends Entity
 {
@@ -2375,6 +2376,7 @@ public abstract class EntityLivingBase extends Entity
     public void onUpdate()
     {
         if (net.minecraftforge.common.ForgeHooks.onLivingUpdate(this)) return;
+        SpigotTimings.timerEntityBaseTick.startTiming(); // Spigot
         super.onUpdate();
         this.updateActiveHand();
 
@@ -2458,7 +2460,9 @@ public abstract class EntityLivingBase extends Entity
             }
         }
 
+        SpigotTimings.timerEntityBaseTick.stopTiming(); // Spigot
         this.onLivingUpdate();
+        SpigotTimings.timerEntityTickRest.startTiming(); // Spigot
         double d0 = this.posX - this.prevPosX;
         double d1 = this.posZ - this.prevPosZ;
         float f3 = (float)(d0 * d0 + d1 * d1);
@@ -2551,6 +2555,7 @@ public abstract class EntityLivingBase extends Entity
         {
             this.ticksElytraFlying = 0;
         }
+        SpigotTimings.timerEntityTickRest.stopTiming(); // Spigot
     }
 
     protected float updateDistance(float p_110146_1_, float p_110146_2_)
@@ -2627,6 +2632,7 @@ public abstract class EntityLivingBase extends Entity
         }
 
         this.world.profiler.startSection("ai");
+        SpigotTimings.timerEntityAI.startTiming(); // Spigot
 
         if (this.isMovementBlocked())
         {
@@ -2641,6 +2647,7 @@ public abstract class EntityLivingBase extends Entity
             this.updateEntityActionState();
             this.world.profiler.endSection();
         }
+        SpigotTimings.timerEntityAI.stopTiming(); // Spigot
 
         this.world.profiler.endSection();
         this.world.profiler.startSection("jump");
@@ -2672,10 +2679,14 @@ public abstract class EntityLivingBase extends Entity
         this.moveForward *= 0.98F;
         this.randomYawVelocity *= 0.9F;
         this.updateElytra();
+        SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
         this.travel(this.moveStrafing, this.moveVertical, this.moveForward);
+        SpigotTimings.timerEntityAIMove.stopTiming(); // Spigot
         this.world.profiler.endSection();
         this.world.profiler.startSection("push");
+        SpigotTimings.timerEntityAICollision.startTiming(); // Spigot
         this.collideWithNearbyEntities();
+        SpigotTimings.timerEntityAICollision.stopTiming(); // Spigot
         this.world.profiler.endSection();
     }
 

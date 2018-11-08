@@ -20,10 +20,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.spigotmc.CustomTimingsHandler; // Spigot
 import org.bukkit.inventory.InventoryHolder;
 
 public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
+    public CustomTimingsHandler tickTimer = org.bukkit.craftbukkit.SpigotTimings.getTileEntityTimings(this); // Spigot
     private static final Logger LOGGER = LogManager.getLogger();
     private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> REGISTRY = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
     public World world;

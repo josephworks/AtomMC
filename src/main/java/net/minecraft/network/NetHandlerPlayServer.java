@@ -242,6 +242,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
     public void update()
     {
+        org.bukkit.craftbukkit.SpigotTimings.playerConnectionTimer.startTiming(); // Spigot
         this.captureCurrentPosition();
         this.player.onUpdateEntity();
         this.player.setPositionAndRotation(this.firstGoodX, this.firstGoodY, this.firstGoodZ, this.player.rotationYaw, this.player.rotationPitch);
@@ -334,6 +335,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
             this.player.markPlayerActive(); // CraftBukkit - SPIGOT-854
             this.disconnect(new TextComponentTranslation("multiplayer.disconnect.idling", new Object[0]));
         }
+        org.bukkit.craftbukkit.SpigotTimings.playerConnectionTimer.stopTiming(); // Spigot
     }
 
     public void captureCurrentPosition()
@@ -1559,6 +1561,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
     private void handleSlashCommand(String command)
     {
+        org.bukkit.craftbukkit.SpigotTimings.playerCommandTimer.startTiming(); // Spigot
         // CraftBukkit start - whole method
         // this.serverController.getCommandManager().executeCommand(this.player, command);
         this.LOGGER.info(this.player.getName() + " issued server command: " + command);
@@ -1569,18 +1572,22 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         this.server.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
+            org.bukkit.craftbukkit.SpigotTimings.playerCommandTimer.stopTiming(); // Spigot
             return;
         }
 
         try {
             if (this.server.dispatchCommand(event.getPlayer(), event.getMessage().substring(1))) {
+                org.bukkit.craftbukkit.SpigotTimings.playerCommandTimer.stopTiming(); // Spigot
                 return;
             }
         } catch (org.bukkit.command.CommandException ex) {
             player.sendMessage(org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command");
             java.util.logging.Logger.getLogger(NetHandlerPlayServer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            org.bukkit.craftbukkit.SpigotTimings.playerCommandTimer.stopTiming(); // Spigot
             return;
         }
+        org.bukkit.craftbukkit.SpigotTimings.playerCommandTimer.stopTiming(); // Spigot
         // CraftBukkit end
     }
 

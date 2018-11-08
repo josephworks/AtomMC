@@ -12,6 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SPacketChat implements Packet<INetHandlerPlayClient>
 {
     private ITextComponent chatComponent;
+    public net.md_5.bungee.api.chat.BaseComponent[] components; // Spigot
     private ChatType type;
 
     public SPacketChat()
@@ -37,7 +38,13 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
 
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeTextComponent(this.chatComponent);
+        // Spigot start
+        if (components != null) {
+            buf.writeString(net.md_5.bungee.chat.ComponentSerializer.toString(components));
+        } else {
+            buf.writeTextComponent(this.chatComponent);
+        }
+        // Spigot end
         buf.writeByte(this.type.getId());
     }
 
