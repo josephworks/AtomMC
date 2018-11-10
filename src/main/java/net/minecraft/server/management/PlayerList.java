@@ -179,8 +179,7 @@ public abstract class PlayerList
         WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
 
         playerIn.setWorld(world);
-        playerIn.setPosition(loc.getX(), loc.getY(), loc.getZ());
-        playerIn.turn(loc.getYaw(), loc.getPitch());
+        playerIn.setPositionAndRotation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         // Spigot end
 
         // CraftBukkit - Moved message to after join
