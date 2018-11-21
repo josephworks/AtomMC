@@ -100,6 +100,12 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
                             // world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
                             planted = Blocks.BEETROOTS;
                             flag = true;
+                        } else if (itemstack.getItem() instanceof net.minecraftforge.common.IPlantable) {
+                            if (((net.minecraftforge.common.IPlantable) itemstack.getItem()).getPlantType(world, blockpos) == net.minecraftforge.common.EnumPlantType.Crop) {
+                                // world.setBlockState(blockpos, ((net.minecraftforge.common.IPlantable) itemstack.getItem()).getPlant(world, blockpos), 3);
+                                planted = ((net.minecraftforge.common.IPlantable) itemstack.getItem()).getPlant(world, blockpos).getBlock();
+                                flag = true;
+                            }
                         }
                         if (planted != null && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.villager, blockpos, planted, 0).isCancelled()) {
                             world.setBlockState(blockpos, planted.getDefaultState(), 3);

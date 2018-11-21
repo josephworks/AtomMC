@@ -25,7 +25,7 @@ public class FoodStats
     }
 
     public FoodStats(EntityPlayer entityhuman) {
-        org.apache.commons.lang.Validate.notNull(entityhuman);
+        org.apache.commons.lang3.Validate.notNull(entityhuman);
         this.entityhuman = entityhuman;
     }
 

@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -42,6 +44,7 @@ import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.ServerCommandManager;
@@ -77,6 +80,7 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.MinecraftException;
 import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerDemo;
 import net.minecraft.world.WorldServerMulti;
@@ -86,6 +90,7 @@ import net.minecraft.world.chunk.storage.AnvilSaveHandler;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.Validate;
@@ -94,6 +99,7 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.Main;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 
 public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo
 {
@@ -203,7 +209,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             }
         }
         Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
-        this.serverThread = primaryThread = new Thread(this, "Server thread"); // Moved from main
+        this.serverThread = primaryThread = new Thread(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER, this, "Server thread"); // Moved from main
     }
 
     public abstract PropertyManager getPropertyManager();
@@ -265,6 +271,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions)
     {
+        ServerCommandManager vanillaCommandManager = (ServerCommandManager) this.getCommandManager();
+        vanillaCommandManager.registerVanillaCommands();
         this.convertMapIfNeeded(saveName);
         this.setUserMessage("menu.loadingLevel");
         this.worlds = new WorldServer[3];
@@ -372,7 +380,16 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 }
             }
 
-            String worldType = org.bukkit.World.Environment.getEnvironment(dim).toString().toLowerCase();
+            String worldType;
+            org.bukkit.World.Environment worldEnvironment = org.bukkit.World.Environment.getEnvironment(dim);
+            if (worldEnvironment == null) {
+                WorldProvider provider = DimensionManager.createProviderFor(dim);
+                worldType = provider.getClass().getSimpleName().toLowerCase();
+                worldType = worldType.replace("worldprovider", "");
+                worldType = worldType.replace("provider", "");
+            } else {
+                worldType = worldEnvironment.toString().toLowerCase();
+            }
             String name = (dim == 0) ? saveName : saveName + "_" + worldType;
             org.bukkit.generator.ChunkGenerator gen = this.server.getGenerator(name);
 
@@ -386,7 +403,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 if (this.isDemo()) {
                     world = (WorldServer) (new WorldServerDemo(this, idatamanager, worlddata, dim, this.profiler)).init();
                 } else {
-                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, org.bukkit.World.Environment.getEnvironment(dim), gen)).init();
+                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, worldEnvironment, gen)).init();
                 }
 
                 world.initialize(worldsettings);
@@ -434,7 +451,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     worlddata = new WorldInfo(worldsettings, name);
                 }
                 worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, org.bukkit.World.Environment.getEnvironment(dim), gen).init();
+                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, worldEnvironment, gen).init();
             }
             this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
             world.addEventListener(new ServerWorldEventHandler(this, world));
@@ -555,8 +572,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 try
                 {
                     worldserver.saveAllChunks(true, (IProgressUpdate)null);
-                    worldserver.flush();
-                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(worldserver)); // Moved from stopServer
                 }
                 catch (MinecraftException minecraftexception)
                 {
@@ -608,7 +623,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
             this.saveAllWorlds(false);
 
-            /* CraftBukkit start - Handled in saveChunks
             for (WorldServer worldserver1 : this.worlds)
             {
                 if (worldserver1 != null)
@@ -617,7 +631,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     worldserver1.flush();
                 }
             }
-            // CraftBukkit end */
 
             WorldServer[] tmp = worlds;
             for (WorldServer world : tmp)
@@ -630,6 +643,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             this.usageSnooper.stopSnooper();
         }
+
+        CommandBase.setCommandListener(null); // Forge: fix MC-128561
     }
 
     public boolean isServerRunning()
@@ -824,6 +839,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void tick()
     {
+        SpigotTimings.serverTickTimer.startTiming(); // Spigot
         long i = System.nanoTime();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
         ++this.tickCounter;
@@ -857,10 +873,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
         if (autosavePeriod > 0 && this.tickCounter % autosavePeriod == 0) // CraftBukkit
         {
+            SpigotTimings.worldSaveTimer.startTiming(); // Spigot
             this.profiler.startSection("save");
             this.playerList.saveAllPlayerData();
             this.saveAllWorlds(true);
             this.profiler.endSection();
+            SpigotTimings.worldSaveTimer.stopTiming(); // Spigot
         }
 
         this.profiler.startSection("tallying");
@@ -881,11 +899,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.endSection();
         this.profiler.endSection();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
+        SpigotTimings.serverTickTimer.stopTiming(); // Spigot
+        org.spigotmc.CustomTimingsHandler.tick(); // Spigot
     }
 
     public void updateTimeLightAndEntities()
     {
+        SpigotTimings.schedulerTimer.startTiming(); // Spigot
         this.server.getScheduler().mainThreadHeartbeat(this.tickCounter); // CraftBukkit
+        SpigotTimings.schedulerTimer.stopTiming(); // Spigot
         this.profiler.startSection("jobs");
 
         synchronized (this.futureTaskQueue)
@@ -899,12 +921,17 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.endStartSection("levels");
         // CraftBukkit start
         // Run tasks that are waiting on processing
+        SpigotTimings.processQueueTimer.startTiming(); // Spigot
         while (!processQueue.isEmpty()) {
             processQueue.remove().run();
         }
+        SpigotTimings.processQueueTimer.stopTiming(); // Spigot
 
+        SpigotTimings.chunkIOTickTimer.startTiming(); // Spigot
         org.bukkit.craftbukkit.chunkio.ChunkIOExecutor.tick();
+        SpigotTimings.chunkIOTickTimer.stopTiming(); // Spigot
 
+        SpigotTimings.timeUpdateTimer.startTiming(); // Spigot
         // Send time updates to everyone, it will get the right time from the world the player is in.
         if (this.tickCounter % 20 == 0) {
             for (int i = 0; i < this.getPlayerList().getPlayers().size(); ++i) {
@@ -936,12 +963,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     this.profiler.endSection();
                 }
                 */
+                SpigotTimings.timeUpdateTimer.stopTiming(); // Spigot
                 this.profiler.startSection("tick");
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreWorldTick(worldserver);
 
                 try
                 {
+                    worldserver.timings.doTick.startTiming(); // Spigot
                     worldserver.tick();
+                    worldserver.timings.doTick.stopTiming(); // Spigot
                 }
                 catch (Throwable throwable1)
                 {
@@ -952,7 +982,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 try
                 {
+                    worldserver.timings.tickEntities.startTiming(); // Spigot
                     worldserver.updateEntities();
+                    worldserver.timings.tickEntities.stopTiming(); // Spigot
                 }
                 catch (Throwable throwable)
                 {
@@ -964,7 +996,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostWorldTick(worldserver);
                 this.profiler.endSection();
                 this.profiler.startSection("tracker");
+                worldserver.timings.tracker.startTiming(); // Spigot
                 worldserver.getEntityTracker().tick();
+                worldserver.timings.tracker.stopTiming(); // Spigot
                 this.profiler.endSection();
                 this.profiler.endSection();
             // }
@@ -975,17 +1009,25 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.profiler.endStartSection("dim_unloading");
         net.minecraftforge.common.DimensionManager.unloadWorlds(worldTickTimes);
         this.profiler.endStartSection("connection");
+        SpigotTimings.connectionTimer.startTiming(); // Spigot
         this.getNetworkSystem().networkTick();
+        SpigotTimings.connectionTimer.stopTiming(); // Spigot
         this.profiler.endStartSection("players");
+        SpigotTimings.playerListTimer.startTiming(); // Spigot
         this.playerList.onTick();
+        SpigotTimings.playerListTimer.stopTiming(); // Spigot
         this.profiler.endStartSection("commandFunctions");
+        SpigotTimings.commandFunctionsTimer.startTiming(); // Spigot
         this.getFunctionManager().update();
+        SpigotTimings.commandFunctionsTimer.stopTiming();// Spigot
         this.profiler.endStartSection("tickables");
 
+        SpigotTimings.tickablesTimer.startTiming(); // Spigot
         for (int k = 0; k < this.tickables.size(); ++k)
         {
             ((ITickable)this.tickables.get(k)).update();
         }
+        SpigotTimings.tickablesTimer.stopTiming(); // Spigot
 
         this.profiler.endSection();
     }
@@ -1094,8 +1136,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos, boolean hasTargetBlock)
     {
-        /* CraftBukkit start - Allow tab-completion of Bukkit commands
-        List<String> list = Lists.<String>newArrayList();
+        Set<String> completionsSet = Sets.newHashSet(server.tabComplete(sender, input, pos, hasTargetBlock));
         boolean flag = input.startsWith("/");
 
         if (flag)
@@ -1112,11 +1153,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             {
                 if (CommandBase.doesStringStartWith(s2, s1))
                 {
-                    list.add(s1);
+                    completionsSet.add(s1);
                 }
             }
-
-            return list;
         }
         else
         {
@@ -1129,19 +1168,18 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 {
                     if (flag1 && !hasTargetBlock)
                     {
-                        list.add("/" + s);
+                        completionsSet.add("/" + s);
                     }
                     else
                     {
-                        list.add(s);
+                        completionsSet.add(s);
                     }
                 }
             }
-
-            return list;
         }
-        */
-        return server.tabComplete(sender, input, pos, hasTargetBlock);
+        List<String> finalCompletionsList = new ArrayList<>(completionsSet);
+        Collections.sort(finalCompletionsList);
+        return finalCompletionsList;
     }
 
     public boolean isAnvilFileSet()
@@ -1678,6 +1716,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         OptionSet options = org.bukkit.craftbukkit.Main.main(args);
         if (options == null)
             return;
+        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
+        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
+        ServerEula eula = new ServerEula(new File("eula.txt"));
+        if (!eula.hasAcceptedEULA())
+        {
+            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+            eula.createEULAFile();
+            return;
+        }
         Bootstrap.register();
         try
         {

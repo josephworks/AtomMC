@@ -113,7 +113,6 @@ public class ChunkProviderServer implements IChunkProvider
                 {
                 this.id2ChunkMap.put(ChunkPos.asLong(x, z), chunk);
                 chunk.onLoad();
-                // TODO: Recheck if everything is alright here
                 chunk.populateCB(this, this.chunkGenerator, false);
                 }
 
@@ -144,6 +143,7 @@ public class ChunkProviderServer implements IChunkProvider
 
         if (chunk == null)
         {
+            world.timings.syncChunkLoadTimer.startTiming(); // Spigot
             long i = ChunkPos.asLong(x, z);
 
             try
@@ -162,7 +162,8 @@ public class ChunkProviderServer implements IChunkProvider
 
             this.id2ChunkMap.put(i, chunk);
             chunk.onLoad();
-            chunk.populate(this, this.chunkGenerator);
+            chunk.populateCB(this, this.chunkGenerator, true);
+            world.timings.syncChunkLoadTimer.stopTiming(); // Spigot
         }
 
         return chunk;

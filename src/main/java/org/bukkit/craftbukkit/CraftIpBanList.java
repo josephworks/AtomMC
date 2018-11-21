@@ -7,8 +7,8 @@ import java.util.Set;
 
 import net.minecraft.server.management.UserListIPBans;
 import net.minecraft.server.management.UserListIPBansEntry;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.logging.Level;

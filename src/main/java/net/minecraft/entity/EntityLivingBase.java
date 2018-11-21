@@ -23,6 +23,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentFrostWalker;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -96,6 +97,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 
 public abstract class EntityLivingBase extends Entity
 {
@@ -918,7 +920,7 @@ public abstract class EntityLivingBase extends Entity
         if (f > 0.0F)
         {
             // this.setHealth(f + healAmount);
-            EntityRegainHealthEvent event = new EntityRegainHealthEvent(this.getBukkitEntity(), f, regainReason);
+            EntityRegainHealthEvent event = new EntityRegainHealthEvent(this.getBukkitEntity(), healAmount, regainReason);
             this.world.getServer().getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
@@ -1046,6 +1048,8 @@ public abstract class EntityLivingBase extends Entity
                 if (this instanceof EntityAnimal) {
                     ((EntityAnimal) this).resetInLove();
                     if (this instanceof EntityTameable) {
+                        if (((EntityTameable) this).getAISit() == null)
+                            ((EntityTameable) this).setAISit(new EntityAISit((EntityTameable) this));
                         ((EntityTameable) this).getAISit().setSitting(false);
                     }
                 }
@@ -2372,6 +2376,7 @@ public abstract class EntityLivingBase extends Entity
     public void onUpdate()
     {
         if (net.minecraftforge.common.ForgeHooks.onLivingUpdate(this)) return;
+        SpigotTimings.timerEntityBaseTick.startTiming(); // Spigot
         super.onUpdate();
         this.updateActiveHand();
 
@@ -2455,7 +2460,9 @@ public abstract class EntityLivingBase extends Entity
             }
         }
 
+        SpigotTimings.timerEntityBaseTick.stopTiming(); // Spigot
         this.onLivingUpdate();
+        SpigotTimings.timerEntityTickRest.startTiming(); // Spigot
         double d0 = this.posX - this.prevPosX;
         double d1 = this.posZ - this.prevPosZ;
         float f3 = (float)(d0 * d0 + d1 * d1);
@@ -2548,6 +2555,7 @@ public abstract class EntityLivingBase extends Entity
         {
             this.ticksElytraFlying = 0;
         }
+        SpigotTimings.timerEntityTickRest.stopTiming(); // Spigot
     }
 
     protected float updateDistance(float p_110146_1_, float p_110146_2_)
@@ -2624,6 +2632,7 @@ public abstract class EntityLivingBase extends Entity
         }
 
         this.world.profiler.startSection("ai");
+        SpigotTimings.timerEntityAI.startTiming(); // Spigot
 
         if (this.isMovementBlocked())
         {
@@ -2638,6 +2647,7 @@ public abstract class EntityLivingBase extends Entity
             this.updateEntityActionState();
             this.world.profiler.endSection();
         }
+        SpigotTimings.timerEntityAI.stopTiming(); // Spigot
 
         this.world.profiler.endSection();
         this.world.profiler.startSection("jump");
@@ -2669,10 +2679,14 @@ public abstract class EntityLivingBase extends Entity
         this.moveForward *= 0.98F;
         this.randomYawVelocity *= 0.9F;
         this.updateElytra();
+        SpigotTimings.timerEntityAIMove.startTiming(); // Spigot
         this.travel(this.moveStrafing, this.moveVertical, this.moveForward);
+        SpigotTimings.timerEntityAIMove.stopTiming(); // Spigot
         this.world.profiler.endSection();
         this.world.profiler.startSection("push");
+        SpigotTimings.timerEntityAICollision.startTiming(); // Spigot
         this.collideWithNearbyEntities();
+        SpigotTimings.timerEntityAICollision.stopTiming(); // Spigot
         this.world.profiler.endSection();
     }
 

@@ -93,6 +93,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.craftbukkit.boss.CraftBossBar;
+import org.bukkit.craftbukkit.command.CraftSimpleCommandMap;
 import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.generator.CraftChunkData;
@@ -154,7 +155,7 @@ import org.bukkit.util.permissions.DefaultPermissions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.MarkedYAMLException;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
@@ -173,6 +174,7 @@ import jline.console.ConsoleReader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.event.server.TabCompleteEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public final class CraftServer implements Server {
     private final String serverName = "CraftBukkit";
@@ -181,6 +183,7 @@ public final class CraftServer implements Server {
     private final Logger logger = Logger.getLogger("Minecraft");
     private final ServicesManager servicesManager = new SimpleServicesManager();
     private final CraftScheduler scheduler = new CraftScheduler();
+    private final CraftSimpleCommandMap craftCommandMap = new CraftSimpleCommandMap(this);
     private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
     private final SimpleHelpMap helpMap = new SimpleHelpMap(this);
     private final StandardMessenger messenger = new StandardMessenger();
@@ -212,6 +215,10 @@ public final class CraftServer implements Server {
     private boolean unrestrictedAdvancements;
     private final List<CraftPlayer> playerView;
     public int reloadCount;
+
+    public CraftSimpleCommandMap getCraftCommandMap() {
+        return this.craftCommandMap;
+    }
 
     private final class BooleanWrapper {
         private boolean value = true;
@@ -385,7 +392,7 @@ public final class CraftServer implements Server {
     }
 
     private void setVanillaCommands() {
-        Map<String, ICommand> commands = new ServerCommandManager(console).getCommands();
+        Map<String, ICommand> commands = console.getCommandManager().getCommands();
         for (ICommand cmd : commands.values()) {
             commandMap.register("minecraft", new VanillaCommandWrapper((CommandBase) cmd, I18n.translateToLocal(cmd.getUsage(null))));
         }
@@ -651,7 +658,7 @@ public final class CraftServer implements Server {
         }
         try {
             this.playerCommandState = true;
-            return dispatchCommand(sender, serverCommand.command);
+            return this.dispatchCommand(sender, serverCommand.command);
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Unexpected exception while parsing console command \"" + serverCommand.command + '"', ex);
             return false;
@@ -666,6 +673,19 @@ public final class CraftServer implements Server {
         Validate.notNull(commandLine, "CommandLine cannot be null");
 
         if (commandMap.dispatch(sender, commandLine)) {
+            return true;
+        }
+
+        if (sender instanceof ConsoleCommandSender) {
+            craftCommandMap.setVanillaConsoleSender(this.console);
+        }
+
+        return this.dispatchVanillaCommand(sender, commandLine);
+    }
+
+    // used to process vanilla commands
+    public boolean dispatchVanillaCommand(CommandSender sender, String commandLine) {
+        if (craftCommandMap.dispatch(sender, commandLine)) {
             return true;
         }
 
@@ -718,6 +738,7 @@ public final class CraftServer implements Server {
             logger.log(Level.WARNING, "Failed to load banned-players.json, " + ex.getMessage());
         }
 
+        org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
         for (WorldServer world : console.worlds) {
             world.worldInfo.setDifficulty(difficulty);
             world.setAllowedSpawnTypes(monsters, animals);
@@ -732,12 +753,14 @@ public final class CraftServer implements Server {
             } else {
                 world.ticksPerMonsterSpawns = this.getTicksPerMonsterSpawns();
             }
+            world.spigotConfig.init(); // Spigot
         }
 
         pluginManager.clearPlugins();
         commandMap.clearCommands();
         resetRecipes();
         reloadData();
+        org.spigotmc.SpigotConfig.registerCommands(); // Spigot
         overrideAllCommandBlockCommands = commandsConfiguration.getStringList("command-block-overrides").contains("*");
 
         int pollCount = 0;
@@ -1571,7 +1594,7 @@ public final class CraftServer implements Server {
     }
 
     public List<String> tabComplete(net.minecraft.command.ICommandSender sender, String message, BlockPos pos, boolean forceCommand) {
-        if (!(sender instanceof EntityPlayer)) {
+        if (!(sender instanceof EntityPlayerMP)) {
             return ImmutableList.of();
         }
 
@@ -1734,5 +1757,33 @@ public final class CraftServer implements Server {
     @Override
     public UnsafeValues getUnsafe() {
         return CraftMagicNumbers.INSTANCE;
+    }
+
+    private final Spigot spigot = new Spigot()
+    {
+        @Override
+        public YamlConfiguration getConfig()
+        {
+            return org.spigotmc.SpigotConfig.config;
+        }
+
+        @Override
+        public void broadcast(BaseComponent component) {
+            for (Player player : getOnlinePlayers()) {
+                player.spigot().sendMessage(component);
+            }
+        }
+
+        @Override
+        public void broadcast(BaseComponent... components) {
+            for (Player player : getOnlinePlayers()) {
+                player.spigot().sendMessage(components);
+            }
+        }
+    };
+
+    public Spigot spigot()
+    {
+        return spigot;
     }
 }

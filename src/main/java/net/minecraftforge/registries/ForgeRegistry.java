@@ -29,6 +29,9 @@ import java.util.Map.Entry;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraftforge.common.util.EnumHelper;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Set;
@@ -56,6 +59,7 @@ import net.minecraftforge.fml.common.InjectedModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.bukkit.Material;
 
 public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRegistryInternal<V>, IForgeRegistryModifiable<V>
 {
@@ -330,6 +334,10 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
         this.ids.put(idToUse, value);
         this.availabilityMap.set(idToUse);
         this.owners.put(new OverrideOwner(owner == null ? key.getResourceDomain() : owner, key), value);
+        if((value instanceof Block || value instanceof Item) && !key.getResourceDomain().equals("minecraft")) {
+            String materialName = key.toString().toUpperCase().replaceAll("(:|\\s)", "_").replaceAll("\\W", "");
+            Material.addMaterial(EnumHelper.addEnum(Material.class, materialName, new Class[]{Integer.TYPE}, new Object[]{Integer.valueOf(idToUse)}));
+        }
 
         if (isDelegated)
         {

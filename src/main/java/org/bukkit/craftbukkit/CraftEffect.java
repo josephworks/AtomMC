@@ -1,6 +1,6 @@
 package org.bukkit.craftbukkit;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -56,6 +56,9 @@ public class CraftEffect {
             break;
         case STEP_SOUND:
             Validate.isTrue(((Material) data).isBlock(), "Material is not a block!");
+            datavalue = ((Material) data).getId();
+            break;
+        case ITEM_BREAK:
             datavalue = ((Material) data).getId();
             break;
         default:

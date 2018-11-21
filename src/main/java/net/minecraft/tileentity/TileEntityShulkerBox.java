@@ -29,8 +29,6 @@ import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-import org.bukkit.entity.HumanEntity;
 
 public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITickable, ISidedInventory
 {
@@ -44,7 +42,6 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
     private EnumDyeColor color;
     private boolean destroyedByCreativePlayer;
 
-    public List<HumanEntity> transaction = new java.util.ArrayList<>();
     private int maxStack = MAX_STACK;
 
     public TileEntityShulkerBox()
@@ -61,18 +58,6 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
 
     public List<ItemStack> getContents() {
         return this.items;
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public void setMaxStackSize(int size) {

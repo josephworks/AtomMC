@@ -224,10 +224,12 @@ public class EntityPig extends EntityAnimal
         }
     }
 
-    public void onStruckByLightning(EntityLightningBolt lightningBolt)
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
     {
         if (!this.world.isRemote && !this.isDead)
         {
+            if (lightningBolt == null)
+                lightningBolt = new EntityLightningBolt(this.world, this.posX, this.posY, this.posZ, false);
             EntityPigZombie entitypigzombie = new EntityPigZombie(this.world);
             if (CraftEventFactory.callPigZapEvent(this, lightningBolt, entitypigzombie).isCancelled()) {
                 return;

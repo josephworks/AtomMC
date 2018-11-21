@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Sound;
 
 public enum CraftSound {

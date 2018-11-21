@@ -58,7 +58,9 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     @Nullable
     public Chunk loadChunk(World worldIn, int x, int z) throws IOException
     {
+        worldIn.timings.syncChunkLoadDataTimer.startTiming(); // Spigot
         Object[] data = this.loadChunk__Async(worldIn, x, z);
+        worldIn.timings.syncChunkLoadDataTimer.stopTiming(); // Spigot
 
         if (data != null)
         {
@@ -478,6 +480,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
     public void loadEntities(World worldIn, NBTTagCompound compound, Chunk chunk)
     {
+        worldIn.timings.syncChunkLoadEntitiesTimer.startTiming(); // Spigot
         NBTTagList nbttaglist1 = compound.getTagList("Entities", 10);
 
         for (int j1 = 0; j1 < nbttaglist1.tagCount(); ++j1)
@@ -486,6 +489,9 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             readChunkEntity(nbttagcompound1, worldIn, chunk);
             chunk.setHasEntities(true);
         }
+
+        worldIn.timings.syncChunkLoadEntitiesTimer.stopTiming(); // Spigot
+        worldIn.timings.syncChunkLoadTileEntitiesTimer.startTiming(); // Spigot
 
         NBTTagList nbttaglist2 = compound.getTagList("TileEntities", 10);
 
@@ -499,6 +505,8 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
                 chunk.addTileEntity(tileentity);
             }
         }
+        worldIn.timings.syncChunkLoadTileEntitiesTimer.stopTiming(); // Spigot
+        worldIn.timings.syncChunkLoadTileTicksTimer.startTiming(); // Spigot
 
         if (compound.hasKey("TileTicks", 9))
         {
@@ -521,6 +529,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
                 worldIn.scheduleBlockUpdate(new BlockPos(nbttagcompound3.getInteger("x"), nbttagcompound3.getInteger("y"), nbttagcompound3.getInteger("z")), block, nbttagcompound3.getInteger("t"), nbttagcompound3.getInteger("p"));
             }
         }
+        worldIn.timings.syncChunkLoadTileTicksTimer.stopTiming(); // Spigot
     }
 
     @Nullable

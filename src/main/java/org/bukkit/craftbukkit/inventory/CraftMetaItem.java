@@ -18,7 +18,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.DelegateDeserialization;
@@ -905,4 +905,27 @@ class CraftMetaItem implements ItemMeta, Repairable {
             return HANDLED_TAGS;
         }
     }
+
+    // Spigot start
+    private final Spigot spigot = new Spigot()
+    {
+        @Override
+        public void setUnbreakable(boolean setUnbreakable)
+        {
+            CraftMetaItem.this.setUnbreakable(setUnbreakable);
+        }
+
+        @Override
+        public boolean isUnbreakable()
+        {
+            return CraftMetaItem.this.unbreakable;
+        }
+    };
+
+    @Override
+    public Spigot spigot()
+    {
+        return spigot;
+    }
+    // Spigot end
 }

@@ -11,8 +11,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-import org.bukkit.entity.HumanEntity;
 
 public class InventoryBasic implements IInventory
 {
@@ -22,24 +20,11 @@ public class InventoryBasic implements IInventory
     private List<IInventoryChangedListener> changeListeners;
     private boolean hasCustomName;
 
-    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
     private int maxStack = MAX_STACK;
     protected org.bukkit.inventory.InventoryHolder bukkitOwner;
 
     public List<ItemStack> getContents() {
         return this.inventoryContents;
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public void setMaxStackSize(int i) {

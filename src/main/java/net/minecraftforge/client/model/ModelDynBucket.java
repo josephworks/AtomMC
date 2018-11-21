@@ -110,6 +110,8 @@ public final class ModelDynBucket implements IModel
             builder.add(liquidLocation);
         if (coverLocation != null)
             builder.add(coverLocation);
+        if (fluid != null)
+            builder.add(fluid.getStill());
 
         return builder.build();
     }

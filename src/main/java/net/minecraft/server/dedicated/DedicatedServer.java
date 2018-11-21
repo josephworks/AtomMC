@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.LoggerOutputStream;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -219,6 +220,11 @@ public class DedicatedServer extends MinecraftServer implements IServer
             {
                 this.setServerPort(this.settings.getIntProperty("server-port", 25565));
             }
+            // Spigot start
+            setPlayerList(new DedicatedPlayerList(this));
+            org.spigotmc.SpigotConfig.init((File) options.valueOf("spigot-settings"));
+            org.spigotmc.SpigotConfig.registerCommands();
+            // Spigot end
 
             LOGGER.info("Generating keypair");
             this.setKeyPair(CryptManager.generateKeyPair());
@@ -236,7 +242,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 return false;
             }
 
-            this.setPlayerList(new DedicatedPlayerList(this));
+            //  this.setPlayerList(new DedicatedPlayerList(this)); // Spigot - moved up
             server.loadPlugins();
             server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
 
@@ -478,6 +484,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public void executePendingCommands()
     {
+        SpigotTimings.serverCommandTimer.startTiming(); // Spigot
         while (!this.pendingCommandList.isEmpty())
         {
             PendingCommand pendingcommand = this.pendingCommandList.remove(0);
@@ -491,6 +498,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
             server.dispatchServerCommand(console, pendingcommand);
             // CraftBukkit end
         }
+        SpigotTimings.serverCommandTimer.stopTiming(); // Spigot
     }
 
     public boolean isDedicatedServer()

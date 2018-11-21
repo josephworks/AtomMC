@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSand;
@@ -18,7 +19,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.PacketBuffer;
@@ -923,8 +924,12 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         {
             // Do not pass along players, as doing so can get them stuck outside of time.
             // (which for example disables inventory icon updates and prevents block breaking)
-            classinheritancemultimap.removeIf(entity -> entity instanceof EntityPlayer);
-            this.world.unloadEntities(classinheritancemultimap);
+            this.world.unloadEntities(
+                    classinheritancemultimap
+                    .stream()
+                    .filter(entity -> !(entity instanceof EntityPlayerMP))
+                    .collect(Collectors.toCollection(() -> new ClassInheritanceMultiMap<>(Entity.class)))
+            );
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
     }
@@ -1053,6 +1058,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
     public void populateCB(IChunkProvider chunkProvider, IChunkGenerator chunkGenrator, boolean newChunk)
     {
+        world.timings.syncChunkLoadPostTimer.startTiming(); // Spigot
         Server server = world.getServer();
         if (server != null) {
             /*
@@ -1106,6 +1112,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
                 chunk4.populate(chunkGenrator);
             }
         }
+        world.timings.syncChunkLoadPostTimer.stopTiming(); // Spigot
     }
 
     protected void populate(IChunkGenerator generator)

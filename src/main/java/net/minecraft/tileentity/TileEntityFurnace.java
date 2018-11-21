@@ -32,9 +32,7 @@ import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 
@@ -54,22 +52,9 @@ public class TileEntityFurnace extends TileEntityLockable implements ITickable, 
 
     private int lastTick = MinecraftServer.currentTick;
     private int maxStack = MAX_STACK;
-    public List<HumanEntity> transaction = new java.util.ArrayList<>();
 
     public List<ItemStack> getContents() {
         return this.furnaceItemStacks;
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public void setMaxStackSize(int size) {

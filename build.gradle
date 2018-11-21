@@ -95,7 +95,12 @@ dependencies {
     compile('org.spongepowered:mixin:0.7.8-SNAPSHOT') {
         exclude module: 'launchwrapper'
     }
-    compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    compile files('src/main/resources/bukkit-1.12.2-R0.1-SNAPSHOT.jar')
+    compile 'org.yaml:snakeyaml:1.21'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'commons-lang:commons-lang:2.6' // Is needed for plugin compatibility
+    compile 'org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1'
+    compile 'net.md-5:bungeecord-chat:1.12-SNAPSHOT'
 }
 
 jar {
@@ -111,6 +116,7 @@ task reobfuscate(type: ReobfuscateTask) {
 
 task shrinkJar(type: ShrinkJarTask) {
     dependsOn(tasks.reobfuscate)
+    outputs.upToDateWhen { false }
     inputJar = (File) tasks.reobfuscate.outputJar
 }
 

@@ -5,6 +5,7 @@ PK: net/minecraft/client net/minecraft/client
 PK: net/minecraft/client/main net/minecraft/client/main
 PK: net/minecraft/realms net/minecraft/realms
 PK: net/minecraft/server net/minecraft/server
+PK: org/bukkit/craftbukkit org/bukkit/craftbukkit/v1_12_R1
 CL: net/minecraft/util/text/TextFormatting a
 CL: net/minecraft/crash/CrashReport b
 CL: net/minecraft/crash/CrashReport$1 b$1

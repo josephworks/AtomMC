@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -349,7 +349,9 @@ public class CraftScheduler implements BukkitScheduler {
             }
             if (task.isSync()) {
                 try {
+                    task.timings.startTiming(); // Spigot
                     task.run();
+                    task.timings.stopTiming(); // Spigot
                 } catch (final Throwable throwable) {
                     task.getOwner().getLogger().log(
                             Level.WARNING,

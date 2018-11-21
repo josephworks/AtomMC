@@ -945,11 +945,13 @@ public class ForgeBlockStateV1 extends Marker
                     }
                     return ret;
                 }
-                else
-                {
-                    // quaternion
-                    return new Quat4f(parseFloatArray(e, 4, "Rotation"));
-                }
+                else if (e.isJsonArray()) {
+                    JsonArray array = e.getAsJsonArray();
+                    if (array.size() == 3) //Vanilla rotation
+                        return TRSRTransformation.quatFromXYZDegrees(new Vector3f(parseFloatArray(e, 3, "Rotation")));
+                    else // quaternion
+                        return new Quat4f(parseFloatArray(e, 4, "Rotation"));
+                } else throw new JsonParseException("Rotation: expected array or object, got: " + e);
             }
             else if (e.isJsonObject())
             {
