@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# AtomMC
-=======
 <p align="center">
   <img />
   ![alt text](https://assets.gitlab-static.net/uploads/-/system/project/avatar/6581187/atom_logo1.png?width=160)   
@@ -37,4 +34,3 @@ You're always more than welcome to send pull requests and raise issues.
 
 ## Support project
 If you want to express your gratitude you may support AtomicInteger on [Patreon](https://www.patreon.com/AtomicInteger).
->>>>>>> ca8b6622650fcecd2b5e72b313b9ea8a7f6da971
