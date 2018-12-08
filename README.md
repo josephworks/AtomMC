@@ -1,9 +1,4 @@
-<p align="center">
-  <img />
-  ![alt text](https://assets.gitlab-static.net/uploads/-/system/project/avatar/6581187/atom_logo1.png?width=160)   
-</p>
-
-# Atom
+# AtomMC (Abandoned)
 <a href="https://discord.gg/ddgXan7"><img src="https://img.shields.io/badge/chat-discord-blue.svg"></a>
 <a href="https://gitlab.com/AtomMC/Atom/pipelines"><img src="https://img.shields.io/badge/build-download-green.svg"></a>
 
@@ -33,4 +28,4 @@ Should you have any questions or need any assistance please do not hesitate to j
 You're always more than welcome to send pull requests and raise issues.
 
 ## Support project
-If you want to express your gratitude you may support AtomicInteger on [Patreon](https://www.patreon.com/AtomicInteger).
+If you want to express your gratitude you may support AtomicInteger on [Patreon](https://www.patreon.com/AtomicInteger) or emeraldtnt on [PayPal](https://paypal.me/emeraldtnt).
