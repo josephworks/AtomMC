@@ -2230,6 +2230,22 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
     }
 
     /**
+     * Used to determine the state 'viewed' by an entity (see
+     * {@link net.minecraft.client.renderer.ActiveRenderInfo#getBlockStateAtEntityViewpoint(World, Entity, float)}).
+     * Can be used by fluid blocks to determine if the viewpoint is within the fluid or not.
+     *
+     * @param state     the state
+     * @param world     the world
+     * @param pos       the position
+     * @param viewpoint the viewpoint
+     * @return the block state that should be 'seen'
+     */
+    public IBlockState getStateAtViewpoint(IBlockState state, IBlockAccess world, BlockPos pos, Vec3d viewpoint)
+    {
+        return state;
+    }
+
+     /**
      * Gets the {@link IBlockState} to place
      * @param world The world the block is being placed in
      * @param pos The position the block is being placed at

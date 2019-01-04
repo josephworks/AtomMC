@@ -101,6 +101,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public boolean init() throws IOException
     {
+        /*
         Thread thread = new Thread("Server console handler")
         {
             public void run()
@@ -112,6 +113,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
 //                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 String s4;
+
 
                 try {
                     while (!isServerStopped() && isServerRunning()) {
@@ -131,6 +133,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 }
             }
         };
+        */
 
         // CraftBukkit start - TODO: handle command-line logging arguments
         java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
@@ -147,14 +150,14 @@ public class DedicatedServer extends MinecraftServer implements IServer
             }
         }
 
-        new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
+        //new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 
         System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
         // CraftBukkit end
 
-        thread.setDaemon(true);
-        thread.start();
+        //thread.setDaemon(true);
+        //thread.start();
         LOGGER.info("Starting minecraft server version 1.12.2");
 
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
@@ -321,6 +324,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
                 LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
+                this.currentTime = getCurrentTimeMillis();
 
                 if (this.settings.hasProperty("announce-player-achievements"))
                 {

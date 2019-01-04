@@ -208,7 +208,6 @@ public class CrashReport
     {
         StringBuilder stringbuilder = new StringBuilder();
         stringbuilder.append("---- Minecraft Crash Report ----\n");
-        net.minecraftforge.fml.common.asm.transformers.BlamingTransformer.onCrash(stringbuilder);
         net.minecraftforge.fml.relauncher.CoreModManager.onCrash(stringbuilder);
         stringbuilder.append("// ");
         stringbuilder.append(getWittyComment());

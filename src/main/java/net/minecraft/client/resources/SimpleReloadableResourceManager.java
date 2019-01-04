@@ -128,6 +128,7 @@ public class SimpleReloadableResourceManager implements IReloadableResourceManag
         for (IResourceManagerReloadListener iresourcemanagerreloadlistener : this.reloadListeners)
         {
             resReload.step(iresourcemanagerreloadlistener.getClass());
+            if (!net.minecraftforge.client.ForgeHooksClient.shouldUseVanillaReloadableListener(iresourcemanagerreloadlistener)) continue; // Forge: Selective reloading for vanilla listeners
             iresourcemanagerreloadlistener.onResourceManagerReload(this);
         }
         net.minecraftforge.fml.common.ProgressManager.pop(resReload);

@@ -1415,6 +1415,11 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
         this.spawnChunkMap = that.spawnChunkMap;
         this.spawnForcedMap = that.spawnForcedMap;
+        if(that.dimension != 0)
+        {
+            this.spawnPos = that.spawnPos;
+            this.spawnForced = that.spawnForced;
+        }
 
         //Copy over a section of the Entity Data from the old player.
         //Allows mods to specify data that persists after players respawn.

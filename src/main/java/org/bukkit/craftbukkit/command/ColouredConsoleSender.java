@@ -1,5 +1,5 @@
 package org.bukkit.craftbukkit.command;
-
+/*
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -72,3 +72,4 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
         }
     }
 }
+*/

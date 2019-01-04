@@ -77,7 +77,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.model.animation.AnimationItemOverrideList;
 import net.minecraftforge.client.model.animation.ModelBlockAnimation;
-import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.model.IModelPart;
 import net.minecraftforge.common.model.IModelState;
@@ -87,7 +86,6 @@ import net.minecraftforge.common.model.animation.IClip;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -289,12 +287,6 @@ public final class ModelLoader extends ModelBakery
     @Override
     protected void loadItemModels()
     {
-        // register model for the universal bucket, if it exists
-        if(FluidRegistry.isUniversalBucketEnabled())
-        {
-            setBucketModelDefinition(ForgeModContainer.getInstance().universalBucket);
-        }
-
         registerVariantNames();
 
         List<Item> items = StreamSupport.stream(Item.REGISTRY.spliterator(), false)
@@ -314,22 +306,21 @@ public final class ModelLoader extends ModelBakery
                 Exception exception = null;
                 try
                 {
-                    model = ModelLoaderRegistry.getModel(file);
+                    model = ModelLoaderRegistry.getModel(memory);
                 }
-                catch(Exception normalException)
+                catch (Exception blockstateException)
                 {
-                    // try blockstate json if the item model is missing
-                    FMLLog.log.debug("Item json isn't found for '{}', trying to load the variant from the blockstate json", memory);
                     try
                     {
-                        model = ModelLoaderRegistry.getModel(memory);
+                        model = ModelLoaderRegistry.getModel(file);
+                        ModelLoaderRegistry.addAlias(memory, file);
                     }
-                    catch (Exception blockstateException)
+                    catch (Exception normalException)
                     {
                         exception = new ItemLoadingException("Could not load item model either from the normal location " + file + " or from the blockstate", normalException, blockstateException);
                     }
                 }
-                if(exception != null)
+                if (exception != null)
                 {
                     storeException(memory, exception);
                     model = ModelLoaderRegistry.getMissingModel(memory, exception);
@@ -1075,6 +1066,8 @@ public final class ModelLoader extends ModelBakery
                 FMLLog.log.fatal("Suppressed additional {} model loading errors for domain {}", e.getValue() - verboseMissingInfoCount, e.getKey());
             }
         }
+        loadingExceptions.clear();
+        missingVariants.clear();
         isLoading = false;
     }
 
