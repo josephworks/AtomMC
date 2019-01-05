@@ -101,21 +101,25 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public boolean init() throws IOException
     {
-        /*
         Thread thread = new Thread("Server console handler")
         {
             public void run()
             {
-                if (!org.bukkit.craftbukkit.Main.useConsole) {
-                    return;
-                }
-                jline.console.ConsoleReader bufferedreader = reader;
+                //if (!org.bukkit.craftbukkit.Main.useConsole) {
+                //    return;
+                //}
+                //jline.console.ConsoleReader bufferedreader = reader;
+                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
-//                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 String s4;
 
 
                 try {
+                    while (!DedicatedServer.this.isServerStopped() && DedicatedServer.this.isServerRunning() && (s4 = bufferedreader.readLine()) != null)
+                    {
+                        DedicatedServer.this.addPendingCommand(s4, DedicatedServer.this);
+                    }
+                    /*
                     while (!isServerStopped() && isServerRunning()) {
                         if (org.bukkit.craftbukkit.Main.useJline) {
                             s4 = bufferedreader.readLine(">", null);
@@ -126,6 +130,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                             addPendingCommand(s4, DedicatedServer.this);
                         }
                     }
+                    */
                 }
                 catch (IOException ioexception1)
                 {
@@ -133,7 +138,6 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 }
             }
         };
-        */
 
         // CraftBukkit start - TODO: handle command-line logging arguments
         java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
@@ -156,8 +160,8 @@ public class DedicatedServer extends MinecraftServer implements IServer
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
         // CraftBukkit end
 
-        //thread.setDaemon(true);
-        //thread.start();
+        thread.setDaemon(true);
+        thread.start();
         LOGGER.info("Starting minecraft server version 1.12.2");
 
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
