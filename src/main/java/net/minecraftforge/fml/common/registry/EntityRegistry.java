@@ -19,12 +19,8 @@
 
 package net.minecraftforge.fml.common.registry;
 
-import java.util.Iterator;
-import java.util.List;
-
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.common.Loader;
-import org.apache.logging.log4j.Level;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList.EntityEggInfo;
@@ -32,13 +28,16 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityTracker;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.SpawnListEntry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.internal.FMLMessage.EntitySpawnMessage;
+import net.minecraftforge.registries.GameData;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -52,7 +51,9 @@ public class EntityRegistry
 {
     public class EntityRegistration
     {
+        @Deprecated
         private Class<? extends Entity> entityClass;
+        private Function<World, ? extends Entity> factory;
         private ModContainer container;
         private ResourceLocation regName;
         private String entityName;
@@ -62,7 +63,14 @@ public class EntityRegistry
         private boolean sendsVelocityUpdates;
         private Function<EntitySpawnMessage, Entity> customSpawnCallback;
         private boolean usesVanillaSpawning;
+
+        @Deprecated //1.13
         public EntityRegistration(ModContainer mc, ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
+        {
+            this(mc, registryName, entityClass, entityName, id, trackingRange, updateFrequency, sendsVelocityUpdates, null);
+        }
+
+        public EntityRegistration(ModContainer mc, ResourceLocation registryName, Class<? extends Entity> entityClass, String entityName, int id, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates, Function<World, ? extends Entity> factory)
         {
             this.container = mc;
             this.regName = registryName;
@@ -72,14 +80,26 @@ public class EntityRegistry
             this.trackingRange = trackingRange;
             this.updateFrequency = updateFrequency;
             this.sendsVelocityUpdates = sendsVelocityUpdates;
+            this.factory = factory != null ? factory :
+                    new EntityEntryBuilder.ConstructorFactory<Entity>(entityClass) {
+                        @Override
+                        protected String describeEntity() {
+                            return String.valueOf(EntityRegistration.this.getRegistryName());
+                        }
+                    };
         }
         public ResourceLocation getRegistryName()
         {
             return regName;
         }
+        @Deprecated //Used only for creating a new instance in EntitySpawnHandler, use newInstance(world) instead.
         public Class<? extends Entity> getEntityClass()
         {
             return entityClass;
+        }
+        public Entity newInstance(World world)
+        {
+            return this.factory.apply(world);
         }
         public ModContainer getContainer()
         {
@@ -127,8 +147,9 @@ public class EntityRegistry
 
     private static final EntityRegistry INSTANCE = new EntityRegistry();
 
-    private ListMultimap<ModContainer, EntityRegistration> entityRegistrations = ArrayListMultimap.create();
-    private BiMap<Class<? extends Entity>, EntityRegistration> entityClassRegistrations = HashBiMap.create();
+    private final ListMultimap<ModContainer, EntityRegistration> entityRegistrations = ArrayListMultimap.create();
+    private final BiMap<Class<? extends Entity>, EntityRegistration> entityClassRegistrations = HashBiMap.create();
+    private final Map<Class<? extends Entity>, EntityEntry> entityClassEntries = GameData.getEntityClassMap();
 
     public static Map<Class<? extends Entity>, String> entityTypeMap = Maps.newHashMap(); // used by CraftCustomEntity
     public static Map<String, Class<? extends Entity>> entityClassMap = Maps.newHashMap(); // user by CraftWorld
@@ -361,15 +382,9 @@ public class EntityRegistry
 
     //Helper function
     @Nullable
-    public static EntityEntry getEntry(Class<? extends Entity> entry)
+    public static EntityEntry getEntry(Class<? extends Entity> entityClass)
     {
-        //TODO: Slave map for faster lookup?
-        for (EntityEntry e : ForgeRegistries.ENTITIES)
-        {
-            if (e.getEntityClass() == entry)
-                return e;
-        }
-        return null;
+        return instance().entityClassEntries.get(entityClass);
     }
 
     // This is an internal method - do not touch.

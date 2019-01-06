@@ -170,7 +170,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
-import jline.console.ConsoleReader;
+//import jline.console.ConsoleReader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.event.server.TabCompleteEvent;
@@ -1078,11 +1078,11 @@ public final class CraftServer implements Server {
     public Logger getLogger() {
         return logger;
     }
-
+/*
     public ConsoleReader getReader() {
         return console.reader;
     }
-
+*/
     @Override
     public PluginCommand getPluginCommand(String name) {
         Command command = commandMap.getCommand(name);

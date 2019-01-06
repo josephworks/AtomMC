@@ -230,4 +230,10 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     {
         return inv.getInventoryStackLimit();
     }
+
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack)
+    {
+        return inv.isItemValidForSlot(slot, stack);
+    }//https://github.com/MinecraftForge/MinecraftForge/commit/c7c2921b2fa05b6d0fa9e6c2934c08fc84dcb71f
 }

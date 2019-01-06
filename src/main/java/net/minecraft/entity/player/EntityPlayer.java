@@ -137,8 +137,8 @@ public abstract class EntityPlayer extends EntityLivingBase
     @SideOnly(Side.CLIENT)
     public float renderOffsetY;
     public float renderOffsetZ;
-    private BlockPos spawnPos;
-    private boolean spawnForced;
+    protected BlockPos spawnPos;
+    protected boolean spawnForced;
     public PlayerCapabilities capabilities = new PlayerCapabilities();
     public int experienceLevel;
     public int experienceTotal;
@@ -226,7 +226,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                 {
                     this.wakeUpPlayer(true, true, false);
                 }
-                else if (this.world.isDaytime())
+                else if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, this.bedLocation))
                 {
                     this.wakeUpPlayer(false, true, true);
                 }
@@ -1660,7 +1660,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                 return SleepResult.NOT_POSSIBLE_HERE;
             }
 
-            if (this.world.isDaytime())
+            if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, this.bedLocation))
             {
                 return SleepResult.NOT_POSSIBLE_NOW;
             }
@@ -1752,7 +1752,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         net.minecraftforge.event.ForgeEventFactory.onPlayerWakeup(this, immediately, updateWorldFlag, setSpawn);
         this.setSize(0.6F, 1.8F);
-        IBlockState iblockstate = this.world.getBlockState(this.bedLocation);
+        IBlockState iblockstate = this.bedLocation == null ? null : this.world.getBlockState(this.bedLocation);
 
         if (this.bedLocation != null && iblockstate.getBlock().isBed(iblockstate, world, bedLocation, this))
         {

@@ -1,5 +1,5 @@
 package org.bukkit.craftbukkit.command;
-
+/*
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -52,3 +52,4 @@ public class ConsoleCommandCompleter implements Completer {
         return cursor;
     }
 }
+*/

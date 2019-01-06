@@ -317,4 +317,10 @@ public abstract class CreativeTabs
     {
         return 89;
     }
+
+    @SideOnly(Side.CLIENT)
+    public net.minecraft.util.ResourceLocation getBackgroundImage()
+    {
+        return new net.minecraft.util.ResourceLocation("textures/gui/container/creative_inventory/tab_" + this.getBackgroundImageName());
+    }
 }

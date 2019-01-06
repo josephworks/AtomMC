@@ -75,7 +75,7 @@ public class BlockFarmland extends Block
     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance)
     {
         super.onFallenUpon(worldIn, pos, entityIn, fallDistance); // CraftBukkit - moved here as game rules / events shouldn't affect fall damage.
-        if (!worldIn.isRemote && entityIn.canTrample(worldIn, this, pos, fallDistance)) // Forge: Move logic to Entity#canTrample
+        if (net.minecraftforge.common.ForgeHooks.onFarmlandTrample(worldIn, pos, Blocks.DIRT.getDefaultState(), fallDistance, entityIn)) // Forge: Move logic to Entity#canTrample
         {
             org.bukkit.event.Cancellable cancellable;
             if (entityIn instanceof EntityPlayer) {

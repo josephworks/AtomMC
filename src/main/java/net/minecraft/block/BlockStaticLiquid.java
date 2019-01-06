@@ -69,7 +69,7 @@ public class BlockStaticLiquid extends BlockLiquid
                                         continue;
                                     }
                                 }
-                                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
+                                worldIn.setBlockState(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos, pos, Blocks.FIRE.getDefaultState()));
                                 return;
                             }
                         }
@@ -100,7 +100,7 @@ public class BlockStaticLiquid extends BlockLiquid
                                 }
                             }
                             // CraftBukkit end
-                            worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
+                            worldIn.setBlockState(blockpos1.up(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos1.up(), pos, Blocks.FIRE.getDefaultState()));
                         }
                     }
                 }

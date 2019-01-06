@@ -22,7 +22,6 @@ public class ServerHangWatchdog implements Runnable
     private static final Logger LOGGER = LogManager.getLogger();
     private final DedicatedServer server;
     private final long maxTickTime;
-    private boolean firstRun = true;
 
     public ServerHangWatchdog(DedicatedServer server)
     {
@@ -38,7 +37,7 @@ public class ServerHangWatchdog implements Runnable
             long j = MinecraftServer.getCurrentTimeMillis();
             long k = j - i;
 
-            if (k > this.maxTickTime && !this.firstRun)
+            if (k > this.maxTickTime)
             {
                 LOGGER.fatal("A single server tick took {} seconds (should be max {})", String.format("%.2f", (float)k / 1000.0F), String.format("%.2f", 0.05F));
                 LOGGER.fatal("Considering it to be crashed, server will forcibly shutdown.");
@@ -75,8 +74,6 @@ public class ServerHangWatchdog implements Runnable
 
                 this.scheduleHalt();
             }
-
-            this.firstRun = false;
 
             try
             {

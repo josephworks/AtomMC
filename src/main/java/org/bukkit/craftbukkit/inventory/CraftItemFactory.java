@@ -34,6 +34,7 @@ public final class CraftItemFactory implements ItemFactory {
             .add("horse.jumpStrength")
             .add("zombie.spawnReinforcements")
             .add("generic.reachDistance")
+            .add("forge.swimSpeed")
             .build();
     }
 

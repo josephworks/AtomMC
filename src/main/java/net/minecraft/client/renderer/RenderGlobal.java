@@ -1875,7 +1875,8 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.DST_COLOR, GlStateManager.DestFactor.SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.enableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
-        GlStateManager.doPolygonOffset(-3.0F, -3.0F);
+        // FORGE: Fix MC-234
+        GlStateManager.doPolygonOffset(-1.0F, -10.0F);
         GlStateManager.enablePolygonOffset();
         GlStateManager.alphaFunc(516, 0.1F);
         GlStateManager.enableAlpha();

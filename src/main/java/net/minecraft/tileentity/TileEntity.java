@@ -255,7 +255,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
                     try
                     {
-                        return String.format("ID #%d (%s // %s)", i, Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getCanonicalName());
+                        return String.format("ID #%d (%s // %s // %s)", i, Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getName(), Block.getBlockById(i).getRegistryName());
                     }
                     catch (Throwable var3)
                     {

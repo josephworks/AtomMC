@@ -1,5 +1,5 @@
 package org.bukkit.craftbukkit.util;
-
+/*
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -52,3 +52,4 @@ public class TerminalConsoleWriterThread implements Runnable {
         }
     }
 }
+*/

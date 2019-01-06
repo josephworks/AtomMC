@@ -739,7 +739,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                     {
                         try
                         {
-                            return String.format("ID #%d (%s // %s)", Block.getIdFromBlock(blockIn), blockIn.getUnlocalizedName(), blockIn.getClass().getCanonicalName());
+                            return String.format("ID #%d (%s // %s // %s)", Block.getIdFromBlock(blockIn), blockIn.getUnlocalizedName(), blockIn.getClass().getName(), blockIn.getRegistryName());
                         }
                         catch (Throwable var2)
                         {
@@ -775,7 +775,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                         {
                             try
                             {
-                                return String.format("ID #%d (%s // %s)", Block.getIdFromBlock(p_190529_2_), p_190529_2_.getUnlocalizedName(), p_190529_2_.getClass().getCanonicalName());
+                                return String.format("ID #%d (%s // %s // %s)", Block.getIdFromBlock(p_190529_2_), p_190529_2_.getUnlocalizedName(), p_190529_2_.getClass().getName(), p_190529_2_.getRegistryName());
                             }
                             catch (Throwable var2)
                             {
@@ -1443,6 +1443,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         {
             ((IWorldEventListener)this.eventListeners.get(i)).onEntityAdded(entityIn);
         }
+        entityIn.onAddedToWorld();
         entityIn.valid = true;
     }
 
@@ -1452,6 +1453,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         {
             ((IWorldEventListener)this.eventListeners.get(i)).onEntityRemoved(entityIn);
         }
+        entityIn.onRemovedFromWorld();
         entityIn.valid = false;
     }
 

@@ -121,7 +121,7 @@ public abstract class PlayerList
     {
         this.cserver = server.server = new CraftServer(server, this);
         server.console = org.bukkit.craftbukkit.command.ColouredConsoleSender.getInstance();
-        server.reader.addCompleter(new org.bukkit.craftbukkit.command.ConsoleCommandCompleter(server.server));
+        //server.reader.addCompleter(new org.bukkit.craftbukkit.command.ConsoleCommandCompleter(server.server));
 
         this.bannedPlayers = new UserListBans(FILE_PLAYERBANS);
         this.bannedIPs = new UserListIPBans(FILE_IPBANS);
@@ -188,6 +188,7 @@ public abstract class PlayerList
         WorldInfo worldinfo = worldserver.getWorldInfo();
         this.setPlayerGameTypeBasedOnOther(playerIn, (EntityPlayerMP)null, worldserver);
         playerIn.connection = nethandlerplayserver;
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().fireServerConnectionEvent(netManager);
         nethandlerplayserver.sendPacket(new SPacketJoinGame(playerIn.getEntityId(), playerIn.interactionManager.getGameType(), worldinfo.isHardcoreModeEnabled(), worldserver.provider.getDimension(), worldserver.getDifficulty(), this.getMaxPlayers(), worldinfo.getTerrainType(), worldserver.getGameRules().getBoolean("reducedDebugInfo")));
         playerIn.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
         nethandlerplayserver.sendPacket(new SPacketCustomPayload("MC|Brand", (new PacketBuffer(Unpooled.buffer())).writeString(this.getServerInstance().getServerModName())));
