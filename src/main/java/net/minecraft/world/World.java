@@ -1388,7 +1388,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 }
             }
 
-            event = CraftEventFactory.callCreatureSpawnEvent((EntityLiving) entity, spawnReason);
+            event = CraftEventFactory.callCreatureSpawnEvent((EntityLivingBase) entity, spawnReason);
         } else if (entity instanceof EntityItem) {
             event = CraftEventFactory.callItemSpawnEvent((EntityItem) entity);
         } else if (entity.getBukkitEntity() instanceof org.bukkit.entity.Projectile) {
