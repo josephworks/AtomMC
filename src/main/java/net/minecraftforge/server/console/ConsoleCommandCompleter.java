@@ -21,7 +21,10 @@ package net.minecraftforge.server.console;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -29,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.server.dedicated.DedicatedServer;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -61,14 +65,26 @@ final class ConsoleCommandCompleter implements Completer
         }
 
         final String input = buffer;
-        Future<List<String>> tabComplete = this.server.callFromMainThread(() -> this.server.getTabCompletions(this.server, input, this.server.getPosition(), false));
+        final String unmodifiedBuffer = line.line();
+        Future<List<String>> tabComplete = this.server.callFromMainThread(() -> {
+
+            List<String> offers = new ArrayList<>(this.server.getTabCompletions(this.server, input, this.server.getPosition(), false));
+            Optional.ofNullable(server.server.getCommandMap().tabComplete(server.server.getConsoleSender(), unmodifiedBuffer))
+                    .ifPresent(offers::addAll);
+
+            TabCompleteEvent tabEvent = new TabCompleteEvent(server.server.getConsoleSender(), unmodifiedBuffer, offers);
+            server.server.getPluginManager().callEvent(tabEvent);
+
+            return tabEvent.isCancelled() ? Collections.emptyList() : tabEvent.getCompletions();
+        });
+
         try
         {
             for (String completion : tabComplete.get())
             {
                 if (!completion.isEmpty())
                 {
-                    boolean hasPrefix = prefix || completion.charAt(0) != '/';
+                    boolean hasPrefix = completion.charAt(0) != '/' || prefix;
                     Candidate candidate = new Candidate(hasPrefix ? completion : completion.substring(1));
                     candidates.add(candidate);
                 }

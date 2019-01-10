@@ -252,10 +252,6 @@ public final class CraftServer implements Server {
         PotionEffectType.stopAcceptingRegistrations();
         // Ugly hack :(
 
-        if (!Main.useConsole) {
-            getLogger().info("Console input is disabled due to --noconsole command argument");
-        }
-
         configuration = YamlConfiguration.loadConfiguration(getConfigFile());
         configuration.options().copyDefaults(true);
         configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("configurations/bukkit.yml"), Charsets.UTF_8)));
@@ -1078,11 +1074,7 @@ public final class CraftServer implements Server {
     public Logger getLogger() {
         return logger;
     }
-/*
-    public ConsoleReader getReader() {
-        return console.reader;
-    }
-*/
+
     @Override
     public PluginCommand getPluginCommand(String name) {
         Command command = commandMap.getCommand(name);
