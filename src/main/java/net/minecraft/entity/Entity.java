@@ -651,7 +651,9 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         {
             this.attackEntityFrom(DamageSource.LAVA, 4.0F);
             // CraftBukkit start - Fallen in lava TODO: this event spams!
-            if (this instanceof EntityLiving) {
+            if (this instanceof EntityLivingBase) {
+                if (!this.isEntityAlive())
+                    return;
                 if (fire <= 0) {
                     // not on fire yet
                     // TODO: shouldn't be sending null for the block
