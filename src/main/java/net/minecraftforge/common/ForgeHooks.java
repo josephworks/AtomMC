@@ -48,6 +48,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockMushroom;
+import net.minecraft.block.BlockSapling;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -72,6 +74,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBucket;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemPickaxe;
@@ -165,8 +168,12 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.bukkit.Location;
+import org.bukkit.TreeType;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.block.CraftBlockState;
+import org.bukkit.entity.Player;
+import org.bukkit.event.world.StructureGrowEvent;
 
 public class ForgeHooks
 {
@@ -879,34 +886,64 @@ public class ForgeHooks
         if (!(itemstack.getItem() instanceof ItemBucket)) // if not bucket
         {
             world.captureBlockSnapshots = true;
+            if (itemstack.getItem() instanceof ItemDye && itemstack.getItemDamage() == 15) {
+                Block block = world.getBlockState(pos).getBlock();
+                if (block == Blocks.SAPLING || block instanceof BlockMushroom)
+                    world.captureTreeGeneration = true;
+            }
         }
 
         EnumActionResult ret = itemstack.getItem().onItemUse(player, world, pos, hand, side, hitX, hitY, hitZ);
         world.captureBlockSnapshots = false;
+        int newMeta = itemstack.getItemDamage();
+        int newSize = itemstack.getCount();
+        NBTTagCompound newNBT = null;
+        if (itemstack.getTagCompound() != null) {
+            newNBT = itemstack.getTagCompound().copy();
+        }
+        itemstack.setItemDamage(meta);
+        itemstack.setCount(size);
+        if (nbt != null) {
+            itemstack.setTagCompound(nbt);
+        }
+        if (ret == EnumActionResult.SUCCESS && world.captureTreeGeneration && world.capturedBlockSnapshots.size() > 0) {
+            world.captureTreeGeneration = false;
+            Location location = new Location(world.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+            TreeType treeType = BlockSapling.treeType;
+            BlockSapling.treeType = null;
+            @SuppressWarnings("unchecked")
+            List<BlockSnapshot> blocks = (List<BlockSnapshot>) world.capturedBlockSnapshots.clone();
+            world.capturedBlockSnapshots.clear();
+            StructureGrowEvent event = null;
+            if (treeType != null) {
+                boolean isBonemeal = itemstack.getItem() == Items.DYE && meta == 15;
+                event = new StructureGrowEvent(location, treeType, isBonemeal, (Player) player.getBukkitEntity(), toBlockStates(world, blocks));
+                org.bukkit.Bukkit.getPluginManager().callEvent(event);
+            }
+            if (event == null || !event.isCancelled()) {
+                // Change the stack to its new contents if it hasn't been tampered with.
+                if (itemstack.getCount() == size && itemstack.getItemDamage() == meta) {
+                    itemstack.setItemDamage(newMeta);
+                    itemstack.setCount(newSize);
+                }
+                for (BlockSnapshot blocksnapshot : Lists.reverse(blocks)) {
+                    world.restoringBlockSnapshots = true;
+                    blocksnapshot.restore(true, false);
+                    world.restoringBlockSnapshots = false;
+                }
+            }
+
+            return ret;
+        }
+        world.captureTreeGeneration = false;
 
         if (ret == EnumActionResult.SUCCESS)
         {
-            // save new item data
-            int newMeta = itemstack.getItemDamage();
-            int newSize = itemstack.getCount();
-            NBTTagCompound newNBT = null;
-            if (itemstack.getTagCompound() != null)
-            {
-                newNBT = itemstack.getTagCompound().copy();
-            }
             org.bukkit.event.block.BlockPlaceEvent blockPlaceEvent = null;
             BlockEvent.PlaceEvent placeEvent = null;
             @SuppressWarnings("unchecked")
             List<BlockSnapshot> blockSnapshots = (List<BlockSnapshot>)world.capturedBlockSnapshots.clone();
             world.capturedBlockSnapshots.clear();
-
-            // make sure to set pre-placement item data for event
-            itemstack.setItemDamage(meta);
-            itemstack.setCount(size);
-            if (nbt != null)
-            {
-                itemstack.setTagCompound(nbt);
-            }
             if (blockSnapshots.size() > 1)
             {
                 blockPlaceEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockMultiPlaceEvent(world, player, hand, toBlockStates(world, blockSnapshots), pos.getX(), pos.getY(), pos.getZ());
@@ -988,6 +1025,7 @@ public class ForgeHooks
             }
         }
         world.capturedBlockSnapshots.clear();
+        world.capturedTileEntities.clear();
 
         return ret;
     }
@@ -996,7 +1034,7 @@ public class ForgeHooks
         return new CraftBlockState(world.getWorld().getBlockAt(blockSnapshot.getPos().getX(), blockSnapshot.getPos().getY(), blockSnapshot.getPos().getZ()), blockSnapshot.getFlag());
     }
 
-    private static List<BlockState> toBlockStates(World world, List<BlockSnapshot> blockSnapshots) {
+    public static List<BlockState> toBlockStates(World world, List<BlockSnapshot> blockSnapshots) {
         List<BlockState> blockStates = new ArrayList<>(blockSnapshots.size());
         for (BlockSnapshot blockSnapshot : blockSnapshots) {
             blockStates.add(new CraftBlockState(world.getWorld().getBlockAt(blockSnapshot.getPos().getX(), blockSnapshot.getPos().getY(), blockSnapshot.getPos().getZ()), blockSnapshot.getFlag()));
