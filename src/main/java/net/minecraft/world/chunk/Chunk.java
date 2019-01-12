@@ -825,7 +825,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
     public TileEntity getTileEntity(BlockPos pos, EnumCreateEntityType p_177424_2_)
     {
         TileEntity tileentity = null;
-        if (world.captureBlockStates) {
+        if (world.captureBlockSnapshots) {
             tileentity = world.capturedTileEntities.get(pos);
         }
         if (tileentity == null) {
