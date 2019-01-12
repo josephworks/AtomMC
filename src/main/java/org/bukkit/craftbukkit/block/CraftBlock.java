@@ -149,7 +149,7 @@ public class CraftBlock implements Block {
     }
 
     public boolean setTypeIdAndData(final int type, final byte data, final boolean applyPhysics) {
-        IBlockState blockData = getNMSBlock(type).getDefaultState();
+        IBlockState blockData = getNMSBlock(type).getStateFromMeta(data);
         BlockPos position = new BlockPos(x, y, z);
 
         // SPIGOT-611: need to do this to prevent glitchiness. Easier to handle this here (like /setblock) than to fix weirdness in tile entity cleanup
