@@ -958,6 +958,8 @@ public class ForgeHooks
             if ((placeEvent != null && placeEvent.isCanceled()) || (blockPlaceEvent != null && (blockPlaceEvent.isCancelled() || !blockPlaceEvent.canBuild())))
             {
                 ret = EnumActionResult.FAIL; // cancel placement
+                // Remove this when MC-99075 fixed
+                blockPlaceEvent.getPlayer().updateInventory();
                 // revert back all captured blocks
                 for (BlockSnapshot blocksnapshot : Lists.reverse(blockSnapshots))
                 {
