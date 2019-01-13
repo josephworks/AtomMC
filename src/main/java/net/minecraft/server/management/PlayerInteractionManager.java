@@ -1,6 +1,7 @@
 package net.minecraft.server.management;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCake;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.block.BlockDoor;
@@ -543,10 +544,46 @@ public class PlayerInteractionManager
 
     public boolean interactResult = false;
     public boolean firedInteract = false;
-    // TODO: Implement PlayerInteractEvent here
     public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (this.gameType == GameType.SPECTATOR)
+        EnumActionResult result = EnumActionResult.FAIL;
+        IBlockState blockdata = world.getBlockState(pos);
+
+        boolean cancelledBlock = false;
+
+        if (this.gameType == GameType.SPECTATOR) {
+            TileEntity tileentity = world.getTileEntity(pos);
+            cancelledBlock = !(tileentity instanceof ILockableContainer || tileentity instanceof IInventory);
+        }
+
+        if (player.getCooldownTracker().hasCooldown(stack.getItem())) {
+            cancelledBlock = true;
+        }
+
+        if (stack.getItem() instanceof ItemBlock  && !player.canUseCommandBlock()) {
+            Block block1 = ((ItemBlock) stack.getItem()).getBlock();
+
+            if (block1 instanceof BlockCommandBlock || block1 instanceof BlockStructure) {
+                cancelledBlock = true;
+            }
+        }
+
+        PlayerInteractEvent bukkitInteractEvent = CraftEventFactory.callPlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, pos, facing, stack, cancelledBlock, hand);
+        firedInteract = true;
+        interactResult = bukkitInteractEvent.useItemInHand() == Event.Result.DENY;
+
+        if (bukkitInteractEvent.useInteractedBlock() == Event.Result.DENY) {
+            // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
+            if (blockdata.getBlock() instanceof BlockDoor) {
+                boolean bottom = blockdata.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER;
+                ((EntityPlayerMP) player).connection.sendPacket(new SPacketBlockChange(world, bottom ? pos.up() : pos.down()));
+            } else if (blockdata.getBlock() instanceof BlockCake) {
+                ((EntityPlayerMP) player).getBukkitEntity().sendHealthUpdate(); // SPIGOT-1341 - reset health for cake
+            }
+            ((EntityPlayerMP) player).getBukkitEntity().updateInventory(); // SPIGOT-2867
+            return (bukkitInteractEvent.useItemInHand() != Event.Result.ALLOW) ? EnumActionResult.SUCCESS : EnumActionResult.PASS;
+        }
+        else if (this.gameType == GameType.SPECTATOR)
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -581,7 +618,6 @@ public class PlayerInteractionManager
                     .onRightClickBlock(player, hand, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, reachDist + 1));
             if (event.isCanceled()) return event.getCancellationResult();
 
-            EnumActionResult result = EnumActionResult.PASS;
             if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
             {
                 result = stack.onItemUseFirst(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
