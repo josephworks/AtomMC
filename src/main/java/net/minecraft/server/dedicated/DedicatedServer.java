@@ -105,10 +105,6 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             public void run()
             {
-                //if (!org.bukkit.craftbukkit.Main.useConsole) {
-                //    return;
-                //}
-                //jline.console.ConsoleReader bufferedreader = reader;
                 BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
                 String s4;
@@ -119,18 +115,6 @@ public class DedicatedServer extends MinecraftServer implements IServer
                     {
                         DedicatedServer.this.addPendingCommand(s4, DedicatedServer.this);
                     }
-                    /*
-                    while (!isServerStopped() && isServerRunning()) {
-                        if (org.bukkit.craftbukkit.Main.useJline) {
-                            s4 = bufferedreader.readLine(">", null);
-                        } else {
-                            s4 = bufferedreader.readLine();
-                        }
-                        if (s4 != null && s4.trim().length() > 0) { // Trim to filter lines which are just spaces
-                            addPendingCommand(s4, DedicatedServer.this);
-                        }
-                    }
-                    */
                 }
                 catch (IOException ioexception1)
                 {
@@ -153,8 +137,6 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 logger.removeAppender(appender);
             }
         }
-
-        //new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 
         System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));

@@ -121,7 +121,6 @@ public abstract class PlayerList
     {
         this.cserver = server.server = new CraftServer(server, this);
         server.console = org.bukkit.craftbukkit.command.ColouredConsoleSender.getInstance();
-        //server.reader.addCompleter(new org.bukkit.craftbukkit.command.ConsoleCommandCompleter(server.server));
 
         this.bannedPlayers = new UserListBans(FILE_PLAYERBANS);
         this.bannedIPs = new UserListIPBans(FILE_IPBANS);
