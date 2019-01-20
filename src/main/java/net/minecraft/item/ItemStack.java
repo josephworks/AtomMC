@@ -399,9 +399,9 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 // Spigot start
                 if (damager != null) {
                     org.bukkit.craftbukkit.inventory.CraftItemStack item = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(this);
-                    org.bukkit.event.player.PlayerItemDamageEvent event = new org.bukkit.event.player.PlayerItemDamageEvent(damager.getBukkitEntity(), item, i);
+                    org.bukkit.event.player.PlayerItemDamageEvent event = new org.bukkit.event.player.PlayerItemDamageEvent(damager.getBukkitEntity(), item, amount);
                     org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
-                    if (i != event.getDamage() || event.isCancelled()) {
+                    if (amount != event.getDamage() || event.isCancelled()) {
                         event.getPlayer().updateInventory();
                     }
                     if (event.isCancelled()) return false;
