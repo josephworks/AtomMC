@@ -18,7 +18,7 @@ Our main goals are:
 The Atom latest version can be dowloaded on the following page: https://gitlab.com/AtomMC/Atom/pipelines.  
 Once the download is completed you have to follow the next steps:
 1. Create a directory, where your future server will be located.
-2. Put a .jar-file with a `-server.jar` prefix and a `libraries` folder from artifacts.zip to this directory.
+2. Put a jar file which ends with `-server.jar` and a `libraries` folder from artifacts.zip to this directory.
 3. Launch the core using `java -jar` command.  
     Example (You may add optional flags): `java -jar Atom-master-7e9d289-server.jar`
 
