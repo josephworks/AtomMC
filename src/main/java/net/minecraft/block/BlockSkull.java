@@ -161,7 +161,6 @@ public class BlockSkull extends BlockContainer
             state = state.withProperty(NODROP, Boolean.valueOf(true));
             worldIn.setBlockState(pos, state, 4);
         }
-        this.dropBlockAsItem(worldIn, pos, state, 0);
 
         super.onBlockHarvested(worldIn, pos, state, player);
     }
