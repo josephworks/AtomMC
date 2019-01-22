@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.LoggerOutputStream;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.craftbukkit.util.Waitable;
 import org.bukkit.event.server.RemoteServerCommandEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -104,24 +105,15 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             public void run()
             {
-                if (!org.bukkit.craftbukkit.Main.useConsole) {
-                    return;
-                }
-                jline.console.ConsoleReader bufferedreader = reader;
+                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
-//                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 String s4;
 
+
                 try {
-                    while (!isServerStopped() && isServerRunning()) {
-                        if (org.bukkit.craftbukkit.Main.useJline) {
-                            s4 = bufferedreader.readLine(">", null);
-                        } else {
-                            s4 = bufferedreader.readLine();
-                        }
-                        if (s4 != null && s4.trim().length() > 0) { // Trim to filter lines which are just spaces
-                            addPendingCommand(s4, DedicatedServer.this);
-                        }
+                    while (!DedicatedServer.this.isServerStopped() && DedicatedServer.this.isServerRunning() && (s4 = bufferedreader.readLine()) != null)
+                    {
+                        DedicatedServer.this.addPendingCommand(s4, DedicatedServer.this);
                     }
                 }
                 catch (IOException ioexception1)
@@ -145,8 +137,6 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 logger.removeAppender(appender);
             }
         }
-
-        new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 
         System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
@@ -219,6 +209,11 @@ public class DedicatedServer extends MinecraftServer implements IServer
             {
                 this.setServerPort(this.settings.getIntProperty("server-port", 25565));
             }
+            // Spigot start
+            setPlayerList(new DedicatedPlayerList(this));
+            org.spigotmc.SpigotConfig.init((File) options.valueOf("spigot-settings"));
+            org.spigotmc.SpigotConfig.registerCommands();
+            // Spigot end
 
             LOGGER.info("Generating keypair");
             this.setKeyPair(CryptManager.generateKeyPair());
@@ -236,7 +231,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 return false;
             }
 
-            this.setPlayerList(new DedicatedPlayerList(this));
+            //  this.setPlayerList(new DedicatedPlayerList(this)); // Spigot - moved up
             server.loadPlugins();
             server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.STARTUP);
 
@@ -315,6 +310,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
                 LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
+                this.currentTime = getCurrentTimeMillis();
 
                 if (this.settings.hasProperty("announce-player-achievements"))
                 {
@@ -478,6 +474,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public void executePendingCommands()
     {
+        SpigotTimings.serverCommandTimer.startTiming(); // Spigot
         while (!this.pendingCommandList.isEmpty())
         {
             PendingCommand pendingcommand = this.pendingCommandList.remove(0);
@@ -491,6 +488,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
             server.dispatchServerCommand(console, pendingcommand);
             // CraftBukkit end
         }
+        SpigotTimings.serverCommandTimer.stopTiming(); // Spigot
     }
 
     public boolean isDedicatedServer()

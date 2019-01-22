@@ -1,5 +1,6 @@
 package org.atom.gradle.task;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.specialsource.Jar;
@@ -17,6 +18,8 @@ import org.objectweb.asm.tree.ClassNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 
 public class ShrinkJarTask extends DefaultTask {
 
@@ -31,14 +34,9 @@ public class ShrinkJarTask extends DefaultTask {
     @TaskAction
     private void doTask() throws IOException {
         try (Jar input = Jar.init(inputJar)) {
-            for (String entryName : input.getEntryNames()) {
-                if (entryName.endsWith(".class")) {
-                    byte[] classBytes = IOUtils.toByteArray(input.getResource(entryName));
-                    byte[] serverCls = processClass(classBytes);
-                    if (serverCls != null)
-                        FileUtils.writeByteArrayToFile(new File(classesServer, entryName), serverCls);
-                }
-            }
+            List<String> allJarEntries = ImmutableList.copyOf(input.getEntryNames());
+            ProcessClassesTask processClassesTask = new ProcessClassesTask(allJarEntries, input);
+            new ForkJoinPool().invoke(processClassesTask);
         }
     }
 
@@ -72,5 +70,45 @@ public class ShrinkJarTask extends DefaultTask {
             }
         }
         return false;
+    }
+
+    private class ProcessClassesTask extends RecursiveAction {
+
+        private List<String> classesSet;
+        private Jar inputJar;
+
+        ProcessClassesTask(List<String> classesSet, Jar inputJar) {
+            this.classesSet = classesSet;
+            this.inputJar = inputJar;
+        }
+
+        @Override
+        protected void compute() {
+            if (classesSet.size() > 500) {
+                int middleIndex = classesSet.size() / 2;
+                ProcessClassesTask firstPart = new ProcessClassesTask(classesSet.subList(0, middleIndex), inputJar);
+                ProcessClassesTask secondPart = new ProcessClassesTask(classesSet.subList(middleIndex, classesSet.size()), inputJar);
+                invokeAll(firstPart, secondPart);
+            } else {
+                for (String className : classesSet) {
+                    if (className.endsWith(".class")) {
+                        byte[] classBytes = new byte[0];
+                        try {
+                            classBytes = IOUtils.toByteArray(inputJar.getResource(className));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        byte[] serverCls = processClass(classBytes);
+                        if (serverCls != null) {
+                            try {
+                                FileUtils.writeByteArrayToFile(new File(classesServer, className), serverCls);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

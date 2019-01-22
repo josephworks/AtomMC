@@ -9,8 +9,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
 
 import java.util.List;
@@ -23,7 +21,6 @@ public class InventoryCrafting implements IInventory
     public final Container eventHandler;
 
     // CraftBukkit start - add fields
-    public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
     public IRecipe currentRecipe;
     public IInventory resultInventory;
     private EntityPlayer owner;
@@ -33,20 +30,8 @@ public class InventoryCrafting implements IInventory
         return this.stackList;
     }
 
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
     public InventoryType getInvType() {
         return stackList.size() == 4 ? InventoryType.CRAFTING : InventoryType.WORKBENCH;
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public org.bukkit.inventory.InventoryHolder getOwner() {

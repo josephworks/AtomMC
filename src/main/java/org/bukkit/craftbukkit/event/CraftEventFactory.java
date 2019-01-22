@@ -309,7 +309,7 @@ public class CraftEventFactory {
     /**
      * CreatureSpawnEvent
      */
-    public static CreatureSpawnEvent callCreatureSpawnEvent(EntityLiving entityliving, SpawnReason spawnReason) {
+    public static CreatureSpawnEvent callCreatureSpawnEvent(EntityLivingBase entityliving, SpawnReason spawnReason) {
         LivingEntity entity = (LivingEntity) entityliving.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
 
@@ -527,7 +527,7 @@ public class CraftEventFactory {
             }
             return event;
         } else if (blockDamage != null) {
-            DamageCause cause = null;
+            DamageCause cause;
             Block damager = blockDamage;
             blockDamage = null;
             if (source == DamageSource.CACTUS) {
@@ -535,7 +535,7 @@ public class CraftEventFactory {
             } else if (source == DamageSource.HOT_FLOOR) {
                 cause = DamageCause.HOT_FLOOR;
             } else {
-                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.damageType));
+                cause = DamageCause.CUSTOM;
             }
             EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
             if (!event.isCancelled()) {
@@ -543,7 +543,7 @@ public class CraftEventFactory {
             }
             return event;
         } else if (entityDamage != null) {
-            DamageCause cause = null;
+            DamageCause cause;
             CraftEntity damager = entityDamage.getBukkitEntity();
             entityDamage = null;
             if (source == DamageSource.ANVIL || source == DamageSource.FALLING_BLOCK) {
@@ -557,7 +557,7 @@ public class CraftEventFactory {
             } else if (source == DamageSource.MAGIC) {
                 cause = DamageCause.MAGIC;
             } else {
-                throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager.getHandle(), source.damageType));
+                cause = DamageCause.CUSTOM;
             }
             EntityDamageEvent event = callEvent(new EntityDamageByEntityEvent(damager, entity.getBukkitEntity(), cause, modifiers, modifierFunctions));
             if (!event.isCancelled()) {
@@ -566,7 +566,7 @@ public class CraftEventFactory {
             return event;
         }
 
-        DamageCause cause = null;
+        DamageCause cause;
         if (source == DamageSource.IN_FIRE) {
             cause = DamageCause.FIRE;
         } else if (source == DamageSource.STARVE) {
@@ -593,13 +593,11 @@ public class CraftEventFactory {
             cause = DamageCause.CRAMMING;
         } else if (source == DamageSource.GENERIC) {
             cause = DamageCause.CUSTOM;
+        } else {
+            cause = DamageCause.CUSTOM;
         }
 
-        if (cause != null) {
-            return callEntityDamageEvent(null, entity, cause, modifiers, modifierFunctions);
-        }
-
-        throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.damageType));
+        return callEntityDamageEvent(null, entity, cause, modifiers, modifierFunctions);
     }
 
     private static EntityDamageEvent callEntityDamageEvent(Entity damager, Entity damagee, DamageCause cause, Map<DamageModifier, Double> modifiers, Map<DamageModifier, Function<? super Double, Double>> modifierFunctions) {
@@ -1000,7 +998,7 @@ public class CraftEventFactory {
         if (true) {
             org.bukkit.Statistic stat = CraftStatistic.getBukkitStatistic(statistic);
             if (stat == null) {
-                System.err.println("Unhandled statistic: " + statistic);
+                // System.err.println("Unhandled statistic: " + statistic);
                 return null;
             }
             switch (stat) {
@@ -1047,6 +1045,21 @@ public class CraftEventFactory {
         PrepareAnvilEvent event = new PrepareAnvilEvent(view, CraftItemStack.asCraftMirror(item).clone());
         event.getView().getPlayer().getServer().getPluginManager().callEvent(event);
         event.getInventory().setItem(2, event.getResult());
+        return event;
+    }
+
+    /**
+     * Mob spawner event.
+     */
+    public static SpawnerSpawnEvent callSpawnerSpawnEvent(Entity spawnee, BlockPos pos) {
+        org.bukkit.craftbukkit.entity.CraftEntity entity = spawnee.getBukkitEntity();
+        BlockState state = entity.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()).getState();
+        if (!(state instanceof org.bukkit.block.CreatureSpawner)) {
+            state = null;
+        }
+
+        SpawnerSpawnEvent event = new SpawnerSpawnEvent(entity, (org.bukkit.block.CreatureSpawner) state);
+        entity.getServer().getPluginManager().callEvent(event);
         return event;
     }
 

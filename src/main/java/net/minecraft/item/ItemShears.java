@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 
 public class ItemShears extends Item
 {
@@ -50,10 +51,20 @@ public class ItemShears extends Item
             BlockPos pos = new BlockPos(entity.posX, entity.posY, entity.posZ);
             if (target.isShearable(itemstack, entity.world, pos))
             {
+                PlayerShearEntityEvent event = new PlayerShearEntityEvent((org.bukkit.entity.Player) player.getBukkitEntity(), entity.getBukkitEntity());
+                entity.world.getServer().getPluginManager().callEvent(event);
+
+                if (event.isCancelled()) {
+                    return false;
+                }
+
                 java.util.List<ItemStack> drops = target.onSheared(itemstack, entity.world, pos,
                         net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.FORTUNE, itemstack));
 
                 java.util.Random rand = new java.util.Random();
+
+                entity.forceDrops = true;
+
                 for(ItemStack stack : drops)
                 {
                     net.minecraft.entity.item.EntityItem ent = entity.entityDropItem(stack, 1.0F);
@@ -61,6 +72,9 @@ public class ItemShears extends Item
                     ent.motionX += (rand.nextFloat() - rand.nextFloat()) * 0.1F;
                     ent.motionZ += (rand.nextFloat() - rand.nextFloat()) * 0.1F;
                 }
+
+                entity.forceDrops = false;
+
                 itemstack.damageItem(1, entity);
             }
             return true;

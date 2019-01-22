@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSand;
@@ -780,6 +781,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         entityIn.chunkCoordY = k;
         entityIn.chunkCoordZ = this.z;
         this.entityLists[k].add(entityIn);
+        this.markDirty(); // Forge - ensure chunks are marked to save after an entity add
     }
 
     public void removeEntity(Entity entityIn)
@@ -800,6 +802,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         }
 
         this.entityLists[index].remove(entityIn);
+        this.markDirty(); // Forge - ensure chunks are marked to save after entity removals
     }
 
     public boolean canSeeSky(BlockPos pos)
@@ -822,7 +825,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
     public TileEntity getTileEntity(BlockPos pos, EnumCreateEntityType p_177424_2_)
     {
         TileEntity tileentity = null;
-        if (world.captureBlockStates) {
+        if (world.captureBlockSnapshots) {
             tileentity = world.capturedTileEntities.get(pos);
         }
         if (tileentity == null) {
@@ -923,12 +926,12 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         {
             // Do not pass along players, as doing so can get them stuck outside of time.
             // (which for example disables inventory icon updates and prevents block breaking)
-            for (Entity entity : classinheritancemultimap) {
-                if (entity instanceof EntityPlayerMP) {
-                    classinheritancemultimap.remove(entity);
-                }
-            }
-            this.world.unloadEntities(classinheritancemultimap);
+            this.world.unloadEntities(
+                    classinheritancemultimap
+                    .stream()
+                    .filter(entity -> !(entity instanceof EntityPlayerMP))
+                    .collect(Collectors.toCollection(() -> new ClassInheritanceMultiMap<>(Entity.class)))
+            );
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
     }
@@ -1057,6 +1060,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
 
     public void populateCB(IChunkProvider chunkProvider, IChunkGenerator chunkGenrator, boolean newChunk)
     {
+        world.timings.syncChunkLoadPostTimer.startTiming(); // Spigot
         Server server = world.getServer();
         if (server != null) {
             /*
@@ -1110,6 +1114,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
                 chunk4.populate(chunkGenrator);
             }
         }
+        world.timings.syncChunkLoadPostTimer.stopTiming(); // Spigot
     }
 
     protected void populate(IChunkGenerator generator)

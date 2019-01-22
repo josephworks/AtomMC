@@ -77,10 +77,11 @@ import net.minecraft.world.storage.WorldInfo;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraft.world.storage.loot.LootTableManager;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.Bukkit;
-import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -153,29 +154,14 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     public boolean pvpMode;
     public boolean keepSpawnInMemory = true;
     public ChunkGenerator generator;
-
-    // TODO: Should we use Forge capturing instead of this?
-    public boolean captureBlockStates = false;
     public boolean captureTreeGeneration = false;
-    public ArrayList<BlockState> capturedBlockStates= new ArrayList<BlockState>(){
-        @Override
-        public boolean add( BlockState blockState ) {
-            Iterator<BlockState> blockStateIterator = this.iterator();
-            while( blockStateIterator.hasNext() ) {
-                BlockState blockState1 = blockStateIterator.next();
-                if ( blockState1.getLocation().equals( blockState.getLocation() ) ) {
-                    return false;
-                }
-            }
-
-            return super.add( blockState );
-        }
-    };
     public List<EntityItem> captureDrops;
     public long ticksPerAnimalSpawns;
     public long ticksPerMonsterSpawns;
     public boolean populating;
     private int tickPosition;
+    public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
+    public final SpigotTimings.WorldTimingsHandler timings; // Spigot
 
     public CraftWorld getWorld() {
         return this.world;
@@ -190,6 +176,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     }
 
     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client, ChunkGenerator gen, org.bukkit.World.Environment env) {
+        this.spigotConfig = new org.spigotmc.SpigotWorldConfig( info.getWorldName() ); // Spigot
         this.generator = gen;
         this.world = new CraftWorld((WorldServer) this, gen, env);
         this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
@@ -238,10 +225,12 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         });
         this.getServer().addWorld(this.world);
         // CraftBukkit end
+        timings = new SpigotTimings.WorldTimingsHandler(this); // Spigot - code below can generate new world and access timings
     }
 
     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client)
     {
+        this.spigotConfig = new org.spigotmc.SpigotWorldConfig( info.getWorldName() ); // Spigot
         this.world = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).getWorld() : null;
         this.eventListeners = Lists.newArrayList(this.pathListener);
         this.calendar = Calendar.getInstance();
@@ -257,6 +246,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         this.worldBorder = providerIn.createWorldBorder();
         perWorldStorage = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).mapStorage : new MapStorage(null);
         this.mapStorage = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).mapStorage : new MapStorage(null);
+        timings = new SpigotTimings.WorldTimingsHandler(this); // Spigot - code below can generate new world and access timings
     }
 
     public World init()
@@ -439,22 +429,13 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     {
         // CraftBukkit start - tree generation
         if (this.captureTreeGeneration) {
-            BlockState blockstate = null;
-            Iterator<BlockState> it = capturedBlockStates.iterator();
-            while (it.hasNext()) {
-                BlockState previous = it.next();
-                if (previous.getX() == pos.getX() && previous.getY() == pos.getY() && previous.getZ() == pos.getZ()) {
-                    blockstate = previous;
-                    it.remove();
-                    break;
+            for (int i = 0; i < capturedBlockSnapshots.size(); i++) {
+                if (capturedBlockSnapshots.get(i).getPos().equals(pos)) {
+                    capturedBlockSnapshots.set(i, new BlockSnapshot(this, pos, newState, flags));
+                    return true;
                 }
             }
-            if (blockstate == null) {
-                blockstate = org.bukkit.craftbukkit.block.CraftBlockState.getBlockState(this, pos.getX(), pos.getY(), pos.getZ(), flags);
-            }
-            blockstate.setTypeId(CraftMagicNumbers.getId(newState.getBlock()));
-            blockstate.setRawData((byte) newState.getBlock().getMetaFromState(newState));
-            this.capturedBlockStates.add(blockstate);
+            this.capturedBlockSnapshots.add(new BlockSnapshot(this, pos, newState, flags));
             return true;
         }
         // CraftBukkit end
@@ -477,13 +458,6 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 blockSnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(this, pos, flags);
                 this.capturedBlockSnapshots.add(blockSnapshot);
             }
-            // CraftBukkit start - capture blockstates
-            BlockState blockstate = null;
-            if (this.captureBlockStates) {
-                blockstate = org.bukkit.craftbukkit.block.CraftBlockState.getBlockState(this, pos.getX(), pos.getY(), pos.getZ(), flags);
-                this.capturedBlockStates.add(blockstate);
-            }
-            // CraftBukkit end
             IBlockState oldState = getBlockState(pos);
             int oldLight = oldState.getLightValue(this, pos);
             int oldOpacity = oldState.getLightOpacity(this, pos);
@@ -493,11 +467,6 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
             if (iblockstate == null)
             {
                 if (blockSnapshot != null) this.capturedBlockSnapshots.remove(blockSnapshot);
-                // CraftBukkit start - remove blockstate if failed
-                if (this.captureBlockStates) {
-                    this.capturedBlockStates.remove(blockstate);
-                }
-                // CraftBukkit end
                 return false;
             }
             else
@@ -513,12 +482,6 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 {
                     this.markAndNotifyBlock(pos, chunk, iblockstate, newState, flags);
                 }
-                // CraftBukkit start
-                if (!this.captureBlockStates) { // Don't notify clients or update physics while capturing blockstates
-                    // Modularize client and physic updates
-                    this.markAndNotifyBlock(pos, chunk, iblockstate, newState, flags);
-                }
-                // CraftBukkit end
 
                 return true;
             }
@@ -732,7 +695,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                     {
                         try
                         {
-                            return String.format("ID #%d (%s // %s)", Block.getIdFromBlock(blockIn), blockIn.getUnlocalizedName(), blockIn.getClass().getCanonicalName());
+                            return String.format("ID #%d (%s // %s // %s)", Block.getIdFromBlock(blockIn), blockIn.getUnlocalizedName(), blockIn.getClass().getName(), blockIn.getRegistryName());
                         }
                         catch (Throwable var2)
                         {
@@ -768,7 +731,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                         {
                             try
                             {
-                                return String.format("ID #%d (%s // %s)", Block.getIdFromBlock(p_190529_2_), p_190529_2_.getUnlocalizedName(), p_190529_2_.getClass().getCanonicalName());
+                                return String.format("ID #%d (%s // %s // %s)", Block.getIdFromBlock(p_190529_2_), p_190529_2_.getUnlocalizedName(), p_190529_2_.getClass().getName(), p_190529_2_.getRegistryName());
                             }
                             catch (Throwable var2)
                             {
@@ -1076,11 +1039,9 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
     {
         // CraftBukkit start - tree generation
         if (captureTreeGeneration) {
-            Iterator<BlockState> it = capturedBlockStates.iterator();
-            while (it.hasNext()) {
-                BlockState previous = it.next();
-                if (previous.getX() == pos.getX() && previous.getY() == pos.getY() && previous.getZ() == pos.getZ()) {
-                    return CraftMagicNumbers.getBlock(previous.getTypeId()).getDefaultState();
+            for (BlockSnapshot blockSnapshot : capturedBlockSnapshots) {
+                if (blockSnapshot.getPos().equals(pos)) {
+                    return blockSnapshot.getReplacedBlock();
                 }
             }
         }
@@ -1381,7 +1342,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 }
             }
 
-            event = CraftEventFactory.callCreatureSpawnEvent((EntityLiving) entity, spawnReason);
+            event = CraftEventFactory.callCreatureSpawnEvent((EntityLivingBase) entity, spawnReason);
         } else if (entity instanceof EntityItem) {
             event = CraftEventFactory.callItemSpawnEvent((EntityItem) entity);
         } else if (entity.getBukkitEntity() instanceof org.bukkit.entity.Projectile) {
@@ -1436,6 +1397,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         {
             ((IWorldEventListener)this.eventListeners.get(i)).onEntityAdded(entityIn);
         }
+        entityIn.onAddedToWorld();
         entityIn.valid = true;
     }
 
@@ -1445,6 +1407,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         {
             ((IWorldEventListener)this.eventListeners.get(i)).onEntityRemoved(entityIn);
         }
+        entityIn.onRemovedFromWorld();
         entityIn.valid = false;
     }
 
@@ -1965,6 +1928,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         this.tickPlayers();
         this.profiler.endStartSection("regular");
 
+        timings.entityTick.startTiming(); // Spigot
         // CraftBukkit start - Use field for loop variable
         for (this.tickPosition = 0; this.tickPosition < this.loadedEntityList.size(); ++this.tickPosition) {
             Entity entity2 = (Entity) this.loadedEntityList.get(this.tickPosition);
@@ -1987,9 +1951,11 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
             {
                 try
                 {
+                    SpigotTimings.tickEntityTimer.startTiming(); // Spigot
                     net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackStart(entity2);
                     this.updateEntity(entity2);
                     net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackEnd(entity2);
+                    SpigotTimings.tickEntityTimer.stopTiming(); // Spigot
                 }
                 catch (Throwable throwable1)
                 {
@@ -2026,7 +1992,9 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
             this.profiler.endSection();
         }
 
+        timings.entityTick.stopTiming(); // Spigot
         this.profiler.endStartSection("blockEntities");
+        timings.tileEntityTick.startTiming(); // Spigot
 
         this.processingLoadedTiles = true; //FML Move above remove to prevent CMEs
 
@@ -2063,6 +2031,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                         {
                             return String.valueOf((Object)TileEntity.getKey(tileentity.getClass()));
                         });
+                        tileentity.tickTimer.startTiming(); // Spigot
                         net.minecraftforge.server.timings.TimeTracker.TILE_ENTITY_UPDATE.trackStart(tileentity);
                         ((ITickable)tileentity).update();
                         net.minecraftforge.server.timings.TimeTracker.TILE_ENTITY_UPDATE.trackEnd(tileentity);
@@ -2082,6 +2051,11 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                         else
                         throw new ReportedException(crashreport2);
                     }
+                    // Spigot start
+                    finally {
+                        tileentity.tickTimer.stopTiming();
+                    }
+                    // Spigot end
                 }
             }
 
@@ -2100,6 +2074,8 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
             }
         }
 
+        timings.tileEntityTick.stopTiming(); // Spigot
+        timings.tileEntityPending.startTiming(); // Spigot
         this.processingLoadedTiles = false;
         this.profiler.endStartSection("pendingBlockEntities");
 
@@ -2137,6 +2113,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
             this.addedTileEntityList.clear();
         }
 
+        timings.tileEntityPending.stopTiming(); // Spigot
         this.profiler.endSection();
         this.profiler.endSection();
     }
@@ -2213,6 +2190,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
             }
         }
 
+        entityIn.tickTimer.startTiming(); // Spigot
         entityIn.lastTickPosX = entityIn.posX;
         entityIn.lastTickPosY = entityIn.posY;
         entityIn.lastTickPosZ = entityIn.posZ;
@@ -2299,6 +2277,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
                 }
             }
         }
+        entityIn.tickTimer.stopTiming(); // Spigot
     }
 
     public boolean checkNoEntityCollision(AxisAlignedBB bb)
@@ -2676,7 +2655,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         {
             if (tileEntityIn != null && !tileEntityIn.isInvalid())
             {
-                if (captureBlockStates) {
+                if (captureBlockSnapshots) {
                     tileEntityIn.setWorld(this);
                     tileEntityIn.setPos(pos);
                     capturedTileEntities.put(pos, tileEntityIn);

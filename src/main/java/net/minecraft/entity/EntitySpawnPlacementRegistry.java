@@ -50,13 +50,12 @@ public class EntitySpawnPlacementRegistry
 
     public static EntityLiving.SpawnPlacementType getPlacementForEntity(Class<?> entityClass)
     {
-        return ENTITY_PLACEMENTS.get(entityClass);
+        return ENTITY_PLACEMENTS.getOrDefault(entityClass, EntityLiving.SpawnPlacementType.ON_GROUND);
     }
 
     public static void setPlacementType(Class<? extends Entity> entityClass, EntityLiving.SpawnPlacementType placementType)
     {
-        if(!ENTITY_PLACEMENTS.containsKey(entityClass))
-            ENTITY_PLACEMENTS.put(entityClass, placementType);
+        ENTITY_PLACEMENTS.putIfAbsent(entityClass, placementType);
     }
 
     static

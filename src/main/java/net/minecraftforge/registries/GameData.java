@@ -70,6 +70,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -112,8 +113,9 @@ public class GameData
     private static final int MAX_RECIPE_ID = Integer.MAX_VALUE >> 5; // Varint CPacketRecipeInfo/SPacketRecipeBook
     private static final int MAX_PROFESSION_ID = 1024; //TODO: Is this serialized anywhere anymore?
 
-    private static final ResourceLocation BLOCK_TO_ITEM    = new ResourceLocation("minecraft:blocktoitemmap");
-    private static final ResourceLocation BLOCKSTATE_TO_ID = new ResourceLocation("minecraft:blockstatetoid");
+    private static final ResourceLocation BLOCK_TO_ITEM         = new ResourceLocation("minecraft:blocktoitemmap");
+    private static final ResourceLocation BLOCKSTATE_TO_ID      = new ResourceLocation("minecraft:blockstatetoid");
+    private static final ResourceLocation ENTITY_CLASS_TO_ENTRY = new ResourceLocation("forge:entity_class_to_entry");
     private static boolean hasInit = false;
     private static final boolean DISABLE_VANILLA_REGISTRIES = Boolean.parseBoolean(System.getProperty("forge.disableVanillaGameData", "false")); // Use for unit tests/debugging
     private static final BiConsumer<ResourceLocation, ForgeRegistry<?>> LOCK_VANILLA = (name, reg) -> reg.slaves.values().stream().filter(o -> o instanceof ILockableRegistry).forEach(o -> ((ILockableRegistry)o).lock());
@@ -187,6 +189,12 @@ public class GameData
     public static ObjectIntIdentityMap<IBlockState> getBlockStateIDMap()
     {
         return GameRegistry.findRegistry(Block.class).getSlaveMap(BLOCKSTATE_TO_ID, ObjectIntIdentityMap.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<Class<? extends Entity>, EntityEntry> getEntityClassMap()
+    {
+        return GameRegistry.findRegistry(EntityEntry.class).getSlaveMap(ENTITY_CLASS_TO_ENTRY, Map.class);
     }
 
     public static <K extends IForgeRegistryEntry<K>> K register_impl(K value)
@@ -403,9 +411,21 @@ public class GameData
         }
     }
 
-    private static class RecipeCallbacks implements IForgeRegistry.MissingFactory<IRecipe>
+    private static class RecipeCallbacks implements IForgeRegistry.ValidateCallback<IRecipe>, IForgeRegistry.MissingFactory<IRecipe>
     {
         static final RecipeCallbacks INSTANCE = new RecipeCallbacks();
+
+        @Override
+        public void onValidate(IForgeRegistryInternal<IRecipe> owner, RegistryManager stage, int id, ResourceLocation key, IRecipe obj)
+        {
+            if (stage != RegistryManager.ACTIVE) return;
+            // verify the recipe output yields a registered item
+            Item item = obj.getRecipeOutput().getItem();
+            if (!stage.getRegistry(Item.class).containsValue(item))
+            {
+                throw new IllegalStateException(String.format("Recipe %s (%s) produces unregistered item %s (%s)", key, obj, item.getRegistryName(), item));
+            }
+        }
 
         @Override
         public IRecipe createMissing(ResourceLocation key, boolean isNetwork)
@@ -451,7 +471,7 @@ public class GameData
         reg.register(id, key, new EntityEntry(clazz, oldName));
     }
 
-    private static class EntityCallbacks implements IForgeRegistry.AddCallback<EntityEntry>
+    private static class EntityCallbacks implements IForgeRegistry.AddCallback<EntityEntry>, IForgeRegistry.ClearCallback<EntityEntry>, IForgeRegistry.CreateCallback<EntityEntry>
     {
         static final EntityCallbacks INSTANCE = new EntityCallbacks();
 
@@ -463,7 +483,24 @@ public class GameData
                 ((EntityEntryBuilder.BuiltEntityEntry) entry).addedToRegistry();
             }
             if (entry.getEgg() != null)
+            {
                 EntityList.ENTITY_EGGS.put(entry.getRegistryName(), entry.getEgg());
+            }
+            @SuppressWarnings("unchecked")
+            Map<Class<? extends Entity>, EntityEntry> map = owner.getSlaveMap(ENTITY_CLASS_TO_ENTRY, Map.class);
+            map.put(entry.getEntityClass(), entry);
+        }
+
+        @Override
+        public void onClear(IForgeRegistryInternal<EntityEntry> owner, RegistryManager stage)
+        {
+            owner.getSlaveMap(ENTITY_CLASS_TO_ENTRY, Map.class).clear();
+        }
+
+        @Override
+        public void onCreate(IForgeRegistryInternal<EntityEntry> owner, RegistryManager stage)
+        {
+            owner.setSlaveMap(ENTITY_CLASS_TO_ENTRY, new IdentityHashMap<>());
         }
     }
 

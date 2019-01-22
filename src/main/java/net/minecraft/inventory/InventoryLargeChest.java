@@ -8,6 +8,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.LockCode;
+import org.atom.asm.IInventoryTransactionProvider;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.entity.HumanEntity;
@@ -15,7 +16,7 @@ import org.bukkit.entity.HumanEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InventoryLargeChest implements ILockableContainer
+public class InventoryLargeChest implements ILockableContainer, IInventoryTransactionProvider
 {
     private final String name;
     public final ILockableContainer upperChest;
@@ -32,14 +33,14 @@ public class InventoryLargeChest implements ILockableContainer
     }
 
     public void onOpen(CraftHumanEntity who) {
-        this.upperChest.onOpen(who);
-        this.lowerChest.onOpen(who);
+        ((IInventoryTransactionProvider) this.upperChest).onOpen(who);
+        ((IInventoryTransactionProvider) this.lowerChest).onOpen(who);
         transaction.add(who);
     }
 
     public void onClose(CraftHumanEntity who) {
-        this.upperChest.onClose(who);
-        this.lowerChest.onClose(who);
+        ((IInventoryTransactionProvider) this.upperChest).onClose(who);
+        ((IInventoryTransactionProvider) this.lowerChest).onClose(who);
         transaction.remove(who);
     }
 

@@ -33,9 +33,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.potion.CraftPotionUtil;
-import org.bukkit.entity.HumanEntity;
 
 public class TileEntityBeacon extends TileEntityLockable implements ITickable, ISidedInventory {
     public static final Potion[][] EFFECTS_LIST = new Potion[][]{{MobEffects.SPEED, MobEffects.HASTE}, {MobEffects.RESISTANCE, MobEffects.JUMP_BOOST}, {MobEffects.STRENGTH}, {MobEffects.REGENERATION}};
@@ -54,23 +52,10 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     private ItemStack payment = ItemStack.EMPTY;
     private String customName;
 
-    public List<HumanEntity> transaction = new java.util.ArrayList<>();
     private int maxStack = MAX_STACK;
 
     public List<ItemStack> getContents() {
         return Arrays.asList(this.payment);
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public void setMaxStackSize(int size) {

@@ -581,11 +581,14 @@ public class PlayerInteractionManager
                     .onRightClickBlock(player, hand, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, reachDist + 1));
             if (event.isCanceled()) return event.getCancellationResult();
 
-            EnumActionResult ret = stack.onItemUseFirst(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-            if (ret != EnumActionResult.PASS) return ret;
+            EnumActionResult result = EnumActionResult.PASS;
+            if (event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
+            {
+                result = stack.onItemUseFirst(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+                if (result != EnumActionResult.PASS) return result ;
+            }
 
             boolean bypass = player.getHeldItemMainhand().doesSneakBypassUse(worldIn, pos, player) && player.getHeldItemOffhand().doesSneakBypassUse(worldIn, pos, player);
-            EnumActionResult result = EnumActionResult.PASS;
 
             if (!player.isSneaking() || bypass || event.getUseBlock() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
             {

@@ -29,9 +29,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+import org.atom.inventory.util.InventoryUtils;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.Inventory;
@@ -42,23 +41,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     private int transferCooldown = -1;
     private long tickedGameTime;
 
-    public List<HumanEntity> transaction = new java.util.ArrayList<>();
     private int maxStack = MAX_STACK;
 
     public List<ItemStack> getContents() {
         return this.inventory;
-    }
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
     }
 
     public void setMaxStackSize(int size) {
@@ -253,10 +239,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
                         if (iinventory instanceof InventoryLargeChest) {
                             destinationInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) iinventory);
                         } else {
-                            destinationInventory = iinventory.getOwner().getInventory();
+                            destinationInventory = InventoryUtils.getInventoryOwner(iinventory).getInventory();
                         }
 
-                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(this.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
+                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(InventoryUtils.getInventoryOwner(this).getInventory(), oitemstack.clone(), destinationInventory, true);
                         this.getWorld().getServer().getPluginManager().callEvent(event);
                         if (event.isCancelled()) {
                             this.setInventorySlotContents(i, itemstack);
@@ -423,10 +409,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             if (inventoryIn instanceof InventoryLargeChest) {
                 sourceInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) inventoryIn);
             } else {
-                sourceInventory = inventoryIn.getOwner().getInventory();
+                sourceInventory = InventoryUtils.getInventoryOwner(inventoryIn).getInventory();
             }
 
-            InventoryMoveItemEvent event = new InventoryMoveItemEvent(sourceInventory, oitemstack.clone(), hopper.getOwner().getInventory(), false);
+            InventoryMoveItemEvent event = new InventoryMoveItemEvent(sourceInventory, oitemstack.clone(), InventoryUtils.getInventoryOwner(hopper).getInventory(), false);
 
             hopper.getWorld().getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -470,7 +456,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         }
         else
         {
-            InventoryPickupItemEvent event = new InventoryPickupItemEvent(destination.getOwner().getInventory(), (org.bukkit.entity.Item) entity.getBukkitEntity());
+            InventoryPickupItemEvent event = new InventoryPickupItemEvent(InventoryUtils.getInventoryOwner(destination).getInventory(), (org.bukkit.entity.Item) entity.getBukkitEntity());
             entity.world.getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return false;

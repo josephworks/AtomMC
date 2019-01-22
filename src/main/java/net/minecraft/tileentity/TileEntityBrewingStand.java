@@ -25,9 +25,7 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.BrewingStandFuelEvent;
 import org.bukkit.inventory.InventoryHolder;
@@ -45,20 +43,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
     private int fuel;
 
     private int lastTick = MinecraftServer.currentTick;
-    public List<HumanEntity> transaction = new java.util.ArrayList<>();
     private int maxStack = 64;
-
-    public void onOpen(CraftHumanEntity who) {
-        transaction.add(who);
-    }
-
-    public void onClose(CraftHumanEntity who) {
-        transaction.remove(who);
-    }
-
-    public List<HumanEntity> getViewers() {
-        return transaction;
-    }
 
     public List<ItemStack> getContents() {
         return this.brewingItemStacks;

@@ -10,16 +10,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.util.CraftChatMessage;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 public class InventoryWrapper implements IInventory {
 
     private final Inventory inventory;
-    private final List<HumanEntity> viewers = new ArrayList<HumanEntity>();
 
     public InventoryWrapper(Inventory inventory) {
         this.inventory = inventory;
@@ -133,21 +130,6 @@ public class InventoryWrapper implements IInventory {
         }
 
         return items;
-    }
-
-    @Override
-    public void onOpen(CraftHumanEntity who) {
-        viewers.add(who);
-    }
-
-    @Override
-    public void onClose(CraftHumanEntity who) {
-        viewers.remove(who);
-    }
-
-    @Override
-    public List<HumanEntity> getViewers() {
-        return viewers;
     }
 
     @Override

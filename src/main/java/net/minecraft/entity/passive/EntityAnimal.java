@@ -176,9 +176,9 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
         if (player != null)
         {
             this.playerInLove = player.getUniqueID();
+            this.breedItem = player.inventory.getCurrentItem();
         }
 
-        this.breedItem = player.inventory.getCurrentItem();
         this.world.setEntityState(this, (byte)18);
     }
 

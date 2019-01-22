@@ -88,6 +88,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.util.Vector;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 public abstract class PlayerList
 {
@@ -120,7 +121,6 @@ public abstract class PlayerList
     {
         this.cserver = server.server = new CraftServer(server, this);
         server.console = org.bukkit.craftbukkit.command.ColouredConsoleSender.getInstance();
-        server.reader.addCompleter(new org.bukkit.craftbukkit.command.ConsoleCommandCompleter(server.server));
 
         this.bannedPlayers = new UserListBans(FILE_PLAYERBANS);
         this.bannedIPs = new UserListIPBans(FILE_IPBANS);
@@ -169,12 +169,25 @@ public abstract class PlayerList
             s1 = netManager.getRemoteAddress().toString();
         }
 
+        // Spigot start - spawn location event
+        Player bukkitPlayer = playerIn.getBukkitEntity();
+        PlayerSpawnLocationEvent ev = new PlayerSpawnLocationEvent(bukkitPlayer, bukkitPlayer.getLocation());
+        Bukkit.getPluginManager().callEvent(ev);
+
+        Location loc = ev.getSpawnLocation();
+        WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
+
+        playerIn.setWorld(world);
+        playerIn.setPositionAndRotation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+        // Spigot end
+
         // CraftBukkit - Moved message to after join
         // LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", playerIn.getName(), s1, Integer.valueOf(playerIn.getEntityId()), Double.valueOf(playerIn.posX), Double.valueOf(playerIn.posY), Double.valueOf(playerIn.posZ));
         WorldServer worldserver = this.mcServer.getWorld(playerIn.dimension);
         WorldInfo worldinfo = worldserver.getWorldInfo();
         this.setPlayerGameTypeBasedOnOther(playerIn, (EntityPlayerMP)null, worldserver);
         playerIn.connection = nethandlerplayserver;
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().fireServerConnectionEvent(netManager);
         nethandlerplayserver.sendPacket(new SPacketJoinGame(playerIn.getEntityId(), playerIn.interactionManager.getGameType(), worldinfo.isHardcoreModeEnabled(), worldserver.provider.getDimension(), worldserver.getDifficulty(), this.getMaxPlayers(), worldinfo.getTerrainType(), worldserver.getGameRules().getBoolean("reducedDebugInfo")));
         playerIn.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
         nethandlerplayserver.sendPacket(new SPacketCustomPayload("MC|Brand", (new PacketBuffer(Unpooled.buffer())).writeString(this.getServerInstance().getServerModName())));
@@ -492,7 +505,7 @@ public abstract class PlayerList
         cserver.getPluginManager().callEvent(playerQuitEvent);
         playerIn.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
 
-        playerIn.onUpdateEntity();// SPIGOT-924
+        // playerIn.onUpdateEntity();// SPIGOT-924
         // CraftBukkit end
 
         this.writePlayerData(playerIn);
@@ -762,7 +775,7 @@ public abstract class PlayerList
         {
             dimension = playerIn.getSpawnDimension();
         }
-        else if (!world.provider.canRespawnHere())
+        else if (location == null && !world.provider.canRespawnHere())
         {
             dimension = world.provider.getRespawnDimension(playerIn);
         }
@@ -1155,9 +1168,11 @@ public abstract class PlayerList
                 blockposition = worldserver1.getSpawnCoordinate();
             }
 
-            d0 = (double) blockposition.getX();
-            y = (double) blockposition.getY();
-            d1 = (double) blockposition.getZ();
+            if (blockposition != null) {
+                d0 = (double) blockposition.getX();
+                y = (double) blockposition.getY();
+                d1 = (double) blockposition.getZ();
+            }
             /*
             entity.setPositionRotation(d0, entity.locY, d1, 90.0F, 0.0F);
             if (entity.isAlive()) {

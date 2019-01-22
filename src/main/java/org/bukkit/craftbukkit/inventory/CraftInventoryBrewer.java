@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.inventory;
 
 import net.minecraft.inventory.IInventory;
+import org.atom.inventory.util.InventoryUtils;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +21,7 @@ public class CraftInventoryBrewer extends CraftInventory implements BrewerInvent
 
     @Override
     public BrewingStand getHolder() {
-        return (BrewingStand) inventory.getOwner();
+        return (BrewingStand) InventoryUtils.getInventoryOwner(inventory);
     }
 
     @Override

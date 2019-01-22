@@ -313,6 +313,7 @@ public class EntityShulker extends EntityGolem implements IMob
             this.posX = (double)blockpos.getX() + 0.5D;
             this.posY = (double)blockpos.getY();
             this.posZ = (double)blockpos.getZ() + 0.5D;
+            if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;

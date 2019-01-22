@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.atom.inventory.util.InventoryUtils;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 
@@ -65,10 +66,10 @@ public class BlockDropper extends BlockDispenser
                         if (iinventory instanceof InventoryLargeChest) {
                             destinationInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) iinventory);
                         } else {
-                            destinationInventory = iinventory.getOwner().getInventory();
+                            destinationInventory = InventoryUtils.getInventoryOwner(iinventory).getInventory();
                         }
 
-                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(tileentitydispenser.getOwner().getInventory(), oitemstack.clone(), destinationInventory, true);
+                        InventoryMoveItemEvent event = new InventoryMoveItemEvent(InventoryUtils.getInventoryOwner(tileentitydispenser).getInventory(), oitemstack.clone(), destinationInventory, true);
                         worldIn.getServer().getPluginManager().callEvent(event);
                         if (event.isCancelled()) {
                             return;

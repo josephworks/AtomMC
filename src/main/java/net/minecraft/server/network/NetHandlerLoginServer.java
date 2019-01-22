@@ -117,10 +117,14 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
 
     public void tryAcceptPlayer()
     {
+        // Spigot start - Moved to getOfflineProfile
+        /*
         if (!this.loginGameProfile.isComplete())
         {
             this.loginGameProfile = this.getOfflineProfile(this.loginGameProfile);
         }
+        */
+        // Spigot end
 
         // String s = this.server.getPlayerList().allowUserToConnect(this.networkManager.getRemoteAddress(), this.loginGameProfile);
         // CraftBukkit start - fire PlayerLoginEvent
@@ -155,7 +159,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
             }
             else
             {
-                net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.fmlServerHandshake(this.server.getPlayerList(), this.networkManager, this.server.getPlayerList().createPlayerForUser(this.loginGameProfile));
+                net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.fmlServerHandshake(this.server.getPlayerList(), this.networkManager, s);
             }
         }
     }
@@ -182,7 +186,26 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
         }
         else
         {
-            this.currentLoginState = LoginState.READY_TO_ACCEPT;
+            // Spigot start
+            new Thread(net.minecraftforge.fml.common.thread.SidedThreadGroups.SERVER,"User Authenticator #" + NetHandlerLoginServer.AUTHENTICATOR_THREAD_ID.incrementAndGet())
+            {
+
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        loginGameProfile = getOfflineProfile(loginGameProfile);
+                        new LoginHandler().fireEvents();
+                    }
+                    catch (Exception ex)
+                    {
+                        disconnect("Failed to verify username!");
+                        server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + loginGameProfile.getName(), ex);
+                    }
+                }
+            }.start();
+            // Spigot end
         }
     }
 
@@ -218,40 +241,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
                                 return;
                             }
 
-                            String playerName = loginGameProfile.getName();
-                            java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getRemoteAddress()).getAddress();
-                            java.util.UUID uniqueId = loginGameProfile.getId();
-                            final org.bukkit.craftbukkit.CraftServer server = NetHandlerLoginServer.this.server.server;
-
-                            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
-                            server.getPluginManager().callEvent(asyncEvent);
-
-                            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
-                                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
-                                if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
-                                    event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
-                                }
-                                Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
-                                    @Override
-                                    protected PlayerPreLoginEvent.Result evaluate() {
-                                        server.getPluginManager().callEvent(event);
-                                        return event.getResult();
-                                    }};
-
-                                NetHandlerLoginServer.this.server.processQueue.add(waitable);
-                                if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
-                                    disconnect(event.getKickMessage());
-                                    return;
-                                }
-                            } else {
-                                if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-                                    disconnect(asyncEvent.getKickMessage());
-                                    return;
-                                }
-                            }
-                            // CraftBukkit end
-                            NetHandlerLoginServer.LOGGER.info("UUID of player {} is {}", NetHandlerLoginServer.this.loginGameProfile.getName(), NetHandlerLoginServer.this.loginGameProfile.getId());
-                            NetHandlerLoginServer.this.currentLoginState = LoginState.READY_TO_ACCEPT;
+                            new LoginHandler().fireEvents();
                         }
                         else if (NetHandlerLoginServer.this.server.isSinglePlayer())
                         {
@@ -295,6 +285,44 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
             }).start();
         }
     }
+
+    // Spigot start
+    public class LoginHandler {
+        public void fireEvents() throws Exception {
+            String playerName = loginGameProfile.getName();
+            java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getRemoteAddress()).getAddress();
+            java.util.UUID uniqueId = loginGameProfile.getId();
+            final org.bukkit.craftbukkit.CraftServer server = NetHandlerLoginServer.this.server.server;
+            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
+            server.getPluginManager().callEvent(asyncEvent);
+            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
+                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
+                if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
+                    event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
+                }
+                Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
+                    @Override
+                    protected PlayerPreLoginEvent.Result evaluate() {
+                        server.getPluginManager().callEvent(event);
+                        return event.getResult();
+                    }};
+                NetHandlerLoginServer.this.server.processQueue.add(waitable);
+                if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
+                    disconnect(event.getKickMessage());
+                    return;
+                }
+            } else {
+                if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+                    disconnect(asyncEvent.getKickMessage());
+                    return;
+                }
+            }
+            // CraftBukkit end
+            NetHandlerLoginServer.LOGGER.info("UUID of player {} is {}", NetHandlerLoginServer.this.loginGameProfile.getName(), NetHandlerLoginServer.this.loginGameProfile.getId());
+            NetHandlerLoginServer.this.currentLoginState = LoginState.READY_TO_ACCEPT;
+        }
+	}
+    // Spigot end
 
     protected GameProfile getOfflineProfile(GameProfile original)
     {

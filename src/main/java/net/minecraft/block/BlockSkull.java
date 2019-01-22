@@ -161,7 +161,6 @@ public class BlockSkull extends BlockContainer
             state = state.withProperty(NODROP, Boolean.valueOf(true));
             worldIn.setBlockState(pos, state, 4);
         }
-        this.dropBlockAsItem(worldIn, pos, state, 0);
 
         super.onBlockHarvested(worldIn, pos, state, player);
     }
@@ -217,7 +216,7 @@ public class BlockSkull extends BlockContainer
 
     public void checkWitherSpawn(World worldIn, BlockPos pos, TileEntitySkull te)
     {
-        if (worldIn.captureBlockStates) return;
+        if (worldIn.captureBlockSnapshots) return;
         if (te.getSkullType() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote)
         {
             BlockPattern blockpattern = this.getWitherPattern();

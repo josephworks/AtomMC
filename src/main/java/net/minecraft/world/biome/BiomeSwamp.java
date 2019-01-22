@@ -90,13 +90,13 @@ public class BiomeSwamp extends Biome
     public int getGrassColorAtPos(BlockPos pos)
     {
         double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() * 0.0225D, (double)pos.getZ() * 0.0225D);
-        return d0 < -0.1D ? 5011004 : 6975545;
+        return getModdedBiomeGrassColor(d0 < -0.1D ? 5011004 : 6975545);
     }
 
     @SideOnly(Side.CLIENT)
     public int getFoliageColorAtPos(BlockPos pos)
     {
-        return 6975545;
+        return getModdedBiomeFoliageColor(6975545);
     }
 
     @Override

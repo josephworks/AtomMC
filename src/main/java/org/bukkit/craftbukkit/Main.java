@@ -13,12 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import net.minecraft.server.MinecraftServer;
-import org.fusesource.jansi.AnsiConsole;
 
 public class Main {
-    public static boolean useJline = true;
-    public static boolean useConsole = true;
 
     public static OptionSet main(String[] args) {
         // Todo: Installation script
@@ -119,6 +115,14 @@ public class Main {
 
                 acceptsAll(asList("demo"), "Demo mode");
 
+                // Spigot Start
+                acceptsAll(asList("S", "spigot-settings"), "File for spigot settings")
+                        .withRequiredArg()
+                        .ofType(File.class)
+                        .defaultsTo(new File("spigot.yml"))
+                        .describedAs("Yml file");
+                // Spigot End
+
                 acceptsAll(asList("mixin"), "This argument is needed for proper Mixin Framework work in the test env");
             }
         };
@@ -146,29 +150,6 @@ public class Main {
             }
 
             try {
-                // This trick bypasses Maven Shade's clever rewriting of our getProperty call when using String literals
-                String jline_UnsupportedTerminal = new String(new char[] {'j','l','i','n','e','.','U','n','s','u','p','p','o','r','t','e','d','T','e','r','m','i','n','a','l'});
-                String jline_terminal = new String(new char[] {'j','l','i','n','e','.','t','e','r','m','i','n','a','l'});
-
-                useJline = !(jline_UnsupportedTerminal).equals(System.getProperty(jline_terminal));
-
-                if (options.has("nojline")) {
-                    System.setProperty("user.language", "en");
-                    useJline = false;
-                }
-
-                if (useJline) {
-                    AnsiConsole.systemInstall();
-                } else {
-                    // This ensures the terminal literal will always match the jline implementation
-                    System.setProperty(jline.TerminalFactory.JLINE_TERMINAL, jline.UnsupportedTerminal.class.getName());
-                }
-
-
-                if (options.has("noconsole")) {
-                    useConsole = false;
-                }
-
                 if (Main.class.getPackage().getImplementationVendor() != null && System.getProperty("IReallyKnowWhatIAmDoingISwear") == null) {
                     Date buildDate = new SimpleDateFormat("yyyyMMdd-HHmm").parse(Main.class.getPackage().getImplementationVendor());
 

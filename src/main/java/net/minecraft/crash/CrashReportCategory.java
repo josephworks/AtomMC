@@ -209,7 +209,7 @@ public class CrashReportCategory
             {
                 try
                 {
-                    return String.format("ID #%d (%s // %s)", i, blockIn.getUnlocalizedName(), blockIn.getClass().getCanonicalName());
+                    return String.format("ID #%d (%s // %s // %s)", i, blockIn.getUnlocalizedName(), blockIn.getClass().getName(), blockIn.getRegistryName());
                 }
                 catch (Throwable var2)
                 {

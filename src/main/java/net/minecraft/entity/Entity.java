@@ -97,6 +97,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Vehicle;
+import org.spigotmc.CustomTimingsHandler; // Spigot
 import org.bukkit.event.entity.EntityAirChangeEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -223,6 +224,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public boolean valid;
     public org.bukkit.projectiles.ProjectileSource projectileSource; // For projectiles only
     public boolean forceExplosionKnockback; // SPIGOT-949
+    public CustomTimingsHandler tickTimer = org.bukkit.craftbukkit.SpigotTimings.getEntityTimings(this); // Spigot
 
     public float getBukkitYaw() {
         return this.rotationYaw;
@@ -430,6 +432,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.posX = x;
         this.posY = y;
         this.posZ = z;
+        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
         float f = this.width / 2.0F;
         float f1 = this.height;
         this.setEntityBoundingBox(new AxisAlignedBB(x - (double)f, y, z - (double)f, x + (double)f, y + (double)f1, z + (double)f));
@@ -648,7 +651,9 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         {
             this.attackEntityFrom(DamageSource.LAVA, 4.0F);
             // CraftBukkit start - Fallen in lava TODO: this event spams!
-            if (this instanceof EntityLiving) {
+            if (this instanceof EntityLivingBase) {
+                if (!this.isEntityAlive())
+                    return;
                 if (fire <= 0) {
                     // not on fire yet
                     // TODO: shouldn't be sending null for the block
@@ -709,6 +714,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     public void move(MoverType type, double x, double y, double z)
     {
+        org.bukkit.craftbukkit.SpigotTimings.entityMoveTimer.startTiming(); // Spigot
         if (this.noClip)
         {
             this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
@@ -1181,6 +1187,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
             this.world.profiler.endSection();
         }
+        org.bukkit.craftbukkit.SpigotTimings.entityMoveTimer.stopTiming(); // Spigot
     }
 
     public void resetPositionToBB()
@@ -1189,6 +1196,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.posX = (axisalignedbb.minX + axisalignedbb.maxX) / 2.0D;
         this.posY = axisalignedbb.minY;
         this.posZ = (axisalignedbb.minZ + axisalignedbb.maxZ) / 2.0D;
+        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
     }
 
     protected SoundEvent getSwimSound()
@@ -1590,6 +1598,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             this.prevRotationYaw -= 360.0F;
         }
 
+        if (!this.world.isRemote) this.world.getChunkFromChunkCoords((int) Math.floor(this.posX) >> 4, (int) Math.floor(this.posZ) >> 4); // Forge - ensure target chunk is loaded.
         this.setPosition(this.posX, this.posY, this.posZ);
         this.setRotation(yaw, pitch);
     }
@@ -2193,17 +2202,18 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
         else
         {
+            boolean bukkitCaptureDrops = false;
             // CraftBukkit start - Capture drops for death event
             if (this instanceof EntityLiving && !((EntityLiving) this).forceDrops) {
                 ((EntityLiving) this).drops.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asBukkitCopy(stack));
-                return null;
+                bukkitCaptureDrops = true;
             }
             // CraftBukkit end
             EntityItem entityitem = new EntityItem(this.world, this.posX, this.posY + (double)offsetY, this.posZ, stack);
             entityitem.setDefaultPickupDelay();
             if (captureDrops)
                 this.capturedDrops.add(entityitem);
-            else
+            else if (!bukkitCaptureDrops)
                 this.world.spawnEntity(entityitem);
             return entityitem;
         }
@@ -2385,6 +2395,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     return;
                 }
             }
+            // Spigot start
+            org.spigotmc.event.entity.EntityMountEvent event = new org.spigotmc.event.entity.EntityMountEvent(passenger.getBukkitEntity(), this.getBukkitEntity());
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+            // Spigot end
             if (!this.world.isRemote && passenger instanceof EntityPlayer && !(this.getControllingPassenger() instanceof EntityPlayer))
             {
                 this.riddenByEntities.add(0, passenger);
@@ -2418,6 +2435,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     return;
                 }
             }
+            Bukkit.getPluginManager().callEvent( new org.spigotmc.event.entity.EntityDismountEvent(passenger.getBukkitEntity(), this.getBukkitEntity())); // Spigot
             this.riddenByEntities.remove(passenger);
             passenger.rideCooldown = 60;
         }
@@ -2649,8 +2667,10 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.dataManager.set(Entity.AIR, event.getAmount());
     }
 
-    public void onStruckByLightning(EntityLightningBolt lightningBolt)
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
     {
+        if (lightningBolt == null)
+            lightningBolt = new EntityLightningBolt(this.world, this.posX, this.posY, this.posZ, false);
         final org.bukkit.entity.Entity thisBukkitEntity = this.getBukkitEntity();
         final org.bukkit.entity.Entity stormBukkitEntity = lightningBolt.getBukkitEntity();
         final PluginManager pluginManager = Bukkit.getPluginManager();
@@ -3355,6 +3375,41 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /* ================================== Forge Start =====================================*/
+    /**
+     * Internal use for keeping track of entities that are tracked by a world, to
+     * allow guarantees that entity position changes will force a chunk load, avoiding
+     * potential issues with entity desyncing and bad chunk data.
+     */
+    private boolean isAddedToWorld;
+
+    /**
+      * Gets whether this entity has been added to a world (for tracking). Specifically
+      * between the times when an entity is added to a world and the entity being removed
+      * from the world's tracked lists. See {@link World#onEntityAdded(Entity)} and
+      * {@link World#onEntityRemoved(Entity)}.
+      *
+      * @return True if this entity is being tracked by a world
+      */
+    public final boolean isAddedToWorld() { return this.isAddedToWorld; }
+
+    /**
+      * Called after the entity has been added to the world's
+      * ticking list. Can be overriden, but needs to call super
+      * to prevent MC-136995.
+      */
+    public void onAddedToWorld() {
+        this.isAddedToWorld = true;
+    }
+
+    /**
+     * Called after the entity has been removed to the world's
+     * ticking list. Can be overriden, but needs to call super
+     * to prevent MC-136995.
+     */
+    public void onRemovedFromWorld() {
+        this.isAddedToWorld = false;
+    }
+
     /**
      * Returns a NBTTagCompound that can be used to store custom data for this entity.
      * It will be written, and read from disc, so it persists over world saves.

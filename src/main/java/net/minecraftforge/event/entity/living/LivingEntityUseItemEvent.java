@@ -114,6 +114,8 @@ public class LivingEntityUseItemEvent extends LivingEvent
      * The item has been notified that it was used, and the item/result stacks reflect after that state.
      * This means that when this is fired for a Potion, the potion effect has already been applied.
      *
+     * {@link LivingEntityUseItemEvent#item} is a copy of the item BEFORE it was used.
+     *
      * If you wish to cancel those effects, you should cancel one of the above events.
      *
      * The result item stack is the stack that is placed in the player's inventory in replacement of the stack that is currently being used.

@@ -66,11 +66,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
-    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin" };
+    private static String[] rootPlugins = { "net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "org.atom.asm.AtomCorePlugin" };
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
     private static List<FMLPluginWrapper> loadPlugins;
@@ -213,6 +215,16 @@ public class CoreModManager {
         if (!deobfuscatedEnvironment)
         {
             FMLLog.log.debug("Enabling runtime deobfuscation");
+        }
+        else
+        {
+            if (System.getProperty("log4j.configurationFile") == null)
+            {
+                FMLLog.log.info("Detected deobfuscated environment, loading log configs for colored console logs.");
+                // use server logging configs in deobfuscated environment so developers get nicely colored console logs
+                System.setProperty("log4j.configurationFile", "log4j2_server.xml");
+                ((LoggerContext) LogManager.getContext(false)).reconfigure();
+            }
         }
 
         tweaker.injectCascadingTweak("net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker");

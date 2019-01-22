@@ -3,23 +3,20 @@ package org.bukkit.craftbukkit.command;
 import java.util.EnumMap;
 import java.util.Map;
 
+import net.minecraftforge.server.terminalconsole.TerminalConsoleAppender;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
-import jline.Terminal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.CraftServer;
 
 public class ColouredConsoleSender extends CraftConsoleCommandSender {
-    private final Terminal terminal;
     private final Map<ChatColor, String> replacements = new EnumMap<ChatColor, String>(ChatColor.class);
     private final ChatColor[] colors = ChatColor.values();
 
     protected ColouredConsoleSender() {
         super();
-        this.terminal = ((CraftServer) getServer()).getReader().getTerminal();
 
         replacements.put(ChatColor.BLACK, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
         replacements.put(ChatColor.DARK_BLUE, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
@@ -47,7 +44,7 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
 
     @Override
     public void sendMessage(String message) {
-        if (terminal.isAnsiSupported()) {
+        if (TerminalConsoleAppender.isAnsiSupported()) {
             if (!conversationTracker.isConversingModaly()) {
                 String result = message;
                 for (ChatColor color : colors) {
@@ -72,3 +69,4 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
         }
     }
 }
+

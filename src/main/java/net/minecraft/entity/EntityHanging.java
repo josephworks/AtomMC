@@ -349,7 +349,7 @@ public abstract class EntityHanging extends Entity
         return this.getRotatedYaw(transformMirror.toRotation(this.facingDirection));
     }
 
-    public void onStruckByLightning(EntityLightningBolt lightningBolt)
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
     {
     }
 }

@@ -128,6 +128,7 @@ public class BlockDynamicLiquid extends BlockLiquid
             }
             if (this.blockMaterial == Material.LAVA && worldIn.getBlockState(pos.down()).getMaterial() == Material.WATER)
             {
+                worldIn.setBlockState(pos.down(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, pos.down(), pos, Blocks.STONE.getDefaultState()));
                 if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(worldIn, pos.down(), Blocks.STONE.getDefaultState(), null)) {
                     this.triggerMixEffects(worldIn, pos.down());
                 }

@@ -238,8 +238,10 @@ public class EntityCreeper extends EntityMob
         this.dataManager.set(STATE, Integer.valueOf(state));
     }
 
-    public void onStruckByLightning(EntityLightningBolt lightningBolt)
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
     {
+        if (lightningBolt == null)
+            lightningBolt = new EntityLightningBolt(this.world, this.posX, this.posY, this.posZ, false);
         super.onStruckByLightning(lightningBolt);
 //        this.dataManager.set(POWERED, Boolean.valueOf(true));
         if (CraftEventFactory.callCreeperPowerEvent(this, lightningBolt, org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING).isCancelled()) {

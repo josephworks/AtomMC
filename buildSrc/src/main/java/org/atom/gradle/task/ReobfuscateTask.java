@@ -2,6 +2,7 @@ package org.atom.gradle.task;
 
 import com.google.common.io.Files;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import net.md_5.specialsource.Jar;
 import net.md_5.specialsource.JarMapping;
@@ -13,7 +14,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.internal.impldep.org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class ReobfuscateTask extends DefaultTask {
         }
     }
 
-    private static URL[] toUrls(@NotNull FileCollection collection) throws MalformedURLException {
+    private static URL[] toUrls(@NonNull FileCollection collection) throws MalformedURLException {
         ArrayList<URL> urls = new ArrayList<>(collection.getFiles().size());
         for (File file : collection.getFiles())
             urls.add(file.toURI().toURL());
