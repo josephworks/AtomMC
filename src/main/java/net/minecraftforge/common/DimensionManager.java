@@ -57,6 +57,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerMulti;
 import net.minecraft.world.chunk.storage.AnvilSaveHandler;
 import net.minecraft.world.storage.ISaveHandler;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import org.bukkit.Bukkit;
@@ -142,6 +143,8 @@ public class DimensionManager
         {
             dimensionMap.set(id);
         }
+        if (id != -1 && id != 0 && id != 1)
+            registerBukkitEnvironment(id, type.getName());
     }
 
     /**
@@ -520,5 +523,15 @@ public class DimensionManager
         {
             return null;
         }
+    }
+
+    public static org.bukkit.World.Environment registerBukkitEnvironment(int dim, String providerName) {
+        org.bukkit.World.Environment env = org.bukkit.World.Environment.getEnvironment(dim);
+        if (env == null) {
+            providerName = providerName.replace("WorldProvider", "");
+            env = EnumHelper.addEnum(org.bukkit.World.Environment.class, providerName.toUpperCase(), new Class[] { Integer.TYPE }, dim);
+            org.bukkit.World.Environment.registerEnvironment(env);
+        }
+        return env;
     }
 }
