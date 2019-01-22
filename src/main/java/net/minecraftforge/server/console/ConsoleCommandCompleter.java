@@ -21,19 +21,24 @@ package net.minecraftforge.server.console;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import jline.console.completer.Completer;
 import net.minecraft.server.dedicated.DedicatedServer;
+import org.bukkit.event.server.TabCompleteEvent;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.ParsedLine;
 
-public final class ConsoleCommandCompleter implements Completer
+final class ConsoleCommandCompleter implements Completer
 {
 
     private static final Logger logger = LogManager.getLogger();
@@ -45,10 +50,9 @@ public final class ConsoleCommandCompleter implements Completer
     }
 
     @Override
-    public int complete(String buffer, int cursor, List<CharSequence> candidates)
+    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates)
     {
-        int len = buffer.length();
-
+        String buffer = line.line();
         boolean prefix;
         if (buffer.isEmpty() || buffer.charAt(0) != '/')
         {
@@ -61,44 +65,29 @@ public final class ConsoleCommandCompleter implements Completer
         }
 
         final String input = buffer;
-        Future<List<String>> tabComplete = this.server.callFromMainThread(new Callable<List<String>>() {
+        final String unmodifiedBuffer = line.line();
+        Future<List<String>> tabComplete = this.server.callFromMainThread(() -> {
 
-            @Override
-            public List<String> call() throws Exception
-            {
-                return ConsoleCommandCompleter.this.server.getTabCompletions(ConsoleCommandCompleter.this.server, input,
-                        ConsoleCommandCompleter.this.server.getPosition(), false/*  we're not a command block */);
-            }
+            List<String> offers = new ArrayList<>(this.server.getTabCompletions(this.server, input, this.server.getPosition(), false));
+            Optional.ofNullable(server.server.getCommandMap().tabComplete(server.server.getConsoleSender(), unmodifiedBuffer))
+                    .ifPresent(offers::addAll);
+
+            TabCompleteEvent tabEvent = new TabCompleteEvent(server.server.getConsoleSender(), unmodifiedBuffer, offers);
+            server.server.getPluginManager().callEvent(tabEvent);
+
+            return tabEvent.isCancelled() ? Collections.emptyList() : tabEvent.getCompletions();
         });
+
         try
         {
-            List<String> completions = tabComplete.get();
-            if (!completions.isEmpty())
-                Collections.sort(completions);
-            if (prefix)
+            for (String completion : tabComplete.get())
             {
-                candidates.addAll(completions);
-            }
-            else
-            {
-                for (String completion : completions)
+                if (!completion.isEmpty())
                 {
-                    candidates.add(completion.charAt(0) == '/' ? completion.substring(1) : completion);
+                    boolean hasPrefix = completion.charAt(0) != '/' || prefix;
+                    Candidate candidate = new Candidate(hasPrefix ? completion : completion.substring(1));
+                    candidates.add(candidate);
                 }
-            }
-
-            int pos = buffer.lastIndexOf(' ');
-            if (pos == -1)
-            {
-                return cursor - len;
-            }
-            else if (prefix)
-            {
-                return cursor - len + pos + 1;
-            }
-            else
-            {
-                return cursor - len + pos;
             }
         }
         catch (InterruptedException e)
@@ -109,8 +98,6 @@ public final class ConsoleCommandCompleter implements Completer
         {
             logger.error("Failed to tab complete", e);
         }
-
-        return cursor;
     }
 
 }

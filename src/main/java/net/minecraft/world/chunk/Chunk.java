@@ -781,6 +781,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         entityIn.chunkCoordY = k;
         entityIn.chunkCoordZ = this.z;
         this.entityLists[k].add(entityIn);
+        this.markDirty(); // Forge - ensure chunks are marked to save after an entity add
     }
 
     public void removeEntity(Entity entityIn)
@@ -801,6 +802,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
         }
 
         this.entityLists[index].remove(entityIn);
+        this.markDirty(); // Forge - ensure chunks are marked to save after entity removals
     }
 
     public boolean canSeeSky(BlockPos pos)
@@ -823,7 +825,7 @@ public class Chunk implements net.minecraftforge.common.capabilities.ICapability
     public TileEntity getTileEntity(BlockPos pos, EnumCreateEntityType p_177424_2_)
     {
         TileEntity tileentity = null;
-        if (world.captureBlockStates) {
+        if (world.captureBlockSnapshots) {
             tileentity = world.capturedTileEntities.get(pos);
         }
         if (tileentity == null) {

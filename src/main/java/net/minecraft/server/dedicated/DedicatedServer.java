@@ -105,24 +105,15 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             public void run()
             {
-                if (!org.bukkit.craftbukkit.Main.useConsole) {
-                    return;
-                }
-                jline.console.ConsoleReader bufferedreader = reader;
+                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
-//                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
                 String s4;
 
+
                 try {
-                    while (!isServerStopped() && isServerRunning()) {
-                        if (org.bukkit.craftbukkit.Main.useJline) {
-                            s4 = bufferedreader.readLine(">", null);
-                        } else {
-                            s4 = bufferedreader.readLine();
-                        }
-                        if (s4 != null && s4.trim().length() > 0) { // Trim to filter lines which are just spaces
-                            addPendingCommand(s4, DedicatedServer.this);
-                        }
+                    while (!DedicatedServer.this.isServerStopped() && DedicatedServer.this.isServerRunning() && (s4 = bufferedreader.readLine()) != null)
+                    {
+                        DedicatedServer.this.addPendingCommand(s4, DedicatedServer.this);
                     }
                 }
                 catch (IOException ioexception1)
@@ -146,8 +137,6 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 logger.removeAppender(appender);
             }
         }
-
-        new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
 
         System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
         System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
@@ -321,6 +310,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
                 LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
+                this.currentTime = getCurrentTimeMillis();
 
                 if (this.settings.hasProperty("announce-player-achievements"))
                 {

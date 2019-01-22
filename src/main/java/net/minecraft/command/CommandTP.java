@@ -76,8 +76,8 @@ public class CommandTP extends CommandBase
 
                 // CraftBukkit Start
                 // Use Bukkit teleport method in all cases. It has cross dimensional handling, events
-                if (entity.getBukkitEntity().teleport(entity.getBukkitEntity(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND)) {
-                    notifyCommandListener(sender, (ICommand) this, "commands.tp.success", new Object[] { entity.getName(), entity.getName()});
+                if (entity.getBukkitEntity().teleport(entity1.getBukkitEntity(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND)) {
+                    notifyCommandListener(sender, (ICommand) this, "commands.tp.success", new Object[] { entity.getName(), entity1.getName()});
                     // CraftBukkit End
                 }
             }

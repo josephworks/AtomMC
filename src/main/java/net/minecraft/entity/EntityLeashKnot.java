@@ -46,6 +46,7 @@ public class EntityLeashKnot extends EntityHanging
         this.posX = (double)this.hangingPosition.getX() + 0.5D;
         this.posY = (double)this.hangingPosition.getY() + 0.5D;
         this.posZ = (double)this.hangingPosition.getZ() + 0.5D;
+        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
     }
 
     public void updateFacingWithBoundingBox(EnumFacing facingDirectionIn)

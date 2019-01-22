@@ -170,7 +170,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.base64.Base64;
-import jline.console.ConsoleReader;
+//import jline.console.ConsoleReader;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.util.CraftNamespacedKey;
 import org.bukkit.event.server.TabCompleteEvent;
@@ -251,10 +251,6 @@ public final class CraftServer implements Server {
         MobEffects.BLINDNESS.getClass();
         PotionEffectType.stopAcceptingRegistrations();
         // Ugly hack :(
-
-        if (!Main.useConsole) {
-            getLogger().info("Console input is disabled due to --noconsole command argument");
-        }
 
         configuration = YamlConfiguration.loadConfiguration(getConfigFile());
         configuration.options().copyDefaults(true);
@@ -1077,10 +1073,6 @@ public final class CraftServer implements Server {
     @Override
     public Logger getLogger() {
         return logger;
-    }
-
-    public ConsoleReader getReader() {
-        return console.reader;
     }
 
     @Override

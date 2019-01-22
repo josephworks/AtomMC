@@ -448,7 +448,7 @@ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener
 
             languagemanager.setCurrentLanguage(language);
             this.mc.gameSettings.language = language.getLanguageCode();
-            this.mc.refreshResources();
+            net.minecraftforge.fml.client.FMLClientHandler.instance().refreshResources(net.minecraftforge.client.resource.VanillaResourceType.LANGUAGES);
             this.mc.fontRenderer.setUnicodeFlag(this.mc.getLanguageManager().isCurrentLocaleUnicode() || this.mc.gameSettings.forceUnicodeFont);
             this.mc.fontRenderer.setBidiFlag(languagemanager.isCurrentLanguageBidirectional());
             this.mc.gameSettings.saveOptions();

@@ -40,12 +40,14 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
 
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.down()).isTopSolid() ? super.canPlaceBlockAt(worldIn, pos) : false;
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        return (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID) ? super.canPlaceBlockAt(worldIn, pos) : false;
     }
 
     public boolean canBlockStay(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.down()).isTopSolid();
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        return downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID;
     }
 
     public void randomTick(World worldIn, BlockPos pos, IBlockState state, Random random)

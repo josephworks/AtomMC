@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+
+import com.google.common.collect.Lists;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
@@ -25,6 +27,8 @@ import net.minecraft.world.gen.feature.WorldGenSavannaTree;
 import net.minecraft.world.gen.feature.WorldGenTaiga2;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraft.world.gen.feature.WorldGenerator;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.util.BlockSnapshot;
 import org.bukkit.Location;
 import org.bukkit.TreeType;
 import org.bukkit.block.BlockState;
@@ -65,20 +69,23 @@ public class BlockSapling extends BlockBush implements IGrowable
                 worldIn.captureTreeGeneration = true;
                 this.grow(worldIn, pos, state, rand);
                 worldIn.captureTreeGeneration = false;
-                if (worldIn.capturedBlockStates.size() > 0) {
+                if (worldIn.capturedBlockSnapshots.size() > 0) {
                     TreeType treeType = BlockSapling.treeType;
                     BlockSapling.treeType = null;
                     Location location = new Location(worldIn.getWorld(), pos.getX(), pos.getY(), pos.getZ());
-                    List<BlockState> blocks = (List<BlockState>) worldIn.capturedBlockStates.clone();
-                    worldIn.capturedBlockStates.clear();
+                    @SuppressWarnings("unchecked")
+                    List<BlockSnapshot> blocks = (List<BlockSnapshot>) worldIn.capturedBlockSnapshots.clone();
+                    worldIn.capturedBlockSnapshots.clear();
                     StructureGrowEvent event = null;
                     if (treeType != null) {
-                        event = new StructureGrowEvent(location, treeType, false, null, blocks);
+                        event = new StructureGrowEvent(location, treeType, false, null, ForgeHooks.toBlockStates(worldIn, blocks));
                         org.bukkit.Bukkit.getPluginManager().callEvent(event);
                     }
                     if (event == null || !event.isCancelled()) {
-                        for (BlockState blockstate : blocks) {
-                            blockstate.update(true);
+                        for (BlockSnapshot blocksnapshot : Lists.reverse(blocks)) {
+                            worldIn.restoringBlockSnapshots = true;
+                            blocksnapshot.restore(true, false);
+                            worldIn.restoringBlockSnapshots = false;
                         }
                     }
                 }

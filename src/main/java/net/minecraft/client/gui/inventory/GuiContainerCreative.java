@@ -774,7 +774,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
             }
         }
 
-        this.mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/container/creative_inventory/tab_" + creativetabs.getBackgroundImageName()));
+        this.mc.getTextureManager().bindTexture(creativetabs.getBackgroundImage());
         this.drawTexturedModalRect(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         this.searchField.drawTextBox();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

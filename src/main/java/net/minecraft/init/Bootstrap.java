@@ -1,5 +1,6 @@
 package net.minecraft.init;
 
+import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
 import java.io.PrintStream;
@@ -69,6 +70,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -556,20 +559,23 @@ public class Bootstrap
                     }
 
                     world.captureTreeGeneration = false;
-                    if (world.capturedBlockStates.size() > 0) {
+                    if (world.capturedBlockSnapshots.size() > 0) {
                         TreeType treeType = BlockSapling.treeType;
                         BlockSapling.treeType = null;
                         Location location = new Location(world.getWorld(), blockpos.getX(), blockpos.getY(), blockpos.getZ());
-                        List<BlockState> blocks = (List<org.bukkit.block.BlockState>) world.capturedBlockStates.clone();
-                        world.capturedBlockStates.clear();
+                        @SuppressWarnings("unchecked")
+                        List<BlockSnapshot> blocks = (List<BlockSnapshot>) world.capturedBlockSnapshots.clone();
+                        world.capturedBlockSnapshots.clear();
                         StructureGrowEvent structureEvent = null;
                         if (treeType != null) {
-                            structureEvent = new StructureGrowEvent(location, treeType, false, null, blocks);
+                            structureEvent = new StructureGrowEvent(location, treeType, false, null, ForgeHooks.toBlockStates(world, blocks));
                             org.bukkit.Bukkit.getPluginManager().callEvent(structureEvent);
                         }
                         if (structureEvent == null || !structureEvent.isCancelled()) {
-                            for (org.bukkit.block.BlockState blockstate : blocks) {
-                                blockstate.update(true);
+                            for (BlockSnapshot blocksnapshot : Lists.reverse(blocks)) {
+                                world.restoringBlockSnapshots = true;
+                                blocksnapshot.restore(true, false);
+                                world.restoringBlockSnapshots = false;
                             }
                         }
                     }

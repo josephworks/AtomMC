@@ -5,17 +5,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockJukebox;
-import net.minecraft.block.BlockMushroom;
-import net.minecraft.block.BlockSapling;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.Enchantment;
@@ -38,14 +32,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.StatList;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.BlockEntityTag;
@@ -59,13 +50,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.bukkit.Location;
-import org.bukkit.TreeType;
-import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.block.CraftBlockState;
 import org.bukkit.craftbukkit.util.CraftMagicNumbers;
-import org.bukkit.entity.Player;
-import org.bukkit.event.world.StructureGrowEvent;
 
 public final class ItemStack implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
@@ -251,138 +236,12 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (!worldIn.isRemote) return net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(this, playerIn, worldIn, pos, side, hitX, hitY, hitZ, hand);
-        // CraftBukkit start - handle all block place event logic here
-        int oldData = this.getItemDamage();
-        int oldCount = this.getCount();
-
-        if (!(this.getItem() instanceof ItemBucket)) { // if not bucket
-            worldIn.captureBlockStates = true;
-            // special case bonemeal
-            if (this.getItem() instanceof ItemDye && this.getItemDamage() == 15) {
-                Block block = worldIn.getBlockState(pos).getBlock();
-                if (block == Blocks.SAPLING || block instanceof BlockMushroom) {
-                    worldIn.captureTreeGeneration = true;
-                }
-            }
-        }
         EnumActionResult enumactionresult = this.getItem().onItemUse(playerIn, worldIn, pos, hand, side, hitX, hitY, hitZ);
-        int newData = this.getItemDamage();
-        int newCount = this.getCount();
-        this.setCount(oldCount);
-        this.setItemDamage(oldData);
-        worldIn.captureBlockStates = false;
-        if (enumactionresult == EnumActionResult.SUCCESS && worldIn.captureTreeGeneration && worldIn.capturedBlockStates.size() > 0) {
-            worldIn.captureTreeGeneration = false;
-            Location location = new Location(worldIn.getWorld(), pos.getX(), pos.getY(), pos.getZ());
-            TreeType treeType = BlockSapling.treeType;
-            BlockSapling.treeType = null;
-            List<BlockState> blocks = (List<BlockState>) worldIn.capturedBlockStates.clone();
-            worldIn.capturedBlockStates.clear();
-            StructureGrowEvent event = null;
-            if (treeType != null) {
-                boolean isBonemeal = getItem() == Items.DYE && oldData == 15;
-                event = new StructureGrowEvent(location, treeType, isBonemeal, (Player) playerIn.getBukkitEntity(), blocks);
-                org.bukkit.Bukkit.getPluginManager().callEvent(event);
-            }
-            if (event == null || !event.isCancelled()) {
-                // Change the stack to its new contents if it hasn't been tampered with.
-                if (this.getCount() == oldCount && this.getItemDamage() == oldData) {
-                    this.setItemDamage(newData);
-                    this.setCount(newCount);
-                }
-                for (BlockState blockstate : blocks) {
-                    blockstate.update(true);
-                }
-            }
 
-            return enumactionresult;
-        }
-        worldIn.captureTreeGeneration = false;
         if (enumactionresult == EnumActionResult.SUCCESS)
         {
-            // playerIn.addStat(StatList.getObjectUseStats(this.item));
-            org.bukkit.event.block.BlockPlaceEvent placeEvent = null;
-            List<BlockState> blocks = (List<BlockState>) worldIn.capturedBlockStates.clone();
-            worldIn.capturedBlockStates.clear();
-            if (blocks.size() > 1) {
-                placeEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockMultiPlaceEvent(worldIn, playerIn, hand, blocks, pos.getX(), pos.getY(), pos.getZ());
-            } else if (blocks.size() == 1) {
-                placeEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPlaceEvent(worldIn, playerIn, hand, blocks.get(0), pos.getX(), pos.getY(), pos.getZ());
-            }
-
-            if (placeEvent != null && (placeEvent.isCancelled() || !placeEvent.canBuild())) {
-                enumactionresult = EnumActionResult.FAIL; // cancel placement
-                // TODO: Remove this when MC-99075 fixed
-                placeEvent.getPlayer().updateInventory();
-                // revert back all captured blocks
-                for (BlockState blockstate : blocks) {
-                    blockstate.update(true, false);
-                }
-            } else {
-                // Change the stack to its new contents if it hasn't been tampered with.
-                if (this.getCount() == oldCount && this.getItemDamage() == oldData) {
-                    this.setItemDamage(newData);
-                    this.setCount(newCount);
-                }
-
-                for (Map.Entry<BlockPos, TileEntity> e : worldIn.capturedTileEntities.entrySet()) {
-                    worldIn.setTileEntity(e.getKey(), e.getValue());
-                }
-
-                for (BlockState blockstate : blocks) {
-                    int x = blockstate.getX();
-                    int y = blockstate.getY();
-                    int z = blockstate.getZ();
-                    int updateFlag = ((CraftBlockState) blockstate).getFlag();
-                    org.bukkit.Material mat = blockstate.getType();
-                    Block oldBlock = CraftMagicNumbers.getBlock(mat);
-                    BlockPos newblockposition = new BlockPos(x, y, z);
-                    IBlockState block = worldIn.getBlockState(newblockposition);
-
-                    if (!(block.getBlock() instanceof BlockContainer)) { // Containers get placed automatically
-                        block.getBlock().onBlockAdded(worldIn, newblockposition, block);
-                    }
-
-                    worldIn.markAndNotifyBlock(newblockposition, null, oldBlock.getDefaultState(), block, updateFlag); // send null chunk as chunk.k() returns false by this point
-                }
-
-                // Special case juke boxes as they update their tile entity. Copied from ItemRecord.
-                // PAIL: checkme on updates.
-                if (this.item instanceof ItemRecord) {
-                    ((BlockJukebox) Blocks.JUKEBOX).insertRecord(worldIn, pos, worldIn.getBlockState(pos), this);
-                    worldIn.playEvent(null, 1010, pos, Item.getIdFromItem(this.item));
-                    this.shrink(1);
-                    playerIn.addStat(StatList.CRAFTING_TABLE_INTERACTION);
-                }
-
-                if (this.item == Items.SKULL) { // Special case skulls to allow wither spawns to be cancelled
-                    BlockPos bp = pos;
-                    if (!worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos)) {
-                        if (!worldIn.getBlockState(pos).getMaterial().isSolid()) {
-                            bp = null;
-                        } else {
-                            bp = bp.offset(side);
-                        }
-                    }
-                    if (bp != null) {
-                        TileEntity te = worldIn.getTileEntity(bp);
-                        if (te instanceof TileEntitySkull) {
-                            Blocks.SKULL.checkWitherSpawn(worldIn, bp, (TileEntitySkull) te);
-                        }
-                    }
-                }
-
-                // SPIGOT-1288 - play sound stripped from ItemBlock
-                if (this.item instanceof ItemBlock) {
-                    SoundType soundeffecttype = ((ItemBlock) this.item).getBlock().getSoundType();
-                    worldIn.playSound(playerIn, pos, soundeffecttype.getPlaceSound(), SoundCategory.BLOCKS, (soundeffecttype.getVolume() + 1.0F) / 2.0F, soundeffecttype.getPitch() * 0.8F);
-                }
-
-                playerIn.addStat(StatList.getObjectUseStats(this.item));
-            }
+            playerIn.addStat(StatList.getObjectUseStats(this.item));
         }
-        worldIn.capturedTileEntities.clear();
-        worldIn.capturedBlockStates.clear();
 
         return enumactionresult;
     }
@@ -540,9 +399,9 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 // Spigot start
                 if (damager != null) {
                     org.bukkit.craftbukkit.inventory.CraftItemStack item = org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(this);
-                    org.bukkit.event.player.PlayerItemDamageEvent event = new org.bukkit.event.player.PlayerItemDamageEvent(damager.getBukkitEntity(), item, i);
+                    org.bukkit.event.player.PlayerItemDamageEvent event = new org.bukkit.event.player.PlayerItemDamageEvent(damager.getBukkitEntity(), item, amount);
                     org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
-                    if (i != event.getDamage() || event.isCancelled()) {
+                    if (amount != event.getDamage() || event.isCancelled()) {
                         event.getPlayer().updateInventory();
                     }
                     if (event.isCancelled()) return false;
