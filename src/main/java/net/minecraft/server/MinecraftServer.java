@@ -255,148 +255,48 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.convertMapIfNeeded(saveName);
         this.setUserMessage("menu.loadingLevel");
         this.worlds = new WorldServer[3];
-        /*
-        // ISaveHandler isavehandler = this.anvilConverterForAnvilFile.getSaveLoader(saveName, true);
-        this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
-        // WorldInfo worldinfo = isavehandler.loadWorldInfo();
-        WorldSettings worldsettings;
-
-        if (worldinfo == null)
-        {
-            if (this.isDemo())
-            {
-                worldsettings = WorldServerDemo.DEMO_WORLD_SETTINGS;
-            }
-            else
-            {
-                worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
-                worldsettings.setGeneratorOptions(generatorOptions);
-
-                if (this.enableBonusChest)
-                {
-                    worldsettings.enableBonusChest();
-                }
-            }
-
-            worldinfo = new WorldInfo(worldsettings, worldNameIn);
-        }
-        else
-        {
-            worldinfo.setWorldName(worldNameIn);
-            worldsettings = new WorldSettings(worldinfo);
-        }
-
-        if (false) { //Forge Dead code, reimplemented below
-        for (int i = 0; i < this.worlds.length; ++i)
-        {
-            int j = 0;
-
-            if (i == 1)
-            {
-                j = -1;
-            }
-
-            if (i == 2)
-            {
-                j = 1;
-            }
-
-            if (i == 0)
-            {
-                if (this.isDemo())
-                {
-                    this.worlds[i] = (WorldServer)(new WorldServerDemo(this, isavehandler, worldinfo, j, this.profiler)).init();
-                }
-                else
-                {
-                    this.worlds[i] = (WorldServer)(new WorldServer(this, isavehandler, worldinfo, j, this.profiler)).init();
-                }
-
-                this.worlds[i].initialize(worldsettings);
-            }
-            else
-            {
-                this.worlds[i] = (WorldServer)(new WorldServerMulti(this, isavehandler, j, this.worlds[0], this.profiler)).init();
-            }
-
-            this.worlds[i].addEventListener(new ServerWorldEventHandler(this, this.worlds[i]));
-
-            if (!this.isSinglePlayer())
-            {
-                this.worlds[i].getWorldInfo().setGameType(this.getGameType());
-            }
-        }
-        } //Forge: End dead code
-        */
-
-        // WorldServer overWorld = (WorldServer)(isDemo() ? new WorldServerDemo(this, isavehandler, worldinfo, 0, profiler).init() : new WorldServer(this, isavehandler, worldinfo, 0, profiler).init());
-        // overWorld.initialize(worldsettings);
 
         WorldSettings worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
         worldsettings.setGeneratorOptions(generatorOptions);
-        WorldServer world;
 
-        // WorldServer overWorld = (WorldServer)(isDemo() ? new WorldServerDemo(this, new AnvilSaveHandler(server.getWorldContainer(), worldNameIn , true, this.dataFixer), worldinfo, 0, profiler).init() : new WorldServer(this, new AnvilSaveHandler(server.getWorldContainer(), worldNameIn , true, this.dataFixer), worldinfo, 0, profiler).init());
-        // TODO: Reimplement this!
-        Integer[] dimIds = net.minecraftforge.common.DimensionManager.getStaticDimensionIDs();
-        Arrays.sort(dimIds, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                // Zero-dimension must always be the first in array!
-                if (o1 == 0) {
-                    return -1;
-                } else {
-                    return Math.max(o1, o2);
-                }
-            }
-        });
-        for (int dim : dimIds)
+        WorldInfo worldInfo = new WorldInfo(worldsettings, worldNameIn);
+
+        WorldServer world;
+        ISaveHandler overWorldSaveHandler = new AnvilSaveHandler(server.getWorldContainer(), worldNameIn, true, dataFixer);
+        WorldServer overWorld = (WorldServer) new WorldServer(this, overWorldSaveHandler, worldInfo, 0, profiler, org.bukkit.World.Environment.getEnvironment(0), null, worldNameIn).init();
+
+        org.bukkit.World.Environment worldEnvironment;
+        for (int dim : DimensionManager.getStaticDimensionIDs())
         {
-            // World validation
             if (dim != 0) {
                 if ((dim == -1 && !this.getAllowNether()) || (dim == 1 && !server.getAllowEnd())) {
                     continue;
                 }
             }
-
-            String worldType;
-            org.bukkit.World.Environment worldEnvironment = org.bukkit.World.Environment.getEnvironment(dim);
+            String name;
+            worldEnvironment = org.bukkit.World.Environment.getEnvironment(dim);
             if (worldEnvironment == null) {
                 WorldProvider provider = DimensionManager.createProviderFor(dim);
-                worldType = provider.getClass().getSimpleName().toLowerCase();
-                worldType = worldType.replace("worldprovider", "");
-                worldType = worldType.replace("provider", "");
+                name = provider.getSaveFolder();
+                if (name == null) name = "DIM0";
             } else {
-                worldType = worldEnvironment.toString().toLowerCase();
+                name = "DIM" + dim;
             }
-            String name = (dim == 0) ? saveName : saveName + "_" + worldType;
+
             org.bukkit.generator.ChunkGenerator gen = this.server.getGenerator(name);
 
             if (dim == 0) {
-                ISaveHandler  idatamanager = new AnvilSaveHandler(server.getWorldContainer(), worldNameIn, true, this.dataFixer);
-                WorldInfo worlddata = idatamanager.loadWorldInfo();
-                if (worlddata == null) {
-                    worlddata = new WorldInfo(worldsettings, worldNameIn);
-                }
-                worlddata.checkName(worldNameIn); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-                if (this.isDemo()) {
-                    world = (WorldServer) (new WorldServerDemo(this, idatamanager, worlddata, dim, this.profiler)).init();
-                } else {
-                    world = (WorldServer) (new WorldServer(this, idatamanager, worlddata, dim, this.profiler, worldEnvironment, gen, name)).init();
-                }
-
+                world = overWorld;
                 world.initialize(worldsettings);
-                this.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager(this, world.getScoreboard());
             } else {
                 ISaveHandler idatamanager = new AnvilSaveHandler(server.getWorldContainer(), name, true, this.dataFixer);
-                // world =, b0 to dimension, s1 to name, added Environment and gen
                 WorldInfo worlddata = idatamanager.loadWorldInfo();
                 if (worlddata == null) {
                     worlddata = new WorldInfo(worldsettings, name);
                 }
-                worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, this.worldServerList.get(0), this.profiler, worlddata, worldEnvironment, gen, name).init();
+                world = (WorldServer) new WorldServerMulti(this, idatamanager, dim, overWorld, this.profiler, worlddata, worldEnvironment, gen, name).init();
             }
+            this.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager(this, world.getScoreboard());
             this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldInitEvent(world.getWorld()));
             world.addEventListener(new ServerWorldEventHandler(this, world));
 

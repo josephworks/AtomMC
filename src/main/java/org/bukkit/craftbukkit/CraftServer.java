@@ -66,6 +66,7 @@ import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -1467,6 +1468,9 @@ public final class CraftServer implements Server {
 
     @Override
     public File getWorldContainer() {
+        if (DimensionManager.getWorld(0) != null) {
+            return DimensionManager.getWorld(0).getSaveHandler().getWorldDirectory();
+        }
         if (this.getServer().anvilFile != null) {
             return this.getServer().anvilFile;
         }
