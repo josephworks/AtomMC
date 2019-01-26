@@ -76,9 +76,9 @@ public class BlockCake extends Block
             int oldFoodLevel = player.getFoodStats().foodLevel;
 
             org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callFoodLevelChangeEvent(player, 2 + oldFoodLevel);
-
+            int foodLevelDelta = event.getFoodLevel() - oldFoodLevel;
             if (!event.isCancelled()) {
-                player.getFoodStats().addStats(event.getFoodLevel() - oldFoodLevel, 0.1F);
+                player.getFoodStats().addStats(foodLevelDelta, 0.1F);
             }
 
             ((EntityPlayerMP) player).getBukkitEntity().sendHealthUpdate();
