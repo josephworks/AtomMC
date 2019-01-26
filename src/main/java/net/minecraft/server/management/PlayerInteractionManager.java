@@ -644,7 +644,7 @@ public class PlayerInteractionManager
             {
                 return EnumActionResult.PASS;
             }
-            else
+            else if (!interactResult)
             {
                 if (stack.getItem() instanceof ItemBlock && !player.canUseCommandBlock())
                 {
@@ -679,6 +679,7 @@ public class PlayerInteractionManager
                 }
             }
         }
+        return EnumActionResult.FAIL;
     }
 
     public void setWorld(WorldServer serverWorld)
