@@ -288,7 +288,12 @@ public class ChunkProviderServer implements IChunkProvider
                 }
             }
 
-            if (this.id2ChunkMap.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
+            /*
+                MinecraftForge unloads worlds if there are no loaded chunks by default. CraftBukkit does not do this, so
+                we have to disable it as well for plugin compatibility, because such plugins as MultiVerse rely on this
+                mechanic.
+             */
+            // if (this.id2ChunkMap.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
 
             this.chunkLoader.chunkTick();
         }
