@@ -192,6 +192,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         this.profiler = profilerIn;
         this.worldInfo = saveHandlerIn.loadWorldInfo();
         this.provider = providerIn;
+        this.mapStorage = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).mapStorage : new MapStorage(null);
         if (this.worldInfo == null) {
             this.worldInfo = new WorldInfo(new WorldSettings(info), worldName);
             this.worldInfo.world = (WorldServer) this;
