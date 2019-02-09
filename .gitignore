@@ -1,7 +1,0 @@
-#idea
-/.idea
-*.iml
-
-#gradle
-**/build
-**/.gradle

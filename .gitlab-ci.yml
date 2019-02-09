@@ -1,9 +1,0 @@
-image: gradle:alpine
-build:
-    script:
-        - gradle build
-        - gradle dumpLibs
-    artifacts:
-        paths:
-            - build/libs/
-            - build/libraries/
