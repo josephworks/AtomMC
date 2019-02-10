@@ -5,3 +5,9 @@
 #gradle
 **/build
 **/.gradle
+
+# VSCode Java
+/bin
+/.classpath
+/.project
+/.settings
