@@ -4,17 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import javax.annotation.Nullable;
-
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
@@ -25,37 +14,20 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentFrostWalker;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.EntityAISit;
-import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
-import net.minecraft.entity.ai.attributes.AttributeMap;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.*;
 import net.minecraft.entity.item.EntityBoat;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.init.*;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemElytra;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagFloat;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.item.*;
+import net.minecraft.nbt.*;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -66,28 +38,21 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.StatList;
-import net.minecraft.util.CombatRules;
-import net.minecraft.util.CombatTracker;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.SpigotTimings;
 import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -98,7 +63,16 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.EntityTeleportEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.craftbukkit.SpigotTimings; // Spigot
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public abstract class EntityLivingBase extends Entity {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -1332,6 +1306,12 @@ public abstract class EntityLivingBase extends Entity {
         if (!this.isEntityInvulnerable(damagesource)) {
             final boolean human = this instanceof EntityPlayer;
             float originalDamage = f;
+
+            f = ForgeHooks.onLivingHurt(this, damagesource, f);
+            if (f < 1) {
+                return true;
+            }
+
             Function<Double, Double> hardHat = new Function<Double, Double>() {
                 @Override
                 public Double apply(Double f) {
@@ -1410,6 +1390,12 @@ public abstract class EntityLivingBase extends Entity {
             // Apply damage to armor
             if (!damagesource.isUnblockable()) {
                 float armorDamage = (float) (event.getDamage() + event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) + event.getDamage(EntityDamageEvent.DamageModifier.HARD_HAT));
+
+                if (human) {
+                    EntityPlayer player = (EntityPlayer) this;
+                    armorDamage = ISpecialArmor.ArmorProperties.applyArmor(player, player.inventory.armorInventory, damagesource, armorDamage);
+                }
+
                 this.damageArmor(armorDamage);
             }
 
