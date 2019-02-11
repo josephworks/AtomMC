@@ -83,7 +83,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
         server.worlds[0] = (WorldServer) icommandlistener.getEntityWorld();
         int bpos = 0;
         for (int pos = 1; pos < server.worlds.length; pos++) {
-            WorldServer world = server.worldServerList.get(bpos++);
+            WorldServer world = server.worlds[bpos++];
             if (server.worlds[0] == world) {
                 pos--;
                 continue;

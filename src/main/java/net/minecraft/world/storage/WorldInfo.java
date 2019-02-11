@@ -401,6 +401,14 @@ public class WorldInfo
         }
     }
 
+    public int getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
+    }
+
     public long getSeed()
     {
         return this.randomSeed;

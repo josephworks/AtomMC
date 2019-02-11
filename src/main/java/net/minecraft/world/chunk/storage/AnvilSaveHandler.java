@@ -20,18 +20,7 @@ public class AnvilSaveHandler extends SaveHandler
 
     public IChunkLoader getChunkLoader(WorldProvider provider)
     {
-        File file1 = this.getWorldDirectory();
-
-        if (provider.getSaveFolder() != null)
-        {
-            File file3 = new File(file1, provider.getSaveFolder());
-            file3.mkdirs();
-            return new AnvilChunkLoader(file3, this.dataFixer);
-        }
-        else
-        {
-            return new AnvilChunkLoader(file1, this.dataFixer);
-        }
+        return new AnvilChunkLoader(this.getWorldDirectory(), this.dataFixer);
     }
 
     public void saveWorldInfoWithPlayer(WorldInfo worldInformation, @Nullable NBTTagCompound tagCompound)

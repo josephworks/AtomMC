@@ -869,7 +869,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
             // this.mcServer.getPlayerList().transferPlayerToDimension(this, dimensionIn, teleporter);
             PlayerTeleportEvent.TeleportCause cause = (this.dimension == 1 || dimensionIn == 1) ? PlayerTeleportEvent.TeleportCause.END_PORTAL : PlayerTeleportEvent.TeleportCause.NETHER_PORTAL;
-            this.mcServer.getPlayerList().changeDimension(this, dimensionIn, cause); // check all this
+            this.mcServer.getPlayerList().transferPlayerToDimension(this, dimensionIn, teleporter); // check all this
             this.connection.sendPacket(new SPacketEffect(1032, BlockPos.ORIGIN, 0, false));
             this.lastExperience = -1;
             this.lastHealth = -1.0F;

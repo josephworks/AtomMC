@@ -15,9 +15,9 @@ public class WorldServerMulti extends WorldServer
     private IBorderListener borderListener;
 
     // CraftBukkit start - Add WorldInfo, Environment and ChunkGenerator arguments
-    public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn, WorldInfo worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen)
+    public WorldServerMulti(MinecraftServer server, ISaveHandler saveHandlerIn, int dimensionId, WorldServer delegate, Profiler profilerIn, WorldInfo worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, String worldName)
     {
-        super(server, saveHandlerIn, worldData, dimensionId, profilerIn, env, gen);
+        super(server, saveHandlerIn, worldData, dimensionId, profilerIn, env, gen, worldName);
         this.delegate = delegate;
         /* CraftBukkit start
         this.borderListener = new IBorderListener()
@@ -93,10 +93,18 @@ public class WorldServerMulti extends WorldServer
         this.delegate.getWorldBorder().addListener(this.borderListener);
     }
 
-    protected void saveLevel() throws MinecraftException
-    {
-        this.perWorldStorage.saveAllData();
-    }
+    /*
+        Disable this method in favour of WorldServer#saveLevel(), so level.dat can be saved for each dimension
+        separately, as it is required by CraftBukkit mechanic: CraftBukkit changes world directories hierarchy
+        to separate each world in its own directory, instead of locating them in the world directory via inner
+        directories. Thus, it makes each directory(each world) having its own level.dat. Some plugins, such as
+        MultiVerse, rely on this mechanic, saving some information to level.dat while unloading worlds. By
+        disabling this method we return this behaviour back, so level.dat is created for each world now.
+     */
+//    protected void saveLevel() throws MinecraftException
+//    {
+//        this.perWorldStorage.saveAllData();
+//    }
 
     public World init()
     {
