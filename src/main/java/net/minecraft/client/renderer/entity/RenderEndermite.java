@@ -7,22 +7,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderEndermite extends RenderLiving<EntityEndermite>
-{
+public class RenderEndermite extends RenderLiving<EntityEndermite> {
     private static final ResourceLocation ENDERMITE_TEXTURES = new ResourceLocation("textures/entity/endermite.png");
 
-    public RenderEndermite(RenderManager renderManagerIn)
-    {
+    public RenderEndermite(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelEnderMite(), 0.3F);
     }
 
-    protected float getDeathMaxRotation(EntityEndermite entityLivingBaseIn)
-    {
+    protected float getDeathMaxRotation(EntityEndermite entityLivingBaseIn) {
         return 180.0F;
     }
 
-    protected ResourceLocation getEntityTexture(EntityEndermite entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityEndermite entity) {
         return ENDERMITE_TEXTURES;
     }
 }

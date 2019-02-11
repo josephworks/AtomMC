@@ -8,8 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderRabbit extends RenderLiving<EntityRabbit>
-{
+public class RenderRabbit extends RenderLiving<EntityRabbit> {
     private static final ResourceLocation BROWN = new ResourceLocation("textures/entity/rabbit/brown.png");
     private static final ResourceLocation WHITE = new ResourceLocation("textures/entity/rabbit/white.png");
     private static final ResourceLocation BLACK = new ResourceLocation("textures/entity/rabbit/black.png");
@@ -19,23 +18,17 @@ public class RenderRabbit extends RenderLiving<EntityRabbit>
     private static final ResourceLocation TOAST = new ResourceLocation("textures/entity/rabbit/toast.png");
     private static final ResourceLocation CAERBANNOG = new ResourceLocation("textures/entity/rabbit/caerbannog.png");
 
-    public RenderRabbit(RenderManager p_i47196_1_)
-    {
+    public RenderRabbit(RenderManager p_i47196_1_) {
         super(p_i47196_1_, new ModelRabbit(), 0.3F);
     }
 
-    protected ResourceLocation getEntityTexture(EntityRabbit entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityRabbit entity) {
         String s = TextFormatting.getTextWithoutFormattingCodes(entity.getName());
 
-        if (s != null && "Toast".equals(s))
-        {
+        if (s != null && "Toast".equals(s)) {
             return TOAST;
-        }
-        else
-        {
-            switch (entity.getRabbitType())
-            {
+        } else {
+            switch (entity.getRabbitType()) {
                 case 0:
                 default:
                     return BROWN;

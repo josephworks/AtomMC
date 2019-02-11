@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -9,96 +10,81 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketUpdateScore implements Packet<INetHandlerPlayClient>
-{
+public class SPacketUpdateScore implements Packet<INetHandlerPlayClient> {
     private String name = "";
     private String objective = "";
     private int value;
     private Action action;
 
-    public SPacketUpdateScore()
-    {
+    public SPacketUpdateScore() {
     }
 
-    public SPacketUpdateScore(Score scoreIn)
-    {
+    public SPacketUpdateScore(Score scoreIn) {
         this.name = scoreIn.getPlayerName();
         this.objective = scoreIn.getObjective().getName();
         this.value = scoreIn.getScorePoints();
         this.action = Action.CHANGE;
     }
 
-    public SPacketUpdateScore(String nameIn)
-    {
+    public SPacketUpdateScore(String nameIn) {
         this.name = nameIn;
         this.objective = "";
         this.value = 0;
         this.action = Action.REMOVE;
     }
 
-    public SPacketUpdateScore(String nameIn, ScoreObjective objectiveIn)
-    {
+    public SPacketUpdateScore(String nameIn, ScoreObjective objectiveIn) {
         this.name = nameIn;
         this.objective = objectiveIn.getName();
         this.value = 0;
         this.action = Action.REMOVE;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.name = buf.readString(40);
-        this.action = (Action)buf.readEnumValue(Action.class);
+        this.action = (Action) buf.readEnumValue(Action.class);
         this.objective = buf.readString(16);
 
-        if (this.action != Action.REMOVE)
-        {
+        if (this.action != Action.REMOVE) {
             this.value = buf.readVarInt();
         }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeString(this.name);
         buf.writeEnumValue(this.action);
         buf.writeString(this.objective);
 
-        if (this.action != Action.REMOVE)
-        {
+        if (this.action != Action.REMOVE) {
             buf.writeVarInt(this.value);
         }
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleUpdateScore(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public String getPlayerName()
-    {
+    public String getPlayerName() {
         return this.name;
     }
 
     @SideOnly(Side.CLIENT)
-    public String getObjectiveName()
-    {
+    public String getObjectiveName() {
         return this.objective;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getScoreValue()
-    {
+    public int getScoreValue() {
         return this.value;
     }
 
     @SideOnly(Side.CLIENT)
-    public SPacketUpdateScore.Action getScoreAction()
-    {
+    public SPacketUpdateScore.Action getScoreAction() {
         return this.action;
     }
 
-    public static enum Action
-    {
+    public static enum Action {
         CHANGE,
         REMOVE;
     }

@@ -43,11 +43,9 @@ import net.minecraftforge.fml.relauncher.Side;
  * or the client in any way, except to accept or reject the list of mods.</strong>
  *
  * @author cpw
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface NetworkCheckHandler
-{
+public @interface NetworkCheckHandler {
 
 }

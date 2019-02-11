@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.advancement;
 
 import com.google.common.collect.Lists;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;

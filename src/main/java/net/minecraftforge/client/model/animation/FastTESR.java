@@ -31,11 +31,9 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 
-public abstract class FastTESR<T extends TileEntity> extends TileEntitySpecialRenderer<T>
-{
+public abstract class FastTESR<T extends TileEntity> extends TileEntitySpecialRenderer<T> {
     @Override
-    public final void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float partial)
-    {
+    public final void render(T te, double x, double y, double z, float partialTicks, int destroyStage, float partial) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -44,12 +42,9 @@ public abstract class FastTESR<T extends TileEntity> extends TileEntitySpecialRe
         GlStateManager.enableBlend();
         GlStateManager.disableCull();
 
-        if (Minecraft.isAmbientOcclusionEnabled())
-        {
+        if (Minecraft.isAmbientOcclusionEnabled()) {
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        }
-        else
-        {
+        } else {
             GlStateManager.shadeModel(GL11.GL_FLAT);
         }
 

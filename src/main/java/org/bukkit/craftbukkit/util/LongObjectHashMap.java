@@ -20,12 +20,12 @@ public class LongObjectHashMap<V> implements Cloneable, Serializable {
     static final long serialVersionUID = 2841537710170573815L;
 
     private static final long EMPTY_KEY = Long.MIN_VALUE;
-    private static final int  BUCKET_SIZE = 4096;
+    private static final int BUCKET_SIZE = 4096;
 
     private transient long[][] keys;
-    private transient V[][]    values;
-    private transient int      modCount;
-    private transient int      size;
+    private transient V[][] values;
+    private transient int modCount;
+    private transient int size;
 
     public LongObjectHashMap() {
         initialize();

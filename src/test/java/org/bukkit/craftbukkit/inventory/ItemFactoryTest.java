@@ -44,7 +44,7 @@ public class ItemFactoryTest extends AbstractTestingBase {
         for (File fileInDir : directory.listFiles()) {
             if (fileInDir.isDirectory()) {
                 allClasses.addAll(this.getAllClassesFilesFromDir(fileInDir));
-            } else if (fileInDir.getName().endsWith(".class")){
+            } else if (fileInDir.getName().endsWith(".class")) {
                 allClasses.add(fileInDir);
             }
         }

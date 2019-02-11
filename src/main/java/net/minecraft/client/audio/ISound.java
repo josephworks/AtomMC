@@ -1,14 +1,14 @@
 package net.minecraft.client.audio;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface ISound
-{
+public interface ISound {
     ResourceLocation getSoundLocation();
 
     @Nullable
@@ -35,20 +35,17 @@ public interface ISound
     AttenuationType getAttenuationType();
 
     @SideOnly(Side.CLIENT)
-    public static enum AttenuationType
-    {
+    public static enum AttenuationType {
         NONE(0),
         LINEAR(2);
 
         private final int type;
 
-        private AttenuationType(int typeIn)
-        {
+        private AttenuationType(int typeIn) {
             this.type = typeIn;
         }
 
-        public int getTypeInt()
-        {
+        public int getTypeInt() {
             return this.type;
         }
     }

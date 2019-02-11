@@ -3,8 +3,7 @@ package net.minecraft.init;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 
-public class SoundEvents
-{
+public class SoundEvents {
     public static final SoundEvent AMBIENT_CAVE;
     public static final SoundEvent BLOCK_ANVIL_BREAK;
     public static final SoundEvent BLOCK_ANVIL_DESTROY;
@@ -555,28 +554,20 @@ public class SoundEvents
     public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT;
     public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP;
 
-    private static SoundEvent getRegisteredSoundEvent(String id)
-    {
+    private static SoundEvent getRegisteredSoundEvent(String id) {
         SoundEvent soundevent = SoundEvent.REGISTRY.getObject(new ResourceLocation(id));
 
-        if (soundevent == null)
-        {
+        if (soundevent == null) {
             throw new IllegalStateException("Invalid Sound requested: " + id);
-        }
-        else
-        {
+        } else {
             return soundevent;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed Sounds before Bootstrap!");
-        }
-        else
-        {
+        } else {
             AMBIENT_CAVE = getRegisteredSoundEvent("ambient.cave");
             BLOCK_ANVIL_BREAK = getRegisteredSoundEvent("block.anvil.break");
             BLOCK_ANVIL_DESTROY = getRegisteredSoundEvent("block.anvil.destroy");

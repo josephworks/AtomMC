@@ -6,28 +6,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelArmorStandArmor extends ModelBiped
-{
-    public ModelArmorStandArmor()
-    {
+public class ModelArmorStandArmor extends ModelBiped {
+    public ModelArmorStandArmor() {
         this(0.0F);
     }
 
-    public ModelArmorStandArmor(float modelSize)
-    {
+    public ModelArmorStandArmor(float modelSize) {
         this(modelSize, 64, 32);
     }
 
-    protected ModelArmorStandArmor(float modelSize, int textureWidthIn, int textureHeightIn)
-    {
+    protected ModelArmorStandArmor(float modelSize, int textureWidthIn, int textureHeightIn) {
         super(modelSize, 0.0F, textureWidthIn, textureHeightIn);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
-        if (entityIn instanceof EntityArmorStand)
-        {
-            EntityArmorStand entityarmorstand = (EntityArmorStand)entityIn;
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+        if (entityIn instanceof EntityArmorStand) {
+            EntityArmorStand entityarmorstand = (EntityArmorStand) entityIn;
             this.bipedHead.rotateAngleX = 0.017453292F * entityarmorstand.getHeadRotation().getX();
             this.bipedHead.rotateAngleY = 0.017453292F * entityarmorstand.getHeadRotation().getY();
             this.bipedHead.rotateAngleZ = 0.017453292F * entityarmorstand.getHeadRotation().getZ();

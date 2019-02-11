@@ -1,6 +1,6 @@
 {
-    "parent": "block/flower_pot_cross",
-    "textures": {
-        "plant": "blocks/mushroom_brown"
-    }
+  "parent": "block/flower_pot_cross",
+  "textures": {
+    "plant": "blocks/mushroom_brown"
+  }
 }

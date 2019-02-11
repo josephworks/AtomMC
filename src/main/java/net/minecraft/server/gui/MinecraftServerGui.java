@@ -1,6 +1,7 @@
 package net.minecraft.server.gui;
 
 import com.mojang.util.QueueLogAppender;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -26,6 +27,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,20 +35,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.SERVER)
-public class MinecraftServerGui extends JComponent
-{
+public class MinecraftServerGui extends JComponent {
     private static final Font SERVER_GUI_FONT = new Font("Monospaced", 0, 12);
     private static final Logger LOGGER = LogManager.getLogger();
     private final DedicatedServer server;
 
-    public static void createServerGui(final DedicatedServer serverIn)
-    {
-        try
-        {
+    public static void createServerGui(final DedicatedServer serverIn) {
+        try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        }
-        catch (Exception var3)
-        {
+        } catch (Exception var3) {
             ;
         }
 
@@ -54,22 +51,16 @@ public class MinecraftServerGui extends JComponent
         JFrame jframe = new JFrame("Minecraft server");
         jframe.add(minecraftservergui);
         jframe.pack();
-        jframe.setLocationRelativeTo((Component)null);
+        jframe.setLocationRelativeTo((Component) null);
         jframe.setVisible(true);
-        jframe.addWindowListener(new WindowAdapter()
-        {
-            public void windowClosing(WindowEvent p_windowClosing_1_)
-            {
+        jframe.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent p_windowClosing_1_) {
                 serverIn.initiateShutdown();
 
-                while (!serverIn.isServerStopped())
-                {
-                    try
-                    {
+                while (!serverIn.isServerStopped()) {
+                    try {
                         Thread.sleep(100L);
-                    }
-                    catch (InterruptedException interruptedexception)
-                    {
+                    } catch (InterruptedException interruptedexception) {
                         interruptedexception.printStackTrace();
                     }
                 }
@@ -80,25 +71,20 @@ public class MinecraftServerGui extends JComponent
         minecraftservergui.latch.countDown();
     }
 
-    public MinecraftServerGui(DedicatedServer serverIn)
-    {
+    public MinecraftServerGui(DedicatedServer serverIn) {
         this.server = serverIn;
         this.setPreferredSize(new Dimension(854, 480));
         this.setLayout(new BorderLayout());
 
-        try
-        {
+        try {
             this.add(this.getLogComponent(), "Center");
             this.add(this.getStatsComponent(), "West");
-        }
-        catch (Exception exception)
-        {
-            LOGGER.error("Couldn't build server GUI", (Throwable)exception);
+        } catch (Exception exception) {
+            LOGGER.error("Couldn't build server GUI", (Throwable) exception);
         }
     }
 
-    private JComponent getStatsComponent() throws Exception
-    {
+    private JComponent getStatsComponent() throws Exception {
         JPanel jpanel = new JPanel(new BorderLayout());
         jpanel.add(new StatsComponent(this.server), "North");
         jpanel.add(this.getPlayerListComponent(), "Center");
@@ -106,53 +92,43 @@ public class MinecraftServerGui extends JComponent
         return jpanel;
     }
 
-    private JComponent getPlayerListComponent() throws Exception
-    {
+    private JComponent getPlayerListComponent() throws Exception {
         JList jlist = new PlayerListComponent(this.server);
         JScrollPane jscrollpane = new JScrollPane(jlist, 22, 30);
         jscrollpane.setBorder(new TitledBorder(new EtchedBorder(), "Players"));
         return jscrollpane;
     }
 
-    private JComponent getLogComponent() throws Exception
-    {
+    private JComponent getLogComponent() throws Exception {
         JPanel jpanel = new JPanel(new BorderLayout());
         final JTextArea jtextarea = new JTextArea();
         final JScrollPane jscrollpane = new JScrollPane(jtextarea, 22, 30);
         jtextarea.setEditable(false);
         jtextarea.setFont(SERVER_GUI_FONT);
         final JTextField jtextfield = new JTextField();
-        jtextfield.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent p_actionPerformed_1_)
-            {
+        jtextfield.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent p_actionPerformed_1_) {
                 String s = jtextfield.getText().trim();
 
-                if (!s.isEmpty())
-                {
+                if (!s.isEmpty()) {
                     MinecraftServerGui.this.server.addPendingCommand(s, MinecraftServerGui.this.server);
                 }
 
                 jtextfield.setText("");
             }
         });
-        jtextarea.addFocusListener(new FocusAdapter()
-        {
-            public void focusGained(FocusEvent p_focusGained_1_)
-            {
+        jtextarea.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent p_focusGained_1_) {
             }
         });
         jpanel.add(jscrollpane, "Center");
         jpanel.add(jtextfield, "South");
         jpanel.setBorder(new TitledBorder(new EtchedBorder(), "Log and chat"));
-        Thread thread = new Thread(new Runnable()
-        {
-            public void run()
-            {
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
                 String s;
 
-                while ((s = QueueLogAppender.getNextLogEvent("ServerGuiConsole")) != null)
-                {
+                while ((s = QueueLogAppender.getNextLogEvent("ServerGuiConsole")) != null) {
                     MinecraftServerGui.this.appendLine(jtextarea, jscrollpane, s);
                 }
             }
@@ -163,44 +139,34 @@ public class MinecraftServerGui extends JComponent
     }
 
     private java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
-    public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line)
-    {
-        try
-        {
+
+    public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line) {
+        try {
             latch.await();
-        } catch (InterruptedException e){} //Prevent logging until after constructor has ended.
-        if (!SwingUtilities.isEventDispatchThread())
-        {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
+        } catch (InterruptedException e) {
+        } //Prevent logging until after constructor has ended.
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
                     MinecraftServerGui.this.appendLine(textArea, scrollPane, line);
                 }
             });
-        }
-        else
-        {
+        } else {
             Document document = textArea.getDocument();
             JScrollBar jscrollbar = scrollPane.getVerticalScrollBar();
             boolean flag = false;
 
-            if (scrollPane.getViewport().getView() == textArea)
-            {
-                flag = (double)jscrollbar.getValue() + jscrollbar.getSize().getHeight() + (double)(SERVER_GUI_FONT.getSize() * 4) > (double)jscrollbar.getMaximum();
+            if (scrollPane.getViewport().getView() == textArea) {
+                flag = (double) jscrollbar.getValue() + jscrollbar.getSize().getHeight() + (double) (SERVER_GUI_FONT.getSize() * 4) > (double) jscrollbar.getMaximum();
             }
 
-            try
-            {
-                document.insertString(document.getLength(), line, (AttributeSet)null);
-            }
-            catch (BadLocationException var8)
-            {
+            try {
+                document.insertString(document.getLength(), line, (AttributeSet) null);
+            } catch (BadLocationException var8) {
                 ;
             }
 
-            if (flag)
-            {
+            if (flag) {
                 jscrollbar.setValue(Integer.MAX_VALUE);
             }
         }

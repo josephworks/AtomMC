@@ -6,7 +6,8 @@ import org.hamcrest.Matcher;
 
 public final class Matchers {
 
-    private Matchers() {}
+    private Matchers() {
+    }
 
     public static <T> Matcher<T> sameHash(T value) {
         return new SameHash<T>(value);

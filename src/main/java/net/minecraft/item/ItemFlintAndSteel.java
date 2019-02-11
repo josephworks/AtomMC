@@ -14,28 +14,21 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemFlintAndSteel extends Item
-{
-    public ItemFlintAndSteel()
-    {
+public class ItemFlintAndSteel extends Item {
+    public ItemFlintAndSteel() {
         this.maxStackSize = 1;
         this.setMaxDamage(64);
         this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         pos = pos.offset(facing);
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (!player.canPlayerEdit(pos, facing, itemstack))
-        {
+        if (!player.canPlayerEdit(pos, facing, itemstack)) {
             return EnumActionResult.FAIL;
-        }
-        else
-        {
-            if (worldIn.isAirBlock(pos))
-            {
+        } else {
+            if (worldIn.isAirBlock(pos)) {
                 // CraftBukkit start - Store the clicked block
                 if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(worldIn, pos.getX(), pos.getY(), pos.getZ(), org.bukkit.event.block.BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL, player).isCancelled()) {
                     itemstack.damageItem(1, player);
@@ -46,9 +39,8 @@ public class ItemFlintAndSteel extends Item
                 worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState(), 11);
             }
 
-            if (player instanceof EntityPlayerMP)
-            {
-                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)player, pos, itemstack);
+            if (player instanceof EntityPlayerMP) {
+                CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) player, pos, itemstack);
             }
 
             itemstack.damageItem(1, player);

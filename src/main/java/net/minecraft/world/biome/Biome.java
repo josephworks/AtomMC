@@ -1,10 +1,12 @@
 package net.minecraft.world.biome;
 
 import com.google.common.collect.Lists;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockSand;
 import net.minecraft.block.BlockTallGrass;
@@ -51,8 +53,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 
-public abstract class Biome extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Biome>
-{
+public abstract class Biome extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Biome> {
     private static final Logger LOGGER = LogManager.getLogger();
     protected static final IBlockState STONE = Blocks.STONE.getDefaultState();
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
@@ -90,25 +91,21 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     // Forge: Stores the spawnable lists for non-vanilla EnumCreatureTypes. Can't be an EnumMap as that doesn't handle new enum values being added after it's created.
     protected java.util.Map<EnumCreatureType, List<SpawnListEntry>> modSpawnableLists = com.google.common.collect.Maps.newHashMap();
 
-    public static int getIdForBiome(Biome biome)
-    {
+    public static int getIdForBiome(Biome biome) {
         return REGISTRY.getIDForObject(biome);
     }
 
     @Nullable
-    public static Biome getBiomeForId(int id)
-    {
+    public static Biome getBiomeForId(int id) {
         return REGISTRY.getObjectById(id);
     }
 
     @Nullable
-    public static Biome getMutationForBiome(Biome biome)
-    {
+    public static Biome getMutationForBiome(Biome biome) {
         return MUTATION_TO_BASE_ID_MAP.getByValue(getIdForBiome(biome));
     }
 
-    public Biome(BiomeProperties properties)
-    {
+    public Biome(BiomeProperties properties) {
         this.biomeName = properties.biomeName;
         this.baseHeight = properties.baseHeight;
         this.heightVariation = properties.heightVariation;
@@ -136,43 +133,35 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
         this.addDefaultFlowers();
     }
 
-    public BiomeDecorator createBiomeDecorator()
-    {
+    public BiomeDecorator createBiomeDecorator() {
         return getModdedBiomeDecorator(new BiomeDecorator());
     }
 
-    public boolean isMutation()
-    {
+    public boolean isMutation() {
         return this.baseBiomeRegName != null;
     }
 
-    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
-    {
-        return (WorldGenAbstractTree)(rand.nextInt(10) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
+        return (WorldGenAbstractTree) (rand.nextInt(10) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
     }
 
-    public WorldGenerator getRandomWorldGenForGrass(Random rand)
-    {
+    public WorldGenerator getRandomWorldGenForGrass(Random rand) {
         return new WorldGenTallGrass(BlockTallGrass.EnumType.GRASS);
     }
 
-    public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
-    {
+    public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos) {
         return rand.nextInt(3) > 0 ? BlockFlower.EnumFlowerType.DANDELION : BlockFlower.EnumFlowerType.POPPY;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getSkyColorByTemp(float currentTemperature)
-    {
+    public int getSkyColorByTemp(float currentTemperature) {
         currentTemperature = currentTemperature / 3.0F;
         currentTemperature = MathHelper.clamp(currentTemperature, -1.0F, 1.0F);
         return MathHelper.hsvToRGB(0.62222224F - currentTemperature * 0.05F, 0.5F + currentTemperature * 0.1F, 1.0F);
     }
 
-    public List<SpawnListEntry> getSpawnableList(EnumCreatureType creatureType)
-    {
-        switch (creatureType)
-        {
+    public List<SpawnListEntry> getSpawnableList(EnumCreatureType creatureType) {
+        switch (creatureType) {
             case MONSTER:
                 return this.spawnableMonsterList;
             case CREATURE:
@@ -183,138 +172,104 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
                 return this.spawnableCaveCreatureList;
             default:
                 // Forge: Return a non-empty list for non-vanilla EnumCreatureTypes
-                if (!this.modSpawnableLists.containsKey(creatureType)) this.modSpawnableLists.put(creatureType, Lists.<SpawnListEntry>newArrayList());
+                if (!this.modSpawnableLists.containsKey(creatureType))
+                    this.modSpawnableLists.put(creatureType, Lists.<SpawnListEntry>newArrayList());
                 return this.modSpawnableLists.get(creatureType);
         }
     }
 
-    public boolean getEnableSnow()
-    {
+    public boolean getEnableSnow() {
         return this.isSnowyBiome();
     }
 
-    public boolean canRain()
-    {
+    public boolean canRain() {
         return this.isSnowyBiome() ? false : this.enableRain;
     }
 
-    public boolean isHighHumidity()
-    {
+    public boolean isHighHumidity() {
         return this.getRainfall() > 0.85F;
     }
 
-    public float getSpawningChance()
-    {
+    public float getSpawningChance() {
         return 0.1F;
     }
 
-    public final float getTemperature(BlockPos pos)
-    {
-        if (pos.getY() > 64)
-        {
-            float f = (float)(TEMPERATURE_NOISE.getValue((double)((float)pos.getX() / 8.0F), (double)((float)pos.getZ() / 8.0F)) * 4.0D);
-            return this.getDefaultTemperature() - (f + (float)pos.getY() - 64.0F) * 0.05F / 30.0F;
-        }
-        else
-        {
+    public final float getTemperature(BlockPos pos) {
+        if (pos.getY() > 64) {
+            float f = (float) (TEMPERATURE_NOISE.getValue((double) ((float) pos.getX() / 8.0F), (double) ((float) pos.getZ() / 8.0F)) * 4.0D);
+            return this.getDefaultTemperature() - (f + (float) pos.getY() - 64.0F) * 0.05F / 30.0F;
+        } else {
             return this.getDefaultTemperature();
         }
     }
 
-    public void decorate(World worldIn, Random rand, BlockPos pos)
-    {
+    public void decorate(World worldIn, Random rand, BlockPos pos) {
         this.decorator.decorate(worldIn, rand, this, pos);
     }
 
-    public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
-    {
+    public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal) {
         this.generateBiomeTerrain(worldIn, rand, chunkPrimerIn, x, z, noiseVal);
     }
 
     @SideOnly(Side.CLIENT)
-    public int getGrassColorAtPos(BlockPos pos)
-    {
-        double d0 = (double)MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
-        double d1 = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
+    public int getGrassColorAtPos(BlockPos pos) {
+        double d0 = (double) MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
+        double d1 = (double) MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
         return getModdedBiomeGrassColor(ColorizerGrass.getGrassColor(d0, d1));
     }
 
-    public final void generateBiomeTerrain(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
-    {
+    public final void generateBiomeTerrain(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal) {
         int i = worldIn.getSeaLevel();
         IBlockState iblockstate = this.topBlock;
         IBlockState iblockstate1 = this.fillerBlock;
         int j = -1;
-        int k = (int)(noiseVal / 3.0D + 3.0D + rand.nextDouble() * 0.25D);
+        int k = (int) (noiseVal / 3.0D + 3.0D + rand.nextDouble() * 0.25D);
         int l = x & 15;
         int i1 = z & 15;
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int j1 = 255; j1 >= 0; --j1)
-        {
-            if (j1 <= rand.nextInt(5))
-            {
+        for (int j1 = 255; j1 >= 0; --j1) {
+            if (j1 <= rand.nextInt(5)) {
                 chunkPrimerIn.setBlockState(i1, j1, l, BEDROCK);
-            }
-            else
-            {
+            } else {
                 IBlockState iblockstate2 = chunkPrimerIn.getBlockState(i1, j1, l);
 
-                if (iblockstate2.getMaterial() == Material.AIR)
-                {
+                if (iblockstate2.getMaterial() == Material.AIR) {
                     j = -1;
-                }
-                else if (iblockstate2.getBlock() == Blocks.STONE)
-                {
-                    if (j == -1)
-                    {
-                        if (k <= 0)
-                        {
+                } else if (iblockstate2.getBlock() == Blocks.STONE) {
+                    if (j == -1) {
+                        if (k <= 0) {
                             iblockstate = AIR;
                             iblockstate1 = STONE;
-                        }
-                        else if (j1 >= i - 4 && j1 <= i + 1)
-                        {
+                        } else if (j1 >= i - 4 && j1 <= i + 1) {
                             iblockstate = this.topBlock;
                             iblockstate1 = this.fillerBlock;
                         }
 
-                        if (j1 < i && (iblockstate == null || iblockstate.getMaterial() == Material.AIR))
-                        {
-                            if (this.getTemperature(blockpos$mutableblockpos.setPos(x, j1, z)) < 0.15F)
-                            {
+                        if (j1 < i && (iblockstate == null || iblockstate.getMaterial() == Material.AIR)) {
+                            if (this.getTemperature(blockpos$mutableblockpos.setPos(x, j1, z)) < 0.15F) {
                                 iblockstate = ICE;
-                            }
-                            else
-                            {
+                            } else {
                                 iblockstate = WATER;
                             }
                         }
 
                         j = k;
 
-                        if (j1 >= i - 1)
-                        {
+                        if (j1 >= i - 1) {
                             chunkPrimerIn.setBlockState(i1, j1, l, iblockstate);
-                        }
-                        else if (j1 < i - 7 - k)
-                        {
+                        } else if (j1 < i - 7 - k) {
                             iblockstate = AIR;
                             iblockstate1 = STONE;
                             chunkPrimerIn.setBlockState(i1, j1, l, GRAVEL);
-                        }
-                        else
-                        {
+                        } else {
                             chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);
                         }
-                    }
-                    else if (j > 0)
-                    {
+                    } else if (j > 0) {
                         --j;
                         chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);
 
-                        if (j == 0 && iblockstate1.getBlock() == Blocks.SAND && k > 1)
-                        {
+                        if (j == 0 && iblockstate1.getBlock() == Blocks.SAND && k > 1) {
                             j = rand.nextInt(4) + Math.max(0, j1 - 63);
                             iblockstate1 = iblockstate1.getValue(BlockSand.VARIANT) == BlockSand.EnumType.RED_SAND ? RED_SANDSTONE : SANDSTONE;
                         }
@@ -325,108 +280,88 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     }
 
     @SideOnly(Side.CLIENT)
-    public int getFoliageColorAtPos(BlockPos pos)
-    {
-        double d0 = (double)MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
-        double d1 = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
+    public int getFoliageColorAtPos(BlockPos pos) {
+        double d0 = (double) MathHelper.clamp(this.getTemperature(pos), 0.0F, 1.0F);
+        double d1 = (double) MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
         return getModdedBiomeFoliageColor(ColorizerFoliage.getFoliageColor(d0, d1));
     }
 
-    public Class <? extends Biome > getBiomeClass()
-    {
+    public Class<? extends Biome> getBiomeClass() {
         return this.getClass();
     }
 
-    public TempCategory getTempCategory()
-    {
-        if ((double)this.getDefaultTemperature() < 0.2D)
-        {
+    public TempCategory getTempCategory() {
+        if ((double) this.getDefaultTemperature() < 0.2D) {
             return TempCategory.COLD;
-        }
-        else
-        {
-            return (double)this.getDefaultTemperature() < 1.0D ? TempCategory.MEDIUM : TempCategory.WARM;
+        } else {
+            return (double) this.getDefaultTemperature() < 1.0D ? TempCategory.MEDIUM : TempCategory.WARM;
         }
     }
 
     @Nullable
-    public static Biome getBiome(int id)
-    {
-        return getBiome(id, (Biome)null);
+    public static Biome getBiome(int id) {
+        return getBiome(id, (Biome) null);
     }
 
-    public static Biome getBiome(int biomeId, Biome fallback)
-    {
+    public static Biome getBiome(int biomeId, Biome fallback) {
         Biome biome = getBiomeForId(biomeId);
         return biome == null ? fallback : biome;
     }
 
-    public boolean ignorePlayerSpawnSuitability()
-    {
+    public boolean ignorePlayerSpawnSuitability() {
         return false;
     }
 
-    public final float getBaseHeight()
-    {
+    public final float getBaseHeight() {
         return this.baseHeight;
     }
 
-    public final float getRainfall()
-    {
+    public final float getRainfall() {
         return this.rainfall;
     }
 
     @SideOnly(Side.CLIENT)
-    public final String getBiomeName()
-    {
+    public final String getBiomeName() {
         return this.biomeName;
     }
 
-    public final float getHeightVariation()
-    {
+    public final float getHeightVariation() {
         return this.heightVariation;
     }
 
-    public final float getDefaultTemperature()
-    {
+    public final float getDefaultTemperature() {
         return this.temperature;
     }
 
     @SideOnly(Side.CLIENT)
-    public final int getWaterColor()
-    {
+    public final int getWaterColor() {
         return getWaterColorMultiplier();
     }
 
-    public final boolean isSnowyBiome()
-    {
+    public final boolean isSnowyBiome() {
         return this.enableSnow;
     }
 
     /* ========================================= FORGE START ======================================*/
     protected List<FlowerEntry> flowers = new java.util.ArrayList<FlowerEntry>();
 
-    public BiomeDecorator getModdedBiomeDecorator(BiomeDecorator original)
-    {
+    public BiomeDecorator getModdedBiomeDecorator(BiomeDecorator original) {
         return new net.minecraftforge.event.terraingen.DeferredBiomeDecorator(original);
     }
 
-    public int getWaterColorMultiplier()
-    {
+    public int getWaterColorMultiplier() {
         net.minecraftforge.event.terraingen.BiomeEvent.GetWaterColor event = new net.minecraftforge.event.terraingen.BiomeEvent.GetWaterColor(this, waterColor);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         return event.getNewColor();
     }
 
-    public int getModdedBiomeGrassColor(int original)
-    {
+    public int getModdedBiomeGrassColor(int original) {
         net.minecraftforge.event.terraingen.BiomeEvent.GetGrassColor event = new net.minecraftforge.event.terraingen.BiomeEvent.GetGrassColor(this, original);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         return event.getNewColor();
     }
 
-    public int getModdedBiomeFoliageColor(int original)
-    {
+    public int getModdedBiomeFoliageColor(int original) {
         net.minecraftforge.event.terraingen.BiomeEvent.GetFoliageColor event = new net.minecraftforge.event.terraingen.BiomeEvent.GetFoliageColor(this, original);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         return event.getNewColor();
@@ -436,11 +371,10 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
      * Weighted random holder class used to hold possible flowers
      * that can spawn in this biome when bonemeal is used on grass.
      */
-    public static class FlowerEntry extends WeightedRandom.Item
-    {
+    public static class FlowerEntry extends WeightedRandom.Item {
         public final IBlockState state;
-        public FlowerEntry(IBlockState state, int weight)
-        {
+
+        public FlowerEntry(IBlockState state, int weight) {
             super(weight);
             this.state = state;
         }
@@ -449,30 +383,28 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
     /**
      * Adds the default flowers, as of 1.7, it is 2 yellow, and 1 red. I chose 10 to allow some wiggle room in the numbers.
      */
-    public void addDefaultFlowers()
-    {
+    public void addDefaultFlowers() {
         addFlower(Blocks.YELLOW_FLOWER.getDefaultState().withProperty(Blocks.YELLOW_FLOWER.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 20);
         addFlower(Blocks.RED_FLOWER.getDefaultState().withProperty(Blocks.RED_FLOWER.getTypeProperty(), BlockFlower.EnumFlowerType.POPPY), 10);
     }
 
-    /** Register a new plant to be planted when bonemeal is used on grass.
-     * @param state The block to place.
+    /**
+     * Register a new plant to be planted when bonemeal is used on grass.
+     *
+     * @param state  The block to place.
      * @param weight The weight of the plant, where red flowers are
      *               10 and yellow flowers are 20.
      */
-    public void addFlower(IBlockState state, int weight)
-    {
+    public void addFlower(IBlockState state, int weight) {
         this.flowers.add(new FlowerEntry(state, weight));
     }
 
-    public void plantFlower(World world, Random rand, BlockPos pos)
-    {
+    public void plantFlower(World world, Random rand, BlockPos pos) {
         if (flowers.isEmpty()) return;
-        FlowerEntry flower = (FlowerEntry)WeightedRandom.getRandomItem(rand, flowers);
+        FlowerEntry flower = (FlowerEntry) WeightedRandom.getRandomItem(rand, flowers);
         if (flower == null || flower.state == null ||
-            (flower.state.getBlock() instanceof net.minecraft.block.BlockBush &&
-              !((net.minecraft.block.BlockBush)flower.state.getBlock()).canBlockStay(world, pos, flower.state)))
-        {
+                (flower.state.getBlock() instanceof net.minecraft.block.BlockBush &&
+                        !((net.minecraft.block.BlockBush) flower.state.getBlock()).canBlockStay(world, pos, flower.state))) {
             return;
         }
 
@@ -482,8 +414,7 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
 
     /* ========================================= FORGE END ======================================*/
 
-    public static void registerBiomes()
-    {
+    public static void registerBiomes() {
         registerBiome(0, "ocean", new BiomeOcean((new BiomeProperties("Ocean")).setBaseHeight(-1.0F).setHeightVariation(0.1F)));
         registerBiome(1, "plains", new BiomePlains(false, (new BiomeProperties("Plains")).setBaseHeight(0.125F).setHeightVariation(0.05F).setTemperature(0.8F).setRainfall(0.4F)));
         registerBiome(2, "desert", new BiomeDesert((new BiomeProperties("Desert")).setBaseHeight(0.125F).setHeightVariation(0.05F).setTemperature(2.0F).setRainfall(0.0F).setRainDisabled()));
@@ -548,119 +479,99 @@ public abstract class Biome extends net.minecraftforge.registries.IForgeRegistry
         registerBiome(167, "mutated_mesa_clear_rock", new BiomeMesa(false, false, (new BiomeProperties("Mesa Plateau M")).setBaseBiome("mesa_clear_rock").setBaseHeight(0.45F).setHeightVariation(0.3F).setTemperature(2.0F).setRainfall(0.0F).setRainDisabled()));
     }
 
-    public static void registerBiome(int id, String name, Biome biome)
-    {
+    public static void registerBiome(int id, String name, Biome biome) {
         REGISTRY.register(id, new ResourceLocation(name), biome);
 
-        if (biome.isMutation())
-        {
+        if (biome.isMutation()) {
             MUTATION_TO_BASE_ID_MAP.put(biome, getIdForBiome(REGISTRY.getObject(new ResourceLocation(biome.baseBiomeRegName))));
         }
     }
 
-    public static class BiomeProperties
-        {
-            private final String biomeName;
-            private float baseHeight = 0.1F;
-            private float heightVariation = 0.2F;
-            private float temperature = 0.5F;
-            private float rainfall = 0.5F;
-            private int waterColor = 16777215;
-            private boolean enableSnow;
-            private boolean enableRain = true;
-            @Nullable
-            private String baseBiomeRegName;
+    public static class BiomeProperties {
+        private final String biomeName;
+        private float baseHeight = 0.1F;
+        private float heightVariation = 0.2F;
+        private float temperature = 0.5F;
+        private float rainfall = 0.5F;
+        private int waterColor = 16777215;
+        private boolean enableSnow;
+        private boolean enableRain = true;
+        @Nullable
+        private String baseBiomeRegName;
 
-            public BiomeProperties(String nameIn)
-            {
-                this.biomeName = nameIn;
-            }
+        public BiomeProperties(String nameIn) {
+            this.biomeName = nameIn;
+        }
 
-            public BiomeProperties setTemperature(float temperatureIn)
-            {
-                if (temperatureIn > 0.1F && temperatureIn < 0.2F)
-                {
-                    throw new IllegalArgumentException("Please avoid temperatures in the range 0.1 - 0.2 because of snow");
-                }
-                else
-                {
-                    this.temperature = temperatureIn;
-                    return this;
-                }
-            }
-
-            public BiomeProperties setRainfall(float rainfallIn)
-            {
-                this.rainfall = rainfallIn;
-                return this;
-            }
-
-            public BiomeProperties setBaseHeight(float baseHeightIn)
-            {
-                this.baseHeight = baseHeightIn;
-                return this;
-            }
-
-            public BiomeProperties setHeightVariation(float heightVariationIn)
-            {
-                this.heightVariation = heightVariationIn;
-                return this;
-            }
-
-            public BiomeProperties setRainDisabled()
-            {
-                this.enableRain = false;
-                return this;
-            }
-
-            public BiomeProperties setSnowEnabled()
-            {
-                this.enableSnow = true;
-                return this;
-            }
-
-            public BiomeProperties setWaterColor(int waterColorIn)
-            {
-                this.waterColor = waterColorIn;
-                return this;
-            }
-
-            public BiomeProperties setBaseBiome(String nameIn)
-            {
-                this.baseBiomeRegName = nameIn;
+        public BiomeProperties setTemperature(float temperatureIn) {
+            if (temperatureIn > 0.1F && temperatureIn < 0.2F) {
+                throw new IllegalArgumentException("Please avoid temperatures in the range 0.1 - 0.2 because of snow");
+            } else {
+                this.temperature = temperatureIn;
                 return this;
             }
         }
 
-    public static class SpawnListEntry extends WeightedRandom.Item
-        {
-            public Class <? extends EntityLiving > entityClass;
-            public int minGroupCount;
-            public int maxGroupCount;
-
-            public SpawnListEntry(Class <? extends EntityLiving > entityclassIn, int weight, int groupCountMin, int groupCountMax)
-            {
-                super(weight);
-                this.entityClass = entityclassIn;
-                this.minGroupCount = groupCountMin;
-                this.maxGroupCount = groupCountMax;
-            }
-
-            public String toString()
-            {
-                return this.entityClass.getSimpleName() + "*(" + this.minGroupCount + "-" + this.maxGroupCount + "):" + this.itemWeight;
-            }
-
-            public EntityLiving newInstance(World world) throws Exception
-            {
-                net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(this.entityClass);
-                if (entry != null) return (EntityLiving) entry.newInstance(world);
-                return this.entityClass.getConstructor(World.class).newInstance(world);
-            }
+        public BiomeProperties setRainfall(float rainfallIn) {
+            this.rainfall = rainfallIn;
+            return this;
         }
 
-    public static enum TempCategory
-    {
+        public BiomeProperties setBaseHeight(float baseHeightIn) {
+            this.baseHeight = baseHeightIn;
+            return this;
+        }
+
+        public BiomeProperties setHeightVariation(float heightVariationIn) {
+            this.heightVariation = heightVariationIn;
+            return this;
+        }
+
+        public BiomeProperties setRainDisabled() {
+            this.enableRain = false;
+            return this;
+        }
+
+        public BiomeProperties setSnowEnabled() {
+            this.enableSnow = true;
+            return this;
+        }
+
+        public BiomeProperties setWaterColor(int waterColorIn) {
+            this.waterColor = waterColorIn;
+            return this;
+        }
+
+        public BiomeProperties setBaseBiome(String nameIn) {
+            this.baseBiomeRegName = nameIn;
+            return this;
+        }
+    }
+
+    public static class SpawnListEntry extends WeightedRandom.Item {
+        public Class<? extends EntityLiving> entityClass;
+        public int minGroupCount;
+        public int maxGroupCount;
+
+        public SpawnListEntry(Class<? extends EntityLiving> entityclassIn, int weight, int groupCountMin, int groupCountMax) {
+            super(weight);
+            this.entityClass = entityclassIn;
+            this.minGroupCount = groupCountMin;
+            this.maxGroupCount = groupCountMax;
+        }
+
+        public String toString() {
+            return this.entityClass.getSimpleName() + "*(" + this.minGroupCount + "-" + this.maxGroupCount + "):" + this.itemWeight;
+        }
+
+        public EntityLiving newInstance(World world) throws Exception {
+            net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(this.entityClass);
+            if (entry != null) return (EntityLiving) entry.newInstance(world);
+            return this.entityClass.getConstructor(World.class).newInstance(world);
+        }
+    }
+
+    public static enum TempCategory {
         OCEAN,
         COLD,
         MEDIUM,

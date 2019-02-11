@@ -1,11 +1,11 @@
 package net.minecraft.init;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 
-public class MobEffects
-{
+public class MobEffects {
     public static final Potion SPEED;
     public static final Potion SLOWNESS;
     public static final Potion HASTE;
@@ -35,28 +35,20 @@ public class MobEffects
     public static final Potion UNLUCK;
 
     @Nullable
-    private static Potion getRegisteredMobEffect(String id)
-    {
+    private static Potion getRegisteredMobEffect(String id) {
         Potion potion = Potion.REGISTRY.getObject(new ResourceLocation(id));
 
-        if (potion == null)
-        {
+        if (potion == null) {
             throw new IllegalStateException("Invalid MobEffect requested: " + id);
-        }
-        else
-        {
+        } else {
             return potion;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed MobEffects before Bootstrap!");
-        }
-        else
-        {
+        } else {
             SPEED = getRegisteredMobEffect("speed");
             SLOWNESS = getRegisteredMobEffect("slowness");
             HASTE = getRegisteredMobEffect("haste");

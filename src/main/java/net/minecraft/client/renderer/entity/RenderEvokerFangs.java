@@ -8,34 +8,29 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderEvokerFangs extends Render<EntityEvokerFangs>
-{
+public class RenderEvokerFangs extends Render<EntityEvokerFangs> {
     private static final ResourceLocation EVOKER_ILLAGER_FANGS = new ResourceLocation("textures/entity/illager/fangs.png");
     private final ModelEvokerFangs model = new ModelEvokerFangs();
 
-    public RenderEvokerFangs(RenderManager p_i47208_1_)
-    {
+    public RenderEvokerFangs(RenderManager p_i47208_1_) {
         super(p_i47208_1_);
     }
 
-    public void doRender(EntityEvokerFangs entity, double x, double y, double z, float entityYaw, float partialTicks)
-    {
+    public void doRender(EntityEvokerFangs entity, double x, double y, double z, float entityYaw, float partialTicks) {
         float f = entity.getAnimationProgress(partialTicks);
 
-        if (f != 0.0F)
-        {
+        if (f != 0.0F) {
             float f1 = 2.0F;
 
-            if (f > 0.9F)
-            {
-                f1 = (float)((double)f1 * ((1.0D - (double)f) / 0.10000000149011612D));
+            if (f > 0.9F) {
+                f1 = (float) ((double) f1 * ((1.0D - (double) f) / 0.10000000149011612D));
             }
 
             GlStateManager.pushMatrix();
             GlStateManager.disableCull();
             GlStateManager.enableAlpha();
             this.bindEntityTexture(entity);
-            GlStateManager.translate((float)x, (float)y, (float)z);
+            GlStateManager.translate((float) x, (float) y, (float) z);
             GlStateManager.rotate(90.0F - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
             GlStateManager.scale(-f1, -f1, f1);
             float f2 = 0.03125F;
@@ -47,8 +42,7 @@ public class RenderEvokerFangs extends Render<EntityEvokerFangs>
         }
     }
 
-    protected ResourceLocation getEntityTexture(EntityEvokerFangs entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityEvokerFangs entity) {
         return EVOKER_ILLAGER_FANGS;
     }
 }

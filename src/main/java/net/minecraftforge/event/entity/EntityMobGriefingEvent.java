@@ -35,10 +35,8 @@ import net.minecraftforge.fml.common.eventhandler.Event.Result;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  */
 @HasResult
-public class EntityMobGriefingEvent extends EntityEvent
-{
-    public EntityMobGriefingEvent(Entity entity)
-    {
+public class EntityMobGriefingEvent extends EntityEvent {
+    public EntityMobGriefingEvent(Entity entity) {
         super(entity);
     }
 }

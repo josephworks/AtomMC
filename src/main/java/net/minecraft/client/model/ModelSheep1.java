@@ -7,12 +7,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelSheep1 extends ModelQuadruped
-{
+public class ModelSheep1 extends ModelQuadruped {
     private float headRotationAngleX;
 
-    public ModelSheep1()
-    {
+    public ModelSheep1() {
         super(12, 0.0F);
         this.head = new ModelRenderer(this, 0, 0);
         this.head.addBox(-3.0F, -4.0F, -4.0F, 6, 6, 6, 0.6F);
@@ -35,15 +33,13 @@ public class ModelSheep1 extends ModelQuadruped
         this.leg4.setRotationPoint(3.0F, 12.0F, -5.0F);
     }
 
-    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
-    {
+    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
         super.setLivingAnimations(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTickTime);
-        this.head.rotationPointY = 6.0F + ((EntitySheep)entitylivingbaseIn).getHeadRotationPointY(partialTickTime) * 9.0F;
-        this.headRotationAngleX = ((EntitySheep)entitylivingbaseIn).getHeadRotationAngleX(partialTickTime);
+        this.head.rotationPointY = 6.0F + ((EntitySheep) entitylivingbaseIn).getHeadRotationPointY(partialTickTime) * 9.0F;
+        this.headRotationAngleX = ((EntitySheep) entitylivingbaseIn).getHeadRotationAngleX(partialTickTime);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         this.head.rotateAngleX = this.headRotationAngleX;
     }

@@ -8,18 +8,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelVex extends ModelBiped
-{
+public class ModelVex extends ModelBiped {
     protected ModelRenderer leftWing;
     protected ModelRenderer rightWing;
 
-    public ModelVex()
-    {
+    public ModelVex() {
         this(0.0F);
     }
 
-    public ModelVex(float p_i47224_1_)
-    {
+    public ModelVex(float p_i47224_1_) {
         super(p_i47224_1_, 0.0F, 64, 64);
         this.bipedLeftLeg.showModel = false;
         this.bipedHeadwear.showModel = false;
@@ -33,36 +30,30 @@ public class ModelVex extends ModelBiped
         this.leftWing.addBox(0.0F, 0.0F, 0.0F, 20, 12, 1);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         this.rightWing.render(scale);
         this.leftWing.render(scale);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-        EntityVex entityvex = (EntityVex)entityIn;
+        EntityVex entityvex = (EntityVex) entityIn;
 
-        if (entityvex.isCharging())
-        {
-            if (entityvex.getPrimaryHand() == EnumHandSide.RIGHT)
-            {
+        if (entityvex.isCharging()) {
+            if (entityvex.getPrimaryHand() == EnumHandSide.RIGHT) {
                 this.bipedRightArm.rotateAngleX = 3.7699115F;
-            }
-            else
-            {
+            } else {
                 this.bipedLeftArm.rotateAngleX = 3.7699115F;
             }
         }
 
-        this.bipedRightLeg.rotateAngleX += ((float)Math.PI / 5F);
+        this.bipedRightLeg.rotateAngleX += ((float) Math.PI / 5F);
         this.rightWing.rotationPointZ = 2.0F;
         this.leftWing.rotationPointZ = 2.0F;
         this.rightWing.rotationPointY = 1.0F;
         this.leftWing.rotationPointY = 1.0F;
-        this.rightWing.rotateAngleY = 0.47123894F + MathHelper.cos(ageInTicks * 0.8F) * (float)Math.PI * 0.05F;
+        this.rightWing.rotateAngleY = 0.47123894F + MathHelper.cos(ageInTicks * 0.8F) * (float) Math.PI * 0.05F;
         this.leftWing.rotateAngleY = -this.rightWing.rotateAngleY;
         this.leftWing.rotateAngleZ = -0.47123894F;
         this.leftWing.rotateAngleX = 0.47123894F;
@@ -70,8 +61,7 @@ public class ModelVex extends ModelBiped
         this.rightWing.rotateAngleZ = 0.47123894F;
     }
 
-    public int getModelVersion()
-    {
+    public int getModelVersion() {
         return 23;
     }
 }

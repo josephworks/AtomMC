@@ -32,19 +32,15 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ItemHandlerHelper
-{
+public class ItemHandlerHelper {
     @Nonnull
-    public static ItemStack insertItem(IItemHandler dest, @Nonnull ItemStack stack, boolean simulate)
-    {
+    public static ItemStack insertItem(IItemHandler dest, @Nonnull ItemStack stack, boolean simulate) {
         if (dest == null || stack.isEmpty())
             return stack;
 
-        for (int i = 0; i < dest.getSlots(); i++)
-        {
+        for (int i = 0; i < dest.getSlots(); i++) {
             stack = dest.insertItem(i, stack, simulate);
-            if (stack.isEmpty())
-            {
+            if (stack.isEmpty()) {
                 return ItemStack.EMPTY;
             }
         }
@@ -52,8 +48,7 @@ public class ItemHandlerHelper
         return stack;
     }
 
-    public static boolean canItemStacksStack(@Nonnull ItemStack a, @Nonnull ItemStack b)
-    {
+    public static boolean canItemStacksStack(@Nonnull ItemStack a, @Nonnull ItemStack b) {
         if (a.isEmpty() || !a.isItemEqual(b) || a.hasTagCompound() != b.hasTagCompound())
             return false;
 
@@ -64,8 +59,7 @@ public class ItemHandlerHelper
      * A relaxed version of canItemStacksStack that stacks itemstacks with different metadata if they don't have subtypes.
      * This usually only applies when players pick up items.
      */
-    public static boolean canItemStacksStackRelaxed(@Nonnull ItemStack a, @Nonnull ItemStack b)
-    {
+    public static boolean canItemStacksStackRelaxed(@Nonnull ItemStack a, @Nonnull ItemStack b) {
         if (a.isEmpty() || b.isEmpty() || a.getItem() != b.getItem())
             return false;
 
@@ -85,8 +79,7 @@ public class ItemHandlerHelper
     }
 
     @Nonnull
-    public static ItemStack copyStackWithSize(@Nonnull ItemStack itemStack, int size)
-    {
+    public static ItemStack copyStackWithSize(@Nonnull ItemStack itemStack, int size) {
         if (size == 0)
             return ItemStack.EMPTY;
         ItemStack copy = itemStack.copy();
@@ -100,45 +93,36 @@ public class ItemHandlerHelper
      * Note: This function stacks items without subtypes with different metadata together.
      */
     @Nonnull
-    public static ItemStack insertItemStacked(IItemHandler inventory, @Nonnull ItemStack stack, boolean simulate)
-    {
+    public static ItemStack insertItemStacked(IItemHandler inventory, @Nonnull ItemStack stack, boolean simulate) {
         if (inventory == null || stack.isEmpty())
             return stack;
 
         // not stackable -> just insert into a new slot
-        if (!stack.isStackable())
-        {
+        if (!stack.isStackable()) {
             return insertItem(inventory, stack, simulate);
         }
 
         int sizeInventory = inventory.getSlots();
 
         // go through the inventory and try to fill up already existing items
-        for (int i = 0; i < sizeInventory; i++)
-        {
+        for (int i = 0; i < sizeInventory; i++) {
             ItemStack slot = inventory.getStackInSlot(i);
-            if (canItemStacksStackRelaxed(slot, stack))
-            {
+            if (canItemStacksStackRelaxed(slot, stack)) {
                 stack = inventory.insertItem(i, stack, simulate);
 
-                if (stack.isEmpty())
-                {
+                if (stack.isEmpty()) {
                     break;
                 }
             }
         }
 
         // insert remainder into empty slots
-        if (!stack.isEmpty())
-        {
+        if (!stack.isEmpty()) {
             // find empty slot
-            for (int i = 0; i < sizeInventory; i++)
-            {
-                if (inventory.getStackInSlot(i).isEmpty())
-                {
+            for (int i = 0; i < sizeInventory; i++) {
+                if (inventory.getStackInSlot(i).isEmpty()) {
                     stack = inventory.insertItem(i, stack, simulate);
-                    if (stack.isEmpty())
-                    {
+                    if (stack.isEmpty()) {
                         break;
                     }
                 }
@@ -148,7 +132,9 @@ public class ItemHandlerHelper
         return stack;
     }
 
-    /** giveItemToPlayer without preferred slot */
+    /**
+     * giveItemToPlayer without preferred slot
+     */
     public static void giveItemToPlayer(EntityPlayer player, @Nonnull ItemStack stack) {
         giveItemToPlayer(player, stack, -1);
     }
@@ -160,8 +146,7 @@ public class ItemHandlerHelper
      * @param player The player to give the item to
      * @param stack  The itemstack to insert
      */
-    public static void giveItemToPlayer(EntityPlayer player, @Nonnull ItemStack stack, int preferredSlot)
-    {
+    public static void giveItemToPlayer(EntityPlayer player, @Nonnull ItemStack stack, int preferredSlot) {
         if (stack.isEmpty()) return;
 
         IItemHandler inventory = new PlayerMainInvWrapper(player.inventory);
@@ -170,26 +155,22 @@ public class ItemHandlerHelper
         // try adding it into the inventory
         ItemStack remainder = stack;
         // insert into preferred slot first
-        if (preferredSlot >= 0 && preferredSlot < inventory.getSlots())
-        {
+        if (preferredSlot >= 0 && preferredSlot < inventory.getSlots()) {
             remainder = inventory.insertItem(preferredSlot, stack, false);
         }
         // then into the inventory in general
-        if (!remainder.isEmpty())
-        {
+        if (!remainder.isEmpty()) {
             remainder = insertItemStacked(inventory, remainder, false);
         }
 
         // play sound if something got picked up
-        if (remainder.isEmpty() || remainder.getCount() != stack.getCount())
-        {
+        if (remainder.isEmpty() || remainder.getCount() != stack.getCount()) {
             world.playSound(null, player.posX, player.posY + 0.5, player.posZ,
                     SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((world.rand.nextFloat() - world.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
         }
 
         // drop remaining itemstack into the world
-        if (!remainder.isEmpty() && !world.isRemote)
-        {
+        if (!remainder.isEmpty() && !world.isRemote) {
             EntityItem entityitem = new EntityItem(world, player.posX, player.posY + 0.5, player.posZ, remainder);
             entityitem.setPickupDelay(40);
             entityitem.motionX = 0;
@@ -202,32 +183,27 @@ public class ItemHandlerHelper
     /**
      * This method uses the standard vanilla algorithm to calculate a comparator output for how "full" the inventory is.
      * This method is an adaptation of Container#calcRedstoneFromInventory(IInventory).
+     *
      * @param inv The inventory handler to test.
      * @return A redstone value in the range [0,15] representing how "full" this inventory is.
      */
-    public static int calcRedstoneFromInventory(@Nullable IItemHandler inv)
-    {
-        if (inv == null)
-        {
+    public static int calcRedstoneFromInventory(@Nullable IItemHandler inv) {
+        if (inv == null) {
             return 0;
-        }
-        else
-        {
+        } else {
             int itemsFound = 0;
             float proportion = 0.0F;
 
-            for (int j = 0; j < inv.getSlots(); ++j)
-            {
+            for (int j = 0; j < inv.getSlots(); ++j) {
                 ItemStack itemstack = inv.getStackInSlot(j);
 
-                if (!itemstack.isEmpty())
-                {
-                    proportion += (float)itemstack.getCount() / (float)Math.min(inv.getSlotLimit(j), itemstack.getMaxStackSize());
+                if (!itemstack.isEmpty()) {
+                    proportion += (float) itemstack.getCount() / (float) Math.min(inv.getSlotLimit(j), itemstack.getMaxStackSize());
                     ++itemsFound;
                 }
             }
 
-            proportion = proportion / (float)inv.getSlots();
+            proportion = proportion / (float) inv.getSlots();
             return MathHelper.floor(proportion * 14.0F) + (itemsFound > 0 ? 1 : 0);
         }
     }

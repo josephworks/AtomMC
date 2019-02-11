@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
@@ -15,57 +16,46 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockMobSpawner extends BlockContainer
-{
-    protected BlockMobSpawner()
-    {
+public class BlockMobSpawner extends BlockContainer {
+    protected BlockMobSpawner() {
         super(Material.ROCK);
     }
 
-    public TileEntity createNewTileEntity(World worldIn, int meta)
-    {
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntityMobSpawner();
     }
 
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Items.AIR;
     }
 
-    public int quantityDropped(Random random)
-    {
+    public int quantityDropped(Random random) {
         return 0;
     }
 
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
-    {
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
         super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
     }
 
     @Override
-    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
-    {
+    public int getExpDrop(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune) {
         return 15 + RANDOM.nextInt(15) + RANDOM.nextInt(15);
     }
 
-    public boolean isOpaqueCube(IBlockState state)
-    {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
-    public EnumBlockRenderType getRenderType(IBlockState state)
-    {
+    public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.MODEL;
     }
 
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         return ItemStack.EMPTY;
     }
 
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
+    public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 }

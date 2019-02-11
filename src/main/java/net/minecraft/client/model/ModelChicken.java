@@ -7,8 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelChicken extends ModelBase
-{
+public class ModelChicken extends ModelBase {
     public ModelRenderer head;
     public ModelRenderer body;
     public ModelRenderer rightLeg;
@@ -18,8 +17,7 @@ public class ModelChicken extends ModelBase
     public ModelRenderer bill;
     public ModelRenderer chin;
 
-    public ModelChicken()
-    {
+    public ModelChicken() {
         int i = 16;
         this.head = new ModelRenderer(this, 0, 0);
         this.head.addBox(-2.0F, -6.0F, -2.0F, 4, 6, 3, 0.0F);
@@ -47,12 +45,10 @@ public class ModelChicken extends ModelBase
         this.leftWing.setRotationPoint(4.0F, 13.0F, 0.0F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 
-        if (this.isChild)
-        {
+        if (this.isChild) {
             float f = 2.0F;
             GlStateManager.pushMatrix();
             GlStateManager.translate(0.0F, 5.0F * scale, 2.0F * scale);
@@ -69,9 +65,7 @@ public class ModelChicken extends ModelBase
             this.rightWing.render(scale);
             this.leftWing.render(scale);
             GlStateManager.popMatrix();
-        }
-        else
-        {
+        } else {
             this.head.render(scale);
             this.bill.render(scale);
             this.chin.render(scale);
@@ -83,17 +77,16 @@ public class ModelChicken extends ModelBase
         }
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.head.rotateAngleX = headPitch * 0.017453292F;
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.bill.rotateAngleX = this.head.rotateAngleX;
         this.bill.rotateAngleY = this.head.rotateAngleY;
         this.chin.rotateAngleX = this.head.rotateAngleX;
         this.chin.rotateAngleY = this.head.rotateAngleY;
-        this.body.rotateAngleX = ((float)Math.PI / 2F);
+        this.body.rotateAngleX = ((float) Math.PI / 2F);
         this.rightLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        this.leftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.leftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
         this.rightWing.rotateAngleZ = ageInTicks;
         this.leftWing.rotateAngleZ = -ageInTicks;
     }

@@ -2,10 +2,8 @@ package net.minecraft.world.biome;
 
 import net.minecraft.init.Blocks;
 
-public class BiomeBeach extends Biome
-{
-    public BiomeBeach(BiomeProperties properties)
-    {
+public class BiomeBeach extends Biome {
+    public BiomeBeach(BiomeProperties properties) {
         super(properties);
         this.spawnableCreatureList.clear();
         this.topBlock = Blocks.SAND.getDefaultState();

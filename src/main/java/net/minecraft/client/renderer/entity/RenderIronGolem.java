@@ -9,27 +9,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderIronGolem extends RenderLiving<EntityIronGolem>
-{
+public class RenderIronGolem extends RenderLiving<EntityIronGolem> {
     private static final ResourceLocation IRON_GOLEM_TEXTURES = new ResourceLocation("textures/entity/iron_golem.png");
 
-    public RenderIronGolem(RenderManager renderManagerIn)
-    {
+    public RenderIronGolem(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelIronGolem(), 0.5F);
         this.addLayer(new LayerIronGolemFlower(this));
     }
 
-    protected ResourceLocation getEntityTexture(EntityIronGolem entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityIronGolem entity) {
         return IRON_GOLEM_TEXTURES;
     }
 
-    protected void applyRotations(EntityIronGolem entityLiving, float p_77043_2_, float rotationYaw, float partialTicks)
-    {
+    protected void applyRotations(EntityIronGolem entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
         super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
 
-        if ((double)entityLiving.limbSwingAmount >= 0.01D)
-        {
+        if ((double) entityLiving.limbSwingAmount >= 0.01D) {
             float f = 13.0F;
             float f1 = entityLiving.limbSwing - entityLiving.limbSwingAmount * (1.0F - partialTicks) + 6.0F;
             float f2 = (Math.abs(f1 % 13.0F - 6.5F) - 3.25F) / 3.25F;

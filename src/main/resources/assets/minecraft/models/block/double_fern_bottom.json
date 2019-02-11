@@ -1,6 +1,6 @@
 {
-    "parent": "block/tinted_cross",
-    "textures": {
-        "cross": "blocks/double_plant_fern_bottom"
-    }
+  "parent": "block/tinted_cross",
+  "textures": {
+    "cross": "blocks/double_plant_fern_bottom"
+  }
 }

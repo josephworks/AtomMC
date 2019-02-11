@@ -3,13 +3,13 @@ package net.minecraft.world.storage;
 import java.io.File;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.AnvilConverterException;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public interface ISaveFormat
-{
+public interface ISaveFormat {
     @SideOnly(Side.CLIENT)
     String getName();
 

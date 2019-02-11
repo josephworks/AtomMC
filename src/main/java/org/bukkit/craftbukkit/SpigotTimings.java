@@ -50,6 +50,7 @@ public class SpigotTimings {
 
     /**
      * Gets a timer associated with a plugins tasks.
+     *
      * @param task
      * @param period
      * @return
@@ -72,7 +73,7 @@ public class SpigotTimings {
 
         String name = "Task: " + plugin + " Runnable: " + taskname;
         if (period > 0) {
-            name += "(interval:" + period +")";
+            name += "(interval:" + period + ")";
         } else {
             name += "(Single)";
         }
@@ -86,6 +87,7 @@ public class SpigotTimings {
 
     /**
      * Get a named timer for the specified entity type to track type specific timings.
+     *
      * @param entity
      * @return
      */
@@ -101,6 +103,7 @@ public class SpigotTimings {
 
     /**
      * Get a named timer for the specified tile entity type to track type specific timings.
+     *
      * @param entity
      * @return
      */
@@ -143,7 +146,7 @@ public class SpigotTimings {
         public final CustomTimingsHandler syncChunkLoadPostTimer;
 
         public WorldTimingsHandler(World server) {
-            String name = server.getWorldInfo().getWorldName() +" - ";
+            String name = server.getWorldInfo().getWorldName() + " - ";
 
             mobSpawn = new CustomTimingsHandler("** " + name + "mobSpawn");
             doChunkUnload = new CustomTimingsHandler("** " + name + "doChunkUnload");

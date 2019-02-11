@@ -6,8 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelVillager extends ModelBase
-{
+public class ModelVillager extends ModelBase {
     public ModelRenderer villagerHead;
     public ModelRenderer villagerBody;
     public ModelRenderer villagerArms;
@@ -15,13 +14,11 @@ public class ModelVillager extends ModelBase
     public ModelRenderer leftVillagerLeg;
     public ModelRenderer villagerNose;
 
-    public ModelVillager(float scale)
-    {
+    public ModelVillager(float scale) {
         this(scale, 0.0F, 64, 64);
     }
 
-    public ModelVillager(float scale, float p_i1164_2_, int width, int height)
-    {
+    public ModelVillager(float scale, float p_i1164_2_, int width, int height) {
         this.villagerHead = (new ModelRenderer(this)).setTextureSize(width, height);
         this.villagerHead.setRotationPoint(0.0F, 0.0F + p_i1164_2_, 0.0F);
         this.villagerHead.setTextureOffset(0, 0).addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, scale);
@@ -47,8 +44,7 @@ public class ModelVillager extends ModelBase
         this.leftVillagerLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, scale);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.villagerHead.render(scale);
         this.villagerBody.render(scale);
@@ -57,15 +53,14 @@ public class ModelVillager extends ModelBase
         this.villagerArms.render(scale);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.villagerHead.rotateAngleY = netHeadYaw * 0.017453292F;
         this.villagerHead.rotateAngleX = headPitch * 0.017453292F;
         this.villagerArms.rotationPointY = 3.0F;
         this.villagerArms.rotationPointZ = -1.0F;
         this.villagerArms.rotateAngleX = -0.75F;
         this.rightVillagerLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount * 0.5F;
-        this.leftVillagerLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount * 0.5F;
+        this.leftVillagerLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount * 0.5F;
         this.rightVillagerLeg.rotateAngleY = 0.0F;
         this.leftVillagerLeg.rotateAngleY = 0.0F;
     }

@@ -7,44 +7,38 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+
 import java.lang.reflect.Type;
 import java.util.List;
+
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.Validate;
 
 @SideOnly(Side.CLIENT)
-public class SoundListSerializer implements JsonDeserializer<SoundList>
-{
-    public SoundList deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException
-    {
+public class SoundListSerializer implements JsonDeserializer<SoundList> {
+    public SoundList deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
         JsonObject jsonobject = JsonUtils.getJsonObject(p_deserialize_1_, "entry");
         boolean flag = JsonUtils.getBoolean(jsonobject, "replace", false);
-        String s = JsonUtils.getString(jsonobject, "subtitle", (String)null);
+        String s = JsonUtils.getString(jsonobject, "subtitle", (String) null);
         List<Sound> list = this.deserializeSounds(jsonobject);
         return new SoundList(list, flag, s);
     }
 
-    private List<Sound> deserializeSounds(JsonObject object)
-    {
+    private List<Sound> deserializeSounds(JsonObject object) {
         List<Sound> list = Lists.<Sound>newArrayList();
 
-        if (object.has("sounds"))
-        {
+        if (object.has("sounds")) {
             JsonArray jsonarray = JsonUtils.getJsonArray(object, "sounds");
 
-            for (int i = 0; i < jsonarray.size(); ++i)
-            {
+            for (int i = 0; i < jsonarray.size(); ++i) {
                 JsonElement jsonelement = jsonarray.get(i);
 
-                if (JsonUtils.isString(jsonelement))
-                {
+                if (JsonUtils.isString(jsonelement)) {
                     String s = JsonUtils.getString(jsonelement, "sound");
                     list.add(new Sound(s, 1.0F, 1.0F, 1, Sound.Type.FILE, false));
-                }
-                else
-                {
+                } else {
                     list.add(this.deserializeSound(JsonUtils.getJsonObject(jsonelement, "sound")));
                 }
             }
@@ -53,8 +47,7 @@ public class SoundListSerializer implements JsonDeserializer<SoundList>
         return list;
     }
 
-    private Sound deserializeSound(JsonObject object)
-    {
+    private Sound deserializeSound(JsonObject object) {
         String s = JsonUtils.getString(object, "name");
         Sound.Type sound$type = this.deserializeType(object, Sound.Type.FILE);
         float f = JsonUtils.getFloat(object, "volume", 1.0F);
@@ -67,12 +60,10 @@ public class SoundListSerializer implements JsonDeserializer<SoundList>
         return new Sound(s, f, f1, i, sound$type, flag);
     }
 
-    private Sound.Type deserializeType(JsonObject object, Sound.Type defaultValue)
-    {
+    private Sound.Type deserializeType(JsonObject object, Sound.Type defaultValue) {
         Sound.Type sound$type = defaultValue;
 
-        if (object.has("type"))
-        {
+        if (object.has("type")) {
             sound$type = Sound.Type.getByName(JsonUtils.getString(object, "type"));
             Validate.notNull(sound$type, "Invalid type");
         }

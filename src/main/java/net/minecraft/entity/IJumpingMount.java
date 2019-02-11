@@ -3,8 +3,7 @@ package net.minecraft.entity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public interface IJumpingMount
-{
+public interface IJumpingMount {
     @SideOnly(Side.CLIENT)
     void setJumpPower(int jumpPowerIn);
 

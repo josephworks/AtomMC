@@ -1,15 +1,16 @@
 package net.minecraft.client.util;
 
 import com.google.gson.JsonObject;
+
 import java.util.Locale;
+
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class JsonBlendingMode
-{
+public class JsonBlendingMode {
     private static JsonBlendingMode lastApplied;
     private final int srcColorFactor;
     private final int srcAlphaFactor;
@@ -19,8 +20,7 @@ public class JsonBlendingMode
     private final boolean separateBlend;
     private final boolean opaque;
 
-    private JsonBlendingMode(boolean separateBlendIn, boolean opaqueIn, int srcColorFactorIn, int destColorFactorIn, int srcAlphaFactorIn, int destAlphaFactorIn, int blendFunctionIn)
-    {
+    private JsonBlendingMode(boolean separateBlendIn, boolean opaqueIn, int srcColorFactorIn, int destColorFactorIn, int srcAlphaFactorIn, int destAlphaFactorIn, int blendFunctionIn) {
         this.separateBlend = separateBlendIn;
         this.srcColorFactor = srcColorFactorIn;
         this.destColorFactor = destColorFactorIn;
@@ -30,31 +30,24 @@ public class JsonBlendingMode
         this.blendFunction = blendFunctionIn;
     }
 
-    public JsonBlendingMode()
-    {
+    public JsonBlendingMode() {
         this(false, true, 1, 0, 1, 0, 32774);
     }
 
-    public JsonBlendingMode(int srcFactor, int dstFactor, int blendFunctionIn)
-    {
+    public JsonBlendingMode(int srcFactor, int dstFactor, int blendFunctionIn) {
         this(false, false, srcFactor, dstFactor, srcFactor, dstFactor, blendFunctionIn);
     }
 
-    public JsonBlendingMode(int srcColorFactorIn, int destColorFactorIn, int srcAlphaFactorIn, int destAlphaFactorIn, int blendFunctionIn)
-    {
+    public JsonBlendingMode(int srcColorFactorIn, int destColorFactorIn, int srcAlphaFactorIn, int destAlphaFactorIn, int blendFunctionIn) {
         this(true, false, srcColorFactorIn, destColorFactorIn, srcAlphaFactorIn, destAlphaFactorIn, blendFunctionIn);
     }
 
-    public void apply()
-    {
-        if (!this.equals(lastApplied))
-        {
-            if (lastApplied == null || this.opaque != lastApplied.isOpaque())
-            {
+    public void apply() {
+        if (!this.equals(lastApplied)) {
+            if (lastApplied == null || this.opaque != lastApplied.isOpaque()) {
                 lastApplied = this;
 
-                if (this.opaque)
-                {
+                if (this.opaque) {
                     GlStateManager.disableBlend();
                     return;
                 }
@@ -64,64 +57,41 @@ public class JsonBlendingMode
 
             GlStateManager.glBlendEquation(this.blendFunction);
 
-            if (this.separateBlend)
-            {
+            if (this.separateBlend) {
                 GlStateManager.tryBlendFuncSeparate(this.srcColorFactor, this.destColorFactor, this.srcAlphaFactor, this.destAlphaFactor);
-            }
-            else
-            {
+            } else {
                 GlStateManager.blendFunc(this.srcColorFactor, this.destColorFactor);
             }
         }
     }
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
+    public boolean equals(Object p_equals_1_) {
+        if (this == p_equals_1_) {
             return true;
-        }
-        else if (!(p_equals_1_ instanceof JsonBlendingMode))
-        {
+        } else if (!(p_equals_1_ instanceof JsonBlendingMode)) {
             return false;
-        }
-        else
-        {
-            JsonBlendingMode jsonblendingmode = (JsonBlendingMode)p_equals_1_;
+        } else {
+            JsonBlendingMode jsonblendingmode = (JsonBlendingMode) p_equals_1_;
 
-            if (this.blendFunction != jsonblendingmode.blendFunction)
-            {
+            if (this.blendFunction != jsonblendingmode.blendFunction) {
                 return false;
-            }
-            else if (this.destAlphaFactor != jsonblendingmode.destAlphaFactor)
-            {
+            } else if (this.destAlphaFactor != jsonblendingmode.destAlphaFactor) {
                 return false;
-            }
-            else if (this.destColorFactor != jsonblendingmode.destColorFactor)
-            {
+            } else if (this.destColorFactor != jsonblendingmode.destColorFactor) {
                 return false;
-            }
-            else if (this.opaque != jsonblendingmode.opaque)
-            {
+            } else if (this.opaque != jsonblendingmode.opaque) {
                 return false;
-            }
-            else if (this.separateBlend != jsonblendingmode.separateBlend)
-            {
+            } else if (this.separateBlend != jsonblendingmode.separateBlend) {
                 return false;
-            }
-            else if (this.srcAlphaFactor != jsonblendingmode.srcAlphaFactor)
-            {
+            } else if (this.srcAlphaFactor != jsonblendingmode.srcAlphaFactor) {
                 return false;
-            }
-            else
-            {
+            } else {
                 return this.srcColorFactor == jsonblendingmode.srcColorFactor;
             }
         }
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int i = this.srcColorFactor;
         i = 31 * i + this.srcAlphaFactor;
         i = 31 * i + this.destColorFactor;
@@ -132,19 +102,14 @@ public class JsonBlendingMode
         return i;
     }
 
-    public boolean isOpaque()
-    {
+    public boolean isOpaque() {
         return this.opaque;
     }
 
-    public static JsonBlendingMode parseBlendNode(JsonObject json)
-    {
-        if (json == null)
-        {
+    public static JsonBlendingMode parseBlendNode(JsonObject json) {
+        if (json == null) {
             return new JsonBlendingMode();
-        }
-        else
-        {
+        } else {
             int i = 32774;
             int j = 1;
             int k = 0;
@@ -153,147 +118,102 @@ public class JsonBlendingMode
             boolean flag = true;
             boolean flag1 = false;
 
-            if (JsonUtils.isString(json, "func"))
-            {
+            if (JsonUtils.isString(json, "func")) {
                 i = stringToBlendFunction(json.get("func").getAsString());
 
-                if (i != 32774)
-                {
+                if (i != 32774) {
                     flag = false;
                 }
             }
 
-            if (JsonUtils.isString(json, "srcrgb"))
-            {
+            if (JsonUtils.isString(json, "srcrgb")) {
                 j = stringToBlendFactor(json.get("srcrgb").getAsString());
 
-                if (j != 1)
-                {
+                if (j != 1) {
                     flag = false;
                 }
             }
 
-            if (JsonUtils.isString(json, "dstrgb"))
-            {
+            if (JsonUtils.isString(json, "dstrgb")) {
                 k = stringToBlendFactor(json.get("dstrgb").getAsString());
 
-                if (k != 0)
-                {
+                if (k != 0) {
                     flag = false;
                 }
             }
 
-            if (JsonUtils.isString(json, "srcalpha"))
-            {
+            if (JsonUtils.isString(json, "srcalpha")) {
                 l = stringToBlendFactor(json.get("srcalpha").getAsString());
 
-                if (l != 1)
-                {
+                if (l != 1) {
                     flag = false;
                 }
 
                 flag1 = true;
             }
 
-            if (JsonUtils.isString(json, "dstalpha"))
-            {
+            if (JsonUtils.isString(json, "dstalpha")) {
                 i1 = stringToBlendFactor(json.get("dstalpha").getAsString());
 
-                if (i1 != 0)
-                {
+                if (i1 != 0) {
                     flag = false;
                 }
 
                 flag1 = true;
             }
 
-            if (flag)
-            {
+            if (flag) {
                 return new JsonBlendingMode();
-            }
-            else
-            {
+            } else {
                 return flag1 ? new JsonBlendingMode(j, k, l, i1, i) : new JsonBlendingMode(j, k, i);
             }
         }
     }
 
-    private static int stringToBlendFunction(String funcName)
-    {
+    private static int stringToBlendFunction(String funcName) {
         String s = funcName.trim().toLowerCase(Locale.ROOT);
 
-        if ("add".equals(s))
-        {
+        if ("add".equals(s)) {
             return 32774;
-        }
-        else if ("subtract".equals(s))
-        {
+        } else if ("subtract".equals(s)) {
             return 32778;
-        }
-        else if ("reversesubtract".equals(s))
-        {
+        } else if ("reversesubtract".equals(s)) {
             return 32779;
-        }
-        else if ("reverse_subtract".equals(s))
-        {
+        } else if ("reverse_subtract".equals(s)) {
             return 32779;
-        }
-        else if ("min".equals(s))
-        {
+        } else if ("min".equals(s)) {
             return 32775;
-        }
-        else
-        {
+        } else {
             return "max".equals(s) ? 32776 : 32774;
         }
     }
 
-    private static int stringToBlendFactor(String factorName)
-    {
+    private static int stringToBlendFactor(String factorName) {
         String s = factorName.trim().toLowerCase(Locale.ROOT);
         s = s.replaceAll("_", "");
         s = s.replaceAll("one", "1");
         s = s.replaceAll("zero", "0");
         s = s.replaceAll("minus", "-");
 
-        if ("0".equals(s))
-        {
+        if ("0".equals(s)) {
             return 0;
-        }
-        else if ("1".equals(s))
-        {
+        } else if ("1".equals(s)) {
             return 1;
-        }
-        else if ("srccolor".equals(s))
-        {
+        } else if ("srccolor".equals(s)) {
             return 768;
-        }
-        else if ("1-srccolor".equals(s))
-        {
+        } else if ("1-srccolor".equals(s)) {
             return 769;
-        }
-        else if ("dstcolor".equals(s))
-        {
+        } else if ("dstcolor".equals(s)) {
             return 774;
-        }
-        else if ("1-dstcolor".equals(s))
-        {
+        } else if ("1-dstcolor".equals(s)) {
             return 775;
-        }
-        else if ("srcalpha".equals(s))
-        {
+        } else if ("srcalpha".equals(s)) {
             return 770;
-        }
-        else if ("1-srcalpha".equals(s))
-        {
+        } else if ("1-srcalpha".equals(s)) {
             return 771;
-        }
-        else if ("dstalpha".equals(s))
-        {
+        } else if ("dstalpha".equals(s)) {
             return 772;
-        }
-        else
-        {
+        } else {
             return "1-dstalpha".equals(s) ? 773 : -1;
         }
     }

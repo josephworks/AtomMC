@@ -3,23 +3,18 @@ package net.minecraft.util.datafix.fixes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
-public class ItemIntIDToString implements IFixableData
-{
+public class ItemIntIDToString implements IFixableData {
     private static final String[] ID_MAP = new String[2268];
 
-    public int getFixVersion()
-    {
+    public int getFixVersion() {
         return 102;
     }
 
-    public NBTTagCompound fixTagCompound(NBTTagCompound compound)
-    {
-        if (compound.hasKey("id", 99))
-        {
+    public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
+        if (compound.hasKey("id", 99)) {
             short short1 = compound.getShort("id");
 
-            if (short1 > 0 && short1 < ID_MAP.length && ID_MAP[short1] != null)
-            {
+            if (short1 > 0 && short1 < ID_MAP.length && ID_MAP[short1] != null) {
                 compound.setString("id", ID_MAP[short1]);
             }
         }
@@ -27,8 +22,7 @@ public class ItemIntIDToString implements IFixableData
         return compound;
     }
 
-    static
-    {
+    static {
         ID_MAP[1] = "minecraft:stone";
         ID_MAP[2] = "minecraft:grass";
         ID_MAP[3] = "minecraft:dirt";

@@ -1,8 +1,10 @@
 package net.minecraft.util.datafix.walkers;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
 import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.FixTypes;
@@ -11,51 +13,40 @@ import net.minecraft.util.datafix.IDataWalker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BlockEntityTag implements IDataWalker
-{
+public class BlockEntityTag implements IDataWalker {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<String, String> NEW_TO_OLD_ID_MAP = Maps.<String, String>newHashMap();
     private static final Map<String, String> ITEM_ID_TO_BLOCK_ENTITY_ID = Maps.<String, String>newHashMap();
 
     @Nullable
-    private static String getBlockEntityID(int blockID, String p_188267_1_)
-    {
-        return blockID < 515 ? (String)NEW_TO_OLD_ID_MAP.get((new ResourceLocation(p_188267_1_)).toString()) : (String)ITEM_ID_TO_BLOCK_ENTITY_ID.get((new ResourceLocation(p_188267_1_)).toString());
+    private static String getBlockEntityID(int blockID, String p_188267_1_) {
+        return blockID < 515 ? (String) NEW_TO_OLD_ID_MAP.get((new ResourceLocation(p_188267_1_)).toString()) : (String) ITEM_ID_TO_BLOCK_ENTITY_ID.get((new ResourceLocation(p_188267_1_)).toString());
     }
 
-    public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-    {
-        if (!compound.hasKey("tag", 10))
-        {
+    public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn) {
+        if (!compound.hasKey("tag", 10)) {
             return compound;
-        }
-        else
-        {
+        } else {
             NBTTagCompound nbttagcompound = compound.getCompoundTag("tag");
 
-            if (nbttagcompound.hasKey("BlockEntityTag", 10))
-            {
+            if (nbttagcompound.hasKey("BlockEntityTag", 10)) {
                 NBTTagCompound nbttagcompound1 = nbttagcompound.getCompoundTag("BlockEntityTag");
                 String s = compound.getString("id");
                 String s1 = getBlockEntityID(versionIn, s);
                 boolean flag;
 
-                if (s1 == null)
-                {
+                if (s1 == null) {
                     // CraftBukkit - Remove unnecessary warning (occurs when deserializing a Shulker Box item)
                     // LOGGER.warn("Unable to resolve BlockEntity for ItemInstance: {}", (Object)s);
                     flag = false;
-                }
-                else
-                {
+                } else {
                     flag = !nbttagcompound1.hasKey("id");
                     nbttagcompound1.setString("id", s1);
                 }
 
                 fixer.process(FixTypes.BLOCK_ENTITY, nbttagcompound1, versionIn);
 
-                if (flag)
-                {
+                if (flag) {
                     nbttagcompound1.removeTag("id");
                 }
             }
@@ -64,8 +55,7 @@ public class BlockEntityTag implements IDataWalker
         }
     }
 
-    static
-    {
+    static {
         Map<String, String> map = NEW_TO_OLD_ID_MAP;
         map.put("minecraft:furnace", "Furnace");
         map.put("minecraft:lit_furnace", "Furnace");

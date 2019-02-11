@@ -49,7 +49,7 @@ public class CraftInventoryCrafting extends CraftInventory implements CraftingIn
         List<net.minecraft.item.ItemStack> mcResultItems = getResultInventory().getContents();
 
         int i = 0;
-        for (i = 0; i < mcResultItems.size(); i++ ) {
+        for (i = 0; i < mcResultItems.size(); i++) {
             items[i] = CraftItemStack.asCraftMirror(mcResultItems.get(i));
         }
 
@@ -120,7 +120,7 @@ public class CraftInventoryCrafting extends CraftInventory implements CraftingIn
 
     @Nullable
     public Recipe getRecipe() {
-        IRecipe recipe = ((InventoryCrafting)getInventory()).currentRecipe;
+        IRecipe recipe = ((InventoryCrafting) getInventory()).currentRecipe;
         if (recipe != null) {
             if (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) {
                 return recipe.toBukkitRecipe();

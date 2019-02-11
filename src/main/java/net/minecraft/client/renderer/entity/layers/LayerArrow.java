@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.entity.layers;
 
 import java.util.Random;
+
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,27 +15,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerArrow implements LayerRenderer<EntityLivingBase>
-{
+public class LayerArrow implements LayerRenderer<EntityLivingBase> {
     private final RenderLivingBase<?> renderer;
 
-    public LayerArrow(RenderLivingBase<?> rendererIn)
-    {
+    public LayerArrow(RenderLivingBase<?> rendererIn) {
         this.renderer = rendererIn;
     }
 
-    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         int i = entitylivingbaseIn.getArrowCountInEntity();
 
-        if (i > 0)
-        {
+        if (i > 0) {
             Entity entity = new EntityTippedArrow(entitylivingbaseIn.world, entitylivingbaseIn.posX, entitylivingbaseIn.posY, entitylivingbaseIn.posZ);
-            Random random = new Random((long)entitylivingbaseIn.getEntityId());
+            Random random = new Random((long) entitylivingbaseIn.getEntityId());
             RenderHelper.disableStandardItemLighting();
 
-            for (int j = 0; j < i; ++j)
-            {
+            for (int j = 0; j < i; ++j) {
                 GlStateManager.pushMatrix();
                 ModelRenderer modelrenderer = this.renderer.getMainModel().getRandomModelBox(random);
                 ModelBox modelbox = modelrenderer.cubeList.get(random.nextInt(modelrenderer.cubeList.size()));
@@ -53,8 +49,8 @@ public class LayerArrow implements LayerRenderer<EntityLivingBase>
                 f1 = f1 * -1.0F;
                 f2 = f2 * -1.0F;
                 float f6 = MathHelper.sqrt(f * f + f2 * f2);
-                entity.rotationYaw = (float)(Math.atan2((double)f, (double)f2) * (180D / Math.PI));
-                entity.rotationPitch = (float)(Math.atan2((double)f1, (double)f6) * (180D / Math.PI));
+                entity.rotationYaw = (float) (Math.atan2((double) f, (double) f2) * (180D / Math.PI));
+                entity.rotationPitch = (float) (Math.atan2((double) f1, (double) f6) * (180D / Math.PI));
                 entity.prevRotationYaw = entity.rotationYaw;
                 entity.prevRotationPitch = entity.rotationPitch;
                 double d0 = 0.0D;
@@ -68,8 +64,7 @@ public class LayerArrow implements LayerRenderer<EntityLivingBase>
         }
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return false;
     }
 }

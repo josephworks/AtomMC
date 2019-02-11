@@ -3,35 +3,26 @@ package net.minecraft.entity.ai;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 
-public class EntityAIOwnerHurtByTarget extends EntityAITarget
-{
+public class EntityAIOwnerHurtByTarget extends EntityAITarget {
     EntityTameable tameable;
     EntityLivingBase attacker;
     private int timestamp;
 
-    public EntityAIOwnerHurtByTarget(EntityTameable theDefendingTameableIn)
-    {
+    public EntityAIOwnerHurtByTarget(EntityTameable theDefendingTameableIn) {
         super(theDefendingTameableIn, false);
         this.tameable = theDefendingTameableIn;
         this.setMutexBits(1);
     }
 
-    public boolean shouldExecute()
-    {
-        if (!this.tameable.isTamed())
-        {
+    public boolean shouldExecute() {
+        if (!this.tameable.isTamed()) {
             return false;
-        }
-        else
-        {
+        } else {
             EntityLivingBase entitylivingbase = this.tameable.getOwner();
 
-            if (entitylivingbase == null)
-            {
+            if (entitylivingbase == null) {
                 return false;
-            }
-            else
-            {
+            } else {
                 this.attacker = entitylivingbase.getRevengeTarget();
                 int i = entitylivingbase.getRevengeTimer();
                 return i != this.timestamp && this.isSuitableTarget(this.attacker, false) && this.tameable.shouldAttackEntity(this.attacker, entitylivingbase);
@@ -39,13 +30,11 @@ public class EntityAIOwnerHurtByTarget extends EntityAITarget
         }
     }
 
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.taskOwner.setAttackTarget(this.attacker, org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_OWNER, true);
         EntityLivingBase entitylivingbase = this.tameable.getOwner();
 
-        if (entitylivingbase != null)
-        {
+        if (entitylivingbase != null) {
             this.timestamp = entitylivingbase.getRevengeTimer();
         }
 

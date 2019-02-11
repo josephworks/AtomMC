@@ -29,36 +29,31 @@ import net.minecraftforge.fluids.FluidTank;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileFluidHandler extends TileEntity
-{
+public class TileFluidHandler extends TileEntity {
     protected FluidTank tank = new FluidTank(Fluid.BUCKET_VOLUME);
 
     @Override
-    public void readFromNBT(NBTTagCompound tag)
-    {
+    public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         tank.readFromNBT(tag);
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         tag = super.writeToNBT(tag);
         tank.writeToNBT(tag);
         return tag;
     }
 
     @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
-    {
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
-    {
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
             return (T) tank;
         return super.getCapability(capability, facing);

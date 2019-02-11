@@ -55,10 +55,9 @@ import java.util.List;
  * <p><b>Example usage:</b> {@code %highlightError{%level: %message}}</p>
  */
 @Plugin(name = "highlightError", category = PatternConverter.CATEGORY)
-@ConverterKeys({ "highlightError" })
+@ConverterKeys({"highlightError"})
 @PerformanceSensitive("allocation")
-public class HighlightErrorConverter extends LogEventPatternConverter
-{
+public class HighlightErrorConverter extends LogEventPatternConverter {
     private static final String ANSI_RESET = "\u001B[39;0m";
     private static final String ANSI_ERROR = "\u001B[31;1m";
     private static final String ANSI_WARN = "\u001B[33;1m";
@@ -70,68 +69,53 @@ public class HighlightErrorConverter extends LogEventPatternConverter
      *
      * @param formatters The pattern formatters to generate the text to highlight
      */
-    protected HighlightErrorConverter(List<PatternFormatter> formatters)
-    {
+    protected HighlightErrorConverter(List<PatternFormatter> formatters) {
         super("highlightError", null);
         this.formatters = formatters;
     }
 
     @Override
-    public void format(LogEvent event, StringBuilder toAppendTo)
-    {
-        if (TerminalConsoleAppender.isAnsiSupported())
-        {
+    public void format(LogEvent event, StringBuilder toAppendTo) {
+        if (TerminalConsoleAppender.isAnsiSupported()) {
             Level level = event.getLevel();
-            if (level.isMoreSpecificThan(Level.ERROR))
-            {
+            if (level.isMoreSpecificThan(Level.ERROR)) {
                 format(ANSI_ERROR, event, toAppendTo);
                 return;
-            }
-            else if (level.isMoreSpecificThan(Level.WARN))
-            {
+            } else if (level.isMoreSpecificThan(Level.WARN)) {
                 format(ANSI_WARN, event, toAppendTo);
                 return;
             }
         }
 
         //noinspection ForLoopReplaceableByForEach
-        for (int i = 0, size = formatters.size(); i < size; i++)
-        {
+        for (int i = 0, size = formatters.size(); i < size; i++) {
             formatters.get(i).format(event, toAppendTo);
         }
     }
 
-    private void format(String style, LogEvent event, StringBuilder toAppendTo)
-    {
+    private void format(String style, LogEvent event, StringBuilder toAppendTo) {
         int start = toAppendTo.length();
         toAppendTo.append(style);
         int end = toAppendTo.length();
 
         //noinspection ForLoopReplaceableByForEach
-        for (int i = 0, size = formatters.size(); i < size; i++)
-        {
+        for (int i = 0, size = formatters.size(); i < size; i++) {
             formatters.get(i).format(event, toAppendTo);
         }
 
-        if (toAppendTo.length() == end)
-        {
+        if (toAppendTo.length() == end) {
             // No content so we don't need to append the ANSI escape code
             toAppendTo.setLength(start);
-        }
-        else
-        {
+        } else {
             // Append reset code after the line
             toAppendTo.append(ANSI_RESET);
         }
     }
 
     @Override
-    public boolean handlesThrowable()
-    {
-        for (final PatternFormatter formatter : formatters)
-        {
-            if (formatter.handlesThrowable())
-            {
+    public boolean handlesThrowable() {
+        for (final PatternFormatter formatter : formatters) {
+            if (formatter.handlesThrowable()) {
                 return true;
             }
         }
@@ -142,20 +126,17 @@ public class HighlightErrorConverter extends LogEventPatternConverter
      * Gets a new instance of the {@link HighlightErrorConverter} with the
      * specified options.
      *
-     * @param config The current configuration
+     * @param config  The current configuration
      * @param options The pattern options
      * @return The new instance
      */
     @Nullable
-    public static HighlightErrorConverter newInstance(Configuration config, String[] options)
-    {
-        if (options.length != 1)
-        {
+    public static HighlightErrorConverter newInstance(Configuration config, String[] options) {
+        if (options.length != 1) {
             LOGGER.error("Incorrect number of options on highlightError. Expected 1 received " + options.length);
             return null;
         }
-        if (options[0] == null)
-        {
+        if (options[0] == null) {
             LOGGER.error("No pattern supplied on highlightError");
             return null;
         }

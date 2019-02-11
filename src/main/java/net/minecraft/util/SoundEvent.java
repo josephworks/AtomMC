@@ -4,25 +4,21 @@ import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SoundEvent extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<SoundEvent>
-{
+public class SoundEvent extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<SoundEvent> {
     public static final RegistryNamespaced<ResourceLocation, SoundEvent> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(SoundEvent.class);
     private final ResourceLocation soundName;
     private static int soundEventId;
 
-    public SoundEvent(ResourceLocation soundNameIn)
-    {
+    public SoundEvent(ResourceLocation soundNameIn) {
         this.soundName = soundNameIn;
     }
 
     @SideOnly(Side.CLIENT)
-    public ResourceLocation getSoundName()
-    {
+    public ResourceLocation getSoundName() {
         return this.soundName;
     }
 
-    public static void registerSounds()
-    {
+    public static void registerSounds() {
         registerSound("ambient.cave");
         registerSound("block.anvil.break");
         registerSound("block.anvil.destroy");
@@ -574,8 +570,7 @@ public class SoundEvent extends net.minecraftforge.registries.IForgeRegistryEntr
         registerSound("weather.rain.above");
     }
 
-    private static void registerSound(String soundNameIn)
-    {
+    private static void registerSound(String soundNameIn) {
         ResourceLocation resourcelocation = new ResourceLocation(soundNameIn);
         REGISTRY.register(soundEventId++, resourcelocation, new SoundEvent(resourcelocation));
     }

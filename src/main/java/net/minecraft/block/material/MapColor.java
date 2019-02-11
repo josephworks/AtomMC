@@ -4,8 +4,7 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class MapColor
-{
+public class MapColor {
     public static final MapColor[] COLORS = new MapColor[64];
     public static final MapColor[] BLOCK_COLORS = new MapColor[16];
     public static final MapColor AIR = new MapColor(0, 0);
@@ -63,42 +62,33 @@ public class MapColor
     public final int colorValue;
     public final int colorIndex;
 
-    private MapColor(int index, int color)
-    {
-        if (index >= 0 && index <= 63)
-        {
+    private MapColor(int index, int color) {
+        if (index >= 0 && index <= 63) {
             this.colorIndex = index;
             this.colorValue = color;
             COLORS[index] = this;
-        }
-        else
-        {
+        } else {
             throw new IndexOutOfBoundsException("Map colour ID must be between 0 and 63 (inclusive)");
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public int getMapColor(int index)
-    {
+    public int getMapColor(int index) {
         int i = 220;
 
-        if (index == 3)
-        {
+        if (index == 3) {
             i = 135;
         }
 
-        if (index == 2)
-        {
+        if (index == 2) {
             i = 255;
         }
 
-        if (index == 1)
-        {
+        if (index == 1) {
             i = 220;
         }
 
-        if (index == 0)
-        {
+        if (index == 0) {
             i = 180;
         }
 
@@ -108,13 +98,11 @@ public class MapColor
         return -16777216 | j << 16 | k << 8 | l;
     }
 
-    public static MapColor getBlockColor(EnumDyeColor dyeColorIn)
-    {
+    public static MapColor getBlockColor(EnumDyeColor dyeColorIn) {
         return BLOCK_COLORS[dyeColorIn.getMetadata()];
     }
 
-    static
-    {
+    static {
         BLOCK_COLORS[EnumDyeColor.WHITE.getMetadata()] = SNOW;
         BLOCK_COLORS[EnumDyeColor.ORANGE.getMetadata()] = ADOBE;
         BLOCK_COLORS[EnumDyeColor.MAGENTA.getMetadata()] = MAGENTA;

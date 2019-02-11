@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.block;
 
 import java.util.Objects;
+
 import net.minecraft.tileentity.TileEntityEndGateway;
 import net.minecraft.util.math.BlockPos;
 import org.bukkit.Location;

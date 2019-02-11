@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.block.model;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
@@ -9,8 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface IBakedModel
-{
+public interface IBakedModel {
     List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand);
 
     boolean isAmbientOcclusion();
@@ -22,11 +22,16 @@ public interface IBakedModel
     TextureAtlasSprite getParticleTexture();
 
     @Deprecated
-    default ItemCameraTransforms getItemCameraTransforms() { return ItemCameraTransforms.DEFAULT; }
+    default ItemCameraTransforms getItemCameraTransforms() {
+        return ItemCameraTransforms.DEFAULT;
+    }
 
     ItemOverrideList getOverrides();
 
-    default boolean isAmbientOcclusion(IBlockState state) { return isAmbientOcclusion(); }
+    default boolean isAmbientOcclusion(IBlockState state) {
+        return isAmbientOcclusion();
+    }
+
     /*
      * Returns the pair of the model for the given perspective, and the matrix
      * that should be applied to the GL state before rendering it (matrix may be null).

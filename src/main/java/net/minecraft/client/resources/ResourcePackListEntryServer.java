@@ -1,7 +1,9 @@
 package net.minecraft.client.resources;
 
 import com.google.gson.JsonParseException;
+
 import java.io.IOException;
+
 import net.minecraft.client.gui.GuiScreenResourcePacks;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -14,95 +16,74 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
-public class ResourcePackListEntryServer extends ResourcePackListEntry
-{
+public class ResourcePackListEntryServer extends ResourcePackListEntry {
     private static final Logger LOGGER = LogManager.getLogger();
     private final IResourcePack resourcePack;
     private final ResourceLocation resourcePackIcon;
 
-    public ResourcePackListEntryServer(GuiScreenResourcePacks resourcePacksGUIIn, IResourcePack resourcePackIn)
-    {
+    public ResourcePackListEntryServer(GuiScreenResourcePacks resourcePacksGUIIn, IResourcePack resourcePackIn) {
         super(resourcePacksGUIIn);
         this.resourcePack = resourcePackIn;
         DynamicTexture dynamictexture;
 
-        try
-        {
+        try {
             dynamictexture = new DynamicTexture(resourcePackIn.getPackImage());
-        }
-        catch (IOException var5)
-        {
+        } catch (IOException var5) {
             dynamictexture = TextureUtil.MISSING_TEXTURE;
         }
 
         this.resourcePackIcon = this.mc.getTextureManager().getDynamicTextureLocation("texturepackicon", dynamictexture);
     }
 
-    protected int getResourcePackFormat()
-    {
+    protected int getResourcePackFormat() {
         return 3;
     }
 
-    protected String getResourcePackDescription()
-    {
-        try
-        {
-            PackMetadataSection packmetadatasection = (PackMetadataSection)this.resourcePack.getPackMetadata(this.mc.getResourcePackRepository().rprMetadataSerializer, "pack");
+    protected String getResourcePackDescription() {
+        try {
+            PackMetadataSection packmetadatasection = (PackMetadataSection) this.resourcePack.getPackMetadata(this.mc.getResourcePackRepository().rprMetadataSerializer, "pack");
 
-            if (packmetadatasection != null)
-            {
+            if (packmetadatasection != null) {
                 return packmetadatasection.getPackDescription().getFormattedText();
             }
-        }
-        catch (JsonParseException jsonparseexception)
-        {
-            LOGGER.error("Couldn't load metadata info", (Throwable)jsonparseexception);
-        }
-        catch (IOException ioexception)
-        {
-            LOGGER.error("Couldn't load metadata info", (Throwable)ioexception);
+        } catch (JsonParseException jsonparseexception) {
+            LOGGER.error("Couldn't load metadata info", (Throwable) jsonparseexception);
+        } catch (IOException ioexception) {
+            LOGGER.error("Couldn't load metadata info", (Throwable) ioexception);
         }
 
         return TextFormatting.RED + "Missing " + "pack.mcmeta" + " :(";
     }
 
-    protected boolean canMoveRight()
-    {
+    protected boolean canMoveRight() {
         return false;
     }
 
-    protected boolean canMoveLeft()
-    {
+    protected boolean canMoveLeft() {
         return false;
     }
 
-    protected boolean canMoveUp()
-    {
+    protected boolean canMoveUp() {
         return false;
     }
 
-    protected boolean canMoveDown()
-    {
+    protected boolean canMoveDown() {
         return false;
     }
 
-    protected String getResourcePackName()
-    {
+    protected String getResourcePackName() {
         return "Server";
     }
 
-    protected void bindResourcePackIcon()
-    {
+    protected void bindResourcePackIcon() {
         this.mc.getTextureManager().bindTexture(this.resourcePackIcon);
     }
 
-    protected boolean showHoverOverlay()
-    {
+    protected boolean showHoverOverlay() {
         return false;
     }
 
-    public boolean isServerPack()
-    {
+    public boolean isServerPack() {
         return true;
     }
 }

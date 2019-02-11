@@ -5,30 +5,28 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 
-public class EffectsChangedTrigger implements ICriterionTrigger<EffectsChangedTrigger.Instance>
-{
+public class EffectsChangedTrigger implements ICriterionTrigger<EffectsChangedTrigger.Instance> {
     private static final ResourceLocation ID = new ResourceLocation("effects_changed");
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.<PlayerAdvancements, Listeners>newHashMap();
 
-    public ResourceLocation getId()
-    {
+    public ResourceLocation getId() {
         return ID;
     }
 
-    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener)
-    {
+    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener) {
         Listeners effectschangedtrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
-        if (effectschangedtrigger$listeners == null)
-        {
+        if (effectschangedtrigger$listeners == null) {
             effectschangedtrigger$listeners = new Listeners(playerAdvancementsIn);
             this.listeners.put(playerAdvancementsIn, effectschangedtrigger$listeners);
         }
@@ -36,107 +34,86 @@ public class EffectsChangedTrigger implements ICriterionTrigger<EffectsChangedTr
         effectschangedtrigger$listeners.add(listener);
     }
 
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener)
-    {
+    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener) {
         Listeners effectschangedtrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
-        if (effectschangedtrigger$listeners != null)
-        {
+        if (effectschangedtrigger$listeners != null) {
             effectschangedtrigger$listeners.remove(listener);
 
-            if (effectschangedtrigger$listeners.isEmpty())
-            {
+            if (effectschangedtrigger$listeners.isEmpty()) {
                 this.listeners.remove(playerAdvancementsIn);
             }
         }
     }
 
-    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn)
-    {
+    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn) {
         this.listeners.remove(playerAdvancementsIn);
     }
 
-    public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context)
-    {
+    public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
         MobEffectsPredicate mobeffectspredicate = MobEffectsPredicate.deserialize(json.get("effects"));
         return new Instance(mobeffectspredicate);
     }
 
-    public void trigger(EntityPlayerMP player)
-    {
+    public void trigger(EntityPlayerMP player) {
         Listeners effectschangedtrigger$listeners = this.listeners.get(player.getAdvancements());
 
-        if (effectschangedtrigger$listeners != null)
-        {
+        if (effectschangedtrigger$listeners != null) {
             effectschangedtrigger$listeners.trigger(player);
         }
     }
 
-    public static class Instance extends AbstractCriterionInstance
-        {
-            private final MobEffectsPredicate effects;
+    public static class Instance extends AbstractCriterionInstance {
+        private final MobEffectsPredicate effects;
 
-            public Instance(MobEffectsPredicate effects)
-            {
-                super(EffectsChangedTrigger.ID);
-                this.effects = effects;
-            }
-
-            public boolean test(EntityPlayerMP player)
-            {
-                return this.effects.test(player);
-            }
+        public Instance(MobEffectsPredicate effects) {
+            super(EffectsChangedTrigger.ID);
+            this.effects = effects;
         }
 
-    static class Listeners
-        {
-            private final PlayerAdvancements playerAdvancements;
-            private final Set<ICriterionTrigger.Listener<Instance>> listeners = Sets.<ICriterionTrigger.Listener<Instance>>newHashSet();
+        public boolean test(EntityPlayerMP player) {
+            return this.effects.test(player);
+        }
+    }
 
-            public Listeners(PlayerAdvancements playerAdvancementsIn)
-            {
-                this.playerAdvancements = playerAdvancementsIn;
-            }
+    static class Listeners {
+        private final PlayerAdvancements playerAdvancements;
+        private final Set<ICriterionTrigger.Listener<Instance>> listeners = Sets.<ICriterionTrigger.Listener<Instance>>newHashSet();
 
-            public boolean isEmpty()
-            {
-                return this.listeners.isEmpty();
-            }
+        public Listeners(PlayerAdvancements playerAdvancementsIn) {
+            this.playerAdvancements = playerAdvancementsIn;
+        }
 
-            public void add(ICriterionTrigger.Listener<Instance> listener)
-            {
-                this.listeners.add(listener);
-            }
+        public boolean isEmpty() {
+            return this.listeners.isEmpty();
+        }
 
-            public void remove(ICriterionTrigger.Listener<Instance> listener)
-            {
-                this.listeners.remove(listener);
-            }
+        public void add(ICriterionTrigger.Listener<Instance> listener) {
+            this.listeners.add(listener);
+        }
 
-            public void trigger(EntityPlayerMP player)
-            {
-                List<ICriterionTrigger.Listener<Instance>> list = null;
+        public void remove(ICriterionTrigger.Listener<Instance> listener) {
+            this.listeners.remove(listener);
+        }
 
-                for (ICriterionTrigger.Listener<Instance> listener : this.listeners)
-                {
-                    if (((Instance)listener.getCriterionInstance()).test(player))
-                    {
-                        if (list == null)
-                        {
-                            list = Lists.<ICriterionTrigger.Listener<Instance>>newArrayList();
-                        }
+        public void trigger(EntityPlayerMP player) {
+            List<ICriterionTrigger.Listener<Instance>> list = null;
 
-                        list.add(listener);
+            for (ICriterionTrigger.Listener<Instance> listener : this.listeners) {
+                if (((Instance) listener.getCriterionInstance()).test(player)) {
+                    if (list == null) {
+                        list = Lists.<ICriterionTrigger.Listener<Instance>>newArrayList();
                     }
+
+                    list.add(listener);
                 }
+            }
 
-                if (list != null)
-                {
-                    for (ICriterionTrigger.Listener<Instance> listener1 : list)
-                    {
-                        listener1.grantCriterion(this.playerAdvancements);
-                    }
+            if (list != null) {
+                for (ICriterionTrigger.Listener<Instance> listener1 : list) {
+                    listener1.grantCriterion(this.playerAdvancements);
                 }
             }
         }
+    }
 }

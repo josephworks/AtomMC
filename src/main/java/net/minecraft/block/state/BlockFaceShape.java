@@ -1,7 +1,6 @@
 package net.minecraft.block.state;
 
-public enum BlockFaceShape
-{
+public enum BlockFaceShape {
     SOLID,
     BOWL,
     CENTER_SMALL,

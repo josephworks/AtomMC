@@ -45,15 +45,13 @@ import javax.annotation.Nonnull;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
 @Cancelable
-public class ArrowLooseEvent extends PlayerEvent
-{
+public class ArrowLooseEvent extends PlayerEvent {
     private final ItemStack bow;
     private final World world;
     private final boolean hasAmmo;
     private int charge;
 
-    public ArrowLooseEvent(EntityPlayer player, @Nonnull ItemStack bow, World world, int charge, boolean hasAmmo)
-    {
+    public ArrowLooseEvent(EntityPlayer player, @Nonnull ItemStack bow, World world, int charge, boolean hasAmmo) {
         super(player);
         this.bow = bow;
         this.world = world;
@@ -62,9 +60,23 @@ public class ArrowLooseEvent extends PlayerEvent
     }
 
     @Nonnull
-    public ItemStack getBow() { return this.bow; }
-    public World getWorld() { return this.world; }
-    public boolean hasAmmo() { return this.hasAmmo; }
-    public int getCharge() { return this.charge; }
-    public void setCharge(int charge) { this.charge = charge; }
+    public ItemStack getBow() {
+        return this.bow;
+    }
+
+    public World getWorld() {
+        return this.world;
+    }
+
+    public boolean hasAmmo() {
+        return this.hasAmmo;
+    }
+
+    public int getCharge() {
+        return this.charge;
+    }
+
+    public void setCharge(int charge) {
+        this.charge = charge;
+    }
 }

@@ -24,17 +24,17 @@ import java.util.Collection;
 import net.minecraft.block.state.IBlockState;
 
 import java.util.Optional;
+
 import com.google.common.collect.ImmutableMap;
 
-public interface IExtendedBlockState extends IBlockState
-{
+public interface IExtendedBlockState extends IBlockState {
     Collection<IUnlistedProperty<?>> getUnlistedNames();
 
-    <V>V getValue(IUnlistedProperty<V> property);
+    <V> V getValue(IUnlistedProperty<V> property);
 
-    <V>IExtendedBlockState withProperty(IUnlistedProperty<V> property, V value);
+    <V> IExtendedBlockState withProperty(IUnlistedProperty<V> property, V value);
 
     ImmutableMap<IUnlistedProperty<?>, Optional<?>> getUnlistedProperties();
-    
+
     IBlockState getClean();
 }

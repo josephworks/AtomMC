@@ -3,20 +3,21 @@ package net.minecraft.advancements;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AdvancementList
-{
+public class AdvancementList {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<ResourceLocation, Advancement> advancements = Maps.<ResourceLocation, Advancement>newHashMap();
     private final Set<Advancement> roots = Sets.<Advancement>newLinkedHashSet();
@@ -24,110 +25,86 @@ public class AdvancementList
     private Listener listener;
 
     @SideOnly(Side.CLIENT)
-    private void remove(Advancement advancementIn)
-    {
-        for (Advancement advancement : advancementIn.getChildren())
-        {
+    private void remove(Advancement advancementIn) {
+        for (Advancement advancement : advancementIn.getChildren()) {
             this.remove(advancement);
         }
 
         LOGGER.info("Forgot about advancement " + advancementIn.getId());
         this.advancements.remove(advancementIn.getId());
 
-        if (advancementIn.getParent() == null)
-        {
+        if (advancementIn.getParent() == null) {
             this.roots.remove(advancementIn);
 
-            if (this.listener != null)
-            {
+            if (this.listener != null) {
                 this.listener.rootAdvancementRemoved(advancementIn);
             }
-        }
-        else
-        {
+        } else {
             this.nonRoots.remove(advancementIn);
 
-            if (this.listener != null)
-            {
+            if (this.listener != null) {
                 this.listener.nonRootAdvancementRemoved(advancementIn);
             }
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public void removeAll(Set<ResourceLocation> ids)
-    {
-        for (ResourceLocation resourcelocation : ids)
-        {
+    public void removeAll(Set<ResourceLocation> ids) {
+        for (ResourceLocation resourcelocation : ids) {
             Advancement advancement = this.advancements.get(resourcelocation);
 
-            if (advancement == null)
-            {
+            if (advancement == null) {
                 LOGGER.warn("Told to remove advancement " + resourcelocation + " but I don't know what that is");
-            }
-            else
-            {
+            } else {
                 this.remove(advancement);
             }
         }
     }
 
-    public void loadAdvancements(Map<ResourceLocation, Advancement.Builder> advancementsIn)
-    {
+    public void loadAdvancements(Map<ResourceLocation, Advancement.Builder> advancementsIn) {
         Function<ResourceLocation, Advancement> function = Functions.<ResourceLocation, Advancement>forMap(this.advancements, null);
         label42:
 
-        while (!advancementsIn.isEmpty())
-        {
+        while (!advancementsIn.isEmpty()) {
             boolean flag = false;
             Iterator<Entry<ResourceLocation, Advancement.Builder>> iterator = advancementsIn.entrySet().iterator();
 
-            while (iterator.hasNext())
-            {
-                Entry<ResourceLocation, Advancement.Builder> entry = (Entry)iterator.next();
+            while (iterator.hasNext()) {
+                Entry<ResourceLocation, Advancement.Builder> entry = (Entry) iterator.next();
                 ResourceLocation resourcelocation = entry.getKey();
                 Advancement.Builder advancement$builder = entry.getValue();
 
-                if (advancement$builder.resolveParent(function))
-                {
+                if (advancement$builder.resolveParent(function)) {
                     Advancement advancement = advancement$builder.build(resourcelocation);
                     this.advancements.put(resourcelocation, advancement);
                     flag = true;
                     iterator.remove();
 
-                    if (advancement.getParent() == null)
-                    {
+                    if (advancement.getParent() == null) {
                         this.roots.add(advancement);
 
-                        if (this.listener != null)
-                        {
+                        if (this.listener != null) {
                             this.listener.rootAdvancementAdded(advancement);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         this.nonRoots.add(advancement);
 
-                        if (this.listener != null)
-                        {
+                        if (this.listener != null) {
                             this.listener.nonRootAdvancementAdded(advancement);
                         }
                     }
                 }
             }
 
-            if (!flag)
-            {
+            if (!flag) {
                 iterator = advancementsIn.entrySet().iterator();
 
-                while (true)
-                {
-                    if (!iterator.hasNext())
-                    {
+                while (true) {
+                    if (!iterator.hasNext()) {
                         break label42;
                     }
 
-                    Entry<ResourceLocation, Advancement.Builder> entry1 = (Entry)iterator.next();
+                    Entry<ResourceLocation, Advancement.Builder> entry1 = (Entry) iterator.next();
                     LOGGER.error("Couldn't load advancement " + entry1.getKey() + ": " + entry1.getValue());
                 }
             }
@@ -136,55 +113,45 @@ public class AdvancementList
         LOGGER.info("Loaded " + this.advancements.size() + " advancements");
     }
 
-    public void clear()
-    {
+    public void clear() {
         this.advancements.clear();
         this.roots.clear();
         this.nonRoots.clear();
 
-        if (this.listener != null)
-        {
+        if (this.listener != null) {
             this.listener.advancementsCleared();
         }
     }
 
-    public Iterable<Advancement> getRoots()
-    {
+    public Iterable<Advancement> getRoots() {
         return this.roots;
     }
 
-    public Iterable<Advancement> getAdvancements()
-    {
+    public Iterable<Advancement> getAdvancements() {
         return this.advancements.values();
     }
 
     @Nullable
-    public Advancement getAdvancement(ResourceLocation id)
-    {
+    public Advancement getAdvancement(ResourceLocation id) {
         return this.advancements.get(id);
     }
 
     @SideOnly(Side.CLIENT)
-    public void setListener(@Nullable AdvancementList.Listener listenerIn)
-    {
+    public void setListener(@Nullable AdvancementList.Listener listenerIn) {
         this.listener = listenerIn;
 
-        if (listenerIn != null)
-        {
-            for (Advancement advancement : this.roots)
-            {
+        if (listenerIn != null) {
+            for (Advancement advancement : this.roots) {
                 listenerIn.rootAdvancementAdded(advancement);
             }
 
-            for (Advancement advancement1 : this.nonRoots)
-            {
+            for (Advancement advancement1 : this.nonRoots) {
                 listenerIn.nonRootAdvancementAdded(advancement1);
             }
         }
     }
 
-    public interface Listener
-    {
+    public interface Listener {
         void rootAdvancementAdded(Advancement advancementIn);
 
         @SideOnly(Side.CLIENT)

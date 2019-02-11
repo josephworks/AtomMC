@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "brown_concrete" }
+  "variants": {
+    "normal": {
+      "model": "brown_concrete"
     }
+  }
 }

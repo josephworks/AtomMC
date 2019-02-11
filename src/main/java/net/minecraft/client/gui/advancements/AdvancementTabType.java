@@ -8,8 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-enum AdvancementTabType
-{
+enum AdvancementTabType {
     ABOVE(0, 0, 28, 32, 8),
     BELOW(84, 0, 28, 32, 8),
     LEFT(0, 64, 32, 28, 5),
@@ -22,8 +21,7 @@ enum AdvancementTabType
     private final int height;
     private final int max;
 
-    private AdvancementTabType(int p_i47386_3_, int p_i47386_4_, int widthIn, int heightIn, int p_i47386_7_)
-    {
+    private AdvancementTabType(int p_i47386_3_, int p_i47386_4_, int widthIn, int heightIn, int p_i47386_7_) {
         this.textureX = p_i47386_3_;
         this.textureY = p_i47386_4_;
         this.width = widthIn;
@@ -31,22 +29,18 @@ enum AdvancementTabType
         this.max = p_i47386_7_;
     }
 
-    public int getMax()
-    {
+    public int getMax() {
         return this.max;
     }
 
-    public void draw(Gui guiIn, int x, int y, boolean p_192651_4_, int p_192651_5_)
-    {
+    public void draw(Gui guiIn, int x, int y, boolean p_192651_4_, int p_192651_5_) {
         int i = this.textureX;
 
-        if (p_192651_5_ > 0)
-        {
+        if (p_192651_5_ > 0) {
             i += this.width;
         }
 
-        if (p_192651_5_ == this.max - 1)
-        {
+        if (p_192651_5_ == this.max - 1) {
             i += this.width;
         }
 
@@ -54,13 +48,11 @@ enum AdvancementTabType
         guiIn.drawTexturedModalRect(x + this.getX(p_192651_5_), y + this.getY(p_192651_5_), i, j, this.width, this.height);
     }
 
-    public void drawIcon(int p_192652_1_, int p_192652_2_, int p_192652_3_, RenderItem renderItemIn, ItemStack stack)
-    {
+    public void drawIcon(int p_192652_1_, int p_192652_2_, int p_192652_3_, RenderItem renderItemIn, ItemStack stack) {
         int i = p_192652_1_ + this.getX(p_192652_3_);
         int j = p_192652_2_ + this.getY(p_192652_3_);
 
-        switch (this)
-        {
+        switch (this) {
             case ABOVE:
                 i += 6;
                 j += 9;
@@ -78,13 +70,11 @@ enum AdvancementTabType
                 j += 5;
         }
 
-        renderItemIn.renderItemAndEffectIntoGUI((EntityLivingBase)null, stack, i, j);
+        renderItemIn.renderItemAndEffectIntoGUI((EntityLivingBase) null, stack, i, j);
     }
 
-    public int getX(int p_192648_1_)
-    {
-        switch (this)
-        {
+    public int getX(int p_192648_1_) {
+        switch (this) {
             case ABOVE:
                 return (this.width + 4) * p_192648_1_;
             case BELOW:
@@ -98,10 +88,8 @@ enum AdvancementTabType
         }
     }
 
-    public int getY(int p_192653_1_)
-    {
-        switch (this)
-        {
+    public int getY(int p_192653_1_) {
+        switch (this) {
             case ABOVE:
                 return -this.height + 4;
             case BELOW:
@@ -115,19 +103,16 @@ enum AdvancementTabType
         }
     }
 
-    public boolean isMouseOver(int p_192654_1_, int p_192654_2_, int p_192654_3_, int p_192654_4_, int p_192654_5_)
-    {
+    public boolean isMouseOver(int p_192654_1_, int p_192654_2_, int p_192654_3_, int p_192654_4_, int p_192654_5_) {
         int i = p_192654_1_ + this.getX(p_192654_3_);
         int j = p_192654_2_ + this.getY(p_192654_3_);
         return p_192654_4_ > i && p_192654_4_ < i + this.width && p_192654_5_ > j && p_192654_5_ < j + this.height;
     }
 
-    static
-    {
+    static {
         int i = 0;
 
-        for (AdvancementTabType advancementtabtype : values())
-        {
+        for (AdvancementTabType advancementtabtype : values()) {
             i += advancementtabtype.max;
         }
 

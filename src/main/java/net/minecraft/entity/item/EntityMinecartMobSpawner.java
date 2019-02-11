@@ -17,48 +17,40 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityMinecartMobSpawner extends EntityMinecart
-{
-    private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic()
-    {
-        public void broadcastEvent(int id)
-        {
-            EntityMinecartMobSpawner.this.world.setEntityState(EntityMinecartMobSpawner.this, (byte)id);
+public class EntityMinecartMobSpawner extends EntityMinecart {
+    private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic() {
+        public void broadcastEvent(int id) {
+            EntityMinecartMobSpawner.this.world.setEntityState(EntityMinecartMobSpawner.this, (byte) id);
         }
-        public World getSpawnerWorld()
-        {
+
+        public World getSpawnerWorld() {
             return EntityMinecartMobSpawner.this.world;
         }
-        public BlockPos getSpawnerPosition()
-        {
+
+        public BlockPos getSpawnerPosition() {
             return new BlockPos(EntityMinecartMobSpawner.this);
         }
+
         public net.minecraft.entity.Entity getSpawnerEntity() {
             return EntityMinecartMobSpawner.this;
         }
     };
 
-    public EntityMinecartMobSpawner(World worldIn)
-    {
+    public EntityMinecartMobSpawner(World worldIn) {
         super(worldIn);
     }
 
-    public EntityMinecartMobSpawner(World worldIn, double x, double y, double z)
-    {
+    public EntityMinecartMobSpawner(World worldIn, double x, double y, double z) {
         super(worldIn, x, y, z);
     }
 
-    public static void registerFixesMinecartMobSpawner(DataFixer fixer)
-    {
+    public static void registerFixesMinecartMobSpawner(DataFixer fixer) {
         registerFixesMinecart(fixer, EntityMinecartMobSpawner.class);
-        fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
-        {
-            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-            {
+        fixer.registerWalker(FixTypes.ENTITY, new IDataWalker() {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn) {
                 String s = compound.getString("id");
 
-                if (EntityList.getKey(EntityMinecartMobSpawner.class).equals(new ResourceLocation(s)))
-                {
+                if (EntityList.getKey(EntityMinecartMobSpawner.class).equals(new ResourceLocation(s))) {
                     compound.setString("id", TileEntity.getKey(TileEntityMobSpawner.class).toString());
                     fixer.process(FixTypes.BLOCK_ENTITY, compound, versionIn);
                     compound.setString("id", s);
@@ -69,36 +61,30 @@ public class EntityMinecartMobSpawner extends EntityMinecart
         });
     }
 
-    public Type getType()
-    {
+    public Type getType() {
         return Type.SPAWNER;
     }
 
-    public IBlockState getDefaultDisplayTile()
-    {
+    public IBlockState getDefaultDisplayTile() {
         return Blocks.MOB_SPAWNER.getDefaultState();
     }
 
-    protected void readEntityFromNBT(NBTTagCompound compound)
-    {
+    protected void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         this.mobSpawnerLogic.readFromNBT(compound);
     }
 
-    protected void writeEntityToNBT(NBTTagCompound compound)
-    {
+    protected void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         this.mobSpawnerLogic.writeToNBT(compound);
     }
 
     @SideOnly(Side.CLIENT)
-    public void handleStatusUpdate(byte id)
-    {
+    public void handleStatusUpdate(byte id) {
         this.mobSpawnerLogic.setDelayToMin(id);
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
         this.mobSpawnerLogic.updateSpawner();
     }

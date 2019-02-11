@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "black_wool" }
+  "variants": {
+    "normal": {
+      "model": "black_wool"
     }
+  }
 }

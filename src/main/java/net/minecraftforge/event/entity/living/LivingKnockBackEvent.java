@@ -31,9 +31,9 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
 /**
  * LivingKnockBackEvent is fired when a living entity is about to be knocked back. <br>
  * This event is fired whenever an Entity is knocked back in
- * {@link EntityLivingBase#attackEntityFrom(DamageSource, float)}, 
- * {@link EntityLivingBase#blockWithShield(EntityLivingBase)}, 
- * {@link EntityMob#attackEntityAsMob(Entity)} and 
+ * {@link EntityLivingBase#attackEntityFrom(DamageSource, float)},
+ * {@link EntityLivingBase#blockWithShield(EntityLivingBase)},
+ * {@link EntityMob#attackEntityAsMob(Entity)} and
  * {@link EntityPlayer#attackTargetEntityWithCurrentItem(Entity)} <br>
  * <br>
  * This event is fired via {@link ForgeHooks#onLivingKnockBack(EntityLivingBase, Entity, float, double, double)}.<br>
@@ -47,12 +47,11 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable;
  * If this event is canceled, the entity is not knocked back.<br>
  * <br>
  * This event does not have a result. {@link HasResult}<br>
- *<br>
+ * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
 @Cancelable
-public class LivingKnockBackEvent extends LivingEvent
-{
+public class LivingKnockBackEvent extends LivingEvent {
     protected Entity attacker;
     protected float strength;
     protected double ratioX, ratioZ;
@@ -60,8 +59,7 @@ public class LivingKnockBackEvent extends LivingEvent
     protected final float originalStrength;
     protected final double originalRatioX, originalRatioZ;
 
-    public LivingKnockBackEvent(EntityLivingBase target, Entity attacker, float strength, double ratioX, double ratioZ)
-    {
+    public LivingKnockBackEvent(EntityLivingBase target, Entity attacker, float strength, double ratioX, double ratioZ) {
         super(target);
         this.attacker = this.originalAttacker = attacker;
         this.strength = this.originalStrength = strength;
@@ -69,27 +67,51 @@ public class LivingKnockBackEvent extends LivingEvent
         this.ratioZ = this.originalRatioZ = ratioZ;
     }
 
-    public Entity getAttacker() {return this.attacker;}
+    public Entity getAttacker() {
+        return this.attacker;
+    }
 
-    public float getStrength() {return this.strength;}
+    public float getStrength() {
+        return this.strength;
+    }
 
-    public double getRatioX() {return this.ratioX;}
+    public double getRatioX() {
+        return this.ratioX;
+    }
 
-    public double getRatioZ() {return this.ratioZ;}
+    public double getRatioZ() {
+        return this.ratioZ;
+    }
 
-    public Entity getOriginalAttacker() {return this.originalAttacker;}
+    public Entity getOriginalAttacker() {
+        return this.originalAttacker;
+    }
 
-    public float getOriginalStrength() {return this.originalStrength;}
+    public float getOriginalStrength() {
+        return this.originalStrength;
+    }
 
-    public double getOriginalRatioX() {return this.originalRatioX;}
+    public double getOriginalRatioX() {
+        return this.originalRatioX;
+    }
 
-    public double getOriginalRatioZ() {return this.originalRatioZ;}
+    public double getOriginalRatioZ() {
+        return this.originalRatioZ;
+    }
 
-    public void setAttacker(Entity attacker) {this.attacker = attacker;}
+    public void setAttacker(Entity attacker) {
+        this.attacker = attacker;
+    }
 
-    public void setStrength(float strength) {this.strength = strength;}
+    public void setStrength(float strength) {
+        this.strength = strength;
+    }
 
-    public void setRatioX(double ratioX) {this.ratioX = ratioX;}
+    public void setRatioX(double ratioX) {
+        this.ratioX = ratioX;
+    }
 
-    public void setRatioZ(double ratioZ) {this.ratioZ = ratioZ;}
+    public void setRatioZ(double ratioZ) {
+        this.ratioZ = ratioZ;
+    }
 }

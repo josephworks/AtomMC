@@ -6,8 +6,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEntry<IRecipe>
-{
+public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEntry<IRecipe> {
     boolean matches(InventoryCrafting inv, World worldIn);
 
     ItemStack getCraftingResult(InventoryCrafting inv);
@@ -16,23 +15,19 @@ public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEnt
 
     ItemStack getRecipeOutput();
 
-    default NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-    {
+    default NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
         return net.minecraftforge.common.ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }
 
-default NonNullList<Ingredient> getIngredients()
-    {
+    default NonNullList<Ingredient> getIngredients() {
         return NonNullList.<Ingredient>create();
     }
 
-default boolean isDynamic()
-    {
+    default boolean isDynamic() {
         return false;
     }
 
-default String getGroup()
-    {
+    default String getGroup() {
         return "";
     }
 

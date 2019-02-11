@@ -2,8 +2,7 @@ package net.minecraft.world;
 
 import net.minecraft.util.text.ITextComponent;
 
-public interface IWorldNameable
-{
+public interface IWorldNameable {
     String getName();
 
     boolean hasCustomName();

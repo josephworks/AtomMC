@@ -1,7 +1,6 @@
 package net.minecraft.inventory;
 
-public enum ClickType
-{
+public enum ClickType {
     PICKUP,
     QUICK_MOVE,
     SWAP,

@@ -4,8 +4,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface IRecipeShownListener
-{
+public interface IRecipeShownListener {
     void recipesUpdated();
 
     GuiRecipeBook func_194310_f();

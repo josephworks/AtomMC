@@ -1,6 +1,7 @@
 package net.minecraft.entity.effect;
 
 import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,8 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 
-public class EntityLightningBolt extends EntityWeatherEffect
-{
+public class EntityLightningBolt extends EntityWeatherEffect {
     private int lightningState;
     public long boltVertex;
     private int boltLivingTime;
@@ -27,8 +27,7 @@ public class EntityLightningBolt extends EntityWeatherEffect
     public boolean isEffect;
     public boolean isSilent = false; // Spigot
 
-    public EntityLightningBolt(World worldIn, double x, double y, double z, boolean effectOnlyIn)
-    {
+    public EntityLightningBolt(World worldIn, double x, double y, double z, boolean effectOnlyIn) {
         super(worldIn);
         this.isEffect = effectOnlyIn;
         this.setLocationAndAngles(x, y, z, 0.0F, 0.0F);
@@ -38,22 +37,18 @@ public class EntityLightningBolt extends EntityWeatherEffect
         this.effectOnly = effectOnlyIn;
         BlockPos blockpos = new BlockPos(this);
 
-        if (!effectOnlyIn && !worldIn.isRemote && worldIn.getGameRules().getBoolean("doFireTick") && (worldIn.getDifficulty() == EnumDifficulty.NORMAL || worldIn.getDifficulty() == EnumDifficulty.HARD) && worldIn.isAreaLoaded(blockpos, 10))
-        {
-            if (worldIn.getBlockState(blockpos).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(worldIn, blockpos))
-            {
+        if (!effectOnlyIn && !worldIn.isRemote && worldIn.getGameRules().getBoolean("doFireTick") && (worldIn.getDifficulty() == EnumDifficulty.NORMAL || worldIn.getDifficulty() == EnumDifficulty.HARD) && worldIn.isAreaLoaded(blockpos, 10)) {
+            if (worldIn.getBlockState(blockpos).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(worldIn, blockpos)) {
                 // worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                 if (!CraftEventFactory.callBlockIgniteEvent(world, blockpos.getX(), blockpos.getY(), blockpos.getZ(), this).isCancelled()) {
                     world.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                 }
             }
 
-            for (int i = 0; i < 4; ++i)
-            {
+            for (int i = 0; i < 4; ++i) {
                 BlockPos blockpos1 = blockpos.add(this.rand.nextInt(3) - 1, this.rand.nextInt(3) - 1, this.rand.nextInt(3) - 1);
 
-                if (worldIn.getBlockState(blockpos1).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(worldIn, blockpos1))
-                {
+                if (worldIn.getBlockState(blockpos1).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(worldIn, blockpos1)) {
                     // worldIn.setBlockState(blockpos1, Blocks.FIRE.getDefaultState());
                     if (!CraftEventFactory.callBlockIgniteEvent(world, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), this).isCancelled()) {
                         world.setBlockState(blockpos1, Blocks.FIRE.getDefaultState());
@@ -64,20 +59,17 @@ public class EntityLightningBolt extends EntityWeatherEffect
     }
 
     // Spigot start
-    public EntityLightningBolt(World world, double d0, double d1, double d2, boolean isEffect, boolean isSilent)
-    {
-        this( world, d0, d1, d2, isEffect );
+    public EntityLightningBolt(World world, double d0, double d1, double d2, boolean isEffect, boolean isSilent) {
+        this(world, d0, d1, d2, isEffect);
         this.isSilent = isSilent;
     }
     // Spigot end
 
-    public SoundCategory getSoundCategory()
-    {
+    public SoundCategory getSoundCategory() {
         return SoundCategory.WEATHER;
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
 
         if (!isSilent && this.lightningState == 2) // Spigot
@@ -99,29 +91,23 @@ public class EntityLightningBolt extends EntityWeatherEffect
                     player.connection.sendPacket(new SPacketSoundEffect(SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, this.posX, this.posY, this.posZ, 10000.0F, pitch));
                 }
             }
-            this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_LIGHTNING_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
+            this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_LIGHTNING_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
         }
 
         --this.lightningState;
 
-        if (this.lightningState < 0)
-        {
-            if (this.boltLivingTime == 0)
-            {
+        if (this.lightningState < 0) {
+            if (this.boltLivingTime == 0) {
                 this.setDead();
-            }
-            else if (this.lightningState < -this.rand.nextInt(10))
-            {
+            } else if (this.lightningState < -this.rand.nextInt(10)) {
                 --this.boltLivingTime;
                 this.lightningState = 1;
 
-                if (!this.effectOnly && !this.world.isRemote)
-                {
+                if (!this.effectOnly && !this.world.isRemote) {
                     this.boltVertex = this.rand.nextLong();
                     BlockPos blockpos = new BlockPos(this);
 
-                    if (this.world.getGameRules().getBoolean("doFireTick") && this.world.isAreaLoaded(blockpos, 10) && this.world.getBlockState(blockpos).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(this.world, blockpos))
-                    {
+                    if (this.world.getGameRules().getBoolean("doFireTick") && this.world.isAreaLoaded(blockpos, 10) && this.world.getBlockState(blockpos).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(this.world, blockpos)) {
                         if (!isEffect && !CraftEventFactory.callBlockIgniteEvent(world, blockpos.getX(), blockpos.getY(), blockpos.getZ(), this).isCancelled()) {
                             this.world.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                         }
@@ -132,17 +118,13 @@ public class EntityLightningBolt extends EntityWeatherEffect
 
         if (this.lightningState >= 0 && !this.isEffect) // CraftBukkit - add !this.isEffect
         {
-            if (this.world.isRemote)
-            {
+            if (this.world.isRemote) {
                 this.world.setLastLightningBolt(2);
-            }
-            else if (!this.effectOnly)
-            {
+            } else if (!this.effectOnly) {
                 double d0 = 3.0D;
                 List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, new AxisAlignedBB(this.posX - 3.0D, this.posY - 3.0D, this.posZ - 3.0D, this.posX + 3.0D, this.posY + 6.0D + 3.0D, this.posZ + 3.0D));
 
-                for (int i = 0; i < list.size(); ++i)
-                {
+                for (int i = 0; i < list.size(); ++i) {
                     Entity entity = list.get(i);
                     if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, this))
                         entity.onStruckByLightning(this);
@@ -151,15 +133,12 @@ public class EntityLightningBolt extends EntityWeatherEffect
         }
     }
 
-    protected void entityInit()
-    {
+    protected void entityInit() {
     }
 
-    protected void readEntityFromNBT(NBTTagCompound compound)
-    {
+    protected void readEntityFromNBT(NBTTagCompound compound) {
     }
 
-    protected void writeEntityToNBT(NBTTagCompound compound)
-    {
+    protected void writeEntityToNBT(NBTTagCompound compound) {
     }
 }

@@ -1,7 +1,6 @@
 package net.minecraft.entity;
 
-public enum MoverType
-{
+public enum MoverType {
     SELF,
     PLAYER,
     PISTON,

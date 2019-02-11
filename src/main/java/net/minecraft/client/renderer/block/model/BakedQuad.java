@@ -6,8 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class BakedQuad implements net.minecraftforge.client.model.pipeline.IVertexProducer
-{
+public class BakedQuad implements net.minecraftforge.client.model.pipeline.IVertexProducer {
     protected final int[] vertexData;
     protected final int tintIndex;
     protected final EnumFacing face;
@@ -17,13 +16,11 @@ public class BakedQuad implements net.minecraftforge.client.model.pipeline.IVert
      * @deprecated Use constructor with the format argument.
      */
     @Deprecated
-    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn, TextureAtlasSprite spriteIn)
-    {
+    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn, TextureAtlasSprite spriteIn) {
         this(vertexDataIn, tintIndexIn, faceIn, spriteIn, true, net.minecraft.client.renderer.vertex.DefaultVertexFormats.ITEM);
     }
 
-    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn, TextureAtlasSprite spriteIn, boolean applyDiffuseLighting, net.minecraft.client.renderer.vertex.VertexFormat format)
-    {
+    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn, TextureAtlasSprite spriteIn, boolean applyDiffuseLighting, net.minecraft.client.renderer.vertex.VertexFormat format) {
         this.format = format;
         this.applyDiffuseLighting = applyDiffuseLighting;
         this.vertexData = vertexDataIn;
@@ -32,28 +29,23 @@ public class BakedQuad implements net.minecraftforge.client.model.pipeline.IVert
         this.sprite = spriteIn;
     }
 
-    public TextureAtlasSprite getSprite()
-    {
+    public TextureAtlasSprite getSprite() {
         return this.sprite;
     }
 
-    public int[] getVertexData()
-    {
+    public int[] getVertexData() {
         return this.vertexData;
     }
 
-    public boolean hasTintIndex()
-    {
+    public boolean hasTintIndex() {
         return this.tintIndex != -1;
     }
 
-    public int getTintIndex()
-    {
+    public int getTintIndex() {
         return this.tintIndex;
     }
 
-    public EnumFacing getFace()
-    {
+    public EnumFacing getFace() {
         return this.face;
     }
 
@@ -61,18 +53,15 @@ public class BakedQuad implements net.minecraftforge.client.model.pipeline.IVert
     protected final boolean applyDiffuseLighting;
 
     @Override
-    public void pipe(net.minecraftforge.client.model.pipeline.IVertexConsumer consumer)
-    {
+    public void pipe(net.minecraftforge.client.model.pipeline.IVertexConsumer consumer) {
         net.minecraftforge.client.model.pipeline.LightUtil.putBakedQuad(consumer, this);
     }
 
-    public net.minecraft.client.renderer.vertex.VertexFormat getFormat()
-    {
+    public net.minecraft.client.renderer.vertex.VertexFormat getFormat() {
         return format;
     }
 
-    public boolean shouldApplyDiffuseLighting()
-    {
+    public boolean shouldApplyDiffuseLighting() {
         return applyDiffuseLighting;
     }
 }

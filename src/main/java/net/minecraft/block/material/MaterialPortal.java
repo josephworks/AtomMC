@@ -1,24 +1,19 @@
 package net.minecraft.block.material;
 
-public class MaterialPortal extends Material
-{
-    public MaterialPortal(MapColor color)
-    {
+public class MaterialPortal extends Material {
+    public MaterialPortal(MapColor color) {
         super(color);
     }
 
-    public boolean isSolid()
-    {
+    public boolean isSolid() {
         return false;
     }
 
-    public boolean blocksLight()
-    {
+    public boolean blocksLight() {
         return false;
     }
 
-    public boolean blocksMovement()
-    {
+    public boolean blocksMovement() {
         return false;
     }
 }

@@ -34,38 +34,32 @@ import org.bukkit.TreeType;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.world.StructureGrowEvent;
 
-public class BlockSapling extends BlockBush implements IGrowable
-{
+public class BlockSapling extends BlockBush implements IGrowable {
     public static final PropertyEnum<BlockPlanks.EnumType> TYPE = PropertyEnum.<BlockPlanks.EnumType>create("type", BlockPlanks.EnumType.class);
     public static final PropertyInteger STAGE = PropertyInteger.create("stage", 0, 1);
     protected static final AxisAlignedBB SAPLING_AABB = new AxisAlignedBB(0.09999999403953552D, 0.0D, 0.09999999403953552D, 0.8999999761581421D, 0.800000011920929D, 0.8999999761581421D);
     public static TreeType treeType;
 
-    protected BlockSapling()
-    {
+    protected BlockSapling() {
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, BlockPlanks.EnumType.OAK).withProperty(STAGE, Integer.valueOf(0)));
         this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         return SAPLING_AABB;
     }
 
-    public String getLocalizedName()
-    {
+    public String getLocalizedName() {
         return I18n.translateToLocal(this.getUnlocalizedName() + "." + BlockPlanks.EnumType.OAK.getUnlocalizedName() + ".name");
     }
 
-    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
-        if (!worldIn.isRemote)
-        {
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (!worldIn.isRemote) {
             super.updateTick(worldIn, pos, state, rand);
 
-            if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0)
-            {
+            if (!worldIn.isAreaLoaded(pos, 1))
+                return; // Forge: prevent loading unloaded chunks when checking neighbor's light
+            if (worldIn.getLightFromNeighbors(pos.up()) >= 9 && rand.nextInt(7) == 0) {
                 worldIn.captureTreeGeneration = true;
                 this.grow(worldIn, pos, state, rand);
                 worldIn.captureTreeGeneration = false;
@@ -93,20 +87,15 @@ public class BlockSapling extends BlockBush implements IGrowable
         }
     }
 
-    public void grow(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
-        if (((Integer)state.getValue(STAGE)).intValue() == 0)
-        {
+    public void grow(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+        if (((Integer) state.getValue(STAGE)).intValue() == 0) {
             worldIn.setBlockState(pos, state.cycleProperty(STAGE), 4);
-        }
-        else
-        {
+        } else {
             this.generateTree(worldIn, pos, state, rand);
         }
     }
 
-    public void generateTree(World worldIn, BlockPos pos, IBlockState state, Random rand)
-    {
+    public void generateTree(World worldIn, BlockPos pos, IBlockState state, Random rand) {
         if (!net.minecraftforge.event.terraingen.TerrainGen.saplingGrowTree(worldIn, rand, pos)) return;
         // CraftBukkit start - Turn ternary operator into if statement to set treeType
         // WorldGenerator worldgenerator = (WorldGenerator)(rand.nextInt(10) == 0 ? new WorldGenBigTree(true) : new WorldGenTrees(true));
@@ -123,17 +112,13 @@ public class BlockSapling extends BlockBush implements IGrowable
         int j = 0;
         boolean flag = false;
 
-        switch ((BlockPlanks.EnumType)state.getValue(TYPE))
-        {
+        switch ((BlockPlanks.EnumType) state.getValue(TYPE)) {
             case SPRUCE:
                 label68:
 
-                for (i = 0; i >= -1; --i)
-                {
-                    for (j = 0; j >= -1; --j)
-                    {
-                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.SPRUCE))
-                        {
+                for (i = 0; i >= -1; --i) {
+                    for (j = 0; j >= -1; --j) {
+                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.SPRUCE)) {
                             treeType = TreeType.MEGA_REDWOOD;
                             worldgenerator = new WorldGenMegaPineTree(false, rand.nextBoolean());
                             flag = true;
@@ -142,8 +127,7 @@ public class BlockSapling extends BlockBush implements IGrowable
                     }
                 }
 
-                if (!flag)
-                {
+                if (!flag) {
                     i = 0;
                     j = 0;
                     treeType = TreeType.REDWOOD;
@@ -160,12 +144,9 @@ public class BlockSapling extends BlockBush implements IGrowable
                 IBlockState iblockstate1 = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
                 label82:
 
-                for (i = 0; i >= -1; --i)
-                {
-                    for (j = 0; j >= -1; --j)
-                    {
-                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.JUNGLE))
-                        {
+                for (i = 0; i >= -1; --i) {
+                    for (j = 0; j >= -1; --j) {
+                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.JUNGLE)) {
                             treeType = TreeType.JUNGLE;
                             worldgenerator = new WorldGenMegaJungle(true, 10, 20, iblockstate, iblockstate1);
                             flag = true;
@@ -174,8 +155,7 @@ public class BlockSapling extends BlockBush implements IGrowable
                     }
                 }
 
-                if (!flag)
-                {
+                if (!flag) {
                     i = 0;
                     j = 0;
                     treeType = TreeType.SMALL_JUNGLE;
@@ -190,12 +170,9 @@ public class BlockSapling extends BlockBush implements IGrowable
             case DARK_OAK:
                 label96:
 
-                for (i = 0; i >= -1; --i)
-                {
-                    for (j = 0; j >= -1; --j)
-                    {
-                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.DARK_OAK))
-                        {
+                for (i = 0; i >= -1; --i) {
+                    for (j = 0; j >= -1; --j) {
+                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.DARK_OAK)) {
                             treeType = TreeType.DARK_OAK;
                             worldgenerator = new WorldGenCanopyTree(true);
                             flag = true;
@@ -204,8 +181,7 @@ public class BlockSapling extends BlockBush implements IGrowable
                     }
                 }
 
-                if (!flag)
-                {
+                if (!flag) {
                     return;
                 }
 
@@ -214,88 +190,70 @@ public class BlockSapling extends BlockBush implements IGrowable
 
         IBlockState iblockstate2 = Blocks.AIR.getDefaultState();
 
-        if (flag)
-        {
+        if (flag) {
             worldIn.setBlockState(pos.add(i, 0, j), iblockstate2, 4);
             worldIn.setBlockState(pos.add(i + 1, 0, j), iblockstate2, 4);
             worldIn.setBlockState(pos.add(i, 0, j + 1), iblockstate2, 4);
             worldIn.setBlockState(pos.add(i + 1, 0, j + 1), iblockstate2, 4);
-        }
-        else
-        {
+        } else {
             worldIn.setBlockState(pos, iblockstate2, 4);
         }
 
-        if (!worldgenerator.generate(worldIn, rand, pos.add(i, 0, j)))
-        {
-            if (flag)
-            {
+        if (!worldgenerator.generate(worldIn, rand, pos.add(i, 0, j))) {
+            if (flag) {
                 worldIn.setBlockState(pos.add(i, 0, j), state, 4);
                 worldIn.setBlockState(pos.add(i + 1, 0, j), state, 4);
                 worldIn.setBlockState(pos.add(i, 0, j + 1), state, 4);
                 worldIn.setBlockState(pos.add(i + 1, 0, j + 1), state, 4);
-            }
-            else
-            {
+            } else {
                 worldIn.setBlockState(pos, state, 4);
             }
         }
     }
 
-    private boolean isTwoByTwoOfType(World worldIn, BlockPos pos, int p_181624_3_, int p_181624_4_, BlockPlanks.EnumType type)
-    {
+    private boolean isTwoByTwoOfType(World worldIn, BlockPos pos, int p_181624_3_, int p_181624_4_, BlockPlanks.EnumType type) {
         return this.isTypeAt(worldIn, pos.add(p_181624_3_, 0, p_181624_4_), type) && this.isTypeAt(worldIn, pos.add(p_181624_3_ + 1, 0, p_181624_4_), type) && this.isTypeAt(worldIn, pos.add(p_181624_3_, 0, p_181624_4_ + 1), type) && this.isTypeAt(worldIn, pos.add(p_181624_3_ + 1, 0, p_181624_4_ + 1), type);
     }
 
-    public boolean isTypeAt(World worldIn, BlockPos pos, BlockPlanks.EnumType type)
-    {
+    public boolean isTypeAt(World worldIn, BlockPos pos, BlockPlanks.EnumType type) {
         IBlockState iblockstate = worldIn.getBlockState(pos);
         return iblockstate.getBlock() == this && iblockstate.getValue(TYPE) == type;
     }
 
-    public int damageDropped(IBlockState state)
-    {
-        return ((BlockPlanks.EnumType)state.getValue(TYPE)).getMetadata();
+    public int damageDropped(IBlockState state) {
+        return ((BlockPlanks.EnumType) state.getValue(TYPE)).getMetadata();
     }
 
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
-    {
-        for (BlockPlanks.EnumType blockplanks$enumtype : BlockPlanks.EnumType.values())
-        {
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        for (BlockPlanks.EnumType blockplanks$enumtype : BlockPlanks.EnumType.values()) {
             items.add(new ItemStack(this, 1, blockplanks$enumtype.getMetadata()));
         }
     }
 
-    public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
-    {
+    public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient) {
         return true;
     }
 
-    public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state)
-    {
-        return (double)worldIn.rand.nextFloat() < 0.45D;
+    public boolean canUseBonemeal(World worldIn, Random rand, BlockPos pos, IBlockState state) {
+        return (double) worldIn.rand.nextFloat() < 0.45D;
     }
 
-    public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
-    {
+    public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state) {
         this.grow(worldIn, pos, state, rand);
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(TYPE, BlockPlanks.EnumType.byMetadata(meta & 7)).withProperty(STAGE, Integer.valueOf((meta & 8) >> 3));
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
-        i = i | ((BlockPlanks.EnumType)state.getValue(TYPE)).getMetadata();
-        i = i | ((Integer)state.getValue(STAGE)).intValue() << 3;
+        i = i | ((BlockPlanks.EnumType) state.getValue(TYPE)).getMetadata();
+        i = i | ((Integer) state.getValue(STAGE)).intValue() << 3;
         return i;
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {TYPE, STAGE});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{TYPE, STAGE});
     }
 }

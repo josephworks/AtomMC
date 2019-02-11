@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "hardened_clay_lime" }
+  "variants": {
+    "normal": {
+      "model": "hardened_clay_lime"
     }
+  }
 }

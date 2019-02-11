@@ -32,8 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.ForgeModContainer;
 
-public class ForgeBlockModelRenderer extends BlockModelRenderer
-{
+public class ForgeBlockModelRenderer extends BlockModelRenderer {
     private final ThreadLocal<VertexLighterFlat> lighterFlat;
     private final ThreadLocal<VertexLighterSmoothAo> lighterSmooth;
     private final ThreadLocal<VertexBufferConsumer> wrFlat = new ThreadLocal<>();
@@ -41,20 +40,16 @@ public class ForgeBlockModelRenderer extends BlockModelRenderer
     private final ThreadLocal<BufferBuilder> lastRendererFlat = new ThreadLocal<>();
     private final ThreadLocal<BufferBuilder> lastRendererSmooth = new ThreadLocal<>();
 
-    public ForgeBlockModelRenderer(BlockColors colors)
-    {
+    public ForgeBlockModelRenderer(BlockColors colors) {
         super(colors);
         lighterFlat = ThreadLocal.withInitial(() -> new VertexLighterFlat(colors));
         lighterSmooth = ThreadLocal.withInitial(() -> new VertexLighterSmoothAo(colors));
     }
 
     @Override
-    public boolean renderModelFlat(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand)
-    {
-        if(ForgeModContainer.forgeLightPipelineEnabled)
-        {
-            if(buffer != lastRendererFlat.get())
-            {
+    public boolean renderModelFlat(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand) {
+        if (ForgeModContainer.forgeLightPipelineEnabled) {
+            if (buffer != lastRendererFlat.get()) {
                 lastRendererFlat.set(buffer);
                 VertexBufferConsumer newCons = new VertexBufferConsumer(buffer);
                 wrFlat.set(newCons);
@@ -62,20 +57,15 @@ public class ForgeBlockModelRenderer extends BlockModelRenderer
             }
             wrFlat.get().setOffset(pos);
             return render(lighterFlat.get(), world, model, state, pos, buffer, checkSides, rand);
-        }
-        else
-        {
+        } else {
             return super.renderModelFlat(world, model, state, pos, buffer, checkSides, rand);
         }
     }
 
     @Override
-    public boolean renderModelSmooth(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand)
-    {
-        if(ForgeModContainer.forgeLightPipelineEnabled)
-        {
-            if(buffer != lastRendererSmooth.get())
-            {
+    public boolean renderModelSmooth(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand) {
+        if (ForgeModContainer.forgeLightPipelineEnabled) {
+            if (buffer != lastRendererSmooth.get()) {
                 lastRendererSmooth.set(buffer);
                 VertexBufferConsumer newCons = new VertexBufferConsumer(buffer);
                 wrSmooth.set(newCons);
@@ -83,40 +73,31 @@ public class ForgeBlockModelRenderer extends BlockModelRenderer
             }
             wrSmooth.get().setOffset(pos);
             return render(lighterSmooth.get(), world, model, state, pos, buffer, checkSides, rand);
-        }
-        else
-        {
+        } else {
             return super.renderModelSmooth(world, model, state, pos, buffer, checkSides, rand);
         }
     }
 
-    public static boolean render(VertexLighterFlat lighter, IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder wr, boolean checkSides, long rand)
-    {
+    public static boolean render(VertexLighterFlat lighter, IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder wr, boolean checkSides, long rand) {
         lighter.setWorld(world);
         lighter.setState(state);
         lighter.setBlockPos(pos);
         boolean empty = true;
         List<BakedQuad> quads = model.getQuads(state, null, rand);
-        if(!quads.isEmpty())
-        {
+        if (!quads.isEmpty()) {
             lighter.updateBlockInfo();
             empty = false;
-            for(BakedQuad quad : quads)
-            {
+            for (BakedQuad quad : quads) {
                 quad.pipe(lighter);
             }
         }
-        for(EnumFacing side : EnumFacing.values())
-        {
+        for (EnumFacing side : EnumFacing.values()) {
             quads = model.getQuads(state, side, rand);
-            if(!quads.isEmpty())
-            {
-                if(!checkSides || state.shouldSideBeRendered(world, pos, side))
-                {
-                    if(empty) lighter.updateBlockInfo();
+            if (!quads.isEmpty()) {
+                if (!checkSides || state.shouldSideBeRendered(world, pos, side)) {
+                    if (empty) lighter.updateBlockInfo();
                     empty = false;
-                    for(BakedQuad quad : quads)
-                    {
+                    for (BakedQuad quad : quads) {
                         quad.pipe(lighter);
                     }
                 }

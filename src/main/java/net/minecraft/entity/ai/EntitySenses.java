@@ -1,49 +1,39 @@
 package net.minecraft.entity.ai;
 
 import com.google.common.collect.Lists;
+
 import java.util.List;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 
-public class EntitySenses
-{
+public class EntitySenses {
     EntityLiving entity;
     List<Entity> seenEntities = Lists.<Entity>newArrayList();
     List<Entity> unseenEntities = Lists.<Entity>newArrayList();
 
-    public EntitySenses(EntityLiving entityIn)
-    {
+    public EntitySenses(EntityLiving entityIn) {
         this.entity = entityIn;
     }
 
-    public void clearSensingCache()
-    {
+    public void clearSensingCache() {
         this.seenEntities.clear();
         this.unseenEntities.clear();
     }
 
-    public boolean canSee(Entity entityIn)
-    {
-        if (this.seenEntities.contains(entityIn))
-        {
+    public boolean canSee(Entity entityIn) {
+        if (this.seenEntities.contains(entityIn)) {
             return true;
-        }
-        else if (this.unseenEntities.contains(entityIn))
-        {
+        } else if (this.unseenEntities.contains(entityIn)) {
             return false;
-        }
-        else
-        {
+        } else {
             this.entity.world.profiler.startSection("canSee");
             boolean flag = this.entity.canEntityBeSeen(entityIn);
             this.entity.world.profiler.endSection();
 
-            if (flag)
-            {
+            if (flag) {
                 this.seenEntities.add(entityIn);
-            }
-            else
-            {
+            } else {
                 this.unseenEntities.add(entityIn);
             }
 

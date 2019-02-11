@@ -7,41 +7,33 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
-{
+public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry {
     private final GuiMultiplayer screen;
     protected final Minecraft mc;
     protected final LanServerInfo serverData;
     private long lastClickTime;
 
-    protected ServerListEntryLanDetected(GuiMultiplayer p_i47141_1_, LanServerInfo p_i47141_2_)
-    {
+    protected ServerListEntryLanDetected(GuiMultiplayer p_i47141_1_, LanServerInfo p_i47141_2_) {
         this.screen = p_i47141_1_;
         this.serverData = p_i47141_2_;
         this.mc = Minecraft.getMinecraft();
     }
 
-    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
-    {
+    public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks) {
         this.mc.fontRenderer.drawString(I18n.format("lanServer.title"), x + 32 + 3, y + 1, 16777215);
         this.mc.fontRenderer.drawString(this.serverData.getServerMotd(), x + 32 + 3, y + 12, 8421504);
 
-        if (this.mc.gameSettings.hideServerAddress)
-        {
+        if (this.mc.gameSettings.hideServerAddress) {
             this.mc.fontRenderer.drawString(I18n.format("selectServer.hiddenAddress"), x + 32 + 3, y + 12 + 11, 3158064);
-        }
-        else
-        {
+        } else {
             this.mc.fontRenderer.drawString(this.serverData.getServerIpPort(), x + 32 + 3, y + 12 + 11, 3158064);
         }
     }
 
-    public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
-    {
+    public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) {
         this.screen.selectServer(slotIndex);
 
-        if (Minecraft.getSystemTime() - this.lastClickTime < 250L)
-        {
+        if (Minecraft.getSystemTime() - this.lastClickTime < 250L) {
             this.screen.connectToSelected();
         }
 
@@ -49,16 +41,13 @@ public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
         return false;
     }
 
-    public void updatePosition(int slotIndex, int x, int y, float partialTicks)
-    {
+    public void updatePosition(int slotIndex, int x, int y, float partialTicks) {
     }
 
-    public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY)
-    {
+    public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) {
     }
 
-    public LanServerInfo getServerData()
-    {
+    public LanServerInfo getServerData() {
         return this.serverData;
     }
 }

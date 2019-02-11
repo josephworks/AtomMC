@@ -1,6 +1,6 @@
 {
-    "parent": "block/pane_noside",
-    "textures": {
-        "pane": "blocks/glass_yellow"
-    }
+  "parent": "block/pane_noside",
+  "textures": {
+    "pane": "blocks/glass_yellow"
+  }
 }

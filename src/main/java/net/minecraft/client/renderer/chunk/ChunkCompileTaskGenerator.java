@@ -2,15 +2,16 @@ package net.minecraft.client.renderer.chunk;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
+
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+
 import net.minecraft.client.renderer.RegionRenderCacheBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ChunkCompileTaskGenerator implements Comparable<ChunkCompileTaskGenerator>
-{
+public class ChunkCompileTaskGenerator implements Comparable<ChunkCompileTaskGenerator> {
     private final RenderChunk renderChunk;
     private final ReentrantLock lock = new ReentrantLock();
     private final List<Runnable> listFinishRunnables = Lists.<Runnable>newArrayList();
@@ -21,129 +22,101 @@ public class ChunkCompileTaskGenerator implements Comparable<ChunkCompileTaskGen
     private Status status = Status.PENDING;
     private boolean finished;
 
-    public ChunkCompileTaskGenerator(RenderChunk renderChunkIn, Type typeIn, double distanceSqIn)
-    {
+    public ChunkCompileTaskGenerator(RenderChunk renderChunkIn, Type typeIn, double distanceSqIn) {
         this.renderChunk = renderChunkIn;
         this.type = typeIn;
         this.distanceSq = distanceSqIn;
     }
 
-    public Status getStatus()
-    {
+    public Status getStatus() {
         return this.status;
     }
 
-    public RenderChunk getRenderChunk()
-    {
+    public RenderChunk getRenderChunk() {
         return this.renderChunk;
     }
 
-    public CompiledChunk getCompiledChunk()
-    {
+    public CompiledChunk getCompiledChunk() {
         return this.compiledChunk;
     }
 
-    public void setCompiledChunk(CompiledChunk compiledChunkIn)
-    {
+    public void setCompiledChunk(CompiledChunk compiledChunkIn) {
         this.compiledChunk = compiledChunkIn;
     }
 
-    public RegionRenderCacheBuilder getRegionRenderCacheBuilder()
-    {
+    public RegionRenderCacheBuilder getRegionRenderCacheBuilder() {
         return this.regionRenderCacheBuilder;
     }
 
-    public void setRegionRenderCacheBuilder(RegionRenderCacheBuilder regionRenderCacheBuilderIn)
-    {
+    public void setRegionRenderCacheBuilder(RegionRenderCacheBuilder regionRenderCacheBuilderIn) {
         this.regionRenderCacheBuilder = regionRenderCacheBuilderIn;
     }
 
-    public void setStatus(Status statusIn)
-    {
+    public void setStatus(Status statusIn) {
         this.lock.lock();
 
-        try
-        {
+        try {
             this.status = statusIn;
-        }
-        finally
-        {
+        } finally {
             this.lock.unlock();
         }
     }
 
-    public void finish()
-    {
+    public void finish() {
         this.lock.lock();
 
-        try
-        {
-            if (this.type == Type.REBUILD_CHUNK && this.status != Status.DONE)
-            {
+        try {
+            if (this.type == Type.REBUILD_CHUNK && this.status != Status.DONE) {
                 this.renderChunk.setNeedsUpdate(false);
             }
 
             this.finished = true;
             this.status = Status.DONE;
 
-            for (Runnable runnable : this.listFinishRunnables)
-            {
+            for (Runnable runnable : this.listFinishRunnables) {
                 runnable.run();
             }
-        }
-        finally
-        {
+        } finally {
             this.lock.unlock();
         }
     }
 
-    public void addFinishRunnable(Runnable runnable)
-    {
+    public void addFinishRunnable(Runnable runnable) {
         this.lock.lock();
 
-        try
-        {
+        try {
             this.listFinishRunnables.add(runnable);
 
-            if (this.finished)
-            {
+            if (this.finished) {
                 runnable.run();
             }
-        }
-        finally
-        {
+        } finally {
             this.lock.unlock();
         }
     }
 
-    public ReentrantLock getLock()
-    {
+    public ReentrantLock getLock() {
         return this.lock;
     }
 
-    public Type getType()
-    {
+    public Type getType() {
         return this.type;
     }
 
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return this.finished;
     }
 
-    public int compareTo(ChunkCompileTaskGenerator p_compareTo_1_)
-    {
+    public int compareTo(ChunkCompileTaskGenerator p_compareTo_1_) {
         return Doubles.compare(this.distanceSq, p_compareTo_1_.distanceSq);
     }
 
-    public double getDistanceSq()
-    {
+    public double getDistanceSq() {
         return this.distanceSq;
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum Status
-    {
+    public static enum Status {
         PENDING,
         COMPILING,
         UPLOADING,
@@ -151,8 +124,7 @@ public class ChunkCompileTaskGenerator implements Comparable<ChunkCompileTaskGen
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum Type
-    {
+    public static enum Type {
         REBUILD_CHUNK,
         RESORT_TRANSPARENCY;
     }

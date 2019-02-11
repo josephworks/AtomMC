@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,44 +27,32 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemWrittenBook extends Item
-{
-    public ItemWrittenBook()
-    {
+public class ItemWrittenBook extends Item {
+    public ItemWrittenBook() {
         this.setMaxStackSize(1);
     }
 
-    public static boolean validBookTagContents(NBTTagCompound nbt)
-    {
-        if (!ItemWritableBook.isNBTValid(nbt))
-        {
+    public static boolean validBookTagContents(NBTTagCompound nbt) {
+        if (!ItemWritableBook.isNBTValid(nbt)) {
             return false;
-        }
-        else if (!nbt.hasKey("title", 8))
-        {
+        } else if (!nbt.hasKey("title", 8)) {
             return false;
-        }
-        else
-        {
+        } else {
             String s = nbt.getString("title");
             return s != null && s.length() <= 32 ? nbt.hasKey("author", 8) : false;
         }
     }
 
-    public static int getGeneration(ItemStack book)
-    {
+    public static int getGeneration(ItemStack book) {
         return book.getTagCompound().getInteger("generation");
     }
 
-    public String getItemStackDisplayName(ItemStack stack)
-    {
-        if (stack.hasTagCompound())
-        {
+    public String getItemStackDisplayName(ItemStack stack) {
+        if (stack.hasTagCompound()) {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
             String s = nbttagcompound.getString("title");
 
-            if (!StringUtils.isNullOrEmpty(s))
-            {
+            if (!StringUtils.isNullOrEmpty(s)) {
                 return s;
             }
         }
@@ -72,15 +61,12 @@ public class ItemWrittenBook extends Item
     }
 
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
-        if (stack.hasTagCompound())
-        {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        if (stack.hasTagCompound()) {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
             String s = nbttagcompound.getString("author");
 
-            if (!StringUtils.isNullOrEmpty(s))
-            {
+            if (!StringUtils.isNullOrEmpty(s)) {
                 tooltip.add(TextFormatting.GRAY + I18n.translateToLocalFormatted("book.byAuthor", s));
             }
 
@@ -88,12 +74,10 @@ public class ItemWrittenBook extends Item
         }
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
 
-        if (!worldIn.isRemote)
-        {
+        if (!worldIn.isRemote) {
             this.resolveContents(itemstack, playerIn);
         }
 
@@ -102,22 +86,17 @@ public class ItemWrittenBook extends Item
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
     }
 
-    private void resolveContents(ItemStack stack, EntityPlayer player)
-    {
-        if (stack.getTagCompound() != null)
-        {
+    private void resolveContents(ItemStack stack, EntityPlayer player) {
+        if (stack.getTagCompound() != null) {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
 
-            if (!nbttagcompound.getBoolean("resolved"))
-            {
+            if (!nbttagcompound.getBoolean("resolved")) {
                 nbttagcompound.setBoolean("resolved", true);
 
-                if (validBookTagContents(nbttagcompound))
-                {
+                if (validBookTagContents(nbttagcompound)) {
                     NBTTagList nbttaglist = nbttagcompound.getTagList("pages", 8);
 
-                    for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                    {
+                    for (int i = 0; i < nbttaglist.tagCount(); ++i) {
                         String s = nbttaglist.getStringTagAt(i);
                         ITextComponent itextcomponent;
 
@@ -139,16 +118,12 @@ public class ItemWrittenBook extends Item
                         }
                         // CraftBukkit end
 
-                        try
-                        {
+                        try {
                             itextcomponent = ITextComponent.Serializer.fromJsonLenient(s);
                             itextcomponent = TextComponentUtils.processComponent(player, itextcomponent, player);
-                        }
-                        catch (Exception var9)
-                        {
+                        } catch (Exception var9) {
                             itextcomponent = new TextComponentString(s);
-                        }
-                        finally {
+                        } finally {
                             MinecraftServer.getServerCB().worlds = prev;
                         }
 
@@ -157,10 +132,9 @@ public class ItemWrittenBook extends Item
 
                     nbttagcompound.setTag("pages", nbttaglist);
 
-                    if (player instanceof EntityPlayerMP && player.getHeldItemMainhand() == stack)
-                    {
+                    if (player instanceof EntityPlayerMP && player.getHeldItemMainhand() == stack) {
                         Slot slot = player.openContainer.getSlotFromInventory(player.inventory, player.inventory.currentItem);
-                        ((EntityPlayerMP)player).connection.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
+                        ((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
                     }
                 }
             }
@@ -168,8 +142,7 @@ public class ItemWrittenBook extends Item
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack stack)
-    {
+    public boolean hasEffect(ItemStack stack) {
         return true;
     }
 }

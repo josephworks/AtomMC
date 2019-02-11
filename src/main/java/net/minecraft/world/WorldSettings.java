@@ -4,8 +4,7 @@ import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public final class WorldSettings
-{
+public final class WorldSettings {
     private final long seed;
     private final GameType gameType;
     private final boolean mapFeaturesEnabled;
@@ -15,8 +14,7 @@ public final class WorldSettings
     private boolean bonusChestEnabled;
     private String generatorOptions;
 
-    public WorldSettings(long seedIn, GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn)
-    {
+    public WorldSettings(long seedIn, GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn) {
         this.generatorOptions = "";
         this.seed = seedIn;
         this.gameType = gameType;
@@ -25,72 +23,59 @@ public final class WorldSettings
         this.terrainType = worldTypeIn;
     }
 
-    public WorldSettings(WorldInfo info)
-    {
+    public WorldSettings(WorldInfo info) {
         this(info.getSeed(), info.getGameType(), info.isMapFeaturesEnabled(), info.isHardcoreModeEnabled(), info.getTerrainType());
     }
 
-    public WorldSettings enableBonusChest()
-    {
+    public WorldSettings enableBonusChest() {
         this.bonusChestEnabled = true;
         return this;
     }
 
-    public WorldSettings setGeneratorOptions(String options)
-    {
+    public WorldSettings setGeneratorOptions(String options) {
         this.generatorOptions = options;
         return this;
     }
 
     @SideOnly(Side.CLIENT)
-    public WorldSettings enableCommands()
-    {
+    public WorldSettings enableCommands() {
         this.commandsAllowed = true;
         return this;
     }
 
-    public boolean isBonusChestEnabled()
-    {
+    public boolean isBonusChestEnabled() {
         return this.bonusChestEnabled;
     }
 
-    public long getSeed()
-    {
+    public long getSeed() {
         return this.seed;
     }
 
-    public GameType getGameType()
-    {
+    public GameType getGameType() {
         return this.gameType;
     }
 
-    public boolean getHardcoreEnabled()
-    {
+    public boolean getHardcoreEnabled() {
         return this.hardcoreEnabled;
     }
 
-    public boolean isMapFeaturesEnabled()
-    {
+    public boolean isMapFeaturesEnabled() {
         return this.mapFeaturesEnabled;
     }
 
-    public WorldType getTerrainType()
-    {
+    public WorldType getTerrainType() {
         return this.terrainType;
     }
 
-    public boolean areCommandsAllowed()
-    {
+    public boolean areCommandsAllowed() {
         return this.commandsAllowed;
     }
 
-    public static GameType getGameTypeById(int id)
-    {
+    public static GameType getGameTypeById(int id) {
         return GameType.getByID(id);
     }
 
-    public String getGeneratorOptions()
-    {
+    public String getGeneratorOptions() {
         return this.generatorOptions;
     }
 }

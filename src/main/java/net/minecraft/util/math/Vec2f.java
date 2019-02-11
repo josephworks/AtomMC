@@ -4,8 +4,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class Vec2f
-{
+public class Vec2f {
     public static final Vec2f ZERO = new Vec2f(0.0F, 0.0F);
     public static final Vec2f ONE = new Vec2f(1.0F, 1.0F);
     public static final Vec2f UNIT_X = new Vec2f(1.0F, 0.0F);
@@ -17,8 +16,7 @@ public class Vec2f
     public final float x;
     public final float y;
 
-    public Vec2f(float xIn, float yIn)
-    {
+    public Vec2f(float xIn, float yIn) {
         this.x = xIn;
         this.y = yIn;
     }

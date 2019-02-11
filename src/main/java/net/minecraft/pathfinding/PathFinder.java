@@ -1,40 +1,37 @@
 package net.minecraft.pathfinding;
 
 import com.google.common.collect.Sets;
+
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class PathFinder
-{
+public class PathFinder {
     private final PathHeap path = new PathHeap();
     private final Set<PathPoint> closedSet = Sets.<PathPoint>newHashSet();
     private final PathPoint[] pathOptions = new PathPoint[32];
     private final NodeProcessor nodeProcessor;
 
-    public PathFinder(NodeProcessor processor)
-    {
+    public PathFinder(NodeProcessor processor) {
         this.nodeProcessor = processor;
     }
 
     @Nullable
-    public Path findPath(IBlockAccess worldIn, EntityLiving entitylivingIn, Entity targetEntity, float maxDistance)
-    {
+    public Path findPath(IBlockAccess worldIn, EntityLiving entitylivingIn, Entity targetEntity, float maxDistance) {
         return this.findPath(worldIn, entitylivingIn, targetEntity.posX, targetEntity.getEntityBoundingBox().minY, targetEntity.posZ, maxDistance);
     }
 
     @Nullable
-    public Path findPath(IBlockAccess worldIn, EntityLiving entitylivingIn, BlockPos targetPos, float maxDistance)
-    {
-        return this.findPath(worldIn, entitylivingIn, (double)((float)targetPos.getX() + 0.5F), (double)((float)targetPos.getY() + 0.5F), (double)((float)targetPos.getZ() + 0.5F), maxDistance);
+    public Path findPath(IBlockAccess worldIn, EntityLiving entitylivingIn, BlockPos targetPos, float maxDistance) {
+        return this.findPath(worldIn, entitylivingIn, (double) ((float) targetPos.getX() + 0.5F), (double) ((float) targetPos.getY() + 0.5F), (double) ((float) targetPos.getZ() + 0.5F), maxDistance);
     }
 
     @Nullable
-    private Path findPath(IBlockAccess worldIn, EntityLiving entitylivingIn, double x, double y, double z, float maxDistance)
-    {
+    private Path findPath(IBlockAccess worldIn, EntityLiving entitylivingIn, double x, double y, double z, float maxDistance) {
         this.path.clearPath();
         this.nodeProcessor.init(worldIn, entitylivingIn);
         PathPoint pathpoint = this.nodeProcessor.getStart();
@@ -45,8 +42,7 @@ public class PathFinder
     }
 
     @Nullable
-    private Path findPath(PathPoint pathFrom, PathPoint pathTo, float maxDistance)
-    {
+    private Path findPath(PathPoint pathFrom, PathPoint pathTo, float maxDistance) {
         pathFrom.totalPathDistance = 0.0F;
         pathFrom.distanceToNext = pathFrom.distanceManhattan(pathTo);
         pathFrom.distanceToTarget = pathFrom.distanceToNext;
@@ -56,51 +52,42 @@ public class PathFinder
         PathPoint pathpoint = pathFrom;
         int i = 0;
 
-        while (!this.path.isPathEmpty())
-        {
+        while (!this.path.isPathEmpty()) {
             ++i;
 
-            if (i >= 200)
-            {
+            if (i >= 200) {
                 break;
             }
 
             PathPoint pathpoint1 = this.path.dequeue();
 
-            if (pathpoint1.equals(pathTo))
-            {
+            if (pathpoint1.equals(pathTo)) {
                 pathpoint = pathTo;
                 break;
             }
 
-            if (pathpoint1.distanceManhattan(pathTo) < pathpoint.distanceManhattan(pathTo))
-            {
+            if (pathpoint1.distanceManhattan(pathTo) < pathpoint.distanceManhattan(pathTo)) {
                 pathpoint = pathpoint1;
             }
 
             pathpoint1.visited = true;
             int j = this.nodeProcessor.findPathOptions(this.pathOptions, pathpoint1, pathTo, maxDistance);
 
-            for (int k = 0; k < j; ++k)
-            {
+            for (int k = 0; k < j; ++k) {
                 PathPoint pathpoint2 = this.pathOptions[k];
                 float f = pathpoint1.distanceManhattan(pathpoint2);
                 pathpoint2.distanceFromOrigin = pathpoint1.distanceFromOrigin + f;
                 pathpoint2.cost = f + pathpoint2.costMalus;
                 float f1 = pathpoint1.totalPathDistance + pathpoint2.cost;
 
-                if (pathpoint2.distanceFromOrigin < maxDistance && (!pathpoint2.isAssigned() || f1 < pathpoint2.totalPathDistance))
-                {
+                if (pathpoint2.distanceFromOrigin < maxDistance && (!pathpoint2.isAssigned() || f1 < pathpoint2.totalPathDistance)) {
                     pathpoint2.previous = pathpoint1;
                     pathpoint2.totalPathDistance = f1;
                     pathpoint2.distanceToNext = pathpoint2.distanceManhattan(pathTo) + pathpoint2.costMalus;
 
-                    if (pathpoint2.isAssigned())
-                    {
+                    if (pathpoint2.isAssigned()) {
                         this.path.changeDistance(pathpoint2, pathpoint2.totalPathDistance + pathpoint2.distanceToNext);
-                    }
-                    else
-                    {
+                    } else {
                         pathpoint2.distanceToTarget = pathpoint2.totalPathDistance + pathpoint2.distanceToNext;
                         this.path.addPoint(pathpoint2);
                     }
@@ -108,23 +95,18 @@ public class PathFinder
             }
         }
 
-        if (pathpoint == pathFrom)
-        {
+        if (pathpoint == pathFrom) {
             return null;
-        }
-        else
-        {
+        } else {
             Path path = this.createPath(pathFrom, pathpoint);
             return path;
         }
     }
 
-    private Path createPath(PathPoint start, PathPoint end)
-    {
+    private Path createPath(PathPoint start, PathPoint end) {
         int i = 1;
 
-        for (PathPoint pathpoint = end; pathpoint.previous != null; pathpoint = pathpoint.previous)
-        {
+        for (PathPoint pathpoint = end; pathpoint.previous != null; pathpoint = pathpoint.previous) {
             ++i;
         }
 
@@ -132,8 +114,7 @@ public class PathFinder
         PathPoint pathpoint1 = end;
         --i;
 
-        for (apathpoint[i] = end; pathpoint1.previous != null; apathpoint[i] = pathpoint1)
-        {
+        for (apathpoint[i] = end; pathpoint1.previous != null; apathpoint[i] = pathpoint1) {
             pathpoint1 = pathpoint1.previous;
             --i;
         }

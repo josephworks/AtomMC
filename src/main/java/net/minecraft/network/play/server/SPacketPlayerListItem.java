@@ -4,9 +4,11 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+
 import java.io.IOException;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -16,65 +18,52 @@ import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
-{
+public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient> {
     private Action action;
     private final List<AddPlayerData> players = Lists.<AddPlayerData>newArrayList();
 
-    public SPacketPlayerListItem()
-    {
+    public SPacketPlayerListItem() {
     }
 
-    public SPacketPlayerListItem(Action actionIn, EntityPlayerMP... playersIn)
-    {
+    public SPacketPlayerListItem(Action actionIn, EntityPlayerMP... playersIn) {
         this.action = actionIn;
 
-        for (EntityPlayerMP entityplayermp : playersIn)
-        {
+        for (EntityPlayerMP entityplayermp : playersIn) {
             this.players.add(new AddPlayerData(entityplayermp.getGameProfile(), entityplayermp.ping, entityplayermp.interactionManager.getGameType(), entityplayermp.getTabListDisplayName()));
         }
     }
 
-    public SPacketPlayerListItem(Action actionIn, Iterable<EntityPlayerMP> playersIn)
-    {
+    public SPacketPlayerListItem(Action actionIn, Iterable<EntityPlayerMP> playersIn) {
         this.action = actionIn;
 
-        for (EntityPlayerMP entityplayermp : playersIn)
-        {
+        for (EntityPlayerMP entityplayermp : playersIn) {
             this.players.add(new AddPlayerData(entityplayermp.getGameProfile(), entityplayermp.ping, entityplayermp.interactionManager.getGameType(), entityplayermp.getTabListDisplayName()));
         }
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.action = (Action)buf.readEnumValue(Action.class);
+    public void readPacketData(PacketBuffer buf) throws IOException {
+        this.action = (Action) buf.readEnumValue(Action.class);
         int i = buf.readVarInt();
 
-        for (int j = 0; j < i; ++j)
-        {
+        for (int j = 0; j < i; ++j) {
             GameProfile gameprofile = null;
             int k = 0;
             GameType gametype = null;
             ITextComponent itextcomponent = null;
 
-            switch (this.action)
-            {
+            switch (this.action) {
                 case ADD_PLAYER:
                     gameprofile = new GameProfile(buf.readUniqueId(), buf.readString(16));
                     int l = buf.readVarInt();
                     int i1 = 0;
 
-                    for (; i1 < l; ++i1)
-                    {
+                    for (; i1 < l; ++i1) {
                         String s = buf.readString(32767);
                         String s1 = buf.readString(32767);
 
-                        if (buf.readBoolean())
-                        {
+                        if (buf.readBoolean()) {
                             gameprofile.getProperties().put(s, new Property(s, s1, buf.readString(32767)));
-                        }
-                        else
-                        {
+                        } else {
                             gameprofile.getProperties().put(s, new Property(s, s1));
                         }
                     }
@@ -82,63 +71,54 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                     gametype = GameType.getByID(buf.readVarInt());
                     k = buf.readVarInt();
 
-                    if (buf.readBoolean())
-                    {
+                    if (buf.readBoolean()) {
                         itextcomponent = buf.readTextComponent();
                     }
 
                     break;
                 case UPDATE_GAME_MODE:
-                    gameprofile = new GameProfile(buf.readUniqueId(), (String)null);
+                    gameprofile = new GameProfile(buf.readUniqueId(), (String) null);
                     gametype = GameType.getByID(buf.readVarInt());
                     break;
                 case UPDATE_LATENCY:
-                    gameprofile = new GameProfile(buf.readUniqueId(), (String)null);
+                    gameprofile = new GameProfile(buf.readUniqueId(), (String) null);
                     k = buf.readVarInt();
                     break;
                 case UPDATE_DISPLAY_NAME:
-                    gameprofile = new GameProfile(buf.readUniqueId(), (String)null);
+                    gameprofile = new GameProfile(buf.readUniqueId(), (String) null);
 
-                    if (buf.readBoolean())
-                    {
+                    if (buf.readBoolean()) {
                         itextcomponent = buf.readTextComponent();
                     }
 
                     break;
                 case REMOVE_PLAYER:
-                    gameprofile = new GameProfile(buf.readUniqueId(), (String)null);
+                    gameprofile = new GameProfile(buf.readUniqueId(), (String) null);
             }
 
             this.players.add(new AddPlayerData(gameprofile, k, gametype, itextcomponent));
         }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeEnumValue(this.action);
         buf.writeVarInt(this.players.size());
 
-        for (AddPlayerData spacketplayerlistitem$addplayerdata : this.players)
-        {
-            switch (this.action)
-            {
+        for (AddPlayerData spacketplayerlistitem$addplayerdata : this.players) {
+            switch (this.action) {
                 case ADD_PLAYER:
                     buf.writeUniqueId(spacketplayerlistitem$addplayerdata.getProfile().getId());
                     buf.writeString(spacketplayerlistitem$addplayerdata.getProfile().getName());
                     buf.writeVarInt(spacketplayerlistitem$addplayerdata.getProfile().getProperties().size());
 
-                    for (Property property : spacketplayerlistitem$addplayerdata.getProfile().getProperties().values())
-                    {
+                    for (Property property : spacketplayerlistitem$addplayerdata.getProfile().getProperties().values()) {
                         buf.writeString(property.getName());
                         buf.writeString(property.getValue());
 
-                        if (property.hasSignature())
-                        {
+                        if (property.hasSignature()) {
                             buf.writeBoolean(true);
                             buf.writeString(property.getSignature());
-                        }
-                        else
-                        {
+                        } else {
                             buf.writeBoolean(false);
                         }
                     }
@@ -146,12 +126,9 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                     buf.writeVarInt(spacketplayerlistitem$addplayerdata.getGameMode().getID());
                     buf.writeVarInt(spacketplayerlistitem$addplayerdata.getPing());
 
-                    if (spacketplayerlistitem$addplayerdata.getDisplayName() == null)
-                    {
+                    if (spacketplayerlistitem$addplayerdata.getDisplayName() == null) {
                         buf.writeBoolean(false);
-                    }
-                    else
-                    {
+                    } else {
                         buf.writeBoolean(true);
                         buf.writeTextComponent(spacketplayerlistitem$addplayerdata.getDisplayName());
                     }
@@ -168,12 +145,9 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                 case UPDATE_DISPLAY_NAME:
                     buf.writeUniqueId(spacketplayerlistitem$addplayerdata.getProfile().getId());
 
-                    if (spacketplayerlistitem$addplayerdata.getDisplayName() == null)
-                    {
+                    if (spacketplayerlistitem$addplayerdata.getDisplayName() == null) {
                         buf.writeBoolean(false);
-                    }
-                    else
-                    {
+                    } else {
                         buf.writeBoolean(true);
                         buf.writeTextComponent(spacketplayerlistitem$addplayerdata.getDisplayName());
                     }
@@ -185,30 +159,25 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
         }
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handlePlayerListItem(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public List<AddPlayerData> getEntries()
-    {
+    public List<AddPlayerData> getEntries() {
         return this.players;
     }
 
     @SideOnly(Side.CLIENT)
-    public SPacketPlayerListItem.Action getAction()
-    {
+    public SPacketPlayerListItem.Action getAction() {
         return this.action;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return MoreObjects.toStringHelper(this).add("action", this.action).add("entries", this.players).toString();
     }
 
-    public static enum Action
-    {
+    public static enum Action {
         ADD_PLAYER,
         UPDATE_GAME_MODE,
         UPDATE_LATENCY,
@@ -216,44 +185,37 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
         REMOVE_PLAYER;
     }
 
-    public class AddPlayerData
-    {
+    public class AddPlayerData {
         private final int ping;
         private final GameType gamemode;
         private final GameProfile profile;
         private final ITextComponent displayName;
 
-        public AddPlayerData(GameProfile profileIn, int latencyIn, GameType gameModeIn, @Nullable ITextComponent displayNameIn)
-        {
+        public AddPlayerData(GameProfile profileIn, int latencyIn, GameType gameModeIn, @Nullable ITextComponent displayNameIn) {
             this.profile = profileIn;
             this.ping = latencyIn;
             this.gamemode = gameModeIn;
             this.displayName = displayNameIn;
         }
 
-        public GameProfile getProfile()
-        {
+        public GameProfile getProfile() {
             return this.profile;
         }
 
-        public int getPing()
-        {
+        public int getPing() {
             return this.ping;
         }
 
-        public GameType getGameMode()
-        {
+        public GameType getGameMode() {
             return this.gamemode;
         }
 
         @Nullable
-        public ITextComponent getDisplayName()
-        {
+        public ITextComponent getDisplayName() {
             return this.displayName;
         }
 
-        public String toString()
-        {
+        public String toString() {
             return MoreObjects.toStringHelper(this).add("latency", this.ping).add("gameMode", this.gamemode).add("profile", this.profile).add("displayName", this.displayName == null ? null : ITextComponent.Serializer.componentToJson(this.displayName)).toString();
         }
     }

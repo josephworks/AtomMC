@@ -56,7 +56,7 @@ public class CraftSkull extends CraftBlockEntityState<TileEntitySkull> implement
     }
 
     static int getSkullType(SkullType type) {
-        switch(type) {
+        switch (type) {
             default:
             case SKELETON:
                 return 0;

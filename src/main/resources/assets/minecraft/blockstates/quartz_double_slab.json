@@ -1,6 +1,10 @@
 {
-    "variants": {
-        "normal": { "model": "quartz_normal" },
-        "all":    { "model": "quartz_top" }
+  "variants": {
+    "normal": {
+      "model": "quartz_normal"
+    },
+    "all": {
+      "model": "quartz_top"
     }
+  }
 }

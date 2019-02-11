@@ -12,26 +12,23 @@ import net.minecraft.util.text.TextComponentTranslation;
 import java.net.InetAddress;
 import java.util.HashMap;
 
-public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
-{
+public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer {
     private final MinecraftServer server;
     private final NetworkManager networkManager;
 
     private static final HashMap<InetAddress, Long> throttleTracker = new HashMap<InetAddress, Long>();
     private static int throttleCounter = 0;
 
-    public NetHandlerHandshakeTCP(MinecraftServer serverIn, NetworkManager netManager)
-    {
+    public NetHandlerHandshakeTCP(MinecraftServer serverIn, NetworkManager netManager) {
         this.server = serverIn;
         this.networkManager = netManager;
     }
 
-    public void processHandshake(C00Handshake packetIn)
-    {
-        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
+    public void processHandshake(C00Handshake packetIn) {
+        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager))
+            return;
 
-        switch (packetIn.getRequestedState())
-        {
+        switch (packetIn.getRequestedState()) {
             case LOGIN:
                 this.networkManager.setConnectionState(EnumConnectionState.LOGIN);
 
@@ -70,20 +67,15 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
                 }
                 // CraftBukkit end
 
-                if (packetIn.getProtocolVersion() > 340)
-                {
-                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", new Object[] {"1.12.2"});
+                if (packetIn.getProtocolVersion() > 340) {
+                    ITextComponent itextcomponent = new TextComponentTranslation("multiplayer.disconnect.outdated_server", new Object[]{"1.12.2"});
                     this.networkManager.sendPacket(new SPacketDisconnect(itextcomponent));
                     this.networkManager.closeChannel(itextcomponent);
-                }
-                else if (packetIn.getProtocolVersion() < 340)
-                {
-                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", new Object[] {"1.12.2"});
+                } else if (packetIn.getProtocolVersion() < 340) {
+                    ITextComponent itextcomponent1 = new TextComponentTranslation("multiplayer.disconnect.outdated_client", new Object[]{"1.12.2"});
                     this.networkManager.sendPacket(new SPacketDisconnect(itextcomponent1));
                     this.networkManager.closeChannel(itextcomponent1);
-                }
-                else
-                {
+                } else {
                     this.networkManager.setNetHandler(new NetHandlerLoginServer(this.server, this.networkManager));
                     ((NetHandlerLoginServer) this.networkManager.getNetHandler()).hostname = packetIn.ip + ":" + packetIn.port; // CraftBukkit - set hostname
                 }
@@ -98,7 +90,6 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
         }
     }
 
-    public void onDisconnect(ITextComponent reason)
-    {
+    public void onDisconnect(ITextComponent reason) {
     }
 }

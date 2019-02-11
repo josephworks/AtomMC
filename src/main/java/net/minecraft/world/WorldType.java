@@ -3,8 +3,7 @@ package net.minecraft.world;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class WorldType
-{
+public class WorldType {
     public static WorldType[] WORLD_TYPES = new WorldType[16];
     public static final WorldType DEFAULT = (new WorldType(0, "default", 1)).setVersioned();
     public static final WorldType FLAT = new WorldType(1, "flat");
@@ -20,14 +19,13 @@ public class WorldType
     private boolean versioned;
     private boolean hasInfoNotice;
 
-    private WorldType(int id, String name)
-    {
+    private WorldType(int id, String name) {
         this(id, name, 0);
     }
 
-    private WorldType(int id, String name, int version)
-    {
-        if (name.length() > 16 && DEBUG_ALL_BLOCK_STATES != null) throw new IllegalArgumentException("World type names must not be longer then 16: " + name);
+    private WorldType(int id, String name, int version) {
+        if (name.length() > 16 && DEBUG_ALL_BLOCK_STATES != null)
+            throw new IllegalArgumentException("World type names must not be longer then 16: " + name);
         this.name = name;
         this.version = version;
         this.canBeCreated = true;
@@ -35,62 +33,50 @@ public class WorldType
         WORLD_TYPES[id] = this;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
     @SideOnly(Side.CLIENT)
-    public String getTranslationKey()
-    {
+    public String getTranslationKey() {
         return "generator." + this.name;
     }
 
     @SideOnly(Side.CLIENT)
-    public String getInfoTranslationKey()
-    {
+    public String getInfoTranslationKey() {
         return this.getTranslationKey() + ".info";
     }
 
-    public int getVersion()
-    {
+    public int getVersion() {
         return this.version;
     }
 
-    public WorldType getWorldTypeForGeneratorVersion(int version)
-    {
+    public WorldType getWorldTypeForGeneratorVersion(int version) {
         return this == DEFAULT && version == 0 ? DEFAULT_1_1 : this;
     }
 
-    private WorldType setCanBeCreated(boolean enable)
-    {
+    private WorldType setCanBeCreated(boolean enable) {
         this.canBeCreated = enable;
         return this;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean canBeCreated()
-    {
+    public boolean canBeCreated() {
         return this.canBeCreated;
     }
 
-    private WorldType setVersioned()
-    {
+    private WorldType setVersioned() {
         this.versioned = true;
         return this;
     }
 
-    public boolean isVersioned()
-    {
+    public boolean isVersioned() {
         return this.versioned;
     }
 
-    public static WorldType parseWorldType(String type)
-    {
-        for (WorldType worldtype : WORLD_TYPES)
-        {
-            if (worldtype != null && worldtype.name.equalsIgnoreCase(type))
-            {
+    public static WorldType parseWorldType(String type) {
+        for (WorldType worldtype : WORLD_TYPES) {
+            if (worldtype != null && worldtype.name.equalsIgnoreCase(type)) {
                 return worldtype;
             }
         }
@@ -98,75 +84,60 @@ public class WorldType
         return null;
     }
 
-    public int getId()
-    {
+    public int getId() {
         return this.id;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean hasInfoNotice()
-    {
+    public boolean hasInfoNotice() {
         return this.hasInfoNotice;
     }
 
-    private WorldType enableInfoNotice()
-    {
+    private WorldType enableInfoNotice() {
         this.hasInfoNotice = true;
         return this;
     }
 
-    public net.minecraft.world.biome.BiomeProvider getBiomeProvider(World world)
-    {
-        if (this == FLAT)
-        {
+    public net.minecraft.world.biome.BiomeProvider getBiomeProvider(World world) {
+        if (this == FLAT) {
             net.minecraft.world.gen.FlatGeneratorInfo flatgeneratorinfo = net.minecraft.world.gen.FlatGeneratorInfo.createFlatGeneratorFromString(world.getWorldInfo().getGeneratorOptions());
             return new net.minecraft.world.biome.BiomeProviderSingle(net.minecraft.world.biome.Biome.getBiome(flatgeneratorinfo.getBiome(), net.minecraft.init.Biomes.DEFAULT));
-        }
-        else if (this == DEBUG_ALL_BLOCK_STATES)
-        {
+        } else if (this == DEBUG_ALL_BLOCK_STATES) {
             return new net.minecraft.world.biome.BiomeProviderSingle(net.minecraft.init.Biomes.PLAINS);
-        }
-        else
-        {
+        } else {
             return new net.minecraft.world.biome.BiomeProvider(world.getWorldInfo());
         }
     }
 
-    public net.minecraft.world.gen.IChunkGenerator getChunkGenerator(World world, String generatorOptions)
-    {
-        if (this == FLAT) return new net.minecraft.world.gen.ChunkGeneratorFlat(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), generatorOptions);
+    public net.minecraft.world.gen.IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
+        if (this == FLAT)
+            return new net.minecraft.world.gen.ChunkGeneratorFlat(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), generatorOptions);
         if (this == DEBUG_ALL_BLOCK_STATES) return new net.minecraft.world.gen.ChunkGeneratorDebug(world);
-        if (this == CUSTOMIZED) return new net.minecraft.world.gen.ChunkGeneratorOverworld(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), generatorOptions);
+        if (this == CUSTOMIZED)
+            return new net.minecraft.world.gen.ChunkGeneratorOverworld(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), generatorOptions);
         return new net.minecraft.world.gen.ChunkGeneratorOverworld(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), generatorOptions);
     }
 
-    public int getMinimumSpawnHeight(World world)
-    {
+    public int getMinimumSpawnHeight(World world) {
         return this == FLAT ? 4 : world.getSeaLevel() + 1;
     }
 
-    public double getHorizon(World world)
-    {
+    public double getHorizon(World world) {
         return this == FLAT ? 0.0D : 63.0D;
     }
 
-    public double voidFadeMagnitude()
-    {
+    public double voidFadeMagnitude() {
         return this == FLAT ? 1.0D : 0.03125D;
     }
 
-    public boolean handleSlimeSpawnReduction(java.util.Random random, World world)
-    {
+    public boolean handleSlimeSpawnReduction(java.util.Random random, World world) {
         return this == FLAT ? random.nextInt(4) != 1 : false;
     }
 
     /*=================================================== FORGE START ======================================*/
-    private static int getNextID()
-    {
-        for (int x = 0; x < WORLD_TYPES.length; x++)
-        {
-            if (WORLD_TYPES[x] == null)
-            {
+    private static int getNextID() {
+        for (int x = 0; x < WORLD_TYPES.length; x++) {
+            if (WORLD_TYPES[x] == null) {
                 return x;
             }
         }
@@ -179,62 +150,60 @@ public class WorldType
     /**
      * Creates a new world type, the ID is hidden and should not be referenced by modders.
      * It will automatically expand the underlying workdType array if there are no IDs left.
+     *
      * @param name
      */
-    public WorldType(String name)
-    {
+    public WorldType(String name) {
         this(getNextID(), name);
     }
 
     /**
      * Called when 'Create New World' button is pressed before starting game
      */
-    public void onGUICreateWorldPress() { }
+    public void onGUICreateWorldPress() {
+    }
 
     /**
      * Gets the spawn fuzz for players who join the world.
      * Useful for void world types.
+     *
      * @return Fuzz for entity initial spawn in blocks.
      */
-    public int getSpawnFuzz(WorldServer world, net.minecraft.server.MinecraftServer server)
-    {
+    public int getSpawnFuzz(WorldServer world, net.minecraft.server.MinecraftServer server) {
         return Math.max(0, server.getSpawnRadius(world));
     }
 
     /**
      * Called when the 'Customize' button is pressed on world creation GUI
-     * @param mc The Minecraft instance
+     *
+     * @param mc             The Minecraft instance
      * @param guiCreateWorld the createworld GUI
      */
     @SideOnly(Side.CLIENT)
-    public void onCustomizeButton(net.minecraft.client.Minecraft mc, net.minecraft.client.gui.GuiCreateWorld guiCreateWorld)
-    {
-        if (this == WorldType.FLAT)
-        {
+    public void onCustomizeButton(net.minecraft.client.Minecraft mc, net.minecraft.client.gui.GuiCreateWorld guiCreateWorld) {
+        if (this == WorldType.FLAT) {
             mc.displayGuiScreen(new net.minecraft.client.gui.GuiCreateFlatWorld(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
-        }
-        else if (this == WorldType.CUSTOMIZED)
-        {
+        } else if (this == WorldType.CUSTOMIZED) {
             mc.displayGuiScreen(new net.minecraft.client.gui.GuiCustomizeWorldScreen(guiCreateWorld, guiCreateWorld.chunkProviderSettingsJson));
         }
     }
 
     /**
      * Should world creation GUI show 'Customize' button for this world type?
+     *
      * @return if this world type has customization parameters
      */
-    public boolean isCustomizable()
-    {
+    public boolean isCustomizable() {
         return this == FLAT || this == WorldType.CUSTOMIZED;
     }
 
 
     /**
      * Get the height to render the clouds for this world type
+     *
      * @return The height to render clouds at
      */
-    public float getCloudHeight()
-    {
+    public float getCloudHeight() {
         return 128.0F;
     }
 
@@ -242,14 +211,12 @@ public class WorldType
      * Creates the GenLayerBiome used for generating the world with the specified ChunkProviderSettings JSON String
      * *IF AND ONLY IF* this WorldType == WorldType.CUSTOMIZED.
      *
-     *
-     * @param worldSeed The world seed
-     * @param parentLayer The parent layer to feed into any layer you return
+     * @param worldSeed     The world seed
+     * @param parentLayer   The parent layer to feed into any layer you return
      * @param chunkSettings The ChunkGeneratorSettings constructed from the custom JSON
      * @return A GenLayer that will return ints representing the Biomes to be generated, see GenLayerBiome
      */
-    public net.minecraft.world.gen.layer.GenLayer getBiomeLayer(long worldSeed, net.minecraft.world.gen.layer.GenLayer parentLayer, net.minecraft.world.gen.ChunkGeneratorSettings chunkSettings)
-    {
+    public net.minecraft.world.gen.layer.GenLayer getBiomeLayer(long worldSeed, net.minecraft.world.gen.layer.GenLayer parentLayer, net.minecraft.world.gen.ChunkGeneratorSettings chunkSettings) {
         net.minecraft.world.gen.layer.GenLayer ret = new net.minecraft.world.gen.layer.GenLayerBiome(200L, parentLayer, this, chunkSettings);
         ret = net.minecraft.world.gen.layer.GenLayerZoom.magnify(1000L, ret, 2);
         ret = new net.minecraft.world.gen.layer.GenLayerBiomeEdge(1000L, ret);

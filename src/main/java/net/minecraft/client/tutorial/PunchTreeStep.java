@@ -1,7 +1,9 @@
 package net.minecraft.client.tutorial;
 
 import com.google.common.collect.Sets;
+
 import java.util.Set;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -18,103 +20,78 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class PunchTreeStep implements ITutorialStep
-{
+public class PunchTreeStep implements ITutorialStep {
     private static final Set<Block> LOG_BLOCKS = Sets.newHashSet(Blocks.LOG, Blocks.LOG2);
     private static final ITextComponent TITLE = new TextComponentTranslation("tutorial.punch_tree.title", new Object[0]);
-    private static final ITextComponent DESCRIPTION = new TextComponentTranslation("tutorial.punch_tree.description", new Object[] {Tutorial.createKeybindComponent("attack")});
+    private static final ITextComponent DESCRIPTION = new TextComponentTranslation("tutorial.punch_tree.description", new Object[]{Tutorial.createKeybindComponent("attack")});
     private final Tutorial tutorial;
     private TutorialToast toast;
     private int timeWaiting;
     private int resetCount;
 
-    public PunchTreeStep(Tutorial tutorial)
-    {
+    public PunchTreeStep(Tutorial tutorial) {
         this.tutorial = tutorial;
     }
 
-    public void update()
-    {
+    public void update() {
         ++this.timeWaiting;
 
-        if (this.tutorial.getGameType() != GameType.SURVIVAL)
-        {
+        if (this.tutorial.getGameType() != GameType.SURVIVAL) {
             this.tutorial.setStep(TutorialSteps.NONE);
-        }
-        else
-        {
-            if (this.timeWaiting == 1)
-            {
+        } else {
+            if (this.timeWaiting == 1) {
                 EntityPlayerSP entityplayersp = this.tutorial.getMinecraft().player;
 
-                if (entityplayersp != null)
-                {
-                    for (Block block : LOG_BLOCKS)
-                    {
-                        if (entityplayersp.inventory.hasItemStack(new ItemStack(block)))
-                        {
+                if (entityplayersp != null) {
+                    for (Block block : LOG_BLOCKS) {
+                        if (entityplayersp.inventory.hasItemStack(new ItemStack(block))) {
                             this.tutorial.setStep(TutorialSteps.CRAFT_PLANKS);
                             return;
                         }
                     }
 
-                    if (FindTreeStep.hasPunchedTreesPreviously(entityplayersp))
-                    {
+                    if (FindTreeStep.hasPunchedTreesPreviously(entityplayersp)) {
                         this.tutorial.setStep(TutorialSteps.CRAFT_PLANKS);
                         return;
                     }
                 }
             }
 
-            if ((this.timeWaiting >= 600 || this.resetCount > 3) && this.toast == null)
-            {
+            if ((this.timeWaiting >= 600 || this.resetCount > 3) && this.toast == null) {
                 this.toast = new TutorialToast(TutorialToast.Icons.TREE, TITLE, DESCRIPTION, true);
                 this.tutorial.getMinecraft().getToastGui().add(this.toast);
             }
         }
     }
 
-    public void onStop()
-    {
-        if (this.toast != null)
-        {
+    public void onStop() {
+        if (this.toast != null) {
             this.toast.hide();
             this.toast = null;
         }
     }
 
-    public void onHitBlock(WorldClient worldIn, BlockPos pos, IBlockState state, float diggingStage)
-    {
+    public void onHitBlock(WorldClient worldIn, BlockPos pos, IBlockState state, float diggingStage) {
         boolean flag = LOG_BLOCKS.contains(state.getBlock());
 
-        if (flag && diggingStage > 0.0F)
-        {
-            if (this.toast != null)
-            {
+        if (flag && diggingStage > 0.0F) {
+            if (this.toast != null) {
                 this.toast.setProgress(diggingStage);
             }
 
-            if (diggingStage >= 1.0F)
-            {
+            if (diggingStage >= 1.0F) {
                 this.tutorial.setStep(TutorialSteps.OPEN_INVENTORY);
             }
-        }
-        else if (this.toast != null)
-        {
+        } else if (this.toast != null) {
             this.toast.setProgress(0.0F);
-        }
-        else if (flag)
-        {
+        } else if (flag) {
             ++this.resetCount;
         }
     }
 
-    public void handleSetSlot(ItemStack stack)
-    {
-        for (Block block : LOG_BLOCKS)
-        {
-            if (stack.getItem() == Item.getItemFromBlock(block))
-            {
+    public void handleSetSlot(ItemStack stack) {
+        for (Block block : LOG_BLOCKS) {
+            if (stack.getItem() == Item.getItemFromBlock(block)) {
                 this.tutorial.setStep(TutorialSteps.CRAFT_PLANKS);
                 return;
             }

@@ -7,6 +7,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -38,8 +40,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 
-public class EntitySelector
-{
+public class EntitySelector {
     private static final Pattern TOKEN_PATTERN = Pattern.compile("^@([pares])(?:\\[([^ ]*)\\])?$");
     private static final Splitter COMMA_SPLITTER = Splitter.on(',').omitEmptyStrings();
     private static final Splitter EQUAL_SPLITTER = Splitter.on('=').limit(2);
@@ -64,54 +65,43 @@ public class EntitySelector
     private static final String ARGUMENT_PLAYER_NAME = addArgument("name");
     private static final String ARGUMENT_ENTITY_TYPE = addArgument("type");
     private static final String ARGUMENT_ENTITY_TAG = addArgument("tag");
-    private static final Predicate<String> IS_VALID_ARGUMENT = new Predicate<String>()
-    {
-        public boolean apply(@Nullable String p_apply_1_)
-        {
+    private static final Predicate<String> IS_VALID_ARGUMENT = new Predicate<String>() {
+        public boolean apply(@Nullable String p_apply_1_) {
             return p_apply_1_ != null && (EntitySelector.VALID_ARGUMENTS.contains(p_apply_1_) || p_apply_1_.length() > "score_".length() && p_apply_1_.startsWith("score_"));
         }
     };
     private static final Set<String> WORLD_BINDING_ARGS = Sets.newHashSet(ARGUMENT_COORDINATE_X, ARGUMENT_COORDINATE_Y, ARGUMENT_COORDINATE_Z, ARGUMENT_DELTA_X, ARGUMENT_DELTA_Y, ARGUMENT_DELTA_Z, ARGUMENT_RANGE_MIN, ARGUMENT_RANGE_MAX);
 
-    public static String addArgument(String argument)
-    {
+    public static String addArgument(String argument) {
         VALID_ARGUMENTS.add(argument);
         return argument;
     }
 
     @Nullable
-    public static EntityPlayerMP matchOnePlayer(ICommandSender sender, String token) throws CommandException
-    {
-        return (EntityPlayerMP)matchOneEntity(sender, token, EntityPlayerMP.class);
+    public static EntityPlayerMP matchOnePlayer(ICommandSender sender, String token) throws CommandException {
+        return (EntityPlayerMP) matchOneEntity(sender, token, EntityPlayerMP.class);
     }
 
-    public static List<EntityPlayerMP> getPlayers(ICommandSender sender, String token) throws CommandException
-    {
+    public static List<EntityPlayerMP> getPlayers(ICommandSender sender, String token) throws CommandException {
         return matchEntities(sender, token, EntityPlayerMP.class);
     }
 
     @Nullable
-    public static <T extends Entity> T matchOneEntity(ICommandSender sender, String token, Class <? extends T > targetClass) throws CommandException
-    {
+    public static <T extends Entity> T matchOneEntity(ICommandSender sender, String token, Class<? extends T> targetClass) throws CommandException {
         List<T> list = matchEntities(sender, token, targetClass);
-        return (T)(list.size() == 1 ? (Entity)list.get(0) : null);
+        return (T) (list.size() == 1 ? (Entity) list.get(0) : null);
     }
 
     @Nullable
-    public static ITextComponent matchEntitiesToTextComponent(ICommandSender sender, String token) throws CommandException
-    {
+    public static ITextComponent matchEntitiesToTextComponent(ICommandSender sender, String token) throws CommandException {
         List<Entity> list = matchEntities(sender, token, Entity.class);
 
-        if (list.isEmpty())
-        {
+        if (list.isEmpty()) {
             return null;
-        }
-        else
-        {
+        } else {
             List<ITextComponent> list1 = Lists.<ITextComponent>newArrayList();
 
-            for (Entity entity : list)
-            {
+            for (Entity entity : list) {
                 list1.add(entity.getDisplayName());
             }
 
@@ -119,35 +109,27 @@ public class EntitySelector
         }
     }
 
-    public static <T extends Entity> List<T> matchEntities(ICommandSender sender, String token, Class <? extends T > targetClass) throws CommandException
-    {
+    public static <T extends Entity> List<T> matchEntities(ICommandSender sender, String token, Class<? extends T> targetClass) throws CommandException {
         return net.minecraftforge.common.command.SelectorHandlerManager.matchEntities(sender, token, targetClass);
     }
 
-    public static <T extends Entity> List<T> matchEntitiesDefault(ICommandSender sender, String token, Class <? extends T > targetClass) throws CommandException
-    {
+    public static <T extends Entity> List<T> matchEntitiesDefault(ICommandSender sender, String token, Class<? extends T> targetClass) throws CommandException {
         Matcher matcher = TOKEN_PATTERN.matcher(token);
 
-        if (matcher.matches() && sender.canUseCommand(1, "@"))
-        {
+        if (matcher.matches() && sender.canUseCommand(1, "@")) {
             Map<String, String> map = getArgumentMap(matcher.group(2));
 
-            if (!isEntityTypeValid(sender, map))
-            {
+            if (!isEntityTypeValid(sender, map)) {
                 return Collections.<T>emptyList();
-            }
-            else
-            {
+            } else {
                 String s = matcher.group(1);
                 BlockPos blockpos = getBlockPosFromArguments(map, sender.getPosition());
                 Vec3d vec3d = getPosFromArguments(map, sender.getPositionVector());
                 List<World> list = getWorlds(sender, map);
                 List<T> list1 = Lists.<T>newArrayList();
 
-                for (World world : list)
-                {
-                    if (world != null)
-                    {
+                for (World world : list) {
+                    if (world != null) {
                         List<Predicate<Entity>> list2 = Lists.<Predicate<Entity>>newArrayList();
                         list2.addAll(getTypePredicates(map, s));
                         list2.addAll(getXpLevelPredicates(map));
@@ -160,34 +142,28 @@ public class EntitySelector
                         list2.addAll(getRotationsPredicates(map));
                         list2.addAll(net.minecraftforge.fml.common.registry.GameRegistry.createEntitySelectors(map, s, sender, vec3d));
 
-                        if ("s".equalsIgnoreCase(s))
-                        {
+                        if ("s".equalsIgnoreCase(s)) {
                             Entity entity = sender.getCommandSenderEntity();
 
-                            if (entity != null && targetClass.isAssignableFrom(entity.getClass()))
-                            {
-                                if (map.containsKey(ARGUMENT_DELTA_X) || map.containsKey(ARGUMENT_DELTA_Y) || map.containsKey(ARGUMENT_DELTA_Z))
-                                {
+                            if (entity != null && targetClass.isAssignableFrom(entity.getClass())) {
+                                if (map.containsKey(ARGUMENT_DELTA_X) || map.containsKey(ARGUMENT_DELTA_Y) || map.containsKey(ARGUMENT_DELTA_Z)) {
                                     int i = getInt(map, ARGUMENT_DELTA_X, 0);
                                     int j = getInt(map, ARGUMENT_DELTA_Y, 0);
                                     int k = getInt(map, ARGUMENT_DELTA_Z, 0);
                                     AxisAlignedBB axisalignedbb = getAABB(blockpos, i, j, k);
 
-                                    if (!axisalignedbb.intersects(entity.getEntityBoundingBox()))
-                                    {
+                                    if (!axisalignedbb.intersects(entity.getEntityBoundingBox())) {
                                         return Collections.<T>emptyList();
                                     }
                                 }
 
-                                for (Predicate<Entity> predicate : list2)
-                                {
-                                    if (!predicate.apply(entity))
-                                    {
+                                for (Predicate<Entity> predicate : list2) {
+                                    if (!predicate.apply(entity)) {
                                         return Collections.<T>emptyList();
                                     }
                                 }
 
-                                return Lists.newArrayList((T)entity);
+                                return Lists.newArrayList((T) entity);
                             }
 
                             return Collections.<T>emptyList();
@@ -199,48 +175,35 @@ public class EntitySelector
 
                 return getEntitiesFromPredicates(list1, map, sender, targetClass, s, vec3d);
             }
-        }
-        else
-        {
+        } else {
             return Collections.<T>emptyList();
         }
     }
 
-    private static List<World> getWorlds(ICommandSender sender, Map<String, String> argumentMap)
-    {
+    private static List<World> getWorlds(ICommandSender sender, Map<String, String> argumentMap) {
         List<World> list = Lists.<World>newArrayList();
 
-        if (hasArgument(argumentMap))
-        {
+        if (hasArgument(argumentMap)) {
             list.add(sender.getEntityWorld());
-        }
-        else
-        {
+        } else {
             Collections.addAll(list, sender.getServer().worlds);
         }
 
         return list;
     }
 
-    private static <T extends Entity> boolean isEntityTypeValid(ICommandSender commandSender, Map<String, String> params)
-    {
+    private static <T extends Entity> boolean isEntityTypeValid(ICommandSender commandSender, Map<String, String> params) {
         String s = getArgument(params, ARGUMENT_ENTITY_TYPE);
 
-        if (s == null)
-        {
+        if (s == null) {
             return true;
-        }
-        else
-        {
+        } else {
             ResourceLocation resourcelocation = new ResourceLocation(s.startsWith("!") ? s.substring(1) : s);
 
-            if (EntityList.isRegistered(resourcelocation))
-            {
+            if (EntityList.isRegistered(resourcelocation)) {
                 return true;
-            }
-            else
-            {
-                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.entity.invalidType", new Object[] {resourcelocation});
+            } else {
+                TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.entity.invalidType", new Object[]{resourcelocation});
                 textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
                 commandSender.sendMessage(textcomponenttranslation);
                 return false;
@@ -248,53 +211,38 @@ public class EntitySelector
         }
     }
 
-    private static List<Predicate<Entity>> getTypePredicates(Map<String, String> params, String type)
-    {
+    private static List<Predicate<Entity>> getTypePredicates(Map<String, String> params, String type) {
         String s = getArgument(params, ARGUMENT_ENTITY_TYPE);
 
-        if (s == null || !type.equals("e") && !type.equals("r") && !type.equals("s"))
-        {
-            return !type.equals("e") && !type.equals("s") ? Collections.singletonList(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
+        if (s == null || !type.equals("e") && !type.equals("r") && !type.equals("s")) {
+            return !type.equals("e") && !type.equals("s") ? Collections.singletonList(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
                     return p_apply_1_ instanceof EntityPlayer;
                 }
             }) : Collections.emptyList();
-        }
-        else
-        {
+        } else {
             final boolean flag = s.startsWith("!");
             final ResourceLocation resourcelocation = new ResourceLocation(flag ? s.substring(1) : s);
-            return Collections.singletonList(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
+            return Collections.singletonList(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
                     return EntityList.isMatchingName(p_apply_1_, resourcelocation) != flag;
                 }
             });
         }
     }
 
-    private static List<Predicate<Entity>> getXpLevelPredicates(Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getXpLevelPredicates(Map<String, String> params) {
         List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
         final int i = getInt(params, ARGUMENT_LEVEL_MIN, -1);
         final int j = getInt(params, ARGUMENT_LEVEL_MAX, -1);
 
-        if (i > -1 || j > -1)
-        {
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (!(p_apply_1_ instanceof EntityPlayerMP))
-                    {
+        if (i > -1 || j > -1) {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (!(p_apply_1_ instanceof EntityPlayerMP)) {
                         return false;
-                    }
-                    else
-                    {
-                        EntityPlayerMP entityplayermp = (EntityPlayerMP)p_apply_1_;
+                    } else {
+                        EntityPlayerMP entityplayermp = (EntityPlayerMP) p_apply_1_;
                         return (i <= -1 || entityplayermp.experienceLevel >= i) && (j <= -1 || entityplayermp.experienceLevel <= j);
                     }
                 }
@@ -304,48 +252,35 @@ public class EntitySelector
         return list;
     }
 
-    private static List<Predicate<Entity>> getGamemodePredicates(Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getGamemodePredicates(Map<String, String> params) {
         List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
         String s = getArgument(params, ARGUMENT_MODE);
 
-        if (s == null)
-        {
+        if (s == null) {
             return list;
-        }
-        else
-        {
+        } else {
             final boolean flag = s.startsWith("!");
 
-            if (flag)
-            {
+            if (flag) {
                 s = s.substring(1);
             }
 
             GameType gametype;
 
-            try
-            {
+            try {
                 int i = Integer.parseInt(s);
                 gametype = GameType.parseGameTypeWithDefault(i, GameType.NOT_SET);
-            }
-            catch (Throwable var6)
-            {
+            } catch (Throwable var6) {
                 gametype = GameType.parseGameTypeWithDefault(s, GameType.NOT_SET);
             }
 
             final GameType type = gametype;
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (!(p_apply_1_ instanceof EntityPlayerMP))
-                    {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (!(p_apply_1_ instanceof EntityPlayerMP)) {
                         return false;
-                    }
-                    else
-                    {
-                        EntityPlayerMP entityplayermp = (EntityPlayerMP)p_apply_1_;
+                    } else {
+                        EntityPlayerMP entityplayermp = (EntityPlayerMP) p_apply_1_;
                         GameType gametype1 = entityplayermp.interactionManager.getGameType();
                         return flag ? gametype1 != type : gametype1 == type;
                     }
@@ -355,31 +290,23 @@ public class EntitySelector
         }
     }
 
-    private static List<Predicate<Entity>> getTeamPredicates(Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getTeamPredicates(Map<String, String> params) {
         List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
         String s = getArgument(params, ARGUMENT_TEAM_NAME);
         final boolean flag = s != null && s.startsWith("!");
 
-        if (flag)
-        {
+        if (flag) {
             s = s.substring(1);
         }
 
-        if (s != null)
-        {
+        if (s != null) {
             final String s_f_ = s;
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (!(p_apply_1_ instanceof EntityLivingBase))
-                    {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (!(p_apply_1_ instanceof EntityLivingBase)) {
                         return false;
-                    }
-                    else
-                    {
-                        EntityLivingBase entitylivingbase = (EntityLivingBase)p_apply_1_;
+                    } else {
+                        EntityLivingBase entitylivingbase = (EntityLivingBase) p_apply_1_;
                         Team team = entitylivingbase.getTeam();
                         String s1 = team == null ? "" : team.getName();
                         return s1.equals(s_f_) != flag;
@@ -391,56 +318,44 @@ public class EntitySelector
         return list;
     }
 
-    private static List<Predicate<Entity>> getScorePredicates(final ICommandSender sender, Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getScorePredicates(final ICommandSender sender, Map<String, String> params) {
         final Map<String, Integer> map = getScoreMap(params);
-        return (List<Predicate<Entity>>)(map.isEmpty() ? Collections.emptyList() : Lists.newArrayList(new Predicate<Entity>()
-        {
-            public boolean apply(@Nullable Entity p_apply_1_)
-            {
-                if (p_apply_1_ == null)
-                {
+        return (List<Predicate<Entity>>) (map.isEmpty() ? Collections.emptyList() : Lists.newArrayList(new Predicate<Entity>() {
+            public boolean apply(@Nullable Entity p_apply_1_) {
+                if (p_apply_1_ == null) {
                     return false;
-                }
-                else
-                {
+                } else {
                     Scoreboard scoreboard = sender.getServer().getWorld(0).getScoreboard();
 
-                    for (Entry<String, Integer> entry : map.entrySet())
-                    {
+                    for (Entry<String, Integer> entry : map.entrySet()) {
                         String s = entry.getKey();
                         boolean flag = false;
 
-                        if (s.endsWith("_min") && s.length() > 4)
-                        {
+                        if (s.endsWith("_min") && s.length() > 4) {
                             flag = true;
                             s = s.substring(0, s.length() - 4);
                         }
 
                         ScoreObjective scoreobjective = scoreboard.getObjective(s);
 
-                        if (scoreobjective == null)
-                        {
+                        if (scoreobjective == null) {
                             return false;
                         }
 
                         String s1 = p_apply_1_ instanceof EntityPlayerMP ? p_apply_1_.getName() : p_apply_1_.getCachedUniqueIdString();
 
-                        if (!scoreboard.entityHasObjective(s1, scoreobjective))
-                        {
+                        if (!scoreboard.entityHasObjective(s1, scoreobjective)) {
                             return false;
                         }
 
                         Score score = scoreboard.getOrCreateScore(s1, scoreobjective);
                         int i = score.getScorePoints();
 
-                        if (i < ((Integer)entry.getValue()).intValue() && flag)
-                        {
+                        if (i < ((Integer) entry.getValue()).intValue() && flag) {
                             return false;
                         }
 
-                        if (i > ((Integer)entry.getValue()).intValue() && !flag)
-                        {
+                        if (i > ((Integer) entry.getValue()).intValue() && !flag) {
                             return false;
                         }
                     }
@@ -451,24 +366,19 @@ public class EntitySelector
         }));
     }
 
-    private static List<Predicate<Entity>> getNamePredicates(Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getNamePredicates(Map<String, String> params) {
         List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
         String s = getArgument(params, ARGUMENT_PLAYER_NAME);
         final boolean flag = s != null && s.startsWith("!");
 
-        if (flag)
-        {
+        if (flag) {
             s = s.substring(1);
         }
 
-        if (s != null)
-        {
+        if (s != null) {
             final String s_f_ = s;
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
                     return p_apply_1_ != null && p_apply_1_.getName().equals(s_f_) != flag;
                 }
             });
@@ -477,34 +387,24 @@ public class EntitySelector
         return list;
     }
 
-    private static List<Predicate<Entity>> getTagPredicates(Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getTagPredicates(Map<String, String> params) {
         List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
         String s = getArgument(params, ARGUMENT_ENTITY_TAG);
         final boolean flag = s != null && s.startsWith("!");
 
-        if (flag)
-        {
+        if (flag) {
             s = s.substring(1);
         }
 
-        if (s != null)
-        {
+        if (s != null) {
             final String s_f_ = s;
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (p_apply_1_ == null)
-                    {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (p_apply_1_ == null) {
                         return false;
-                    }
-                    else if ("".equals(s_f_))
-                    {
+                    } else if ("".equals(s_f_)) {
                         return p_apply_1_.getTags().isEmpty() != flag;
-                    }
-                    else
-                    {
+                    } else {
                         return p_apply_1_.getTags().contains(s_f_) != flag;
                     }
                 }
@@ -514,33 +414,24 @@ public class EntitySelector
         return list;
     }
 
-    private static List<Predicate<Entity>> getRadiusPredicates(Map<String, String> params, final Vec3d pos)
-    {
-        double d0 = (double)getInt(params, ARGUMENT_RANGE_MIN, -1);
-        double d1 = (double)getInt(params, ARGUMENT_RANGE_MAX, -1);
+    private static List<Predicate<Entity>> getRadiusPredicates(Map<String, String> params, final Vec3d pos) {
+        double d0 = (double) getInt(params, ARGUMENT_RANGE_MIN, -1);
+        double d1 = (double) getInt(params, ARGUMENT_RANGE_MAX, -1);
         final boolean flag = d0 < -0.5D;
         final boolean flag1 = d1 < -0.5D;
 
-        if (flag && flag1)
-        {
+        if (flag && flag1) {
             return Collections.<Predicate<Entity>>emptyList();
-        }
-        else
-        {
+        } else {
             double d2 = Math.max(d0, 1.0E-4D);
             final double d3 = d2 * d2;
             double d4 = Math.max(d1, 1.0E-4D);
             final double d5 = d4 * d4;
-            return Lists.newArrayList(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (p_apply_1_ == null)
-                    {
+            return Lists.newArrayList(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (p_apply_1_ == null) {
                         return false;
-                    }
-                    else
-                    {
+                    } else {
                         double d6 = pos.squareDistanceTo(p_apply_1_.posX, p_apply_1_.posY, p_apply_1_.posZ);
                         return (flag || d6 >= d3) && (flag1 || d6 <= d5);
                     }
@@ -549,32 +440,22 @@ public class EntitySelector
         }
     }
 
-    private static List<Predicate<Entity>> getRotationsPredicates(Map<String, String> params)
-    {
+    private static List<Predicate<Entity>> getRotationsPredicates(Map<String, String> params) {
         List<Predicate<Entity>> list = Lists.<Predicate<Entity>>newArrayList();
 
-        if (params.containsKey(ARGUMENT_ROTY_MIN) || params.containsKey(ARGUMENT_ROTY_MAX))
-        {
+        if (params.containsKey(ARGUMENT_ROTY_MIN) || params.containsKey(ARGUMENT_ROTY_MAX)) {
             final int i = MathHelper.wrapDegrees(getInt(params, ARGUMENT_ROTY_MIN, 0));
             final int j = MathHelper.wrapDegrees(getInt(params, ARGUMENT_ROTY_MAX, 359));
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (p_apply_1_ == null)
-                    {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (p_apply_1_ == null) {
                         return false;
-                    }
-                    else
-                    {
+                    } else {
                         int i1 = MathHelper.wrapDegrees(MathHelper.floor(p_apply_1_.rotationYaw));
 
-                        if (i > j)
-                        {
+                        if (i > j) {
                             return i1 >= i || i1 <= j;
-                        }
-                        else
-                        {
+                        } else {
                             return i1 >= i && i1 <= j;
                         }
                     }
@@ -582,28 +463,19 @@ public class EntitySelector
             });
         }
 
-        if (params.containsKey(ARGUMENT_ROTX_MIN) || params.containsKey(ARGUMENT_ROTX_MAX))
-        {
+        if (params.containsKey(ARGUMENT_ROTX_MIN) || params.containsKey(ARGUMENT_ROTX_MAX)) {
             final int k = MathHelper.wrapDegrees(getInt(params, ARGUMENT_ROTX_MIN, 0));
             final int l = MathHelper.wrapDegrees(getInt(params, ARGUMENT_ROTX_MAX, 359));
-            list.add(new Predicate<Entity>()
-            {
-                public boolean apply(@Nullable Entity p_apply_1_)
-                {
-                    if (p_apply_1_ == null)
-                    {
+            list.add(new Predicate<Entity>() {
+                public boolean apply(@Nullable Entity p_apply_1_) {
+                    if (p_apply_1_ == null) {
                         return false;
-                    }
-                    else
-                    {
+                    } else {
                         int i1 = MathHelper.wrapDegrees(MathHelper.floor(p_apply_1_.rotationPitch));
 
-                        if (k > l)
-                        {
+                        if (k > l) {
                             return i1 >= k || i1 <= l;
-                        }
-                        else
-                        {
+                        } else {
                             return i1 >= k && i1 <= l;
                         }
                     }
@@ -614,8 +486,7 @@ public class EntitySelector
         return list;
     }
 
-    private static <T extends Entity> List<T> filterResults(Map<String, String> params, Class <? extends T > entityClass, List<Predicate<Entity>> inputList, String type, World worldIn, BlockPos position)
-    {
+    private static <T extends Entity> List<T> filterResults(Map<String, String> params, Class<? extends T> entityClass, List<Predicate<Entity>> inputList, String type, World worldIn, BlockPos position) {
         List<T> list = Lists.<T>newArrayList();
         String s = getArgument(params, ARGUMENT_ENTITY_TYPE);
         s = s != null && s.startsWith("!") ? s.substring(1) : s;
@@ -628,51 +499,33 @@ public class EntitySelector
         Predicate<Entity> predicate = Predicates.and(inputList);
         Predicate<Entity> predicate1 = Predicates.<Entity>and(EntitySelectors.IS_ALIVE, predicate);
 
-        if (!params.containsKey(ARGUMENT_DELTA_X) && !params.containsKey(ARGUMENT_DELTA_Y) && !params.containsKey(ARGUMENT_DELTA_Z))
-        {
-            if (l >= 0)
-            {
-                AxisAlignedBB axisalignedbb1 = new AxisAlignedBB((double)(position.getX() - l), (double)(position.getY() - l), (double)(position.getZ() - l), (double)(position.getX() + l + 1), (double)(position.getY() + l + 1), (double)(position.getZ() + l + 1));
+        if (!params.containsKey(ARGUMENT_DELTA_X) && !params.containsKey(ARGUMENT_DELTA_Y) && !params.containsKey(ARGUMENT_DELTA_Z)) {
+            if (l >= 0) {
+                AxisAlignedBB axisalignedbb1 = new AxisAlignedBB((double) (position.getX() - l), (double) (position.getY() - l), (double) (position.getZ() - l), (double) (position.getX() + l + 1), (double) (position.getY() + l + 1), (double) (position.getZ() + l + 1));
 
-                if (flag && !flag1)
-                {
+                if (flag && !flag1) {
                     list.addAll(worldIn.getPlayers(entityClass, predicate1));
-                }
-                else
-                {
+                } else {
                     list.addAll(worldIn.getEntitiesWithinAABB(entityClass, axisalignedbb1, predicate1));
                 }
-            }
-            else if (type.equals("a"))
-            {
+            } else if (type.equals("a")) {
                 list.addAll(worldIn.getPlayers(entityClass, predicate));
-            }
-            else if (!type.equals("p") && (!type.equals("r") || flag1))
-            {
+            } else if (!type.equals("p") && (!type.equals("r") || flag1)) {
                 list.addAll(worldIn.getEntities(entityClass, predicate1));
-            }
-            else
-            {
+            } else {
                 list.addAll(worldIn.getPlayers(entityClass, predicate1));
             }
-        }
-        else
-        {
+        } else {
             final AxisAlignedBB axisalignedbb = getAABB(position, i, j, k);
 
-            if (flag && !flag1)
-            {
-                Predicate<Entity> predicate2 = new Predicate<Entity>()
-                {
-                    public boolean apply(@Nullable Entity p_apply_1_)
-                    {
+            if (flag && !flag1) {
+                Predicate<Entity> predicate2 = new Predicate<Entity>() {
+                    public boolean apply(@Nullable Entity p_apply_1_) {
                         return p_apply_1_ != null && axisalignedbb.intersects(p_apply_1_.getEntityBoundingBox());
                     }
                 };
                 list.addAll(worldIn.getPlayers(entityClass, Predicates.and(predicate1, predicate2)));
-            }
-            else
-            {
+            } else {
                 list.addAll(worldIn.getEntitiesWithinAABB(entityClass, axisalignedbb, predicate1));
             }
         }
@@ -680,23 +533,16 @@ public class EntitySelector
         return list;
     }
 
-    private static <T extends Entity> List<T> getEntitiesFromPredicates(List<T> matchingEntities, Map<String, String> params, ICommandSender sender, Class <? extends T > targetClass, String type, final Vec3d pos)
-    {
+    private static <T extends Entity> List<T> getEntitiesFromPredicates(List<T> matchingEntities, Map<String, String> params, ICommandSender sender, Class<? extends T> targetClass, String type, final Vec3d pos) {
         int i = getInt(params, ARGUMENT_COUNT, !type.equals("a") && !type.equals("e") ? 1 : 0);
 
-        if (!type.equals("p") && !type.equals("a") && !type.equals("e"))
-        {
-            if (type.equals("r"))
-            {
+        if (!type.equals("p") && !type.equals("a") && !type.equals("e")) {
+            if (type.equals("r")) {
                 Collections.shuffle(matchingEntities);
             }
-        }
-        else
-        {
-            Collections.sort(matchingEntities, new Comparator<Entity>()
-            {
-                public int compare(Entity p_compare_1_, Entity p_compare_2_)
-                {
+        } else {
+            Collections.sort(matchingEntities, new Comparator<Entity>() {
+                public int compare(Entity p_compare_1_, Entity p_compare_2_) {
                     return ComparisonChain.start().compare(p_compare_1_.getDistanceSq(pos.x, pos.y, pos.z), p_compare_2_.getDistanceSq(pos.x, pos.y, pos.z)).result();
                 }
             });
@@ -704,15 +550,12 @@ public class EntitySelector
 
         Entity entity = sender.getCommandSenderEntity();
 
-        if (entity != null && targetClass.isAssignableFrom(entity.getClass()) && i == 1 && matchingEntities.contains(entity) && !"r".equals(type))
-        {
-            matchingEntities = Lists.newArrayList((T)entity);
+        if (entity != null && targetClass.isAssignableFrom(entity.getClass()) && i == 1 && matchingEntities.contains(entity) && !"r".equals(type)) {
+            matchingEntities = Lists.newArrayList((T) entity);
         }
 
-        if (i != 0)
-        {
-            if (i < 0)
-            {
+        if (i != 0) {
+            if (i < 0) {
                 Collections.reverse(matchingEntities);
             }
 
@@ -722,8 +565,7 @@ public class EntitySelector
         return matchingEntities;
     }
 
-    private static AxisAlignedBB getAABB(BlockPos pos, int x, int y, int z)
-    {
+    private static AxisAlignedBB getAABB(BlockPos pos, int x, int y, int z) {
         boolean flag = x < 0;
         boolean flag1 = y < 0;
         boolean flag2 = z < 0;
@@ -733,30 +575,24 @@ public class EntitySelector
         int l = pos.getX() + (flag ? 0 : x) + 1;
         int i1 = pos.getY() + (flag1 ? 0 : y) + 1;
         int j1 = pos.getZ() + (flag2 ? 0 : z) + 1;
-        return new AxisAlignedBB((double)i, (double)j, (double)k, (double)l, (double)i1, (double)j1);
+        return new AxisAlignedBB((double) i, (double) j, (double) k, (double) l, (double) i1, (double) j1);
     }
 
-    private static BlockPos getBlockPosFromArguments(Map<String, String> params, BlockPos pos)
-    {
+    private static BlockPos getBlockPosFromArguments(Map<String, String> params, BlockPos pos) {
         return new BlockPos(getInt(params, ARGUMENT_COORDINATE_X, pos.getX()), getInt(params, ARGUMENT_COORDINATE_Y, pos.getY()), getInt(params, ARGUMENT_COORDINATE_Z, pos.getZ()));
     }
 
-    private static Vec3d getPosFromArguments(Map<String, String> params, Vec3d pos)
-    {
+    private static Vec3d getPosFromArguments(Map<String, String> params, Vec3d pos) {
         return new Vec3d(getCoordinate(params, ARGUMENT_COORDINATE_X, pos.x, true), getCoordinate(params, ARGUMENT_COORDINATE_Y, pos.y, false), getCoordinate(params, ARGUMENT_COORDINATE_Z, pos.z, true));
     }
 
-    private static double getCoordinate(Map<String, String> params, String key, double defaultD, boolean offset)
-    {
-        return params.containsKey(key) ? (double)MathHelper.getInt(params.get(key), MathHelper.floor(defaultD)) + (offset ? 0.5D : 0.0D) : defaultD;
+    private static double getCoordinate(Map<String, String> params, String key, double defaultD, boolean offset) {
+        return params.containsKey(key) ? (double) MathHelper.getInt(params.get(key), MathHelper.floor(defaultD)) + (offset ? 0.5D : 0.0D) : defaultD;
     }
 
-    private static boolean hasArgument(Map<String, String> params)
-    {
-        for (String s : WORLD_BINDING_ARGS)
-        {
-            if (params.containsKey(s))
-            {
+    private static boolean hasArgument(Map<String, String> params) {
+        for (String s : WORLD_BINDING_ARGS) {
+            if (params.containsKey(s)) {
                 return true;
             }
         }
@@ -764,25 +600,20 @@ public class EntitySelector
         return false;
     }
 
-    private static int getInt(Map<String, String> params, String key, int defaultI)
-    {
+    private static int getInt(Map<String, String> params, String key, int defaultI) {
         return params.containsKey(key) ? MathHelper.getInt(params.get(key), defaultI) : defaultI;
     }
 
     @Nullable
-    private static String getArgument(Map<String, String> params, String key)
-    {
+    private static String getArgument(Map<String, String> params, String key) {
         return params.get(key);
     }
 
-    public static Map<String, Integer> getScoreMap(Map<String, String> params)
-    {
+    public static Map<String, Integer> getScoreMap(Map<String, String> params) {
         Map<String, Integer> map = Maps.<String, Integer>newHashMap();
 
-        for (String s : params.keySet())
-        {
-            if (s.startsWith("score_") && s.length() > "score_".length())
-            {
+        for (String s : params.keySet()) {
+            if (s.startsWith("score_") && s.length() > "score_".length()) {
                 map.put(s.substring("score_".length()), Integer.valueOf(MathHelper.getInt(params.get(s), 1)));
             }
         }
@@ -790,21 +621,16 @@ public class EntitySelector
         return map;
     }
 
-    public static boolean matchesMultiplePlayers(String selectorStr) throws CommandException
-    {
+    public static boolean matchesMultiplePlayers(String selectorStr) throws CommandException {
         return net.minecraftforge.common.command.SelectorHandlerManager.matchesMultiplePlayers(selectorStr);
     }
 
-    public static boolean matchesMultiplePlayersDefault(String selectorStr) throws CommandException
-    {
+    public static boolean matchesMultiplePlayersDefault(String selectorStr) throws CommandException {
         Matcher matcher = TOKEN_PATTERN.matcher(selectorStr);
 
-        if (!matcher.matches())
-        {
+        if (!matcher.matches()) {
             return false;
-        }
-        else
-        {
+        } else {
             Map<String, String> map = getArgumentMap(matcher.group(2));
             String s = matcher.group(1);
             int i = !"a".equals(s) && !"e".equals(s) ? 1 : 0;
@@ -812,37 +638,29 @@ public class EntitySelector
         }
     }
 
-    public static boolean isSelector(String selectorStr)
-    {
+    public static boolean isSelector(String selectorStr) {
         return net.minecraftforge.common.command.SelectorHandlerManager.isSelector(selectorStr);
     }
 
-    public static boolean isSelectorDefault(String selectorStr)
-    {
+    public static boolean isSelectorDefault(String selectorStr) {
         return TOKEN_PATTERN.matcher(selectorStr).matches();
     }
 
-    private static Map<String, String> getArgumentMap(@Nullable String argumentString) throws CommandException
-    {
+    private static Map<String, String> getArgumentMap(@Nullable String argumentString) throws CommandException {
         Map<String, String> map = Maps.<String, String>newHashMap();
 
-        if (argumentString == null)
-        {
+        if (argumentString == null) {
             return map;
-        }
-        else
-        {
-            for (String s : COMMA_SPLITTER.split(argumentString))
-            {
+        } else {
+            for (String s : COMMA_SPLITTER.split(argumentString)) {
                 Iterator<String> iterator = EQUAL_SPLITTER.split(s).iterator();
                 String s1 = iterator.next();
 
-                if (!IS_VALID_ARGUMENT.apply(s1))
-                {
-                    throw new CommandException("commands.generic.selector_argument", new Object[] {s});
+                if (!IS_VALID_ARGUMENT.apply(s1)) {
+                    throw new CommandException("commands.generic.selector_argument", new Object[]{s});
                 }
 
-                map.put(s1, iterator.hasNext() ? (String)iterator.next() : "");
+                map.put(s1, iterator.hasNext() ? (String) iterator.next() : "");
             }
 
             return map;

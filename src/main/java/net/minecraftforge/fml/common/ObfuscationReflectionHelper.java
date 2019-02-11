@@ -31,79 +31,55 @@ import org.apache.logging.log4j.Level;
  * Some reflection helper code.
  *
  * @author cpw
- *
  */
-public class ObfuscationReflectionHelper
-{
-    public static <T, E> T getPrivateValue(Class<? super E> classToAccess, E instance, int fieldIndex)
-    {
-        try
-        {
+public class ObfuscationReflectionHelper {
+    public static <T, E> T getPrivateValue(Class<? super E> classToAccess, E instance, int fieldIndex) {
+        try {
             return ReflectionHelper.getPrivateValue(classToAccess, instance, fieldIndex);
-        }
-        catch (UnableToAccessFieldException e)
-        {
+        } catch (UnableToAccessFieldException e) {
             FMLLog.log.error("There was a problem getting field index {} from {}", classToAccess.getName(), e);
             throw e;
         }
     }
 
-    public static String[] remapFieldNames(String className, String... fieldNames)
-    {
+    public static String[] remapFieldNames(String className, String... fieldNames) {
         String internalClassName = FMLDeobfuscatingRemapper.INSTANCE.unmap(className.replace('.', '/'));
         String[] mappedNames = new String[fieldNames.length];
         int i = 0;
-        for (String fName : fieldNames)
-        {
+        for (String fName : fieldNames) {
             mappedNames[i++] = FMLDeobfuscatingRemapper.INSTANCE.mapFieldName(internalClassName, fName, null);
         }
         return mappedNames;
     }
 
-    public static <T, E> T getPrivateValue(Class<? super E> classToAccess, E instance, String... fieldNames)
-    {
-        try
-        {
-            return ReflectionHelper.getPrivateValue(classToAccess, instance, remapFieldNames(classToAccess.getName(),fieldNames));
-        }
-        catch (UnableToFindFieldException e)
-        {
+    public static <T, E> T getPrivateValue(Class<? super E> classToAccess, E instance, String... fieldNames) {
+        try {
+            return ReflectionHelper.getPrivateValue(classToAccess, instance, remapFieldNames(classToAccess.getName(), fieldNames));
+        } catch (UnableToFindFieldException e) {
             FMLLog.log.error("Unable to locate any field {} on type {}", Arrays.toString(fieldNames), classToAccess.getName(), e);
             throw e;
-        }
-        catch (UnableToAccessFieldException e)
-        {
+        } catch (UnableToAccessFieldException e) {
             FMLLog.log.error("Unable to access any field {} on type {}", classToAccess.getName(), e);
             throw e;
         }
     }
 
-    public static <T, E> void setPrivateValue(Class<? super T> classToAccess, T instance, E value, int fieldIndex)
-    {
-        try
-        {
+    public static <T, E> void setPrivateValue(Class<? super T> classToAccess, T instance, E value, int fieldIndex) {
+        try {
             ReflectionHelper.setPrivateValue(classToAccess, instance, value, fieldIndex);
-        }
-        catch (UnableToAccessFieldException e)
-        {
+        } catch (UnableToAccessFieldException e) {
             FMLLog.log.error("There was a problem setting field index {} on type {}", classToAccess.getName(), e);
             throw e;
         }
     }
 
-    public static <T, E> void setPrivateValue(Class<? super T> classToAccess, T instance, E value, String... fieldNames)
-    {
-        try
-        {
+    public static <T, E> void setPrivateValue(Class<? super T> classToAccess, T instance, E value, String... fieldNames) {
+        try {
             ReflectionHelper.setPrivateValue(classToAccess, instance, value, remapFieldNames(classToAccess.getName(), fieldNames));
-        }
-        catch (UnableToFindFieldException e)
-        {
+        } catch (UnableToFindFieldException e) {
             FMLLog.log.error("Unable to locate any field {} on type {}", classToAccess.getName(), e);
             throw e;
-        }
-        catch (UnableToAccessFieldException e)
-        {
+        } catch (UnableToAccessFieldException e) {
             FMLLog.log.error("Unable to set any field {} on type {}", classToAccess.getName(), e);
             throw e;
         }

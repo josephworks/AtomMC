@@ -11,25 +11,21 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderBiped<T extends EntityLiving> extends RenderLiving<T>
-{
+public class RenderBiped<T extends EntityLiving> extends RenderLiving<T> {
     private static final ResourceLocation DEFAULT_RES_LOC = new ResourceLocation("textures/entity/steve.png");
 
-    public RenderBiped(RenderManager renderManagerIn, ModelBiped modelBipedIn, float shadowSize)
-    {
+    public RenderBiped(RenderManager renderManagerIn, ModelBiped modelBipedIn, float shadowSize) {
         super(renderManagerIn, modelBipedIn, shadowSize);
         this.addLayer(new LayerCustomHead(modelBipedIn.bipedHead));
         this.addLayer(new LayerElytra(this));
         this.addLayer(new LayerHeldItem(this));
     }
 
-    protected ResourceLocation getEntityTexture(T entity)
-    {
+    protected ResourceLocation getEntityTexture(T entity) {
         return DEFAULT_RES_LOC;
     }
 
-    public void transformHeldFull3DItemLayer()
-    {
+    public void transformHeldFull3DItemLayer() {
         GlStateManager.translate(0.0F, 0.1875F, 0.0F);
     }
 }

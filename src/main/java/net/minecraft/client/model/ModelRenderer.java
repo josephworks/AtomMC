@@ -1,7 +1,9 @@
 package net.minecraft.client.model;
 
 import com.google.common.collect.Lists;
+
 import java.util.List;
+
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,8 +11,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ModelRenderer
-{
+public class ModelRenderer {
     public float textureWidth;
     public float textureHeight;
     private int textureOffsetX;
@@ -34,8 +35,7 @@ public class ModelRenderer
     public float offsetY;
     public float offsetZ;
 
-    public ModelRenderer(ModelBase model, String boxNameIn)
-    {
+    public ModelRenderer(ModelBase model, String boxNameIn) {
         this.textureWidth = 64.0F;
         this.textureHeight = 32.0F;
         this.showModel = true;
@@ -46,36 +46,30 @@ public class ModelRenderer
         this.setTextureSize(model.textureWidth, model.textureHeight);
     }
 
-    public ModelRenderer(ModelBase model)
-    {
-        this(model, (String)null);
+    public ModelRenderer(ModelBase model) {
+        this(model, (String) null);
     }
 
-    public ModelRenderer(ModelBase model, int texOffX, int texOffY)
-    {
+    public ModelRenderer(ModelBase model, int texOffX, int texOffY) {
         this(model);
         this.setTextureOffset(texOffX, texOffY);
     }
 
-    public void addChild(ModelRenderer renderer)
-    {
-        if (this.childModels == null)
-        {
+    public void addChild(ModelRenderer renderer) {
+        if (this.childModels == null) {
             this.childModels = Lists.<ModelRenderer>newArrayList();
         }
 
         this.childModels.add(renderer);
     }
 
-    public ModelRenderer setTextureOffset(int x, int y)
-    {
+    public ModelRenderer setTextureOffset(int x, int y) {
         this.textureOffsetX = x;
         this.textureOffsetY = y;
         return this;
     }
 
-    public ModelRenderer addBox(String partName, float offX, float offY, float offZ, int width, int height, int depth)
-    {
+    public ModelRenderer addBox(String partName, float offX, float offY, float offZ, int width, int height, int depth) {
         partName = this.boxName + "." + partName;
         TextureOffset textureoffset = this.baseModel.getTextureOffset(partName);
         this.setTextureOffset(textureoffset.textureOffsetX, textureoffset.textureOffsetY);
@@ -83,101 +77,78 @@ public class ModelRenderer
         return this;
     }
 
-    public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth)
-    {
+    public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth) {
         this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F));
         return this;
     }
 
-    public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth, boolean mirrored)
-    {
+    public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth, boolean mirrored) {
         this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F, mirrored));
         return this;
     }
 
-    public void addBox(float offX, float offY, float offZ, int width, int height, int depth, float scaleFactor)
-    {
+    public void addBox(float offX, float offY, float offZ, int width, int height, int depth, float scaleFactor) {
         this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, scaleFactor));
     }
 
-    public void setRotationPoint(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn)
-    {
+    public void setRotationPoint(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn) {
         this.rotationPointX = rotationPointXIn;
         this.rotationPointY = rotationPointYIn;
         this.rotationPointZ = rotationPointZIn;
     }
 
     @SideOnly(Side.CLIENT)
-    public void render(float scale)
-    {
-        if (!this.isHidden)
-        {
-            if (this.showModel)
-            {
-                if (!this.compiled)
-                {
+    public void render(float scale) {
+        if (!this.isHidden) {
+            if (this.showModel) {
+                if (!this.compiled) {
                     this.compileDisplayList(scale);
                 }
 
                 GlStateManager.translate(this.offsetX, this.offsetY, this.offsetZ);
 
-                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F)
-                {
-                    if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F)
-                    {
+                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
+                    if (this.rotationPointX == 0.0F && this.rotationPointY == 0.0F && this.rotationPointZ == 0.0F) {
                         GlStateManager.callList(this.displayList);
 
-                        if (this.childModels != null)
-                        {
-                            for (int k = 0; k < this.childModels.size(); ++k)
-                            {
-                                ((ModelRenderer)this.childModels.get(k)).render(scale);
+                        if (this.childModels != null) {
+                            for (int k = 0; k < this.childModels.size(); ++k) {
+                                ((ModelRenderer) this.childModels.get(k)).render(scale);
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
                         GlStateManager.callList(this.displayList);
 
-                        if (this.childModels != null)
-                        {
-                            for (int j = 0; j < this.childModels.size(); ++j)
-                            {
-                                ((ModelRenderer)this.childModels.get(j)).render(scale);
+                        if (this.childModels != null) {
+                            for (int j = 0; j < this.childModels.size(); ++j) {
+                                ((ModelRenderer) this.childModels.get(j)).render(scale);
                             }
                         }
 
                         GlStateManager.translate(-this.rotationPointX * scale, -this.rotationPointY * scale, -this.rotationPointZ * scale);
                     }
-                }
-                else
-                {
+                } else {
                     GlStateManager.pushMatrix();
                     GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
 
-                    if (this.rotateAngleZ != 0.0F)
-                    {
-                        GlStateManager.rotate(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+                    if (this.rotateAngleZ != 0.0F) {
+                        GlStateManager.rotate(this.rotateAngleZ * (180F / (float) Math.PI), 0.0F, 0.0F, 1.0F);
                     }
 
-                    if (this.rotateAngleY != 0.0F)
-                    {
-                        GlStateManager.rotate(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+                    if (this.rotateAngleY != 0.0F) {
+                        GlStateManager.rotate(this.rotateAngleY * (180F / (float) Math.PI), 0.0F, 1.0F, 0.0F);
                     }
 
-                    if (this.rotateAngleX != 0.0F)
-                    {
-                        GlStateManager.rotate(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+                    if (this.rotateAngleX != 0.0F) {
+                        GlStateManager.rotate(this.rotateAngleX * (180F / (float) Math.PI), 1.0F, 0.0F, 0.0F);
                     }
 
                     GlStateManager.callList(this.displayList);
 
-                    if (this.childModels != null)
-                    {
-                        for (int i = 0; i < this.childModels.size(); ++i)
-                        {
-                            ((ModelRenderer)this.childModels.get(i)).render(scale);
+                    if (this.childModels != null) {
+                        for (int i = 0; i < this.childModels.size(); ++i) {
+                            ((ModelRenderer) this.childModels.get(i)).render(scale);
                         }
                     }
 
@@ -190,33 +161,26 @@ public class ModelRenderer
     }
 
     @SideOnly(Side.CLIENT)
-    public void renderWithRotation(float scale)
-    {
-        if (!this.isHidden)
-        {
-            if (this.showModel)
-            {
-                if (!this.compiled)
-                {
+    public void renderWithRotation(float scale) {
+        if (!this.isHidden) {
+            if (this.showModel) {
+                if (!this.compiled) {
                     this.compileDisplayList(scale);
                 }
 
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
 
-                if (this.rotateAngleY != 0.0F)
-                {
-                    GlStateManager.rotate(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+                if (this.rotateAngleY != 0.0F) {
+                    GlStateManager.rotate(this.rotateAngleY * (180F / (float) Math.PI), 0.0F, 1.0F, 0.0F);
                 }
 
-                if (this.rotateAngleX != 0.0F)
-                {
-                    GlStateManager.rotate(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+                if (this.rotateAngleX != 0.0F) {
+                    GlStateManager.rotate(this.rotateAngleX * (180F / (float) Math.PI), 1.0F, 0.0F, 0.0F);
                 }
 
-                if (this.rotateAngleZ != 0.0F)
-                {
-                    GlStateManager.rotate(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+                if (this.rotateAngleZ != 0.0F) {
+                    GlStateManager.rotate(this.rotateAngleZ * (180F / (float) Math.PI), 0.0F, 0.0F, 1.0F);
                 }
 
                 GlStateManager.callList(this.displayList);
@@ -226,41 +190,30 @@ public class ModelRenderer
     }
 
     @SideOnly(Side.CLIENT)
-    public void postRender(float scale)
-    {
-        if (!this.isHidden)
-        {
-            if (this.showModel)
-            {
-                if (!this.compiled)
-                {
+    public void postRender(float scale) {
+        if (!this.isHidden) {
+            if (this.showModel) {
+                if (!this.compiled) {
                     this.compileDisplayList(scale);
                 }
 
-                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F)
-                {
-                    if (this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F)
-                    {
+                if (this.rotateAngleX == 0.0F && this.rotateAngleY == 0.0F && this.rotateAngleZ == 0.0F) {
+                    if (this.rotationPointX != 0.0F || this.rotationPointY != 0.0F || this.rotationPointZ != 0.0F) {
                         GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
                     }
-                }
-                else
-                {
+                } else {
                     GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
 
-                    if (this.rotateAngleZ != 0.0F)
-                    {
-                        GlStateManager.rotate(this.rotateAngleZ * (180F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+                    if (this.rotateAngleZ != 0.0F) {
+                        GlStateManager.rotate(this.rotateAngleZ * (180F / (float) Math.PI), 0.0F, 0.0F, 1.0F);
                     }
 
-                    if (this.rotateAngleY != 0.0F)
-                    {
-                        GlStateManager.rotate(this.rotateAngleY * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+                    if (this.rotateAngleY != 0.0F) {
+                        GlStateManager.rotate(this.rotateAngleY * (180F / (float) Math.PI), 0.0F, 1.0F, 0.0F);
                     }
 
-                    if (this.rotateAngleX != 0.0F)
-                    {
-                        GlStateManager.rotate(this.rotateAngleX * (180F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+                    if (this.rotateAngleX != 0.0F) {
+                        GlStateManager.rotate(this.rotateAngleX * (180F / (float) Math.PI), 1.0F, 0.0F, 0.0F);
                     }
                 }
             }
@@ -268,25 +221,22 @@ public class ModelRenderer
     }
 
     @SideOnly(Side.CLIENT)
-    private void compileDisplayList(float scale)
-    {
+    private void compileDisplayList(float scale) {
         this.displayList = GLAllocation.generateDisplayLists(1);
         GlStateManager.glNewList(this.displayList, 4864);
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
 
-        for (int i = 0; i < this.cubeList.size(); ++i)
-        {
-            ((ModelBox)this.cubeList.get(i)).render(bufferbuilder, scale);
+        for (int i = 0; i < this.cubeList.size(); ++i) {
+            ((ModelBox) this.cubeList.get(i)).render(bufferbuilder, scale);
         }
 
         GlStateManager.glEndList();
         this.compiled = true;
     }
 
-    public ModelRenderer setTextureSize(int textureWidthIn, int textureHeightIn)
-    {
-        this.textureWidth = (float)textureWidthIn;
-        this.textureHeight = (float)textureHeightIn;
+    public ModelRenderer setTextureSize(int textureWidthIn, int textureHeightIn) {
+        this.textureWidth = (float) textureWidthIn;
+        this.textureHeight = (float) textureHeightIn;
         return this;
     }
 }

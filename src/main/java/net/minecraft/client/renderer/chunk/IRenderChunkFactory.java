@@ -6,7 +6,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface IRenderChunkFactory
-{
+public interface IRenderChunkFactory {
     RenderChunk create(World worldIn, RenderGlobal renderGlobalIn, int index);
 }

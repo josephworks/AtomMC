@@ -39,20 +39,15 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.FMLLog;
 
-public class ModList
-{
+public class ModList {
     private static final Gson GSON = new GsonBuilder().setLenient().create();
     static final Map<String, ModList> cache = new HashMap<>();
 
-    public static ModList create(File json, File mcdir)
-    {
-        try
-        {
+    public static ModList create(File json, File mcdir) {
+        try {
             String key = json.getCanonicalFile().getAbsolutePath();
             return cache.computeIfAbsent(key, k -> new ModList(json, mcdir));
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             FMLLog.log.error(FMLLog.log.getMessageFactory().newMessage("Unable to load ModList json at {}.", json.getAbsoluteFile()), e);
         }
 
@@ -60,12 +55,9 @@ public class ModList
     }
 
     @SuppressWarnings("unchecked")
-    public static List<ModList> getKnownLists(File mcdir)
-    {
-        for (String list : new String[] {"mods/mod_list.json", "mods/" + ForgeVersion.mcVersion + "/mod_list.json", ((Map<String, String>)Launch.blackboard.get("launchArgs")).get("--modListFile")})
-        {
-            if (list != null)
-            {
+    public static List<ModList> getKnownLists(File mcdir) {
+        for (String list : new String[]{"mods/mod_list.json", "mods/" + ForgeVersion.mcVersion + "/mod_list.json", ((Map<String, String>) Launch.blackboard.get("launchArgs")).get("--modListFile")}) {
+            if (list != null) {
                 File listFile = getFile(mcdir, list);
                 if (listFile != null && listFile.exists())
                     create(listFile, mcdir); //Create will recursively create parent lists, so after this run everything should be populated.
@@ -75,18 +67,15 @@ public class ModList
     }
 
     @SuppressWarnings("unchecked")
-    public static List<ModList> getBasicLists(File mcdir)
-    {
+    public static List<ModList> getBasicLists(File mcdir) {
         List<ModList> lst = new ArrayList<>();
 
         ModList memory = cache.get("MEMORY");
         if (memory != null)
             lst.add(memory);
 
-        for (String list : new String[] {"mods/mod_list.json", "mods/" + ForgeVersion.mcVersion + "/mod_list.json", ((Map<String, String>)Launch.blackboard.get("launchArgs")).get("--modListFile")})
-        {
-            if (list != null)
-            {
+        for (String list : new String[]{"mods/mod_list.json", "mods/" + ForgeVersion.mcVersion + "/mod_list.json", ((Map<String, String>) Launch.blackboard.get("launchArgs")).get("--modListFile")}) {
+            if (list != null) {
                 File listFile = getFile(mcdir, list);
                 if (listFile != null && listFile.exists())
                     lst.add(create(listFile, mcdir));
@@ -105,48 +94,35 @@ public class ModList
 
     private boolean changed = false;
 
-    protected ModList(Repository repo)
-    {
+    protected ModList(Repository repo) {
         this.path = null;
         this.mod_list = new JsonModList();
         this.repo = repo;
         this.parent = null;
     }
 
-    private ModList(File path, File mcdir)
-    {
+    private ModList(File path, File mcdir) {
         this.path = path;
         JsonModList temp_list = null;
-        if (this.path.exists())
-        {
-            try
-            {
+        if (this.path.exists()) {
+            try {
                 String json = Files.asCharSource(path, StandardCharsets.UTF_8).read();
                 temp_list = GSON.fromJson(json, JsonModList.class);
-            }
-            catch (JsonSyntaxException jse)
-            {
+            } catch (JsonSyntaxException jse) {
                 FMLLog.log.info(FMLLog.log.getMessageFactory().newMessage("Failed to parse modList json file {}.", path), jse);
-            }
-            catch (IOException ioe)
-            {
+            } catch (IOException ioe) {
                 FMLLog.log.info(FMLLog.log.getMessageFactory().newMessage("Failed to read modList json file {}.", path), ioe);
             }
         }
         this.mod_list = temp_list == null ? new JsonModList() : temp_list;
         Repository temp = null;
-        if (mod_list.repositoryRoot != null)
-        {
-            try
-            {
+        if (mod_list.repositoryRoot != null) {
+            try {
                 File repoFile = getFile(mcdir, this.mod_list.repositoryRoot);
-                if (repoFile != null)
-                {
+                if (repoFile != null) {
                     temp = Repository.create(repoFile);
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 FMLLog.log.info(FMLLog.log.getMessageFactory().newMessage("Failed to create repository for modlist at {}.", mod_list.repositoryRoot), e);
             }
         }
@@ -154,85 +130,67 @@ public class ModList
         File parent_path = this.mod_list.parentList == null ? null : getFile(mcdir, this.mod_list.parentList);
         this.parent = parent_path == null || !parent_path.exists() ? null : ModList.create(parent_path, mcdir);
 
-        if (mod_list.modRef != null)
-        {
+        if (mod_list.modRef != null) {
             for (String ref : mod_list.modRef)
                 add(new Artifact(this.getRepository(), ref, null));
             changed = false;
         }
     }
 
-    public Repository getRepository()
-    {
+    public Repository getRepository() {
         return this.repo;
     }
 
-    public void add(Artifact artifact)
-    {
+    public void add(Artifact artifact) {
         Artifact old = art_map.get(artifact.toString());
-        if (old != null)
-        {
+        if (old != null) {
             artifacts.add(artifacts.indexOf(old), artifact);
             artifacts.remove(old);
-        }
-        else
+        } else
             artifacts.add(artifact);
         art_map.put(artifact.toString(), artifact);
         changed = true;
     }
 
-    public List<Artifact> getArtifacts()
-    {
+    public List<Artifact> getArtifacts() {
         return artifacts_imm;
     }
 
-    public boolean changed()
-    {
+    public boolean changed() {
         return changed;
     }
 
-    public void save() throws IOException
-    {
+    public void save() throws IOException {
         mod_list.modRef = artifacts.stream().map(a -> a.toString()).collect(Collectors.toList());
         Files.write(GSON.toJson(mod_list), path, StandardCharsets.UTF_8);
     }
 
-    private static File getFile(File root, String path)
-    {
-        try
-        {
+    private static File getFile(File root, String path) {
+        try {
             if (path.startsWith("absolute:"))
                 return new File(path.substring(9)).getCanonicalFile();
             else
                 return new File(root, path).getCanonicalFile();
-        }
-        catch (IOException ioe)
-        {
+        } catch (IOException ioe) {
             FMLLog.log.info(FMLLog.log.getMessageFactory().newMessage("Unable to canonicalize path {} relative to {}", path, root.getAbsolutePath()));
         }
         return null;
     }
 
-    private static class JsonModList
-    {
+    private static class JsonModList {
         public String repositoryRoot;
         public List<String> modRef;
         public String parentList;
     }
 
     //TODO: Some form of caching?
-    public List<Artifact> flatten()
-    {
+    public List<Artifact> flatten() {
         List<Artifact> lst = parent == null ? new ArrayList<>() : parent.flatten();
-        for (Artifact art : artifacts)
-        {
+        for (Artifact art : artifacts) {
             Optional<Artifact> old = lst.stream().filter(art::matchesID).findFirst();
-            if (!old.isPresent())
-            {
+            if (!old.isPresent()) {
                 lst.add(art);
-            }
-            else if (old.get().getVersion().compareTo(art.getVersion()) < 0)
-            {
+            } else if (old.get().getVersion().compareTo(art.getVersion()) < 0) {
                 lst.add(lst.indexOf(old.get()), art);
                 lst.remove(old.get());
             }
@@ -240,8 +198,7 @@ public class ModList
         return lst;
     }
 
-    public Object getName()
-    {
+    public Object getName() {
         return path.getAbsolutePath();
     }
 }

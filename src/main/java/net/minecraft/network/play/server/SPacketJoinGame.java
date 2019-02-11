@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -10,8 +11,7 @@ import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
-{
+public class SPacketJoinGame implements Packet<INetHandlerPlayClient> {
     private int playerId;
     private boolean hardcoreMode;
     private GameType gameType;
@@ -21,12 +21,10 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
     private WorldType worldType;
     private boolean reducedDebugInfo;
 
-    public SPacketJoinGame()
-    {
+    public SPacketJoinGame() {
     }
 
-    public SPacketJoinGame(int playerIdIn, GameType gameTypeIn, boolean hardcoreModeIn, int dimensionIn, EnumDifficulty difficultyIn, int maxPlayersIn, WorldType worldTypeIn, boolean reducedDebugInfoIn)
-    {
+    public SPacketJoinGame(int playerIdIn, GameType gameTypeIn, boolean hardcoreModeIn, int dimensionIn, EnumDifficulty difficultyIn, int maxPlayersIn, WorldType worldTypeIn, boolean reducedDebugInfoIn) {
         this.playerId = playerIdIn;
         this.dimension = dimensionIn;
         this.difficulty = difficultyIn;
@@ -37,8 +35,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
         this.reducedDebugInfo = reducedDebugInfoIn;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.playerId = buf.readInt();
         int i = buf.readUnsignedByte();
         this.hardcoreMode = (i & 8) == 8;
@@ -49,21 +46,18 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
         this.maxPlayers = buf.readUnsignedByte();
         this.worldType = WorldType.parseWorldType(buf.readString(16));
 
-        if (this.worldType == null)
-        {
+        if (this.worldType == null) {
             this.worldType = WorldType.DEFAULT;
         }
 
         this.reducedDebugInfo = buf.readBoolean();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeInt(this.playerId);
         int i = this.gameType.getID();
 
-        if (this.hardcoreMode)
-        {
+        if (this.hardcoreMode) {
             i |= 8;
         }
 
@@ -75,56 +69,47 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
         buf.writeBoolean(this.reducedDebugInfo);
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleJoinGame(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public int getPlayerId()
-    {
+    public int getPlayerId() {
         return this.playerId;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean isHardcoreMode()
-    {
+    public boolean isHardcoreMode() {
         return this.hardcoreMode;
     }
 
     @SideOnly(Side.CLIENT)
-    public GameType getGameType()
-    {
+    public GameType getGameType() {
         return this.gameType;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getDimension()
-    {
+    public int getDimension() {
         return this.dimension;
     }
 
     @SideOnly(Side.CLIENT)
-    public EnumDifficulty getDifficulty()
-    {
+    public EnumDifficulty getDifficulty() {
         return this.difficulty;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getMaxPlayers()
-    {
+    public int getMaxPlayers() {
         return this.maxPlayers;
     }
 
     @SideOnly(Side.CLIENT)
-    public WorldType getWorldType()
-    {
+    public WorldType getWorldType() {
         return this.worldType;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean isReducedDebugInfo()
-    {
+    public boolean isReducedDebugInfo() {
         return this.reducedDebugInfo;
     }
 }

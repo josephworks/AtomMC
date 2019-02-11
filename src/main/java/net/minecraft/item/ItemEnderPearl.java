@@ -12,16 +12,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-public class ItemEnderPearl extends Item
-{
-    public ItemEnderPearl()
-    {
+public class ItemEnderPearl extends Item {
+    public ItemEnderPearl() {
         this.maxStackSize = 16;
         this.setCreativeTab(CreativeTabs.MISC);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
 
         // CraftBukkit start - change order
@@ -37,12 +34,11 @@ public class ItemEnderPearl extends Item
             }
         }
 
-        if (!playerIn.capabilities.isCreativeMode)
-        {
+        if (!playerIn.capabilities.isCreativeMode) {
             itemstack.shrink(1);
         }
 
-        worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_ENDERPEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        worldIn.playSound((EntityPlayer) null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_ENDERPEARL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
         playerIn.getCooldownTracker().setCooldown(this, 20);
 
         /*

@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "hardened_clay_yellow" }
+  "variants": {
+    "normal": {
+      "model": "hardened_clay_yellow"
     }
+  }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -15,17 +16,14 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class BlockPurpurSlab extends BlockSlab
-{
+public abstract class BlockPurpurSlab extends BlockSlab {
     public static final PropertyEnum<Variant> VARIANT = PropertyEnum.<Variant>create("variant", Variant.class);
 
-    public BlockPurpurSlab()
-    {
+    public BlockPurpurSlab() {
         super(Material.ROCK, MapColor.MAGENTA);
         IBlockState iblockstate = this.blockState.getBaseState();
 
-        if (!this.isDouble())
-        {
+        if (!this.isDouble()) {
             iblockstate = iblockstate.withProperty(HALF, EnumBlockHalf.BOTTOM);
         }
 
@@ -33,82 +31,66 @@ public abstract class BlockPurpurSlab extends BlockSlab
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Item.getItemFromBlock(Blocks.PURPUR_SLAB);
     }
 
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         return new ItemStack(Blocks.PURPUR_SLAB);
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         IBlockState iblockstate = this.getDefaultState().withProperty(VARIANT, Variant.DEFAULT);
 
-        if (!this.isDouble())
-        {
+        if (!this.isDouble()) {
             iblockstate = iblockstate.withProperty(HALF, (meta & 8) == 0 ? EnumBlockHalf.BOTTOM : EnumBlockHalf.TOP);
         }
 
         return iblockstate;
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
 
-        if (!this.isDouble() && state.getValue(HALF) == EnumBlockHalf.TOP)
-        {
+        if (!this.isDouble() && state.getValue(HALF) == EnumBlockHalf.TOP) {
             i |= 8;
         }
 
         return i;
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return this.isDouble() ? new BlockStateContainer(this, new IProperty[] {VARIANT}) : new BlockStateContainer(this, new IProperty[] {HALF, VARIANT});
+    protected BlockStateContainer createBlockState() {
+        return this.isDouble() ? new BlockStateContainer(this, new IProperty[]{VARIANT}) : new BlockStateContainer(this, new IProperty[]{HALF, VARIANT});
     }
 
-    public String getUnlocalizedName(int meta)
-    {
+    public String getUnlocalizedName(int meta) {
         return super.getUnlocalizedName();
     }
 
-    public IProperty<?> getVariantProperty()
-    {
+    public IProperty<?> getVariantProperty() {
         return VARIANT;
     }
 
-    public Comparable<?> getTypeForItem(ItemStack stack)
-    {
+    public Comparable<?> getTypeForItem(ItemStack stack) {
         return Variant.DEFAULT;
     }
 
-    public static class Double extends BlockPurpurSlab
-        {
-            public boolean isDouble()
-            {
-                return true;
-            }
+    public static class Double extends BlockPurpurSlab {
+        public boolean isDouble() {
+            return true;
         }
+    }
 
-    public static class Half extends BlockPurpurSlab
-        {
-            public boolean isDouble()
-            {
-                return false;
-            }
+    public static class Half extends BlockPurpurSlab {
+        public boolean isDouble() {
+            return false;
         }
+    }
 
-    public static enum Variant implements IStringSerializable
-    {
+    public static enum Variant implements IStringSerializable {
         DEFAULT;
 
-        public String getName()
-        {
+        public String getName() {
             return "default";
         }
     }

@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -9,8 +10,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public interface IBlockAccess
-{
+public interface IBlockAccess {
     @Nullable
     TileEntity getTileEntity(BlockPos pos);
 
@@ -32,8 +32,8 @@ public interface IBlockAccess
     /**
      * FORGE: isSideSolid, pulled up from {@link World}
      *
-     * @param pos Position
-     * @param side Side
+     * @param pos      Position
+     * @param side     Side
      * @param _default default return value
      * @return if the block is solid on the side
      */

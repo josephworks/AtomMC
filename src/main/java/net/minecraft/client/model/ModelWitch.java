@@ -6,14 +6,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelWitch extends ModelVillager
-{
+public class ModelWitch extends ModelVillager {
     public boolean holdingItem;
     private final ModelRenderer mole = (new ModelRenderer(this)).setTextureSize(64, 128);
     private final ModelRenderer witchHat;
 
-    public ModelWitch(float scale)
-    {
+    public ModelWitch(float scale) {
         super(scale, 0.0F, 64, 128);
         this.mole.setRotationPoint(0.0F, -2.0F, 0.0F);
         this.mole.setTextureOffset(0, 0).addBox(0.0F, 3.0F, -6.75F, 1, 1, 1, -0.25F);
@@ -42,19 +40,17 @@ public class ModelWitch extends ModelVillager
         modelrenderer1.addChild(modelrenderer2);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         this.villagerNose.offsetX = 0.0F;
         this.villagerNose.offsetY = 0.0F;
         this.villagerNose.offsetZ = 0.0F;
-        float f = 0.01F * (float)(entityIn.getEntityId() % 10);
-        this.villagerNose.rotateAngleX = MathHelper.sin((float)entityIn.ticksExisted * f) * 4.5F * 0.017453292F;
+        float f = 0.01F * (float) (entityIn.getEntityId() % 10);
+        this.villagerNose.rotateAngleX = MathHelper.sin((float) entityIn.ticksExisted * f) * 4.5F * 0.017453292F;
         this.villagerNose.rotateAngleY = 0.0F;
-        this.villagerNose.rotateAngleZ = MathHelper.cos((float)entityIn.ticksExisted * f) * 2.5F * 0.017453292F;
+        this.villagerNose.rotateAngleZ = MathHelper.cos((float) entityIn.ticksExisted * f) * 2.5F * 0.017453292F;
 
-        if (this.holdingItem)
-        {
+        if (this.holdingItem) {
             this.villagerNose.rotateAngleX = -0.9F;
             this.villagerNose.offsetZ = -0.09375F;
             this.villagerNose.offsetY = 0.1875F;

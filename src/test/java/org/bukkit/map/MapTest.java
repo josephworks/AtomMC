@@ -49,9 +49,9 @@ public class MapTest {
 
                     if (bukkit.getRed() != mr || bukkit.getGreen() != mg || bukkit.getBlue() != mb) {
                         logger.log(Level.WARNING, "Incorrect color: {6} {7} c({0}, {1}, {2}) != c({3}, {4}, {5})", new Object[]{
-                            bukkit.getRed(), bukkit.getGreen(), bukkit.getBlue(),
-                            mr, mg, mb,
-                            i, j
+                                bukkit.getRed(), bukkit.getGreen(), bukkit.getBlue(),
+                                mr, mg, mb,
+                                i, j
                         });
                         fail = true;
                     }

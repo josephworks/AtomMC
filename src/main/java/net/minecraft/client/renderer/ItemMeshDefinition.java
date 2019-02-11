@@ -6,7 +6,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface ItemMeshDefinition
-{
+public interface ItemMeshDefinition {
     ModelResourceLocation getModelLocation(ItemStack stack);
 }

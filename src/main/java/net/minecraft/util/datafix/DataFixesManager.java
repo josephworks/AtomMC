@@ -123,10 +123,8 @@ import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.gen.structure.template.Template;
 import net.minecraft.world.storage.WorldInfo;
 
-public class DataFixesManager
-{
-    private static void registerFixes(DataFixer fixer)
-    {
+public class DataFixesManager {
+    private static void registerFixes(DataFixer fixer) {
         fixer.registerFix(FixTypes.ENTITY, new EntityArmorAndHeld());
         fixer.registerFix(FixTypes.BLOCK_ENTITY, new SignStrictJSON());
         fixer.registerFix(FixTypes.ITEM_INSTANCE, new ItemIntIDToString());
@@ -162,8 +160,7 @@ public class DataFixesManager
         fixer.registerFix(FixTypes.ITEM_INSTANCE, new BedItemColor());
     }
 
-    public static DataFixer createFixer()
-    {
+    public static DataFixer createFixer() {
         DataFixer datafixer = new DataFixer(1343);
         datafixer = new net.minecraftforge.common.util.CompoundDataFixer(datafixer);
         WorldInfo.registerFixes(datafixer);
@@ -257,24 +254,19 @@ public class DataFixesManager
         return datafixer;
     }
 
-    public static NBTTagCompound processItemStack(IDataFixer fixer, NBTTagCompound compound, int version, String key)
-    {
-        if (compound.hasKey(key, 10))
-        {
+    public static NBTTagCompound processItemStack(IDataFixer fixer, NBTTagCompound compound, int version, String key) {
+        if (compound.hasKey(key, 10)) {
             compound.setTag(key, fixer.process(FixTypes.ITEM_INSTANCE, compound.getCompoundTag(key), version));
         }
 
         return compound;
     }
 
-    public static NBTTagCompound processInventory(IDataFixer fixer, NBTTagCompound compound, int version, String key)
-    {
-        if (compound.hasKey(key, 9))
-        {
+    public static NBTTagCompound processInventory(IDataFixer fixer, NBTTagCompound compound, int version, String key) {
+        if (compound.hasKey(key, 9)) {
             NBTTagList nbttaglist = compound.getTagList(key, 10);
 
-            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-            {
+            for (int i = 0; i < nbttaglist.tagCount(); ++i) {
                 nbttaglist.set(i, fixer.process(FixTypes.ITEM_INSTANCE, nbttaglist.getCompoundTagAt(i), version));
             }
         }

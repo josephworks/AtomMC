@@ -15,15 +15,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 
-public class CompoundIngredient extends Ingredient
-{
+public class CompoundIngredient extends Ingredient {
     private Collection<Ingredient> children;
     private ItemStack[] stacks;
     private IntList itemIds;
     private final boolean isSimple;
 
-    protected CompoundIngredient(Collection<Ingredient> children)
-    {
+    protected CompoundIngredient(Collection<Ingredient> children) {
         super(0);
         this.children = children;
 
@@ -35,10 +33,8 @@ public class CompoundIngredient extends Ingredient
 
     @Override
     @Nonnull
-    public ItemStack[] getMatchingStacks()
-    {
-        if (stacks == null)
-        {
+    public ItemStack[] getMatchingStacks() {
+        if (stacks == null) {
             List<ItemStack> tmp = Lists.newArrayList();
             for (Ingredient child : children)
                 Collections.addAll(tmp, child.getMatchingStacks());
@@ -50,11 +46,9 @@ public class CompoundIngredient extends Ingredient
 
     @Override
     @Nonnull
-    public IntList getValidItemStacksPacked()
-    {
+    public IntList getValidItemStacksPacked() {
         //TODO: Add a child.isInvalid()?
-        if (this.itemIds == null)
-        {
+        if (this.itemIds == null) {
             this.itemIds = new IntArrayList();
             for (Ingredient child : children)
                 this.itemIds.addAll(child.getValidItemStacksPacked());
@@ -65,8 +59,7 @@ public class CompoundIngredient extends Ingredient
     }
 
     @Override
-    public boolean apply(@Nullable ItemStack target)
-    {
+    public boolean apply(@Nullable ItemStack target) {
         if (target == null)
             return false;
 
@@ -78,22 +71,19 @@ public class CompoundIngredient extends Ingredient
     }
 
     @Override
-    protected void invalidate()
-    {
+    protected void invalidate() {
         this.itemIds = null;
         this.stacks = null;
         //Shouldn't need to invalidate children as this is only called form invalidateAll..
     }
 
     @Override
-    public boolean isSimple()
-    {
+    public boolean isSimple() {
         return isSimple;
     }
 
     @Nonnull
-    public Collection<Ingredient> getChildren()
-    {
+    public Collection<Ingredient> getChildren() {
         return Collections.unmodifiableCollection(this.children);
     }
 }

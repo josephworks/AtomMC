@@ -5,71 +5,51 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import javax.annotation.Nullable;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 
-public class Util
-{
+public class Util {
     @SideOnly(Side.CLIENT)
-    public static Util.EnumOS getOSType()
-    {
+    public static Util.EnumOS getOSType() {
         String s = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 
-        if (s.contains("win"))
-        {
+        if (s.contains("win")) {
             return EnumOS.WINDOWS;
-        }
-        else if (s.contains("mac"))
-        {
+        } else if (s.contains("mac")) {
             return EnumOS.OSX;
-        }
-        else if (s.contains("solaris"))
-        {
+        } else if (s.contains("solaris")) {
             return EnumOS.SOLARIS;
-        }
-        else if (s.contains("sunos"))
-        {
+        } else if (s.contains("sunos")) {
             return EnumOS.SOLARIS;
-        }
-        else if (s.contains("linux"))
-        {
+        } else if (s.contains("linux")) {
             return EnumOS.LINUX;
-        }
-        else
-        {
+        } else {
             return s.contains("unix") ? EnumOS.LINUX : EnumOS.UNKNOWN;
         }
     }
 
     @Nullable
-    public static <V> V runTask(FutureTask<V> task, Logger logger)
-    {
-        try
-        {
+    public static <V> V runTask(FutureTask<V> task, Logger logger) {
+        try {
             task.run();
             return task.get();
-        }
-        catch (ExecutionException executionexception)
-        {
-            logger.fatal("Error executing task", (Throwable)executionexception);
-        }
-        catch (InterruptedException interruptedexception)
-        {
-            logger.fatal("Error executing task", (Throwable)interruptedexception);
+        } catch (ExecutionException executionexception) {
+            logger.fatal("Error executing task", (Throwable) executionexception);
+        } catch (InterruptedException interruptedexception) {
+            logger.fatal("Error executing task", (Throwable) interruptedexception);
         }
 
-        return (V)null;
+        return (V) null;
     }
 
-    public static <T> T getLastElement(List<T> list)
-    {
+    public static <T> T getLastElement(List<T> list) {
         return list.get(list.size() - 1);
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum EnumOS
-    {
+    public static enum EnumOS {
         LINUX,
         SOLARIS,
         WINDOWS,

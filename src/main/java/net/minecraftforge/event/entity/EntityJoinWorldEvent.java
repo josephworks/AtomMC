@@ -29,7 +29,7 @@ import java.util.Collection;
 
 /**
  * EntityJoinWorldEvent is fired when an Entity joins the world. <br>
- * This event is fired whenever an Entity is added to the world in 
+ * This event is fired whenever an Entity is added to the world in
  * {@link World#loadEntities(Collection)}, {@link WorldServer#loadEntities(Collection)} {@link World#joinEntityInSurroundings(Entity)}, and {@link World#spawnEntity(Entity)}. <br>
  * <br>
  * {@link #world} contains the world in which the entity is to join.<br>
@@ -42,19 +42,16 @@ import java.util.Collection;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
 @Cancelable
-public class EntityJoinWorldEvent extends EntityEvent
-{
+public class EntityJoinWorldEvent extends EntityEvent {
 
     private final World world;
 
-    public EntityJoinWorldEvent(Entity entity, World world)
-    {
+    public EntityJoinWorldEvent(Entity entity, World world) {
         super(entity);
         this.world = world;
     }
 
-    public World getWorld()
-    {
+    public World getWorld() {
         return world;
     }
 }

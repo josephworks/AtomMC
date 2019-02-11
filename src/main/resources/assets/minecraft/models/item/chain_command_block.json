@@ -1,3 +1,3 @@
 {
-    "parent": "block/chain_command_block"
+  "parent": "block/chain_command_block"
 }

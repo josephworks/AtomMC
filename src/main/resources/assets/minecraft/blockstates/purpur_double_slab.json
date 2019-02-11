@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "variant=default": { "model": "purpur_block" }
+  "variants": {
+    "variant=default": {
+      "model": "purpur_block"
     }
+  }
 }

@@ -2,13 +2,14 @@ package net.minecraft.advancements.critereon;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.JsonUtils;
 
-public class DamagePredicate
-{
+public class DamagePredicate {
     public static DamagePredicate ANY = new DamagePredicate();
     private final MinMaxBounds dealt;
     private final MinMaxBounds taken;
@@ -16,8 +17,7 @@ public class DamagePredicate
     private final Boolean blocked;
     private final DamageSourcePredicate type;
 
-    public DamagePredicate()
-    {
+    public DamagePredicate() {
         this.dealt = MinMaxBounds.UNBOUNDED;
         this.taken = MinMaxBounds.UNBOUNDED;
         this.sourceEntity = EntityPredicate.ANY;
@@ -25,8 +25,7 @@ public class DamagePredicate
         this.type = DamageSourcePredicate.ANY;
     }
 
-    public DamagePredicate(MinMaxBounds dealt, MinMaxBounds taken, EntityPredicate sourceEntity, @Nullable Boolean blocked, DamageSourcePredicate type)
-    {
+    public DamagePredicate(MinMaxBounds dealt, MinMaxBounds taken, EntityPredicate sourceEntity, @Nullable Boolean blocked, DamageSourcePredicate type) {
         this.dealt = dealt;
         this.taken = taken;
         this.sourceEntity = sourceEntity;
@@ -34,38 +33,24 @@ public class DamagePredicate
         this.type = type;
     }
 
-    public boolean test(EntityPlayerMP player, DamageSource source, float dealt, float taken, boolean blocked)
-    {
-        if (this == ANY)
-        {
+    public boolean test(EntityPlayerMP player, DamageSource source, float dealt, float taken, boolean blocked) {
+        if (this == ANY) {
             return true;
-        }
-        else if (!this.dealt.test(dealt))
-        {
+        } else if (!this.dealt.test(dealt)) {
             return false;
-        }
-        else if (!this.taken.test(taken))
-        {
+        } else if (!this.taken.test(taken)) {
             return false;
-        }
-        else if (!this.sourceEntity.test(player, source.getTrueSource()))
-        {
+        } else if (!this.sourceEntity.test(player, source.getTrueSource())) {
             return false;
-        }
-        else if (this.blocked != null && this.blocked.booleanValue() != blocked)
-        {
+        } else if (this.blocked != null && this.blocked.booleanValue() != blocked) {
             return false;
-        }
-        else
-        {
+        } else {
             return this.type.test(player, source);
         }
     }
 
-    public static DamagePredicate deserialize(@Nullable JsonElement element)
-    {
-        if (element != null && !element.isJsonNull())
-        {
+    public static DamagePredicate deserialize(@Nullable JsonElement element) {
+        if (element != null && !element.isJsonNull()) {
             JsonObject jsonobject = JsonUtils.getJsonObject(element, "damage");
             MinMaxBounds minmaxbounds = MinMaxBounds.deserialize(jsonobject.get("dealt"));
             MinMaxBounds minmaxbounds1 = MinMaxBounds.deserialize(jsonobject.get("taken"));
@@ -73,9 +58,7 @@ public class DamagePredicate
             EntityPredicate entitypredicate = EntityPredicate.deserialize(jsonobject.get("source_entity"));
             DamageSourcePredicate damagesourcepredicate = DamageSourcePredicate.deserialize(jsonobject.get("type"));
             return new DamagePredicate(minmaxbounds, minmaxbounds1, entitypredicate, obool, damagesourcepredicate);
-        }
-        else
-        {
+        } else {
             return ANY;
         }
     }

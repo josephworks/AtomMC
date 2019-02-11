@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "glass_silver" }
+  "variants": {
+    "normal": {
+      "model": "glass_silver"
     }
+  }
 }

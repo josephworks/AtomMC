@@ -25,26 +25,22 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import javax.annotation.Nullable;
 
-public class AreaContext extends PlayerContext
-{
+public class AreaContext extends PlayerContext {
     private final AxisAlignedBB area;
 
-    public AreaContext(EntityPlayer ep, AxisAlignedBB aabb)
-    {
+    public AreaContext(EntityPlayer ep, AxisAlignedBB aabb) {
         super(ep);
         area = Preconditions.checkNotNull(aabb, "AxisAlignedBB can't be null in AreaContext!");
     }
 
     @Override
     @Nullable
-    public <T> T get(ContextKey<T> key)
-    {
+    public <T> T get(ContextKey<T> key) {
         return key.equals(ContextKeys.AREA) ? (T) area : super.get(key);
     }
 
     @Override
-    protected boolean covers(ContextKey<?> key)
-    {
+    protected boolean covers(ContextKey<?> key) {
         return key.equals(ContextKeys.AREA);
     }
 }

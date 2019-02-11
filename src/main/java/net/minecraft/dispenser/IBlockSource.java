@@ -4,8 +4,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-public interface IBlockSource extends ILocatableSource
-{
+public interface IBlockSource extends ILocatableSource {
     double getX();
 
     double getY();

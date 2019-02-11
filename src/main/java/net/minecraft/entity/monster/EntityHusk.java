@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,69 +17,56 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntityHusk extends EntityZombie
-{
-    public EntityHusk(World worldIn)
-    {
+public class EntityHusk extends EntityZombie {
+    public EntityHusk(World worldIn) {
         super(worldIn);
     }
 
-    public static void registerFixesHusk(DataFixer fixer)
-    {
+    public static void registerFixesHusk(DataFixer fixer) {
         EntityLiving.registerFixesMob(fixer, EntityHusk.class);
     }
 
-    public boolean getCanSpawnHere()
-    {
+    public boolean getCanSpawnHere() {
         return super.getCanSpawnHere() && this.world.canSeeSky(new BlockPos(this));
     }
 
-    protected boolean shouldBurnInDay()
-    {
+    protected boolean shouldBurnInDay() {
         return false;
     }
 
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_HUSK_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return SoundEvents.ENTITY_HUSK_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_HUSK_DEATH;
     }
 
-    protected SoundEvent getStepSound()
-    {
+    protected SoundEvent getStepSound() {
         return SoundEvents.ENTITY_HUSK_STEP;
     }
 
     @Nullable
-    protected ResourceLocation getLootTable()
-    {
+    protected ResourceLocation getLootTable() {
         return LootTableList.ENTITIES_HUSK;
     }
 
-    public boolean attackEntityAsMob(Entity entityIn)
-    {
+    public boolean attackEntityAsMob(Entity entityIn) {
         boolean flag = super.attackEntityAsMob(entityIn);
 
-        if (flag && this.getHeldItemMainhand().isEmpty() && entityIn instanceof EntityLivingBase)
-        {
+        if (flag && this.getHeldItemMainhand().isEmpty() && entityIn instanceof EntityLivingBase) {
             float f = this.world.getDifficultyForLocation(new BlockPos(this)).getAdditionalDifficulty();
-            ((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.HUNGER, 140 * (int)f));
+            ((EntityLivingBase) entityIn).addPotionEffect(new PotionEffect(MobEffects.HUNGER, 140 * (int) f));
         }
 
         return flag;
     }
 
-    protected ItemStack getSkullDrop()
-    {
+    protected ItemStack getSkullDrop() {
         return ItemStack.EMPTY;
     }
 }

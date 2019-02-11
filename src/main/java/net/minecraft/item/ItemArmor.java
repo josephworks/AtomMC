@@ -2,8 +2,10 @@ package net.minecraft.item;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Multimap;
+
 import java.util.List;
 import java.util.UUID;
+
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
@@ -32,15 +34,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.block.BlockDispenseEvent;
 
-public class ItemArmor extends Item
-{
-    private static final int[] MAX_DAMAGE_ARRAY = new int[] {13, 15, 16, 11};
-    private static final UUID[] ARMOR_MODIFIERS = new UUID[] {UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
-    public static final String[] EMPTY_SLOT_NAMES = new String[] {"minecraft:items/empty_armor_slot_boots", "minecraft:items/empty_armor_slot_leggings", "minecraft:items/empty_armor_slot_chestplate", "minecraft:items/empty_armor_slot_helmet"};
-    public static final IBehaviorDispenseItem DISPENSER_BEHAVIOR = new BehaviorDefaultDispenseItem()
-    {
-        protected ItemStack dispenseStack(IBlockSource source, ItemStack stack)
-        {
+public class ItemArmor extends Item {
+    private static final int[] MAX_DAMAGE_ARRAY = new int[]{13, 15, 16, 11};
+    private static final UUID[] ARMOR_MODIFIERS = new UUID[]{UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
+    public static final String[] EMPTY_SLOT_NAMES = new String[]{"minecraft:items/empty_armor_slot_boots", "minecraft:items/empty_armor_slot_leggings", "minecraft:items/empty_armor_slot_chestplate", "minecraft:items/empty_armor_slot_helmet"};
+    public static final IBehaviorDispenseItem DISPENSER_BEHAVIOR = new BehaviorDefaultDispenseItem() {
+        protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
             ItemStack itemstack = ItemArmor.dispenseArmor(source, stack);
             return itemstack.isEmpty() ? super.dispenseStack(source, stack) : itemstack;
         }
@@ -51,17 +50,13 @@ public class ItemArmor extends Item
     public final int renderIndex;
     private final ArmorMaterial material;
 
-    public static ItemStack dispenseArmor(IBlockSource blockSource, ItemStack stack)
-    {
-        BlockPos blockpos = blockSource.getBlockPos().offset((EnumFacing)blockSource.getBlockState().getValue(BlockDispenser.FACING));
+    public static ItemStack dispenseArmor(IBlockSource blockSource, ItemStack stack) {
+        BlockPos blockpos = blockSource.getBlockPos().offset((EnumFacing) blockSource.getBlockState().getValue(BlockDispenser.FACING));
         List<EntityLivingBase> list = blockSource.getWorld().<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.and(EntitySelectors.NOT_SPECTATING, new EntitySelectors.ArmoredMob(stack)));
 
-        if (list.isEmpty())
-        {
+        if (list.isEmpty()) {
             return ItemStack.EMPTY;
-        }
-        else
-        {
+        } else {
             EntityLivingBase entitylivingbase = list.get(0);
             EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(stack);
             ItemStack itemstack = stack.splitStack(1);
@@ -89,17 +84,15 @@ public class ItemArmor extends Item
             }
             entitylivingbase.setItemStackToSlot(entityequipmentslot, itemstack);
 
-            if (entitylivingbase instanceof EntityLiving)
-            {
-                ((EntityLiving)entitylivingbase).setDropChance(entityequipmentslot, 2.0F);
+            if (entitylivingbase instanceof EntityLiving) {
+                ((EntityLiving) entitylivingbase).setDropChance(entityequipmentslot, 2.0F);
             }
 
             return stack;
         }
     }
 
-    public ItemArmor(ArmorMaterial materialIn, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn)
-    {
+    public ItemArmor(ArmorMaterial materialIn, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn) {
         this.material = materialIn;
         this.armorType = equipmentSlotIn;
         this.renderIndex = renderIndexIn;
@@ -112,50 +105,37 @@ public class ItemArmor extends Item
     }
 
     @SideOnly(Side.CLIENT)
-    public EntityEquipmentSlot getEquipmentSlot()
-    {
+    public EntityEquipmentSlot getEquipmentSlot() {
         return this.armorType;
     }
 
-    public int getItemEnchantability()
-    {
+    public int getItemEnchantability() {
         return this.material.getEnchantability();
     }
 
-    public ArmorMaterial getArmorMaterial()
-    {
+    public ArmorMaterial getArmorMaterial() {
         return this.material;
     }
 
-    public boolean hasColor(ItemStack stack)
-    {
-        if (this.material != ArmorMaterial.LEATHER)
-        {
+    public boolean hasColor(ItemStack stack) {
+        if (this.material != ArmorMaterial.LEATHER) {
             return false;
-        }
-        else
-        {
+        } else {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
             return nbttagcompound != null && nbttagcompound.hasKey("display", 10) ? nbttagcompound.getCompoundTag("display").hasKey("color", 3) : false;
         }
     }
 
-    public int getColor(ItemStack stack)
-    {
-        if (this.material != ArmorMaterial.LEATHER)
-        {
+    public int getColor(ItemStack stack) {
+        if (this.material != ArmorMaterial.LEATHER) {
             return 16777215;
-        }
-        else
-        {
+        } else {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
 
-            if (nbttagcompound != null)
-            {
+            if (nbttagcompound != null) {
                 NBTTagCompound nbttagcompound1 = nbttagcompound.getCompoundTag("display");
 
-                if (nbttagcompound1 != null && nbttagcompound1.hasKey("color", 3))
-                {
+                if (nbttagcompound1 != null && nbttagcompound1.hasKey("color", 3)) {
                     return nbttagcompound1.getInteger("color");
                 }
             }
@@ -164,44 +144,34 @@ public class ItemArmor extends Item
         }
     }
 
-    public void removeColor(ItemStack stack)
-    {
-        if (this.material == ArmorMaterial.LEATHER)
-        {
+    public void removeColor(ItemStack stack) {
+        if (this.material == ArmorMaterial.LEATHER) {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
 
-            if (nbttagcompound != null)
-            {
+            if (nbttagcompound != null) {
                 NBTTagCompound nbttagcompound1 = nbttagcompound.getCompoundTag("display");
 
-                if (nbttagcompound1.hasKey("color"))
-                {
+                if (nbttagcompound1.hasKey("color")) {
                     nbttagcompound1.removeTag("color");
                 }
             }
         }
     }
 
-    public void setColor(ItemStack stack, int color)
-    {
-        if (this.material != ArmorMaterial.LEATHER)
-        {
+    public void setColor(ItemStack stack, int color) {
+        if (this.material != ArmorMaterial.LEATHER) {
             throw new UnsupportedOperationException("Can't dye non-leather!");
-        }
-        else
-        {
+        } else {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
 
-            if (nbttagcompound == null)
-            {
+            if (nbttagcompound == null) {
                 nbttagcompound = new NBTTagCompound();
                 stack.setTagCompound(nbttagcompound);
             }
 
             NBTTagCompound nbttagcompound1 = nbttagcompound.getCompoundTag("display");
 
-            if (!nbttagcompound.hasKey("display", 10))
-            {
+            if (!nbttagcompound.hasKey("display", 10)) {
                 nbttagcompound.setTag("display", nbttagcompound1);
             }
 
@@ -209,39 +179,32 @@ public class ItemArmor extends Item
         }
     }
 
-    public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
-    {
+    public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
         ItemStack mat = this.material.getRepairItemStack();
-        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false)) return true;
+        if (!mat.isEmpty() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
         return super.getIsRepairable(toRepair, repair);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
         ItemStack itemstack1 = playerIn.getItemStackFromSlot(entityequipmentslot);
 
-        if (itemstack1.isEmpty())
-        {
+        if (itemstack1.isEmpty()) {
             playerIn.setItemStackToSlot(entityequipmentslot, itemstack.copy());
             itemstack.setCount(0);
             return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
-        }
-        else
-        {
+        } else {
             return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
         }
     }
 
-    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot)
-    {
+    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
 
-        if (equipmentSlot == this.armorType)
-        {
-            multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor modifier", (double)this.damageReduceAmount, 0));
-            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor toughness", (double)this.toughness, 0));
+        if (equipmentSlot == this.armorType) {
+            multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor modifier", (double) this.damageReduceAmount, 0));
+            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Armor toughness", (double) this.toughness, 0));
         }
 
         return multimap;
@@ -255,13 +218,11 @@ public class ItemArmor extends Item
      * @param stack The stack
      * @return true/false
      */
-    public boolean hasOverlay(ItemStack stack)
-    {
+    public boolean hasOverlay(ItemStack stack) {
         return this.material == ArmorMaterial.LEATHER || getColor(stack) != 0x00FFFFFF;
     }
 
-    public static enum ArmorMaterial
-    {
+    public static enum ArmorMaterial {
         LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F),
         CHAIN("chainmail", 15, new int[]{1, 4, 5, 2}, 12, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 0.0F),
         IRON("iron", 15, new int[]{2, 5, 6, 2}, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F),
@@ -277,8 +238,7 @@ public class ItemArmor extends Item
         //Added by forge for custom Armor materials.
         public ItemStack repairMaterial = ItemStack.EMPTY;
 
-        private ArmorMaterial(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn, int enchantabilityIn, SoundEvent soundEventIn, float toughnessIn)
-        {
+        private ArmorMaterial(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn, int enchantabilityIn, SoundEvent soundEventIn, float toughnessIn) {
             this.name = nameIn;
             this.maxDamageFactor = maxDamageFactorIn;
             this.damageReductionAmountArray = damageReductionAmountArrayIn;
@@ -287,75 +247,59 @@ public class ItemArmor extends Item
             this.toughness = toughnessIn;
         }
 
-        public int getDurability(EntityEquipmentSlot armorType)
-        {
+        public int getDurability(EntityEquipmentSlot armorType) {
             return ItemArmor.MAX_DAMAGE_ARRAY[armorType.getIndex()] * this.maxDamageFactor;
         }
 
-        public int getDamageReductionAmount(EntityEquipmentSlot armorType)
-        {
+        public int getDamageReductionAmount(EntityEquipmentSlot armorType) {
             return this.damageReductionAmountArray[armorType.getIndex()];
         }
 
-        public int getEnchantability()
-        {
+        public int getEnchantability() {
             return this.enchantability;
         }
 
-        public SoundEvent getSoundEvent()
-        {
+        public SoundEvent getSoundEvent() {
             return this.soundEvent;
         }
 
         @Deprecated // Use getRepairItemStack below
-        public Item getRepairItem()
-        {
-            if (this == LEATHER)
-            {
+        public Item getRepairItem() {
+            if (this == LEATHER) {
                 return Items.LEATHER;
-            }
-            else if (this == CHAIN)
-            {
+            } else if (this == CHAIN) {
                 return Items.IRON_INGOT;
-            }
-            else if (this == GOLD)
-            {
+            } else if (this == GOLD) {
                 return Items.GOLD_INGOT;
-            }
-            else if (this == IRON)
-            {
+            } else if (this == IRON) {
                 return Items.IRON_INGOT;
-            }
-            else
-            {
+            } else {
                 return this == DIAMOND ? Items.DIAMOND : null;
             }
         }
 
         @SideOnly(Side.CLIENT)
-        public String getName()
-        {
+        public String getName() {
             return this.name;
         }
 
-        public float getToughness()
-        {
+        public float getToughness() {
             return this.toughness;
         }
 
-        public ArmorMaterial setRepairItem(ItemStack stack)
-        {
+        public ArmorMaterial setRepairItem(ItemStack stack) {
             if (!this.repairMaterial.isEmpty()) throw new RuntimeException("Repair material has already been set");
-            if (this == LEATHER || this == CHAIN || this == GOLD || this == IRON || this == DIAMOND) throw new RuntimeException("Can not change vanilla armor repair materials");
+            if (this == LEATHER || this == CHAIN || this == GOLD || this == IRON || this == DIAMOND)
+                throw new RuntimeException("Can not change vanilla armor repair materials");
             this.repairMaterial = stack;
             return this;
         }
 
-        public ItemStack getRepairItemStack()
-        {
+        public ItemStack getRepairItemStack() {
             if (!repairMaterial.isEmpty()) return repairMaterial;
             Item ret = this.getRepairItem();
-            if (ret != null) repairMaterial = new ItemStack(ret,1,net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE);
+            if (ret != null)
+                repairMaterial = new ItemStack(ret, 1, net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE);
             return repairMaterial;
         }
     }

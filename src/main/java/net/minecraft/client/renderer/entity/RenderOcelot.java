@@ -8,22 +8,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderOcelot extends RenderLiving<EntityOcelot>
-{
+public class RenderOcelot extends RenderLiving<EntityOcelot> {
     private static final ResourceLocation BLACK_OCELOT_TEXTURES = new ResourceLocation("textures/entity/cat/black.png");
     private static final ResourceLocation OCELOT_TEXTURES = new ResourceLocation("textures/entity/cat/ocelot.png");
     private static final ResourceLocation RED_OCELOT_TEXTURES = new ResourceLocation("textures/entity/cat/red.png");
     private static final ResourceLocation SIAMESE_OCELOT_TEXTURES = new ResourceLocation("textures/entity/cat/siamese.png");
 
-    public RenderOcelot(RenderManager p_i47199_1_)
-    {
+    public RenderOcelot(RenderManager p_i47199_1_) {
         super(p_i47199_1_, new ModelOcelot(), 0.4F);
     }
 
-    protected ResourceLocation getEntityTexture(EntityOcelot entity)
-    {
-        switch (entity.getTameSkin())
-        {
+    protected ResourceLocation getEntityTexture(EntityOcelot entity) {
+        switch (entity.getTameSkin()) {
             case 0:
             default:
                 return OCELOT_TEXTURES;
@@ -36,12 +32,10 @@ public class RenderOcelot extends RenderLiving<EntityOcelot>
         }
     }
 
-    protected void preRenderCallback(EntityOcelot entitylivingbaseIn, float partialTickTime)
-    {
+    protected void preRenderCallback(EntityOcelot entitylivingbaseIn, float partialTickTime) {
         super.preRenderCallback(entitylivingbaseIn, partialTickTime);
 
-        if (entitylivingbaseIn.isTamed())
-        {
+        if (entitylivingbaseIn.isTamed()) {
             GlStateManager.scale(0.8F, 0.8F, 0.8F);
         }
     }

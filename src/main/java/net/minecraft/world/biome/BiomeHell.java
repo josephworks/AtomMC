@@ -5,10 +5,8 @@ import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.entity.monster.EntityPigZombie;
 
-public class BiomeHell extends Biome
-{
-    public BiomeHell(BiomeProperties properties)
-    {
+public class BiomeHell extends Biome {
+    public BiomeHell(BiomeProperties properties) {
         super(properties);
         this.spawnableMonsterList.clear();
         this.spawnableCreatureList.clear();

@@ -1,7 +1,6 @@
 package net.minecraft.world;
 
-public enum EnumDifficulty
-{
+public enum EnumDifficulty {
     PEACEFUL(0, "options.difficulty.peaceful"),
     EASY(1, "options.difficulty.easy"),
     NORMAL(2, "options.difficulty.normal"),
@@ -11,31 +10,25 @@ public enum EnumDifficulty
     private final int difficultyId;
     private final String difficultyResourceKey;
 
-    private EnumDifficulty(int difficultyIdIn, String difficultyResourceKeyIn)
-    {
+    private EnumDifficulty(int difficultyIdIn, String difficultyResourceKeyIn) {
         this.difficultyId = difficultyIdIn;
         this.difficultyResourceKey = difficultyResourceKeyIn;
     }
 
-    public int getDifficultyId()
-    {
+    public int getDifficultyId() {
         return this.difficultyId;
     }
 
-    public static EnumDifficulty getDifficultyEnum(int id)
-    {
+    public static EnumDifficulty getDifficultyEnum(int id) {
         return ID_MAPPING[id % ID_MAPPING.length];
     }
 
-    public String getDifficultyResourceKey()
-    {
+    public String getDifficultyResourceKey() {
         return this.difficultyResourceKey;
     }
 
-    static
-    {
-        for (EnumDifficulty enumdifficulty : values())
-        {
+    static {
+        for (EnumDifficulty enumdifficulty : values()) {
             ID_MAPPING[enumdifficulty.difficultyId] = enumdifficulty;
         }
     }

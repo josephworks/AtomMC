@@ -1,6 +1,6 @@
 {
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "items/dye_powder_red"
-    }
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "items/dye_powder_red"
+  }
 }

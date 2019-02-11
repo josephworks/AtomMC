@@ -3,10 +3,12 @@ package net.minecraft.entity;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -102,8 +104,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EntityList
-{
+public class EntityList {
     public static final ResourceLocation LIGHTNING_BOLT = new ResourceLocation("lightning_bolt");
     private static final ResourceLocation PLAYER = new ResourceLocation("player");
     private static final Logger LOGGER = LogManager.getLogger();
@@ -111,78 +112,63 @@ public class EntityList
     private static final Set<ResourceLocation> EXTRA_NAMES = Sets.newHashSet();
 
     @Nullable
-    public static ResourceLocation getKey(Entity entityIn)
-    {
+    public static ResourceLocation getKey(Entity entityIn) {
         return getKey(entityIn.getClass());
     }
 
     @Nullable
-    public static ResourceLocation getKey(Class <? extends Entity > entityIn)
-    {
+    public static ResourceLocation getKey(Class<? extends Entity> entityIn) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(entityIn);
         return entry == null ? null : entry.getRegistryName();
     }
 
     @Nullable
-    public static String getEntityString(Entity entityIn)
-    {
+    public static String getEntityString(Entity entityIn) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(entityIn.getClass());
         return entry == null ? null : entry.getName();
     }
 
     @Nullable
-    public static String getTranslationName(@Nullable ResourceLocation entityType)
-    {
+    public static String getTranslationName(@Nullable ResourceLocation entityType) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(entityType);
         return entry == null ? null : entry.getName();
     }
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public static Class <? extends Entity > getClassFromID(int entityID)
-    {
+    public static Class<? extends Entity> getClassFromID(int entityID) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(entityID);
         return entry == null ? null : entry.getEntityClass();
     }
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public static Class <? extends Entity > getClassFromName(String p_192839_0_)
-    {
+    public static Class<? extends Entity> getClassFromName(String p_192839_0_) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(new ResourceLocation(p_192839_0_));
         return entry == null ? null : entry.getEntityClass();
     }
 
-    public static int getID(Class<? extends Entity> cls)
-    {
+    public static int getID(Class<? extends Entity> cls) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(cls);
         return entry == null ? -1 : net.minecraftforge.registries.GameData.getEntityRegistry().getID(entry);
     }
 
     @Nullable
-    public static Class<? extends Entity> getClass(ResourceLocation key)
-    {
+    public static Class<? extends Entity> getClass(ResourceLocation key) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(key);
         return entry == null ? null : entry.getEntityClass();
     }
 
     @Nullable
-    public static Entity newEntity(@Nullable Class <? extends Entity > clazz, World worldIn)
-    {
-        if (clazz == null)
-        {
+    public static Entity newEntity(@Nullable Class<? extends Entity> clazz, World worldIn) {
+        if (clazz == null) {
             return null;
-        }
-        else
-        {
-            try
-            {
+        } else {
+            try {
                 net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.EntityRegistry.getEntry(clazz);
                 if (entry != null) return entry.newInstance(worldIn);
                 return clazz.getConstructor(World.class).newInstance(worldIn);
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 exception.printStackTrace();
                 return null;
             }
@@ -191,37 +177,28 @@ public class EntityList
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public static Entity createEntityByID(int entityID, World worldIn)
-    {
+    public static Entity createEntityByID(int entityID, World worldIn) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.registries.GameData.getEntityRegistry().getValue(entityID);
         return entry == null ? null : entry.newInstance(worldIn);
     }
 
     @Nullable
-    public static Entity createEntityByIDFromName(ResourceLocation name, World worldIn)
-    {
+    public static Entity createEntityByIDFromName(ResourceLocation name, World worldIn) {
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(name);
         return entry == null ? null : entry.newInstance(worldIn);
     }
 
     @Nullable
-    public static Entity createEntityFromNBT(NBTTagCompound nbt, World worldIn)
-    {
+    public static Entity createEntityFromNBT(NBTTagCompound nbt, World worldIn) {
         ResourceLocation resourcelocation = new ResourceLocation(nbt.getString("id"));
         Entity entity = createEntityByIDFromName(resourcelocation, worldIn);
 
-        if (entity == null)
-        {
-            LOGGER.warn("Skipping Entity with id {}", (Object)resourcelocation);
-        }
-        else
-        {
-            try
-            {
-            entity.readFromNBT(nbt);
-            }
-            catch (Exception e)
-            {
+        if (entity == null) {
+            LOGGER.warn("Skipping Entity with id {}", (Object) resourcelocation);
+        } else {
+            try {
+                entity.readFromNBT(nbt);
+            } catch (Exception e) {
                 net.minecraftforge.fml.common.FMLLog.log.error("An Entity {}({}) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                         nbt.getString("id"), entity.getName(), e);
                 entity = null;
@@ -231,49 +208,38 @@ public class EntityList
         return entity;
     }
 
-    public static Set<ResourceLocation> getEntityNameList()
-    {
+    public static Set<ResourceLocation> getEntityNameList() {
         return Sets.union(net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getKeys(), EXTRA_NAMES);
     }
 
-    public static boolean isMatchingName(Entity entityIn, ResourceLocation entityName)
-    {
+    public static boolean isMatchingName(Entity entityIn, ResourceLocation entityName) {
         ResourceLocation resourcelocation = getKey(entityIn.getClass());
 
-        if (resourcelocation != null)
-        {
+        if (resourcelocation != null) {
             return resourcelocation.equals(entityName);
-        }
-        else if (entityIn instanceof EntityPlayer)
-        {
+        } else if (entityIn instanceof EntityPlayer) {
             return PLAYER.equals(entityName);
-        }
-        else
-        {
+        } else {
             return entityIn instanceof EntityLightningBolt ? LIGHTNING_BOLT.equals(entityName) : false;
         }
     }
 
-    public static boolean isRegistered(ResourceLocation entityName)
-    {
+    public static boolean isRegistered(ResourceLocation entityName) {
         return PLAYER.equals(entityName) || getEntityNameList().contains(entityName);
     }
 
-    public static String getValidTypeNames()
-    {
+    public static String getValidTypeNames() {
         StringBuilder stringbuilder = new StringBuilder();
 
-        for (ResourceLocation resourcelocation : getEntityNameList())
-        {
-            stringbuilder.append((Object)resourcelocation).append(", ");
+        for (ResourceLocation resourcelocation : getEntityNameList()) {
+            stringbuilder.append((Object) resourcelocation).append(", ");
         }
 
-        stringbuilder.append((Object)PLAYER);
+        stringbuilder.append((Object) PLAYER);
         return stringbuilder.toString();
     }
 
-    public static void init()
-    {
+    public static void init() {
         register(1, "item", EntityItem.class, "Item");
         register(2, "xp_orb", EntityXPOrb.class, "XPOrb");
         register(3, "area_effect_cloud", EntityAreaEffectCloud.class, "AreaEffectCloud");
@@ -403,63 +369,52 @@ public class EntityList
         EXTRA_NAMES.add(LIGHTNING_BOLT);
     }
 
-    private static void register(int id, String name, Class <? extends Entity > clazz, String oldName)
-    {
-        try
-        {
+    private static void register(int id, String name, Class<? extends Entity> clazz, String oldName) {
+        try {
             clazz.getConstructor(World.class);
-        }
-        catch (NoSuchMethodException var5)
-        {
+        } catch (NoSuchMethodException var5) {
             throw new RuntimeException("Invalid class " + clazz + " no constructor taking " + World.class.getName());
         }
 
-        if ((clazz.getModifiers() & 1024) == 1024)
-        {
+        if ((clazz.getModifiers() & 1024) == 1024) {
             throw new RuntimeException("Invalid abstract class " + clazz);
-        }
-        else
-        {
+        } else {
             ResourceLocation resourcelocation = new ResourceLocation(name);
             net.minecraftforge.registries.GameData.registerEntity(id, resourcelocation, clazz, oldName);
         }
     }
 
-    protected static EntityEggInfo addSpawnInfo(String id, int primaryColor, int secondaryColor)
-    {
+    protected static EntityEggInfo addSpawnInfo(String id, int primaryColor, int secondaryColor) {
         ResourceLocation resourcelocation = new ResourceLocation(id);
         EntityEggInfo egg = new EntityEggInfo(resourcelocation, primaryColor, secondaryColor);
         net.minecraftforge.fml.common.registry.EntityEntry entry = net.minecraftforge.fml.common.registry.ForgeRegistries.ENTITIES.getValue(resourcelocation);
         if (entry != null) entry.setEgg(egg);
-        return (EntityEggInfo)ENTITY_EGGS.put(resourcelocation, egg);
+        return (EntityEggInfo) ENTITY_EGGS.put(resourcelocation, egg);
     }
 
-    public static class EntityEggInfo
-        {
-            public final ResourceLocation spawnedID;
-            public final int primaryColor;
-            public final int secondaryColor;
-            public final StatBase killEntityStat;
-            public final StatBase entityKilledByStat;
+    public static class EntityEggInfo {
+        public final ResourceLocation spawnedID;
+        public final int primaryColor;
+        public final int secondaryColor;
+        public final StatBase killEntityStat;
+        public final StatBase entityKilledByStat;
 
-            public EntityEggInfo(ResourceLocation idIn, int primaryColorIn, int secondaryColorIn)
-            {
-                this.spawnedID = idIn;
-                this.primaryColor = primaryColorIn;
-                this.secondaryColor = secondaryColorIn;
-                this.killEntityStat = StatList.getStatKillEntity(this);
-                this.entityKilledByStat = StatList.getStatEntityKilledBy(this);
-            }
-
-            // Forge start
-            public EntityEggInfo(ResourceLocation id, int primaryColor, int secondaryColor, StatBase killEntityStatistic, StatBase entityKilledByStatistic)
-            {
-                this.spawnedID = id;
-                this.primaryColor = primaryColor;
-                this.secondaryColor = secondaryColor;
-                this.killEntityStat = killEntityStatistic;
-                this.entityKilledByStat = entityKilledByStatistic;
-            }
-            // Forge end
+        public EntityEggInfo(ResourceLocation idIn, int primaryColorIn, int secondaryColorIn) {
+            this.spawnedID = idIn;
+            this.primaryColor = primaryColorIn;
+            this.secondaryColor = secondaryColorIn;
+            this.killEntityStat = StatList.getStatKillEntity(this);
+            this.entityKilledByStat = StatList.getStatEntityKilledBy(this);
         }
+
+        // Forge start
+        public EntityEggInfo(ResourceLocation id, int primaryColor, int secondaryColor, StatBase killEntityStatistic, StatBase entityKilledByStatistic) {
+            this.spawnedID = id;
+            this.primaryColor = primaryColor;
+            this.secondaryColor = secondaryColor;
+            this.killEntityStat = killEntityStatistic;
+            this.entityKilledByStat = entityKilledByStatistic;
+        }
+        // Forge end
+    }
 }

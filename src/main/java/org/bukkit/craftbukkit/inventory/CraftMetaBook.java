@@ -19,7 +19,9 @@ import org.bukkit.inventory.meta.BookMeta;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap.Builder;
+
 import java.util.AbstractList;
+
 import org.bukkit.craftbukkit.util.CraftChatMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -103,7 +105,7 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
         setTitle(SerializableMeta.getString(map, BOOK_TITLE.BUKKIT, true));
 
         Iterable<?> pages = SerializableMeta.getObject(Iterable.class, map, BOOK_PAGES.BUKKIT, true);
-        if(pages != null) {
+        if (pages != null) {
             for (Object page : pages) {
                 if (page instanceof String) {
                     addPage((String) page);
@@ -159,11 +161,11 @@ public class CraftMetaBook extends CraftMetaItem implements BookMeta {
     @Override
     boolean applicableTo(Material type) {
         switch (type) {
-        case WRITTEN_BOOK:
-        case BOOK_AND_QUILL:
-            return true;
-        default:
-            return false;
+            case WRITTEN_BOOK:
+            case BOOK_AND_QUILL:
+                return true;
+            default:
+                return false;
         }
     }
 

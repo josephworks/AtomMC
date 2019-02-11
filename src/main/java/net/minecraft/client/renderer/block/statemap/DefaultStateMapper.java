@@ -7,10 +7,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class DefaultStateMapper extends StateMapperBase
-{
-    protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-    {
+public class DefaultStateMapper extends StateMapperBase {
+    protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
         return new ModelResourceLocation(Block.REGISTRY.getNameForObject(state.getBlock()), this.getPropertyString(state.getProperties()));
     }
 }

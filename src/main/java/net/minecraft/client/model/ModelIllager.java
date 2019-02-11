@@ -9,8 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelIllager extends ModelBase
-{
+public class ModelIllager extends ModelBase {
     public ModelRenderer head;
     public ModelRenderer hat;
     public ModelRenderer body;
@@ -21,8 +20,7 @@ public class ModelIllager extends ModelBase
     public ModelRenderer rightArm;
     public ModelRenderer leftArm;
 
-    public ModelIllager(float scaleFactor, float p_i47227_2_, int textureWidthIn, int textureHeightIn)
-    {
+    public ModelIllager(float scaleFactor, float p_i47227_2_, int textureWidthIn, int textureHeightIn) {
         this.head = (new ModelRenderer(this)).setTextureSize(textureWidthIn, textureHeightIn);
         this.head.setRotationPoint(0.0F, 0.0F + p_i47227_2_, 0.0F);
         this.head.setTextureOffset(0, 0).addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, scaleFactor);
@@ -62,57 +60,48 @@ public class ModelIllager extends ModelBase
         this.leftArm.setRotationPoint(5.0F, 2.0F + p_i47227_2_, 0.0F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.head.render(scale);
         this.body.render(scale);
         this.leg0.render(scale);
         this.leg1.render(scale);
-        AbstractIllager abstractillager = (AbstractIllager)entityIn;
+        AbstractIllager abstractillager = (AbstractIllager) entityIn;
 
-        if (abstractillager.getArmPose() == AbstractIllager.IllagerArmPose.CROSSED)
-        {
+        if (abstractillager.getArmPose() == AbstractIllager.IllagerArmPose.CROSSED) {
             this.arms.render(scale);
-        }
-        else
-        {
+        } else {
             this.rightArm.render(scale);
             this.leftArm.render(scale);
         }
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.head.rotateAngleX = headPitch * 0.017453292F;
         this.arms.rotationPointY = 3.0F;
         this.arms.rotationPointZ = -1.0F;
         this.arms.rotateAngleX = -0.75F;
         this.leg0.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount * 0.5F;
-        this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount * 0.5F;
+        this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount * 0.5F;
         this.leg0.rotateAngleY = 0.0F;
         this.leg1.rotateAngleY = 0.0F;
-        AbstractIllager.IllagerArmPose abstractillager$illagerarmpose = ((AbstractIllager)entityIn).getArmPose();
+        AbstractIllager.IllagerArmPose abstractillager$illagerarmpose = ((AbstractIllager) entityIn).getArmPose();
 
-        if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.ATTACKING)
-        {
-            float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
-            float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
+        if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.ATTACKING) {
+            float f = MathHelper.sin(this.swingProgress * (float) Math.PI);
+            float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
             this.rightArm.rotateAngleZ = 0.0F;
             this.leftArm.rotateAngleZ = 0.0F;
             this.rightArm.rotateAngleY = 0.15707964F;
             this.leftArm.rotateAngleY = -0.15707964F;
 
-            if (((EntityLivingBase)entityIn).getPrimaryHand() == EnumHandSide.RIGHT)
-            {
+            if (((EntityLivingBase) entityIn).getPrimaryHand() == EnumHandSide.RIGHT) {
                 this.rightArm.rotateAngleX = -1.8849558F + MathHelper.cos(ageInTicks * 0.09F) * 0.15F;
                 this.leftArm.rotateAngleX = -0.0F + MathHelper.cos(ageInTicks * 0.19F) * 0.5F;
                 this.rightArm.rotateAngleX += f * 2.2F - f1 * 0.4F;
                 this.leftArm.rotateAngleX += f * 1.2F - f1 * 0.4F;
-            }
-            else
-            {
+            } else {
                 this.rightArm.rotateAngleX = -0.0F + MathHelper.cos(ageInTicks * 0.19F) * 0.5F;
                 this.leftArm.rotateAngleX = -1.8849558F + MathHelper.cos(ageInTicks * 0.09F) * 0.15F;
                 this.rightArm.rotateAngleX += f * 1.2F - f1 * 0.4F;
@@ -123,9 +112,7 @@ public class ModelIllager extends ModelBase
             this.leftArm.rotateAngleZ -= MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;
             this.rightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
             this.leftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
-        }
-        else if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.SPELLCASTING)
-        {
+        } else if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.SPELLCASTING) {
             this.rightArm.rotationPointZ = 0.0F;
             this.rightArm.rotationPointX = -5.0F;
             this.leftArm.rotationPointZ = 0.0F;
@@ -136,19 +123,16 @@ public class ModelIllager extends ModelBase
             this.leftArm.rotateAngleZ = -2.3561945F;
             this.rightArm.rotateAngleY = 0.0F;
             this.leftArm.rotateAngleY = 0.0F;
-        }
-        else if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.BOW_AND_ARROW)
-        {
+        } else if (abstractillager$illagerarmpose == AbstractIllager.IllagerArmPose.BOW_AND_ARROW) {
             this.rightArm.rotateAngleY = -0.1F + this.head.rotateAngleY;
-            this.rightArm.rotateAngleX = -((float)Math.PI / 2F) + this.head.rotateAngleX;
+            this.rightArm.rotateAngleX = -((float) Math.PI / 2F) + this.head.rotateAngleX;
             this.leftArm.rotateAngleX = -0.9424779F + this.head.rotateAngleX;
             this.leftArm.rotateAngleY = this.head.rotateAngleY - 0.4F;
-            this.leftArm.rotateAngleZ = ((float)Math.PI / 2F);
+            this.leftArm.rotateAngleZ = ((float) Math.PI / 2F);
         }
     }
 
-    public ModelRenderer getArm(EnumHandSide p_191216_1_)
-    {
+    public ModelRenderer getArm(EnumHandSide p_191216_1_) {
         return p_191216_1_ == EnumHandSide.LEFT ? this.leftArm : this.rightArm;
     }
 }

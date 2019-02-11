@@ -1,11 +1,11 @@
 package net.minecraft.util;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
 import java.util.Set;
 
-public enum SoundCategory
-{
+public enum SoundCategory {
     MASTER("master"),
     MUSIC("music"),
     RECORDS("record"),
@@ -20,32 +20,25 @@ public enum SoundCategory
     private static final Map<String, SoundCategory> SOUND_CATEGORIES = Maps.<String, SoundCategory>newHashMap();
     private final String name;
 
-    private SoundCategory(String nameIn)
-    {
+    private SoundCategory(String nameIn) {
         this.name = nameIn;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
-    public static SoundCategory getByName(String categoryName)
-    {
+    public static SoundCategory getByName(String categoryName) {
         return SOUND_CATEGORIES.get(categoryName);
     }
 
-    public static Set<String> getSoundCategoryNames()
-    {
+    public static Set<String> getSoundCategoryNames() {
         return SOUND_CATEGORIES.keySet();
     }
 
-    static
-    {
-        for (SoundCategory soundcategory : values())
-        {
-            if (SOUND_CATEGORIES.containsKey(soundcategory.getName()))
-            {
+    static {
+        for (SoundCategory soundcategory : values()) {
+            if (SOUND_CATEGORIES.containsKey(soundcategory.getName())) {
                 throw new Error("Clash in Sound Category name pools! Cannot insert " + soundcategory);
             }
 

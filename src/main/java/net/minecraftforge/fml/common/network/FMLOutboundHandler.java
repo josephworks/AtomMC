@@ -53,25 +53,22 @@ import javax.annotation.Nullable;
 public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
     public static final AttributeKey<OutboundTarget> FML_MESSAGETARGET = AttributeKey.valueOf("fml:outboundTarget");
     public static final AttributeKey<Object> FML_MESSAGETARGETARGS = AttributeKey.valueOf("fml:outboundTargetArgs");
+
     public enum OutboundTarget {
         /**
          * The packet is sent nowhere. It will be on the {@link EmbeddedChannel#outboundMessages()} Queue.
          *
          * @author cpw
-         *
          */
-        NOWHERE(Sets.immutableEnumSet(Side.CLIENT, Side.SERVER))
-        {
+        NOWHERE(Sets.immutableEnumSet(Side.CLIENT, Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
+            public void validateArgs(Object args) {
                 // NOOP
             }
 
             @Override
             @Nullable
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
                 return null;
             }
 
@@ -80,23 +77,18 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
          * The packet is sent to the {@link NetworkDispatcher} supplied as an argument.
          *
          * @author cpw
-         *
          */
-        DISPATCHER(Sets.immutableEnumSet(Side.SERVER))
-        {
+        DISPATCHER(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
-                if (!(args instanceof NetworkDispatcher))
-                {
+            public void validateArgs(Object args) {
+                if (!(args instanceof NetworkDispatcher)) {
                     throw new RuntimeException("DISPATCHER expects a NetworkDispatcher");
                 }
             }
 
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
-                return ImmutableList.of((NetworkDispatcher)args);
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
+                return ImmutableList.of((NetworkDispatcher) args);
             }
         },
         /**
@@ -104,19 +96,15 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
          * to have it's originator information set.
          *
          * @author cpw
-         *
          */
-        REPLY(Sets.immutableEnumSet(Side.SERVER))
-        {
+        REPLY(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
+            public void validateArgs(Object args) {
                 // NOOP
             }
 
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
                 return ImmutableList.of(packet.getDispatcher());
             }
         },
@@ -124,21 +112,17 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
          * The packet is sent to the {@link EntityPlayerMP} supplied as an argument.
          *
          * @author cpw
-         *
          */
-        PLAYER(Sets.immutableEnumSet(Side.SERVER))
-        {
+        PLAYER(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
-                if (!(args instanceof EntityPlayerMP))
-                {
+            public void validateArgs(Object args) {
+                if (!(args instanceof EntityPlayerMP)) {
                     throw new RuntimeException("PLAYER target expects a Player arg");
                 }
             }
+
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
                 EntityPlayerMP player = (EntityPlayerMP) args;
                 NetworkDispatcher dispatcher = (player == null || player instanceof FakePlayer) ? null : player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                 return dispatcher == null ? ImmutableList.<NetworkDispatcher>of() : ImmutableList.of(dispatcher);
@@ -146,21 +130,18 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
         },
         /**
          * The packet is dispatched to all players connected to the server.
-         * @author cpw
          *
+         * @author cpw
          */
-        ALL(Sets.immutableEnumSet(Side.SERVER))
-        {
+        ALL(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
+            public void validateArgs(Object args) {
             }
+
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
                 ImmutableList.Builder<NetworkDispatcher> builder = ImmutableList.builder();
-                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers())
-                {
+                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
                     NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                     if (dispatcher != null) builder.add(dispatcher);
                 }
@@ -169,28 +150,23 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
         },
         /**
          * The packet is sent to all players in the dimension identified by the integer argument.
-         * @author cpw
          *
+         * @author cpw
          */
-        DIMENSION(Sets.immutableEnumSet(Side.SERVER))
-        {
+        DIMENSION(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
-                if (!(args instanceof Integer))
-                {
+            public void validateArgs(Object args) {
+                if (!(args instanceof Integer)) {
                     throw new RuntimeException("DIMENSION expects an integer argument");
                 }
             }
+
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
-                int dimension = (Integer)args;
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
+                int dimension = (Integer) args;
                 ImmutableList.Builder<NetworkDispatcher> builder = ImmutableList.builder();
-                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers())
-                {
-                    if (dimension == player.dimension)
-                    {
+                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
+                    if (dimension == player.dimension) {
                         NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                         // Null dispatchers may exist for fake players - skip them
                         if (dispatcher != null) builder.add(dispatcher);
@@ -203,34 +179,26 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
          * The packet is sent to all players within range of the {@link TargetPoint} argument supplied.
          *
          * @author cpw
-         *
          */
-        ALLAROUNDPOINT(Sets.immutableEnumSet(Side.SERVER))
-        {
+        ALLAROUNDPOINT(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
-                if (!(args instanceof TargetPoint))
-                {
+            public void validateArgs(Object args) {
+                if (!(args instanceof TargetPoint)) {
                     throw new RuntimeException("ALLAROUNDPOINT expects a TargetPoint argument");
                 }
             }
 
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
-                TargetPoint tp = (TargetPoint)args;
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
+                TargetPoint tp = (TargetPoint) args;
                 ImmutableList.Builder<NetworkDispatcher> builder = ImmutableList.builder();
-                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers())
-                {
-                    if (player.dimension == tp.dimension)
-                    {
+                for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
+                    if (player.dimension == tp.dimension) {
                         double d4 = tp.x - player.posX;
                         double d5 = tp.y - player.posY;
                         double d6 = tp.z - player.posZ;
 
-                        if (d4 * d4 + d5 * d5 + d6 * d6 < tp.range * tp.range)
-                        {
+                        if (d4 * d4 + d5 * d5 + d6 * d6 < tp.range * tp.range) {
                             NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                             if (dispatcher != null) builder.add(dispatcher);
                         }
@@ -243,37 +211,30 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
          * The packet is sent to all players that are watching the Chunk containing the supplied {@link TargetPoint}.
          * The {@code range} field of the {@link TargetPoint} is ignored.
          */
-        TRACKING_POINT(Sets.immutableEnumSet(Side.SERVER))
-        {
+        TRACKING_POINT(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
-                if (!(args instanceof TargetPoint))
-                {
+            public void validateArgs(Object args) {
+                if (!(args instanceof TargetPoint)) {
                     throw new RuntimeException("TRACKING_POINT expects a TargetPoint argument");
                 }
             }
 
             @Nullable
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
-                TargetPoint tp = (TargetPoint)args;
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
+                TargetPoint tp = (TargetPoint) args;
                 WorldServer world = DimensionManager.getWorld(tp.dimension);
-                if (world == null)
-                {
+                if (world == null) {
                     return ImmutableList.of();
                 }
 
                 PlayerChunkMapEntry entry = world.getPlayerChunkMap().getEntry(MathHelper.floor(tp.x) >> 4, MathHelper.floor(tp.z) >> 4);
-                if (entry == null)
-                {
+                if (entry == null) {
                     return ImmutableList.of();
                 }
 
                 ImmutableList.Builder<NetworkDispatcher> builder = ImmutableList.builder();
-                for (EntityPlayerMP player : entry.getWatchingPlayers())
-                {
+                for (EntityPlayerMP player : entry.getWatchingPlayers()) {
                     NetworkDispatcher dispatcher = player.connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                     if (dispatcher != null) builder.add(dispatcher);
                 }
@@ -284,28 +245,23 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
          * The packet is sent to all players tracking the supplied {@link Entity}. This is different from {@link #TRACKING_POINT} because Entities
          * can have different tracking distances depending on their type.
          */
-        TRACKING_ENTITY(Sets.immutableEnumSet(Side.SERVER))
-        {
+        TRACKING_ENTITY(Sets.immutableEnumSet(Side.SERVER)) {
             @Override
-            public void validateArgs(Object args)
-            {
-                if (!(args instanceof Entity))
-                {
+            public void validateArgs(Object args) {
+                if (!(args instanceof Entity)) {
                     throw new RuntimeException("TRACKING_ENTITY expects an Entity argument");
                 }
             }
 
             @Nullable
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
-                Entity e = (Entity)args;
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
+                Entity e = (Entity) args;
                 Set<? extends EntityPlayer> players = FMLCommonHandler.instance().getMinecraftServerInstance()
                         .getWorld(e.dimension).getEntityTracker().getTrackingPlayers(e);
 
                 ImmutableList.Builder<NetworkDispatcher> builder = ImmutableList.builder();
-                for (EntityPlayer player : players)
-                {
+                for (EntityPlayer player : players) {
                     NetworkDispatcher dispatcher = ((EntityPlayerMP) player).connection.netManager.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
                     if (dispatcher != null) builder.add(dispatcher);
                 }
@@ -314,38 +270,36 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
         },
         /**
          * The packet is sent to the server this client is currently conversing with.
-         * @author cpw
          *
+         * @author cpw
          */
-        TOSERVER(Sets.immutableEnumSet(Side.CLIENT))
-        {
+        TOSERVER(Sets.immutableEnumSet(Side.CLIENT)) {
             @Override
-            public void validateArgs(Object args)
-            {
+            public void validateArgs(Object args) {
             }
+
             @Override
-            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet)
-            {
+            public List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet) {
                 NetworkManager clientConnection = FMLCommonHandler.instance().getClientToServerNetworkManager();
                 return clientConnection == null || clientConnection.channel().attr(NetworkDispatcher.FML_DISPATCHER).get() == null ? ImmutableList.<NetworkDispatcher>of() : ImmutableList.of(clientConnection.channel().attr(NetworkDispatcher.FML_DISPATCHER).get());
             }
         };
 
-        private OutboundTarget(ImmutableSet<Side> sides)
-        {
+        private OutboundTarget(ImmutableSet<Side> sides) {
             this.allowed = sides;
         }
+
         public final ImmutableSet<Side> allowed;
+
         public abstract void validateArgs(Object args);
+
         @Nullable
         public abstract List<NetworkDispatcher> selectNetworks(Object args, ChannelHandlerContext context, FMLProxyPacket packet);
     }
 
     @Override
-    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception
-    {
-        if (!(msg instanceof FMLProxyPacket))
-        {
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        if (!(msg instanceof FMLProxyPacket)) {
             return;
         }
         FMLProxyPacket pkt = (FMLProxyPacket) msg;
@@ -353,38 +307,30 @@ public class FMLOutboundHandler extends ChannelOutboundHandlerAdapter {
         Object args = null;
         NetworkDispatcher dispatcher = ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
         // INTERNAL message callback - let it pass out
-        if (dispatcher != null)
-        {
+        if (dispatcher != null) {
             ctx.write(msg, promise);
             return;
         }
 
         outboundTarget = ctx.channel().attr(FML_MESSAGETARGET).get();
         Side channelSide = ctx.channel().attr(NetworkRegistry.CHANNEL_SOURCE).get();
-        if (outboundTarget != null && outboundTarget.allowed.contains(channelSide))
-        {
+        if (outboundTarget != null && outboundTarget.allowed.contains(channelSide)) {
             args = ctx.channel().attr(FML_MESSAGETARGETARGS).get();
             outboundTarget.validateArgs(args);
-        }
-        else if (channelSide == Side.CLIENT)
-        {
+        } else if (channelSide == Side.CLIENT) {
             outboundTarget = OutboundTarget.TOSERVER;
-        }
-        else
-        {
+        } else {
             throw new FMLNetworkException("Packet arrived at the outbound handler without a valid target!");
         }
 
         List<NetworkDispatcher> dispatchers = outboundTarget.selectNetworks(args, ctx, pkt);
 
         // This will drop the messages into the output queue at the embedded channel
-        if (dispatchers == null)
-        {
+        if (dispatchers == null) {
             ctx.write(msg, promise);
             return;
         }
-        for (NetworkDispatcher targetDispatcher : dispatchers)
-        {
+        for (NetworkDispatcher targetDispatcher : dispatchers) {
             pkt.payload().retain();
             targetDispatcher.sendProxy(pkt);
         }

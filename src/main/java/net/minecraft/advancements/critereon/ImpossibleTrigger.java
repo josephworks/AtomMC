@@ -6,37 +6,29 @@ import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.util.ResourceLocation;
 
-public class ImpossibleTrigger implements ICriterionTrigger<ImpossibleTrigger.Instance>
-{
+public class ImpossibleTrigger implements ICriterionTrigger<ImpossibleTrigger.Instance> {
     private static final ResourceLocation ID = new ResourceLocation("impossible");
 
-    public ResourceLocation getId()
-    {
+    public ResourceLocation getId() {
         return ID;
     }
 
-    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener)
-    {
+    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener) {
     }
 
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener)
-    {
+    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener) {
     }
 
-    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn)
-    {
+    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn) {
     }
 
-    public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context)
-    {
+    public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
         return new Instance();
     }
 
-    public static class Instance extends AbstractCriterionInstance
-        {
-            public Instance()
-            {
-                super(ImpossibleTrigger.ID);
-            }
+    public static class Instance extends AbstractCriterionInstance {
+        public Instance() {
+            super(ImpossibleTrigger.ID);
         }
+    }
 }

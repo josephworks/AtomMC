@@ -3,6 +3,7 @@ package net.minecraft.world.gen.structure;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -21,8 +22,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.template.TemplateManager;
 
-public abstract class StructureComponent
-{
+public abstract class StructureComponent {
     protected StructureBoundingBox boundingBox;
     @Nullable
     private EnumFacing coordBaseMode;
@@ -30,17 +30,14 @@ public abstract class StructureComponent
     private Rotation rotation;
     protected int componentType;
 
-    public StructureComponent()
-    {
+    public StructureComponent() {
     }
 
-    protected StructureComponent(int type)
-    {
+    protected StructureComponent(int type) {
         this.componentType = type;
     }
 
-    public final NBTTagCompound createStructureBaseNBT()
-    {
+    public final NBTTagCompound createStructureBaseNBT() {
         if (MapGenStructureIO.getStructureComponentName(this) == null) // Friendlier error then the Null String error below.
         {
             throw new RuntimeException("StructureComponent \"" + this.getClass().getName() + "\" missing ID Mapping, Modder see MapGenStructureIO");
@@ -57,10 +54,8 @@ public abstract class StructureComponent
 
     protected abstract void writeStructureToNBT(NBTTagCompound tagCompound);
 
-    public void readStructureBaseNBT(World worldIn, NBTTagCompound tagCompound)
-    {
-        if (tagCompound.hasKey("BB"))
-        {
+    public void readStructureBaseNBT(World worldIn, NBTTagCompound tagCompound) {
+        if (tagCompound.hasKey("BB")) {
             this.boundingBox = new StructureBoundingBox(tagCompound.getIntArray("BB"));
         }
 
@@ -72,28 +67,22 @@ public abstract class StructureComponent
 
     protected abstract void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_);
 
-    public void buildComponent(StructureComponent componentIn, List<StructureComponent> listIn, Random rand)
-    {
+    public void buildComponent(StructureComponent componentIn, List<StructureComponent> listIn, Random rand) {
     }
 
     public abstract boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn);
 
-    public StructureBoundingBox getBoundingBox()
-    {
+    public StructureBoundingBox getBoundingBox() {
         return this.boundingBox;
     }
 
-    public int getComponentType()
-    {
+    public int getComponentType() {
         return this.componentType;
     }
 
-    public static StructureComponent findIntersecting(List<StructureComponent> listIn, StructureBoundingBox boundingboxIn)
-    {
-        for (StructureComponent structurecomponent : listIn)
-        {
-            if (structurecomponent.getBoundingBox() != null && structurecomponent.getBoundingBox().intersectsWith(boundingboxIn))
-            {
+    public static StructureComponent findIntersecting(List<StructureComponent> listIn, StructureBoundingBox boundingboxIn) {
+        for (StructureComponent structurecomponent : listIn) {
+            if (structurecomponent.getBoundingBox() != null && structurecomponent.getBoundingBox().intersectsWith(boundingboxIn)) {
                 return structurecomponent;
             }
         }
@@ -101,8 +90,7 @@ public abstract class StructureComponent
         return null;
     }
 
-    protected boolean isLiquidInStructureBoundingBox(World worldIn, StructureBoundingBox boundingboxIn)
-    {
+    protected boolean isLiquidInStructureBoundingBox(World worldIn, StructureBoundingBox boundingboxIn) {
         int i = Math.max(this.boundingBox.minX - 1, boundingboxIn.minX);
         int j = Math.max(this.boundingBox.minY - 1, boundingboxIn.minY);
         int k = Math.max(this.boundingBox.minZ - 1, boundingboxIn.minZ);
@@ -111,49 +99,37 @@ public abstract class StructureComponent
         int j1 = Math.min(this.boundingBox.maxZ + 1, boundingboxIn.maxZ);
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int k1 = i; k1 <= l; ++k1)
-        {
-            for (int l1 = k; l1 <= j1; ++l1)
-            {
-                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, j, l1)).getMaterial().isLiquid())
-                {
+        for (int k1 = i; k1 <= l; ++k1) {
+            for (int l1 = k; l1 <= j1; ++l1) {
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, j, l1)).getMaterial().isLiquid()) {
                     return true;
                 }
 
-                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, i1, l1)).getMaterial().isLiquid())
-                {
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, i1, l1)).getMaterial().isLiquid()) {
                     return true;
                 }
             }
         }
 
-        for (int i2 = i; i2 <= l; ++i2)
-        {
-            for (int k2 = j; k2 <= i1; ++k2)
-            {
-                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, k)).getMaterial().isLiquid())
-                {
+        for (int i2 = i; i2 <= l; ++i2) {
+            for (int k2 = j; k2 <= i1; ++k2) {
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, k)).getMaterial().isLiquid()) {
                     return true;
                 }
 
-                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, j1)).getMaterial().isLiquid())
-                {
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, j1)).getMaterial().isLiquid()) {
                     return true;
                 }
             }
         }
 
-        for (int j2 = k; j2 <= j1; ++j2)
-        {
-            for (int l2 = j; l2 <= i1; ++l2)
-            {
-                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i, l2, j2)).getMaterial().isLiquid())
-                {
+        for (int j2 = k; j2 <= j1; ++j2) {
+            for (int l2 = j; l2 <= i1; ++l2) {
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i, l2, j2)).getMaterial().isLiquid()) {
                     return true;
                 }
 
-                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, l2, j2)).getMaterial().isLiquid())
-                {
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, l2, j2)).getMaterial().isLiquid()) {
                     return true;
                 }
             }
@@ -162,18 +138,13 @@ public abstract class StructureComponent
         return false;
     }
 
-    protected int getXWithOffset(int x, int z)
-    {
+    protected int getXWithOffset(int x, int z) {
         EnumFacing enumfacing = this.getCoordBaseMode();
 
-        if (enumfacing == null)
-        {
+        if (enumfacing == null) {
             return x;
-        }
-        else
-        {
-            switch (enumfacing)
-            {
+        } else {
+            switch (enumfacing) {
                 case NORTH:
                 case SOUTH:
                     return this.boundingBox.minX + x;
@@ -187,23 +158,17 @@ public abstract class StructureComponent
         }
     }
 
-    protected int getYWithOffset(int y)
-    {
+    protected int getYWithOffset(int y) {
         return this.getCoordBaseMode() == null ? y : y + this.boundingBox.minY;
     }
 
-    protected int getZWithOffset(int x, int z)
-    {
+    protected int getZWithOffset(int x, int z) {
         EnumFacing enumfacing = this.getCoordBaseMode();
 
-        if (enumfacing == null)
-        {
+        if (enumfacing == null) {
             return z;
-        }
-        else
-        {
-            switch (enumfacing)
-            {
+        } else {
+            switch (enumfacing) {
                 case NORTH:
                     return this.boundingBox.maxZ - z;
                 case SOUTH:
@@ -217,19 +182,15 @@ public abstract class StructureComponent
         }
     }
 
-    protected void setBlockState(World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn)
-    {
+    protected void setBlockState(World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn) {
         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-        if (boundingboxIn.isVecInside(blockpos))
-        {
-            if (this.mirror != Mirror.NONE)
-            {
+        if (boundingboxIn.isVecInside(blockpos)) {
+            if (this.mirror != Mirror.NONE) {
                 blockstateIn = blockstateIn.withMirror(this.mirror);
             }
 
-            if (this.rotation != Rotation.NONE)
-            {
+            if (this.rotation != Rotation.NONE) {
                 blockstateIn = blockstateIn.withRotation(this.rotation);
             }
 
@@ -237,8 +198,7 @@ public abstract class StructureComponent
         }
     }
 
-    protected IBlockState getBlockStateFromPos(World worldIn, int x, int y, int z, StructureBoundingBox boundingboxIn)
-    {
+    protected IBlockState getBlockStateFromPos(World worldIn, int x, int y, int z, StructureBoundingBox boundingboxIn) {
         int i = this.getXWithOffset(x, z);
         int j = this.getYWithOffset(y);
         int k = this.getZWithOffset(x, z);
@@ -246,8 +206,7 @@ public abstract class StructureComponent
         return !boundingboxIn.isVecInside(blockpos) ? Blocks.AIR.getDefaultState() : worldIn.getBlockState(blockpos);
     }
 
-    protected int getSkyBrightness(World worldIn, int x, int y, int z, StructureBoundingBox boundingboxIn)
-    {
+    protected int getSkyBrightness(World worldIn, int x, int y, int z, StructureBoundingBox boundingboxIn) {
         int i = this.getXWithOffset(x, z);
         int j = this.getYWithOffset(y + 1);
         int k = this.getZWithOffset(x, z);
@@ -255,36 +214,24 @@ public abstract class StructureComponent
         return !boundingboxIn.isVecInside(blockpos) ? EnumSkyBlock.SKY.defaultLightValue : worldIn.getLightFor(EnumSkyBlock.SKY, blockpos);
     }
 
-    protected void fillWithAir(World worldIn, StructureBoundingBox structurebb, int minX, int minY, int minZ, int maxX, int maxY, int maxZ)
-    {
-        for (int i = minY; i <= maxY; ++i)
-        {
-            for (int j = minX; j <= maxX; ++j)
-            {
-                for (int k = minZ; k <= maxZ; ++k)
-                {
+    protected void fillWithAir(World worldIn, StructureBoundingBox structurebb, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        for (int i = minY; i <= maxY; ++i) {
+            for (int j = minX; j <= maxX; ++j) {
+                for (int k = minZ; k <= maxZ; ++k) {
                     this.setBlockState(worldIn, Blocks.AIR.getDefaultState(), j, i, k, structurebb);
                 }
             }
         }
     }
 
-    protected void fillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, IBlockState boundaryBlockState, IBlockState insideBlockState, boolean existingOnly)
-    {
-        for (int i = yMin; i <= yMax; ++i)
-        {
-            for (int j = xMin; j <= xMax; ++j)
-            {
-                for (int k = zMin; k <= zMax; ++k)
-                {
-                    if (!existingOnly || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
-                    {
-                        if (i != yMin && i != yMax && j != xMin && j != xMax && k != zMin && k != zMax)
-                        {
+    protected void fillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, IBlockState boundaryBlockState, IBlockState insideBlockState, boolean existingOnly) {
+        for (int i = yMin; i <= yMax; ++i) {
+            for (int j = xMin; j <= xMax; ++j) {
+                for (int k = zMin; k <= zMax; ++k) {
+                    if (!existingOnly || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR) {
+                        if (i != yMin && i != yMax && j != xMin && j != xMax && k != zMin && k != zMax) {
                             this.setBlockState(worldIn, insideBlockState, j, i, k, boundingboxIn);
-                        }
-                        else
-                        {
+                        } else {
                             this.setBlockState(worldIn, boundaryBlockState, j, i, k, boundingboxIn);
                         }
                     }
@@ -293,16 +240,11 @@ public abstract class StructureComponent
         }
     }
 
-    protected void fillWithRandomizedBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean alwaysReplace, Random rand, BlockSelector blockselector)
-    {
-        for (int i = minY; i <= maxY; ++i)
-        {
-            for (int j = minX; j <= maxX; ++j)
-            {
-                for (int k = minZ; k <= maxZ; ++k)
-                {
-                    if (!alwaysReplace || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
-                    {
+    protected void fillWithRandomizedBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean alwaysReplace, Random rand, BlockSelector blockselector) {
+        for (int i = minY; i <= maxY; ++i) {
+            for (int j = minX; j <= maxX; ++j) {
+                for (int k = minZ; k <= maxZ; ++k) {
+                    if (!alwaysReplace || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR) {
                         blockselector.selectBlocks(rand, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
                         this.setBlockState(worldIn, blockselector.getBlockState(), j, i, k, boundingboxIn);
                     }
@@ -311,22 +253,14 @@ public abstract class StructureComponent
         }
     }
 
-    protected void generateMaybeBox(World worldIn, StructureBoundingBox sbb, Random rand, float chance, int x1, int y1, int z1, int x2, int y2, int z2, IBlockState edgeState, IBlockState state, boolean requireNonAir, int requiredSkylight)
-    {
-        for (int i = y1; i <= y2; ++i)
-        {
-            for (int j = x1; j <= x2; ++j)
-            {
-                for (int k = z1; k <= z2; ++k)
-                {
-                    if (rand.nextFloat() <= chance && (!requireNonAir || this.getBlockStateFromPos(worldIn, j, i, k, sbb).getMaterial() != Material.AIR) && (requiredSkylight <= 0 || this.getSkyBrightness(worldIn, j, i, k, sbb) < requiredSkylight))
-                    {
-                        if (i != y1 && i != y2 && j != x1 && j != x2 && k != z1 && k != z2)
-                        {
+    protected void generateMaybeBox(World worldIn, StructureBoundingBox sbb, Random rand, float chance, int x1, int y1, int z1, int x2, int y2, int z2, IBlockState edgeState, IBlockState state, boolean requireNonAir, int requiredSkylight) {
+        for (int i = y1; i <= y2; ++i) {
+            for (int j = x1; j <= x2; ++j) {
+                for (int k = z1; k <= z2; ++k) {
+                    if (rand.nextFloat() <= chance && (!requireNonAir || this.getBlockStateFromPos(worldIn, j, i, k, sbb).getMaterial() != Material.AIR) && (requiredSkylight <= 0 || this.getSkyBrightness(worldIn, j, i, k, sbb) < requiredSkylight)) {
+                        if (i != y1 && i != y2 && j != x1 && j != x2 && k != z1 && k != z2) {
                             this.setBlockState(worldIn, state, j, i, k, sbb);
-                        }
-                        else
-                        {
+                        } else {
                             this.setBlockState(worldIn, edgeState, j, i, k, sbb);
                         }
                     }
@@ -335,40 +269,32 @@ public abstract class StructureComponent
         }
     }
 
-    protected void randomlyPlaceBlock(World worldIn, StructureBoundingBox boundingboxIn, Random rand, float chance, int x, int y, int z, IBlockState blockstateIn)
-    {
-        if (rand.nextFloat() < chance)
-        {
+    protected void randomlyPlaceBlock(World worldIn, StructureBoundingBox boundingboxIn, Random rand, float chance, int x, int y, int z, IBlockState blockstateIn) {
+        if (rand.nextFloat() < chance) {
             this.setBlockState(worldIn, blockstateIn, x, y, z, boundingboxIn);
         }
     }
 
-    protected void randomlyRareFillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstateIn, boolean excludeAir)
-    {
-        float f = (float)(maxX - minX + 1);
-        float f1 = (float)(maxY - minY + 1);
-        float f2 = (float)(maxZ - minZ + 1);
-        float f3 = (float)minX + f / 2.0F;
-        float f4 = (float)minZ + f2 / 2.0F;
+    protected void randomlyRareFillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstateIn, boolean excludeAir) {
+        float f = (float) (maxX - minX + 1);
+        float f1 = (float) (maxY - minY + 1);
+        float f2 = (float) (maxZ - minZ + 1);
+        float f3 = (float) minX + f / 2.0F;
+        float f4 = (float) minZ + f2 / 2.0F;
 
-        for (int i = minY; i <= maxY; ++i)
-        {
-            float f5 = (float)(i - minY) / f1;
+        for (int i = minY; i <= maxY; ++i) {
+            float f5 = (float) (i - minY) / f1;
 
-            for (int j = minX; j <= maxX; ++j)
-            {
-                float f6 = ((float)j - f3) / (f * 0.5F);
+            for (int j = minX; j <= maxX; ++j) {
+                float f6 = ((float) j - f3) / (f * 0.5F);
 
-                for (int k = minZ; k <= maxZ; ++k)
-                {
-                    float f7 = ((float)k - f4) / (f2 * 0.5F);
+                for (int k = minZ; k <= maxZ; ++k) {
+                    float f7 = ((float) k - f4) / (f2 * 0.5F);
 
-                    if (!excludeAir || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
-                    {
+                    if (!excludeAir || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR) {
                         float f8 = f6 * f6 + f5 * f5 + f7 * f7;
 
-                        if (f8 <= 1.05F)
-                        {
+                        if (f8 <= 1.05F) {
                             this.setBlockState(worldIn, blockstateIn, j, i, k, boundingboxIn);
                         }
                     }
@@ -377,119 +303,93 @@ public abstract class StructureComponent
         }
     }
 
-    protected void clearCurrentPositionBlocksUpwards(World worldIn, int x, int y, int z, StructureBoundingBox structurebb)
-    {
+    protected void clearCurrentPositionBlocksUpwards(World worldIn, int x, int y, int z, StructureBoundingBox structurebb) {
         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-        if (structurebb.isVecInside(blockpos))
-        {
-            while (!worldIn.isAirBlock(blockpos) && blockpos.getY() < 255)
-            {
+        if (structurebb.isVecInside(blockpos)) {
+            while (!worldIn.isAirBlock(blockpos) && blockpos.getY() < 255) {
                 worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 2);
                 blockpos = blockpos.up();
             }
         }
     }
 
-    protected void replaceAirAndLiquidDownwards(World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn)
-    {
+    protected void replaceAirAndLiquidDownwards(World worldIn, IBlockState blockstateIn, int x, int y, int z, StructureBoundingBox boundingboxIn) {
         int i = this.getXWithOffset(x, z);
         int j = this.getYWithOffset(y);
         int k = this.getZWithOffset(x, z);
 
-        if (boundingboxIn.isVecInside(new BlockPos(i, j, k)))
-        {
-            while ((worldIn.isAirBlock(new BlockPos(i, j, k)) || worldIn.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1)
-            {
+        if (boundingboxIn.isVecInside(new BlockPos(i, j, k))) {
+            while ((worldIn.isAirBlock(new BlockPos(i, j, k)) || worldIn.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > 1) {
                 worldIn.setBlockState(new BlockPos(i, j, k), blockstateIn, 2);
                 --j;
             }
         }
     }
 
-    protected boolean generateChest(World worldIn, StructureBoundingBox structurebb, Random randomIn, int x, int y, int z, ResourceLocation loot)
-    {
+    protected boolean generateChest(World worldIn, StructureBoundingBox structurebb, Random randomIn, int x, int y, int z, ResourceLocation loot) {
         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
-        return this.generateChest(worldIn, structurebb, randomIn, blockpos, loot, (IBlockState)null);
+        return this.generateChest(worldIn, structurebb, randomIn, blockpos, loot, (IBlockState) null);
     }
 
-    protected boolean generateChest(World p_191080_1_, StructureBoundingBox p_191080_2_, Random p_191080_3_, BlockPos p_191080_4_, ResourceLocation p_191080_5_, @Nullable IBlockState p_191080_6_)
-    {
-        if (p_191080_2_.isVecInside(p_191080_4_) && p_191080_1_.getBlockState(p_191080_4_).getBlock() != Blocks.CHEST)
-        {
-            if (p_191080_6_ == null)
-            {
+    protected boolean generateChest(World p_191080_1_, StructureBoundingBox p_191080_2_, Random p_191080_3_, BlockPos p_191080_4_, ResourceLocation p_191080_5_, @Nullable IBlockState p_191080_6_) {
+        if (p_191080_2_.isVecInside(p_191080_4_) && p_191080_1_.getBlockState(p_191080_4_).getBlock() != Blocks.CHEST) {
+            if (p_191080_6_ == null) {
                 p_191080_6_ = Blocks.CHEST.correctFacing(p_191080_1_, p_191080_4_, Blocks.CHEST.getDefaultState());
             }
 
             p_191080_1_.setBlockState(p_191080_4_, p_191080_6_, 2);
             TileEntity tileentity = p_191080_1_.getTileEntity(p_191080_4_);
 
-            if (tileentity instanceof TileEntityChest)
-            {
-                ((TileEntityChest)tileentity).setLootTable(p_191080_5_, p_191080_3_.nextLong());
+            if (tileentity instanceof TileEntityChest) {
+                ((TileEntityChest) tileentity).setLootTable(p_191080_5_, p_191080_3_.nextLong());
             }
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    protected boolean createDispenser(World worldIn, StructureBoundingBox sbb, Random rand, int x, int y, int z, EnumFacing facing, ResourceLocation lootTableIn)
-    {
+    protected boolean createDispenser(World worldIn, StructureBoundingBox sbb, Random rand, int x, int y, int z, EnumFacing facing, ResourceLocation lootTableIn) {
         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-        if (sbb.isVecInside(blockpos) && worldIn.getBlockState(blockpos).getBlock() != Blocks.DISPENSER)
-        {
+        if (sbb.isVecInside(blockpos) && worldIn.getBlockState(blockpos).getBlock() != Blocks.DISPENSER) {
             this.setBlockState(worldIn, Blocks.DISPENSER.getDefaultState().withProperty(BlockDispenser.FACING, facing), x, y, z, sbb);
             TileEntity tileentity = worldIn.getTileEntity(blockpos);
 
-            if (tileentity instanceof TileEntityDispenser)
-            {
-                ((TileEntityDispenser)tileentity).setLootTable(lootTableIn, rand.nextLong());
+            if (tileentity instanceof TileEntityDispenser) {
+                ((TileEntityDispenser) tileentity).setLootTable(lootTableIn, rand.nextLong());
             }
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    protected void generateDoor(World worldIn, StructureBoundingBox sbb, Random rand, int x, int y, int z, EnumFacing facing, BlockDoor door)
-    {
+    protected void generateDoor(World worldIn, StructureBoundingBox sbb, Random rand, int x, int y, int z, EnumFacing facing, BlockDoor door) {
         this.setBlockState(worldIn, door.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, sbb);
         this.setBlockState(worldIn, door.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), x, y + 1, z, sbb);
     }
 
-    public void offset(int x, int y, int z)
-    {
+    public void offset(int x, int y, int z) {
         this.boundingBox.offset(x, y, z);
     }
 
     @Nullable
-    public EnumFacing getCoordBaseMode()
-    {
+    public EnumFacing getCoordBaseMode() {
         return this.coordBaseMode;
     }
 
-    public void setCoordBaseMode(@Nullable EnumFacing facing)
-    {
+    public void setCoordBaseMode(@Nullable EnumFacing facing) {
         this.coordBaseMode = facing;
 
-        if (facing == null)
-        {
+        if (facing == null) {
             this.rotation = Rotation.NONE;
             this.mirror = Mirror.NONE;
-        }
-        else
-        {
-            switch (facing)
-            {
+        } else {
+            switch (facing) {
                 case SOUTH:
                     this.mirror = Mirror.LEFT_RIGHT;
                     this.rotation = Rotation.NONE;
@@ -509,15 +409,13 @@ public abstract class StructureComponent
         }
     }
 
-    public abstract static class BlockSelector
-        {
-            protected IBlockState blockstate = Blocks.AIR.getDefaultState();
+    public abstract static class BlockSelector {
+        protected IBlockState blockstate = Blocks.AIR.getDefaultState();
 
-            public abstract void selectBlocks(Random rand, int x, int y, int z, boolean wall);
+        public abstract void selectBlocks(Random rand, int x, int y, int z, boolean wall);
 
-            public IBlockState getBlockState()
-            {
-                return this.blockstate;
-            }
+        public IBlockState getBlockState() {
+            return this.blockstate;
         }
+    }
 }

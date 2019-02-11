@@ -1,38 +1,31 @@
 package net.minecraft.client.gui;
 
 import java.io.IOException;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiMemoryErrorScreen extends GuiScreen
-{
-    public void initGui()
-    {
+public class GuiMemoryErrorScreen extends GuiScreen {
+    public void initGui() {
         this.buttonList.clear();
         this.buttonList.add(new GuiOptionButton(0, this.width / 2 - 155, this.height / 4 + 120 + 12, I18n.format("gui.toTitle")));
         this.buttonList.add(new GuiOptionButton(1, this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, I18n.format("menu.quit")));
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.id == 0)
-        {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.id == 0) {
             this.mc.displayGuiScreen(new GuiMainMenu());
-        }
-        else if (button.id == 1)
-        {
+        } else if (button.id == 1) {
             this.mc.shutdown();
         }
     }
 
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRenderer, "Out of memory!", this.width / 2, this.height / 4 - 60 + 20, 16777215);
         this.drawString(this.fontRenderer, "Minecraft has run out of memory.", this.width / 2 - 140, this.height / 4 - 60 + 60 + 0, 10526880);

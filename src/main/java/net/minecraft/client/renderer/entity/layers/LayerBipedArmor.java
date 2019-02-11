@@ -7,26 +7,21 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerBipedArmor extends LayerArmorBase<ModelBiped>
-{
-    public LayerBipedArmor(RenderLivingBase<?> rendererIn)
-    {
+public class LayerBipedArmor extends LayerArmorBase<ModelBiped> {
+    public LayerBipedArmor(RenderLivingBase<?> rendererIn) {
         super(rendererIn);
     }
 
-    protected void initArmor()
-    {
+    protected void initArmor() {
         this.modelLeggings = new ModelBiped(0.5F);
         this.modelArmor = new ModelBiped(1.0F);
     }
 
     @SuppressWarnings("incomplete-switch")
-    protected void setModelSlotVisible(ModelBiped p_188359_1_, EntityEquipmentSlot slotIn)
-    {
+    protected void setModelSlotVisible(ModelBiped p_188359_1_, EntityEquipmentSlot slotIn) {
         this.setModelVisible(p_188359_1_);
 
-        switch (slotIn)
-        {
+        switch (slotIn) {
             case HEAD:
                 p_188359_1_.bipedHead.showModel = true;
                 p_188359_1_.bipedHeadwear.showModel = true;
@@ -47,14 +42,12 @@ public class LayerBipedArmor extends LayerArmorBase<ModelBiped>
         }
     }
 
-    protected void setModelVisible(ModelBiped model)
-    {
+    protected void setModelVisible(ModelBiped model) {
         model.setVisible(false);
     }
 
     @Override
-    protected ModelBiped getArmorModelHook(net.minecraft.entity.EntityLivingBase entity, net.minecraft.item.ItemStack itemStack, EntityEquipmentSlot slot, ModelBiped model)
-    {
+    protected ModelBiped getArmorModelHook(net.minecraft.entity.EntityLivingBase entity, net.minecraft.item.ItemStack itemStack, EntityEquipmentSlot slot, ModelBiped model) {
         return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
     }
 }

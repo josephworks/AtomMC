@@ -14,46 +14,34 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerElytra implements LayerRenderer<EntityLivingBase>
-{
+public class LayerElytra implements LayerRenderer<EntityLivingBase> {
     private static final ResourceLocation TEXTURE_ELYTRA = new ResourceLocation("textures/entity/elytra.png");
     protected final RenderLivingBase<?> renderPlayer;
     private final ModelElytra modelElytra = new ModelElytra();
 
-    public LayerElytra(RenderLivingBase<?> p_i47185_1_)
-    {
+    public LayerElytra(RenderLivingBase<?> p_i47185_1_) {
         this.renderPlayer = p_i47185_1_;
     }
 
-    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         ItemStack itemstack = entitylivingbaseIn.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 
-        if (itemstack.getItem() == Items.ELYTRA)
-        {
+        if (itemstack.getItem() == Items.ELYTRA) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
-            if (entitylivingbaseIn instanceof AbstractClientPlayer)
-            {
-                AbstractClientPlayer abstractclientplayer = (AbstractClientPlayer)entitylivingbaseIn;
+            if (entitylivingbaseIn instanceof AbstractClientPlayer) {
+                AbstractClientPlayer abstractclientplayer = (AbstractClientPlayer) entitylivingbaseIn;
 
-                if (abstractclientplayer.isPlayerInfoSet() && abstractclientplayer.getLocationElytra() != null)
-                {
+                if (abstractclientplayer.isPlayerInfoSet() && abstractclientplayer.getLocationElytra() != null) {
                     this.renderPlayer.bindTexture(abstractclientplayer.getLocationElytra());
-                }
-                else if (abstractclientplayer.hasPlayerInfo() && abstractclientplayer.getLocationCape() != null && abstractclientplayer.isWearing(EnumPlayerModelParts.CAPE))
-                {
+                } else if (abstractclientplayer.hasPlayerInfo() && abstractclientplayer.getLocationCape() != null && abstractclientplayer.isWearing(EnumPlayerModelParts.CAPE)) {
                     this.renderPlayer.bindTexture(abstractclientplayer.getLocationCape());
-                }
-                else
-                {
+                } else {
                     this.renderPlayer.bindTexture(TEXTURE_ELYTRA);
                 }
-            }
-            else
-            {
+            } else {
                 this.renderPlayer.bindTexture(TEXTURE_ELYTRA);
             }
 
@@ -62,8 +50,7 @@ public class LayerElytra implements LayerRenderer<EntityLivingBase>
             this.modelElytra.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entitylivingbaseIn);
             this.modelElytra.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 
-            if (itemstack.isItemEnchanted())
-            {
+            if (itemstack.isItemEnchanted()) {
                 LayerArmorBase.renderEnchantedGlint(this.renderPlayer, entitylivingbaseIn, this.modelElytra, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
             }
 
@@ -72,8 +59,7 @@ public class LayerElytra implements LayerRenderer<EntityLivingBase>
         }
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return false;
     }
 }

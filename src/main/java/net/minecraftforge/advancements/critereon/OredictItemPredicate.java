@@ -31,20 +31,19 @@ import net.minecraftforge.oredict.OreDictionary;
 /**
  * An {@link ItemPredicate} that matches oredicts.
  */
-public class OredictItemPredicate extends ItemPredicate
-{
+public class OredictItemPredicate extends ItemPredicate {
     private final String ore;
 
-    public OredictItemPredicate(String ore)
-    {
+    public OredictItemPredicate(String ore) {
         this.ore = ore;
     }
 
-    public OredictItemPredicate(JsonObject jsonObject) { this(JsonUtils.getString(jsonObject, "ore")); }
+    public OredictItemPredicate(JsonObject jsonObject) {
+        this(JsonUtils.getString(jsonObject, "ore"));
+    }
 
     @Override
-    public boolean test(ItemStack stack)
-    {
+    public boolean test(ItemStack stack) {
         return !stack.isEmpty() && ArrayUtils.contains(OreDictionary.getOreIDs(stack), OreDictionary.getOreID(ore));
     }
 }

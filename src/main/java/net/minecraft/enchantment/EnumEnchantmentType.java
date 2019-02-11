@@ -12,15 +12,11 @@ import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 
-public enum EnumEnchantmentType
-{
+public enum EnumEnchantmentType {
     ALL {
-        public boolean canEnchantItem(Item itemIn)
-        {
-            for (EnumEnchantmentType enumenchantmenttype : EnumEnchantmentType.values())
-            {
-                if (enumenchantmenttype != EnumEnchantmentType.ALL && enumenchantmenttype.canEnchantItem(itemIn))
-                {
+        public boolean canEnchantItem(Item itemIn) {
+            for (EnumEnchantmentType enumenchantmenttype : EnumEnchantmentType.values()) {
+                if (enumenchantmenttype != EnumEnchantmentType.ALL && enumenchantmenttype.canEnchantItem(itemIn)) {
                     return true;
                 }
             }
@@ -29,84 +25,72 @@ public enum EnumEnchantmentType
         }
     },
     ARMOR {
-        public boolean canEnchantItem(Item itemIn)
-        {
+        public boolean canEnchantItem(Item itemIn) {
             return itemIn instanceof ItemArmor;
         }
     },
     ARMOR_FEET {
-        public boolean canEnchantItem(Item itemIn)
-        {
-            return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.FEET;
+        public boolean canEnchantItem(Item itemIn) {
+            return itemIn instanceof ItemArmor && ((ItemArmor) itemIn).armorType == EntityEquipmentSlot.FEET;
         }
     },
     ARMOR_LEGS {
-        public boolean canEnchantItem(Item itemIn)
-        {
-            return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.LEGS;
+        public boolean canEnchantItem(Item itemIn) {
+            return itemIn instanceof ItemArmor && ((ItemArmor) itemIn).armorType == EntityEquipmentSlot.LEGS;
         }
     },
     ARMOR_CHEST {
-        public boolean canEnchantItem(Item itemIn)
-        {
-            return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.CHEST;
+        public boolean canEnchantItem(Item itemIn) {
+            return itemIn instanceof ItemArmor && ((ItemArmor) itemIn).armorType == EntityEquipmentSlot.CHEST;
         }
     },
     ARMOR_HEAD {
-        public boolean canEnchantItem(Item itemIn)
-        {
-            return itemIn instanceof ItemArmor && ((ItemArmor)itemIn).armorType == EntityEquipmentSlot.HEAD;
+        public boolean canEnchantItem(Item itemIn) {
+            return itemIn instanceof ItemArmor && ((ItemArmor) itemIn).armorType == EntityEquipmentSlot.HEAD;
         }
     },
     WEAPON {
-        public boolean canEnchantItem(Item itemIn)
-        {
+        public boolean canEnchantItem(Item itemIn) {
             return itemIn instanceof ItemSword;
         }
     },
     DIGGER {
-        public boolean canEnchantItem(Item itemIn)
-        {
+        public boolean canEnchantItem(Item itemIn) {
             return itemIn instanceof ItemTool;
         }
     },
     FISHING_ROD {
-        public boolean canEnchantItem(Item itemIn)
-        {
+        public boolean canEnchantItem(Item itemIn) {
             return itemIn instanceof ItemFishingRod;
         }
     },
     BREAKABLE {
-        public boolean canEnchantItem(Item itemIn)
-        {
+        public boolean canEnchantItem(Item itemIn) {
             return itemIn.isDamageable();
         }
     },
     BOW {
-        public boolean canEnchantItem(Item itemIn)
-        {
+        public boolean canEnchantItem(Item itemIn) {
             return itemIn instanceof ItemBow;
         }
     },
     WEARABLE {
-        public boolean canEnchantItem(Item itemIn)
-        {
-            boolean flag = itemIn instanceof ItemBlock && ((ItemBlock)itemIn).getBlock() instanceof BlockPumpkin;
+        public boolean canEnchantItem(Item itemIn) {
+            boolean flag = itemIn instanceof ItemBlock && ((ItemBlock) itemIn).getBlock() instanceof BlockPumpkin;
             return itemIn instanceof ItemArmor || itemIn instanceof ItemElytra || itemIn instanceof ItemSkull || flag;
         }
     };
 
-    private EnumEnchantmentType()
-    {
+    private EnumEnchantmentType() {
     }
 
     private com.google.common.base.Predicate<Item> delegate = null;
-    private EnumEnchantmentType(com.google.common.base.Predicate<Item> delegate)
-    {
+
+    private EnumEnchantmentType(com.google.common.base.Predicate<Item> delegate) {
         this.delegate = delegate;
     }
-    public boolean canEnchantItem(Item itemIn)
-    {
+
+    public boolean canEnchantItem(Item itemIn) {
         return this.delegate == null ? false : this.delegate.apply(itemIn);
     }
 }

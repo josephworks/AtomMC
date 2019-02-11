@@ -29,36 +29,31 @@ import javax.annotation.Nonnull;
 
 /**
  * This event is called when an item is rendered in an item frame.
- *
+ * <p>
  * You can set canceled to do no further vanilla processing.
  */
 @Cancelable
-public class RenderItemInFrameEvent extends Event
-{
+public class RenderItemInFrameEvent extends Event {
     private final ItemStack item;
     private final EntityItemFrame entityItemFrame;
     private final RenderItemFrame renderer;
 
-    public RenderItemInFrameEvent(EntityItemFrame itemFrame, RenderItemFrame renderItemFrame)
-    {
+    public RenderItemInFrameEvent(EntityItemFrame itemFrame, RenderItemFrame renderItemFrame) {
         item = itemFrame.getDisplayedItem();
         entityItemFrame = itemFrame;
         renderer = renderItemFrame;
     }
 
     @Nonnull
-    public ItemStack getItem()
-    {
+    public ItemStack getItem() {
         return item;
     }
 
-    public EntityItemFrame getEntityItemFrame()
-    {
+    public EntityItemFrame getEntityItemFrame() {
         return entityItemFrame;
     }
 
-    public RenderItemFrame getRenderer()
-    {
+    public RenderItemFrame getRenderer() {
         return renderer;
     }
 }

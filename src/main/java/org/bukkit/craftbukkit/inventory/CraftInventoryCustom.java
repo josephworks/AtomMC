@@ -120,7 +120,8 @@ public class CraftInventoryCustom extends CraftInventory {
         }
 
         @Override
-        public void markDirty() {}
+        public void markDirty() {
+        }
 
         @Override
         public boolean isUsableByPlayer(EntityPlayer entityhuman) {

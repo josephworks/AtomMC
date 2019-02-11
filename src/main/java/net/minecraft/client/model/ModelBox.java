@@ -4,8 +4,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ModelBox
-{
+public class ModelBox {
     private final PositionTextureVertex[] vertexPositions;
     private final TexturedQuad[] quadList;
     public final float posX1;
@@ -16,24 +15,22 @@ public class ModelBox
     public final float posZ2;
     public String boxName;
 
-    public ModelBox(ModelRenderer renderer, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta)
-    {
+    public ModelBox(ModelRenderer renderer, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta) {
         this(renderer, texU, texV, x, y, z, dx, dy, dz, delta, renderer.mirror);
     }
 
-    public ModelBox(ModelRenderer renderer, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror)
-    {
+    public ModelBox(ModelRenderer renderer, int texU, int texV, float x, float y, float z, int dx, int dy, int dz, float delta, boolean mirror) {
         this.posX1 = x;
         this.posY1 = y;
         this.posZ1 = z;
-        this.posX2 = x + (float)dx;
-        this.posY2 = y + (float)dy;
-        this.posZ2 = z + (float)dz;
+        this.posX2 = x + (float) dx;
+        this.posY2 = y + (float) dy;
+        this.posZ2 = z + (float) dz;
         this.vertexPositions = new PositionTextureVertex[8];
         this.quadList = new TexturedQuad[6];
-        float f = x + (float)dx;
-        float f1 = y + (float)dy;
-        float f2 = z + (float)dz;
+        float f = x + (float) dx;
+        float f1 = y + (float) dy;
+        float f2 = z + (float) dz;
         x = x - delta;
         y = y - delta;
         z = z - delta;
@@ -41,8 +38,7 @@ public class ModelBox
         f1 = f1 + delta;
         f2 = f2 + delta;
 
-        if (mirror)
-        {
+        if (mirror) {
             float f3 = f;
             f = x;
             x = f3;
@@ -64,33 +60,28 @@ public class ModelBox
         this.vertexPositions[5] = positiontexturevertex4;
         this.vertexPositions[6] = positiontexturevertex5;
         this.vertexPositions[7] = positiontexturevertex6;
-        this.quadList[0] = new TexturedQuad(new PositionTextureVertex[] {positiontexturevertex4, positiontexturevertex, positiontexturevertex1, positiontexturevertex5}, texU + dz + dx, texV + dz, texU + dz + dx + dz, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
-        this.quadList[1] = new TexturedQuad(new PositionTextureVertex[] {positiontexturevertex7, positiontexturevertex3, positiontexturevertex6, positiontexturevertex2}, texU, texV + dz, texU + dz, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
-        this.quadList[2] = new TexturedQuad(new PositionTextureVertex[] {positiontexturevertex4, positiontexturevertex3, positiontexturevertex7, positiontexturevertex}, texU + dz, texV, texU + dz + dx, texV + dz, renderer.textureWidth, renderer.textureHeight);
-        this.quadList[3] = new TexturedQuad(new PositionTextureVertex[] {positiontexturevertex1, positiontexturevertex2, positiontexturevertex6, positiontexturevertex5}, texU + dz + dx, texV + dz, texU + dz + dx + dx, texV, renderer.textureWidth, renderer.textureHeight);
-        this.quadList[4] = new TexturedQuad(new PositionTextureVertex[] {positiontexturevertex, positiontexturevertex7, positiontexturevertex2, positiontexturevertex1}, texU + dz, texV + dz, texU + dz + dx, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
-        this.quadList[5] = new TexturedQuad(new PositionTextureVertex[] {positiontexturevertex3, positiontexturevertex4, positiontexturevertex5, positiontexturevertex6}, texU + dz + dx + dz, texV + dz, texU + dz + dx + dz + dx, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
+        this.quadList[0] = new TexturedQuad(new PositionTextureVertex[]{positiontexturevertex4, positiontexturevertex, positiontexturevertex1, positiontexturevertex5}, texU + dz + dx, texV + dz, texU + dz + dx + dz, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
+        this.quadList[1] = new TexturedQuad(new PositionTextureVertex[]{positiontexturevertex7, positiontexturevertex3, positiontexturevertex6, positiontexturevertex2}, texU, texV + dz, texU + dz, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
+        this.quadList[2] = new TexturedQuad(new PositionTextureVertex[]{positiontexturevertex4, positiontexturevertex3, positiontexturevertex7, positiontexturevertex}, texU + dz, texV, texU + dz + dx, texV + dz, renderer.textureWidth, renderer.textureHeight);
+        this.quadList[3] = new TexturedQuad(new PositionTextureVertex[]{positiontexturevertex1, positiontexturevertex2, positiontexturevertex6, positiontexturevertex5}, texU + dz + dx, texV + dz, texU + dz + dx + dx, texV, renderer.textureWidth, renderer.textureHeight);
+        this.quadList[4] = new TexturedQuad(new PositionTextureVertex[]{positiontexturevertex, positiontexturevertex7, positiontexturevertex2, positiontexturevertex1}, texU + dz, texV + dz, texU + dz + dx, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
+        this.quadList[5] = new TexturedQuad(new PositionTextureVertex[]{positiontexturevertex3, positiontexturevertex4, positiontexturevertex5, positiontexturevertex6}, texU + dz + dx + dz, texV + dz, texU + dz + dx + dz + dx, texV + dz + dy, renderer.textureWidth, renderer.textureHeight);
 
-        if (mirror)
-        {
-            for (TexturedQuad texturedquad : this.quadList)
-            {
+        if (mirror) {
+            for (TexturedQuad texturedquad : this.quadList) {
                 texturedquad.flipFace();
             }
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public void render(BufferBuilder renderer, float scale)
-    {
-        for (TexturedQuad texturedquad : this.quadList)
-        {
+    public void render(BufferBuilder renderer, float scale) {
+        for (TexturedQuad texturedquad : this.quadList) {
             texturedquad.draw(renderer, scale);
         }
     }
 
-    public ModelBox setBoxName(String name)
-    {
+    public ModelBox setBoxName(String name) {
         this.boxName = name;
         return this;
     }

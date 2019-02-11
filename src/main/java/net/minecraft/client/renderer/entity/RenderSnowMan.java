@@ -8,23 +8,19 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSnowMan extends RenderLiving<EntitySnowman>
-{
+public class RenderSnowMan extends RenderLiving<EntitySnowman> {
     private static final ResourceLocation SNOW_MAN_TEXTURES = new ResourceLocation("textures/entity/snowman.png");
 
-    public RenderSnowMan(RenderManager renderManagerIn)
-    {
+    public RenderSnowMan(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelSnowMan(), 0.5F);
         this.addLayer(new LayerSnowmanHead(this));
     }
 
-    protected ResourceLocation getEntityTexture(EntitySnowman entity)
-    {
+    protected ResourceLocation getEntityTexture(EntitySnowman entity) {
         return SNOW_MAN_TEXTURES;
     }
 
-    public ModelSnowMan getMainModel()
-    {
-        return (ModelSnowMan)super.getMainModel();
+    public ModelSnowMan getMainModel() {
+        return (ModelSnowMan) super.getMainModel();
     }
 }

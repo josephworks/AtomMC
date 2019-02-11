@@ -3,9 +3,11 @@ package net.minecraft.network.play.server;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -17,8 +19,7 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketChunkData implements Packet<INetHandlerPlayClient>
-{
+public class SPacketChunkData implements Packet<INetHandlerPlayClient> {
     private int chunkX;
     private int chunkZ;
     private int availableSections;
@@ -26,12 +27,10 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
     private List<NBTTagCompound> tileEntityTags;
     private boolean fullChunk;
 
-    public SPacketChunkData()
-    {
+    public SPacketChunkData() {
     }
 
-    public SPacketChunkData(Chunk chunkIn, int changedSectionFilter)
-    {
+    public SPacketChunkData(Chunk chunkIn, int changedSectionFilter) {
         this.chunkX = chunkIn.x;
         this.chunkZ = chunkIn.z;
         this.fullChunk = changedSectionFilter == 65535;
@@ -40,48 +39,40 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
         this.availableSections = this.extractChunkData(new PacketBuffer(this.getWriteBuffer()), chunkIn, flag, changedSectionFilter);
         this.tileEntityTags = Lists.<NBTTagCompound>newArrayList();
 
-        for (Entry<BlockPos, TileEntity> entry : chunkIn.getTileEntityMap().entrySet())
-        {
+        for (Entry<BlockPos, TileEntity> entry : chunkIn.getTileEntityMap().entrySet()) {
             BlockPos blockpos = entry.getKey();
             TileEntity tileentity = entry.getValue();
             int i = blockpos.getY() >> 4;
 
-            if (this.isFullChunk() || (changedSectionFilter & 1 << i) != 0)
-            {
+            if (this.isFullChunk() || (changedSectionFilter & 1 << i) != 0) {
                 NBTTagCompound nbttagcompound = tileentity.getUpdateTag();
                 this.tileEntityTags.add(nbttagcompound);
             }
         }
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.chunkX = buf.readInt();
         this.chunkZ = buf.readInt();
         this.fullChunk = buf.readBoolean();
         this.availableSections = buf.readVarInt();
         int i = buf.readVarInt();
 
-        if (i > 2097152)
-        {
+        if (i > 2097152) {
             throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
-        }
-        else
-        {
+        } else {
             this.buffer = new byte[i];
             buf.readBytes(this.buffer);
             int j = buf.readVarInt();
             this.tileEntityTags = Lists.<NBTTagCompound>newArrayList();
 
-            for (int k = 0; k < j; ++k)
-            {
+            for (int k = 0; k < j; ++k) {
                 this.tileEntityTags.add(buf.readCompoundTag());
             }
         }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeInt(this.chunkX);
         buf.writeInt(this.chunkZ);
         buf.writeBoolean(this.fullChunk);
@@ -90,85 +81,71 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
         buf.writeBytes(this.buffer);
         buf.writeVarInt(this.tileEntityTags.size());
 
-        for (NBTTagCompound nbttagcompound : this.tileEntityTags)
-        {
+        for (NBTTagCompound nbttagcompound : this.tileEntityTags) {
             buf.writeCompoundTag(nbttagcompound);
         }
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleChunkData(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public PacketBuffer getReadBuffer()
-    {
+    public PacketBuffer getReadBuffer() {
         return new PacketBuffer(Unpooled.wrappedBuffer(this.buffer));
     }
 
-    private ByteBuf getWriteBuffer()
-    {
+    private ByteBuf getWriteBuffer() {
         ByteBuf bytebuf = Unpooled.wrappedBuffer(this.buffer);
         bytebuf.writerIndex(0);
         return bytebuf;
     }
 
-    public int extractChunkData(PacketBuffer buf, Chunk chunkIn, boolean writeSkylight, int changedSectionFilter)
-    {
+    public int extractChunkData(PacketBuffer buf, Chunk chunkIn, boolean writeSkylight, int changedSectionFilter) {
         int i = 0;
         ExtendedBlockStorage[] aextendedblockstorage = chunkIn.getBlockStorageArray();
         int j = 0;
 
-        for (int k = aextendedblockstorage.length; j < k; ++j)
-        {
+        for (int k = aextendedblockstorage.length; j < k; ++j) {
             ExtendedBlockStorage extendedblockstorage = aextendedblockstorage[j];
 
-            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!this.isFullChunk() || !extendedblockstorage.isEmpty()) && (changedSectionFilter & 1 << j) != 0)
-            {
+            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!this.isFullChunk() || !extendedblockstorage.isEmpty()) && (changedSectionFilter & 1 << j) != 0) {
                 i |= 1 << j;
                 extendedblockstorage.getData().write(buf);
                 buf.writeBytes(extendedblockstorage.getBlockLight().getData());
 
-                if (writeSkylight)
-                {
+                if (writeSkylight) {
                     buf.writeBytes(extendedblockstorage.getSkyLight().getData());
                 }
             }
         }
 
-        if (this.isFullChunk())
-        {
+        if (this.isFullChunk()) {
             buf.writeBytes(chunkIn.getBiomeArray());
         }
 
         return i;
     }
 
-    protected int calculateChunkSize(Chunk chunkIn, boolean p_189556_2_, int p_189556_3_)
-    {
+    protected int calculateChunkSize(Chunk chunkIn, boolean p_189556_2_, int p_189556_3_) {
         int i = 0;
         ExtendedBlockStorage[] aextendedblockstorage = chunkIn.getBlockStorageArray();
         int j = 0;
 
-        for (int k = aextendedblockstorage.length; j < k; ++j)
-        {
+        for (int k = aextendedblockstorage.length; j < k; ++j) {
             ExtendedBlockStorage extendedblockstorage = aextendedblockstorage[j];
 
-            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!this.isFullChunk() || !extendedblockstorage.isEmpty()) && (p_189556_3_ & 1 << j) != 0)
-            {
+            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!this.isFullChunk() || !extendedblockstorage.isEmpty()) && (p_189556_3_ & 1 << j) != 0) {
                 i = i + extendedblockstorage.getData().getSerializedSize();
                 i = i + extendedblockstorage.getBlockLight().getData().length;
 
-                if (p_189556_2_)
-                {
+                if (p_189556_2_) {
                     i += extendedblockstorage.getSkyLight().getData().length;
                 }
             }
         }
 
-        if (this.isFullChunk())
-        {
+        if (this.isFullChunk()) {
             i += chunkIn.getBiomeArray().length;
         }
 
@@ -176,31 +153,26 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public int getChunkX()
-    {
+    public int getChunkX() {
         return this.chunkX;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getChunkZ()
-    {
+    public int getChunkZ() {
         return this.chunkZ;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getExtractedSize()
-    {
+    public int getExtractedSize() {
         return this.availableSections;
     }
 
-    public boolean isFullChunk()
-    {
+    public boolean isFullChunk() {
         return this.fullChunk;
     }
 
     @SideOnly(Side.CLIENT)
-    public List<NBTTagCompound> getTileEntityTags()
-    {
+    public List<NBTTagCompound> getTileEntityTags() {
         return this.tileEntityTags;
     }
 }

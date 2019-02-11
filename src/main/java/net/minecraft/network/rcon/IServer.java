@@ -4,8 +4,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.SERVER)
-public interface IServer
-{
+public interface IServer {
     int getIntProperty(String key, int defaultValue);
 
     String getStringProperty(String key, String defaultValue);

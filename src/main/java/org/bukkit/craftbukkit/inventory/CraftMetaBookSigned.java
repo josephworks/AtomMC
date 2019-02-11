@@ -71,7 +71,7 @@ class CraftMetaBookSigned extends CraftMetaBook implements BookMeta {
             NBTTagList list = new NBTTagList();
             for (ITextComponent page : pages) {
                 list.appendTag(new NBTTagString(
-                    ITextComponent.Serializer.componentToJson(page)
+                        ITextComponent.Serializer.componentToJson(page)
                 ));
             }
             itemData.setTag(BOOK_PAGES.NBT, list);
@@ -93,11 +93,11 @@ class CraftMetaBookSigned extends CraftMetaBook implements BookMeta {
     @Override
     boolean applicableTo(Material type) {
         switch (type) {
-        case WRITTEN_BOOK:
-        case BOOK_AND_QUILL:
-            return true;
-        default:
-            return false;
+            case WRITTEN_BOOK:
+            case BOOK_AND_QUILL:
+                return true;
+            default:
+                return false;
         }
     }
 

@@ -12,25 +12,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
-{
+public class EntityAIHarvestFarmland extends EntityAIMoveToBlock {
     private final EntityVillager villager;
     private boolean hasFarmItem;
     private boolean wantsToReapStuff;
     private int currentTask;
 
-    public EntityAIHarvestFarmland(EntityVillager villagerIn, double speedIn)
-    {
+    public EntityAIHarvestFarmland(EntityVillager villagerIn, double speedIn) {
         super(villagerIn, speedIn, 16);
         this.villager = villagerIn;
     }
 
-    public boolean shouldExecute()
-    {
-        if (this.runDelay <= 0)
-        {
-            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.villager.world, this.villager))
-            {
+    public boolean shouldExecute() {
+        if (this.runDelay <= 0) {
+            if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.villager.world, this.villager)) {
                 return false;
             }
 
@@ -42,61 +37,46 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
         return super.shouldExecute();
     }
 
-    public boolean shouldContinueExecuting()
-    {
+    public boolean shouldContinueExecuting() {
         return this.currentTask >= 0 && super.shouldContinueExecuting();
     }
 
-    public void updateTask()
-    {
+    public void updateTask() {
         super.updateTask();
-        this.villager.getLookHelper().setLookPosition((double)this.destinationBlock.getX() + 0.5D, (double)(this.destinationBlock.getY() + 1), (double)this.destinationBlock.getZ() + 0.5D, 10.0F, (float)this.villager.getVerticalFaceSpeed());
+        this.villager.getLookHelper().setLookPosition((double) this.destinationBlock.getX() + 0.5D, (double) (this.destinationBlock.getY() + 1), (double) this.destinationBlock.getZ() + 0.5D, 10.0F, (float) this.villager.getVerticalFaceSpeed());
 
-        if (this.getIsAboveDestination())
-        {
+        if (this.getIsAboveDestination()) {
             World world = this.villager.world;
             BlockPos blockpos = this.destinationBlock.up();
             IBlockState iblockstate = world.getBlockState(blockpos);
             Block block = iblockstate.getBlock();
 
-            if (this.currentTask == 0 && block instanceof BlockCrops && ((BlockCrops)block).isMaxAge(iblockstate))
-            {
+            if (this.currentTask == 0 && block instanceof BlockCrops && ((BlockCrops) block).isMaxAge(iblockstate)) {
                 if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.villager, blockpos, Blocks.AIR, 0).isCancelled()) {
                     world.destroyBlock(blockpos, true);
                 }
-            }
-            else if (this.currentTask == 1 && iblockstate.getMaterial() == Material.AIR)
-            {
+            } else if (this.currentTask == 1 && iblockstate.getMaterial() == Material.AIR) {
                 InventoryBasic inventorybasic = this.villager.getVillagerInventory();
 
-                for (int i = 0; i < inventorybasic.getSizeInventory(); ++i)
-                {
+                for (int i = 0; i < inventorybasic.getSizeInventory(); ++i) {
                     ItemStack itemstack = inventorybasic.getStackInSlot(i);
                     boolean flag = false;
 
-                    if (!itemstack.isEmpty())
-                    {
+                    if (!itemstack.isEmpty()) {
                         Block planted = null;
-                        if (itemstack.getItem() == Items.WHEAT_SEEDS)
-                        {
+                        if (itemstack.getItem() == Items.WHEAT_SEEDS) {
                             // world.setBlockState(blockpos, Blocks.WHEAT.getDefaultState(), 3);
                             planted = Blocks.WHEAT;
                             flag = true;
-                        }
-                        else if (itemstack.getItem() == Items.POTATO)
-                        {
+                        } else if (itemstack.getItem() == Items.POTATO) {
                             // world.setBlockState(blockpos, Blocks.POTATOES.getDefaultState(), 3);
                             planted = Blocks.POTATOES;
                             flag = true;
-                        }
-                        else if (itemstack.getItem() == Items.CARROT)
-                        {
+                        } else if (itemstack.getItem() == Items.CARROT) {
                             // world.setBlockState(blockpos, Blocks.CARROTS.getDefaultState(), 3);
                             planted = Blocks.CARROTS;
                             flag = true;
-                        }
-                        else if (itemstack.getItem() == Items.BEETROOT_SEEDS)
-                        {
+                        } else if (itemstack.getItem() == Items.BEETROOT_SEEDS) {
                             // world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
                             planted = Blocks.BEETROOTS;
                             flag = true;
@@ -114,12 +94,10 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
                         }
                     }
 
-                    if (flag)
-                    {
+                    if (flag) {
                         itemstack.shrink(1);
 
-                        if (itemstack.isEmpty())
-                        {
+                        if (itemstack.isEmpty()) {
                             inventorybasic.setInventorySlotContents(i, ItemStack.EMPTY);
                         }
 
@@ -133,24 +111,20 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
         }
     }
 
-    protected boolean shouldMoveTo(World worldIn, BlockPos pos)
-    {
+    protected boolean shouldMoveTo(World worldIn, BlockPos pos) {
         Block block = worldIn.getBlockState(pos).getBlock();
 
-        if (block == Blocks.FARMLAND)
-        {
+        if (block == Blocks.FARMLAND) {
             pos = pos.up();
             IBlockState iblockstate = worldIn.getBlockState(pos);
             block = iblockstate.getBlock();
 
-            if (block instanceof BlockCrops && ((BlockCrops)block).isMaxAge(iblockstate) && this.wantsToReapStuff && (this.currentTask == 0 || this.currentTask < 0))
-            {
+            if (block instanceof BlockCrops && ((BlockCrops) block).isMaxAge(iblockstate) && this.wantsToReapStuff && (this.currentTask == 0 || this.currentTask < 0)) {
                 this.currentTask = 0;
                 return true;
             }
 
-            if (iblockstate.getMaterial() == Material.AIR && this.hasFarmItem && (this.currentTask == 1 || this.currentTask < 0))
-            {
+            if (iblockstate.getMaterial() == Material.AIR && this.hasFarmItem && (this.currentTask == 1 || this.currentTask < 0)) {
                 this.currentTask = 1;
                 return true;
             }

@@ -25,25 +25,21 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class WorldContext extends Context
-{
+public class WorldContext extends Context {
     private final World world;
 
-    public WorldContext(World w)
-    {
+    public WorldContext(World w) {
         world = Preconditions.checkNotNull(w, "World can't be null in WorldContext!");
     }
 
     @Override
-    public World getWorld()
-    {
+    public World getWorld() {
         return world;
     }
 
     @Override
     @Nullable
-    public EntityPlayer getPlayer()
-    {
+    public EntityPlayer getPlayer() {
         return null;
     }
 }

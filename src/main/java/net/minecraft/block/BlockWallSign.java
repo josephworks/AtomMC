@@ -12,23 +12,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockWallSign extends BlockSign
-{
+public class BlockWallSign extends BlockSign {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     protected static final AxisAlignedBB SIGN_EAST_AABB = new AxisAlignedBB(0.0D, 0.28125D, 0.0D, 0.125D, 0.78125D, 1.0D);
     protected static final AxisAlignedBB SIGN_WEST_AABB = new AxisAlignedBB(0.875D, 0.28125D, 0.0D, 1.0D, 0.78125D, 1.0D);
     protected static final AxisAlignedBB SIGN_SOUTH_AABB = new AxisAlignedBB(0.0D, 0.28125D, 0.0D, 1.0D, 0.78125D, 0.125D);
     protected static final AxisAlignedBB SIGN_NORTH_AABB = new AxisAlignedBB(0.0D, 0.28125D, 0.875D, 1.0D, 0.78125D, 1.0D);
 
-    public BlockWallSign()
-    {
+    public BlockWallSign() {
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
-        switch ((EnumFacing)state.getValue(FACING))
-        {
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        switch ((EnumFacing) state.getValue(FACING)) {
             case NORTH:
             default:
                 return SIGN_NORTH_AABB;
@@ -41,12 +37,10 @@ public class BlockWallSign extends BlockSign
         }
     }
 
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-    {
-        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+        EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
 
-        if (!worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getMaterial().isSolid())
-        {
+        if (!worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getMaterial().isSolid()) {
             this.dropBlockAsItem(worldIn, pos, state, 0);
             worldIn.setBlockToAir(pos);
         }
@@ -54,35 +48,29 @@ public class BlockWallSign extends BlockSign
         super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         EnumFacing enumfacing = EnumFacing.getFront(meta);
 
-        if (enumfacing.getAxis() == EnumFacing.Axis.Y)
-        {
+        if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
             enumfacing = EnumFacing.NORTH;
         }
 
         return this.getDefaultState().withProperty(FACING, enumfacing);
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumFacing)state.getValue(FACING)).getIndex();
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumFacing) state.getValue(FACING)).getIndex();
     }
 
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
     }
 
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {FACING});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{FACING});
     }
 }

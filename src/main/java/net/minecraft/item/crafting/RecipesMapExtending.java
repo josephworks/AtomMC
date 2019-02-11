@@ -9,65 +9,45 @@ import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapDecoration;
 
-public class RecipesMapExtending extends ShapedRecipes
-{
-    public RecipesMapExtending()
-    {
+public class RecipesMapExtending extends ShapedRecipes {
+    public RecipesMapExtending() {
         super("", 3, 3, NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(Items.PAPER), Ingredient.fromItems(Items.PAPER), Ingredient.fromItems(Items.PAPER), Ingredient.fromItems(Items.PAPER), Ingredient.fromItem(Items.FILLED_MAP), Ingredient.fromItems(Items.PAPER), Ingredient.fromItems(Items.PAPER), Ingredient.fromItems(Items.PAPER), Ingredient.fromItems(Items.PAPER)), new ItemStack(Items.MAP));
     }
 
-    public boolean matches(InventoryCrafting inv, World worldIn)
-    {
-        if (!super.matches(inv, worldIn))
-        {
+    public boolean matches(InventoryCrafting inv, World worldIn) {
+        if (!super.matches(inv, worldIn)) {
             return false;
-        }
-        else
-        {
+        } else {
             ItemStack itemstack = ItemStack.EMPTY;
 
-            for (int i = 0; i < inv.getSizeInventory() && itemstack.isEmpty(); ++i)
-            {
+            for (int i = 0; i < inv.getSizeInventory() && itemstack.isEmpty(); ++i) {
                 ItemStack itemstack1 = inv.getStackInSlot(i);
 
-                if (itemstack1.getItem() == Items.FILLED_MAP)
-                {
+                if (itemstack1.getItem() == Items.FILLED_MAP) {
                     itemstack = itemstack1;
                 }
             }
 
-            if (itemstack.isEmpty())
-            {
+            if (itemstack.isEmpty()) {
                 return false;
-            }
-            else
-            {
+            } else {
                 MapData mapdata = Items.FILLED_MAP.getMapData(itemstack, worldIn);
 
-                if (mapdata == null)
-                {
+                if (mapdata == null) {
                     return false;
-                }
-                else if (this.isExplorationMap(mapdata))
-                {
+                } else if (this.isExplorationMap(mapdata)) {
                     return false;
-                }
-                else
-                {
+                } else {
                     return mapdata.scale < 4;
                 }
             }
         }
     }
 
-    private boolean isExplorationMap(MapData p_190934_1_)
-    {
-        if (p_190934_1_.mapDecorations != null)
-        {
-            for (MapDecoration mapdecoration : p_190934_1_.mapDecorations.values())
-            {
-                if (mapdecoration.getType() == MapDecoration.Type.MANSION || mapdecoration.getType() == MapDecoration.Type.MONUMENT)
-                {
+    private boolean isExplorationMap(MapData p_190934_1_) {
+        if (p_190934_1_.mapDecorations != null) {
+            for (MapDecoration mapdecoration : p_190934_1_.mapDecorations.values()) {
+                if (mapdecoration.getType() == MapDecoration.Type.MANSION || mapdecoration.getType() == MapDecoration.Type.MONUMENT) {
                     return true;
                 }
             }
@@ -76,16 +56,13 @@ public class RecipesMapExtending extends ShapedRecipes
         return false;
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting inv)
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inv) {
         ItemStack itemstack = ItemStack.EMPTY;
 
-        for (int i = 0; i < inv.getSizeInventory() && itemstack.isEmpty(); ++i)
-        {
+        for (int i = 0; i < inv.getSizeInventory() && itemstack.isEmpty(); ++i) {
             ItemStack itemstack1 = inv.getStackInSlot(i);
 
-            if (itemstack1.getItem() == Items.FILLED_MAP)
-            {
+            if (itemstack1.getItem() == Items.FILLED_MAP) {
                 itemstack = itemstack1;
             }
         }
@@ -93,8 +70,7 @@ public class RecipesMapExtending extends ShapedRecipes
         itemstack = itemstack.copy();
         itemstack.setCount(1);
 
-        if (itemstack.getTagCompound() == null)
-        {
+        if (itemstack.getTagCompound() == null) {
             itemstack.setTagCompound(new NBTTagCompound());
         }
 
@@ -102,8 +78,7 @@ public class RecipesMapExtending extends ShapedRecipes
         return itemstack;
     }
 
-    public boolean isDynamic()
-    {
+    public boolean isDynamic() {
         return true;
     }
 }

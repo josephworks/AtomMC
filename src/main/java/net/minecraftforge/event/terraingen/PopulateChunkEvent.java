@@ -40,16 +40,14 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * <br>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}, except {@link Populate}, which fires on the {@link MinecraftForge#TERRAIN_GEN_BUS}.<br>
  **/
-public class PopulateChunkEvent extends ChunkGeneratorEvent
-{
+public class PopulateChunkEvent extends ChunkGeneratorEvent {
     private final World world;
     private final Random rand;
     private final int chunkX;
     private final int chunkZ;
     private final boolean hasVillageGenerated;
 
-    public PopulateChunkEvent(IChunkGenerator gen, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated)
-    {
+    public PopulateChunkEvent(IChunkGenerator gen, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated) {
         super(gen);
         this.world = world;
         this.rand = rand;
@@ -58,11 +56,26 @@ public class PopulateChunkEvent extends ChunkGeneratorEvent
         this.hasVillageGenerated = hasVillageGenerated;
     }
 
-    public World getWorld() { return world; }
-    public Random getRand() { return rand; }
-    public int getChunkX() { return chunkX; }
-    public int getChunkZ() { return chunkZ; }
-    public boolean isHasVillageGenerated() { return hasVillageGenerated; }
+    public World getWorld() {
+        return world;
+    }
+
+    public Random getRand() {
+        return rand;
+    }
+
+    public int getChunkX() {
+        return chunkX;
+    }
+
+    public int getChunkZ() {
+        return chunkZ;
+    }
+
+    public boolean isHasVillageGenerated() {
+        return hasVillageGenerated;
+    }
+
     /**
      * PopulateChunkEvent.Pre is fired just before a chunk is populated a terrain feature.<br>
      * This event is fired just before terrain feature generation in
@@ -76,10 +89,8 @@ public class PopulateChunkEvent extends ChunkGeneratorEvent
      * <br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
      **/
-    public static class Pre extends PopulateChunkEvent
-    {
-        public Pre(IChunkGenerator gen, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated)
-        {
+    public static class Pre extends PopulateChunkEvent {
+        public Pre(IChunkGenerator gen, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated) {
             super(gen, world, rand, chunkX, chunkZ, hasVillageGenerated);
         }
     }
@@ -97,10 +108,8 @@ public class PopulateChunkEvent extends ChunkGeneratorEvent
      * <br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
      **/
-    public static class Post extends PopulateChunkEvent
-    {
-        public Post(IChunkGenerator chunkProvider, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated)
-        {
+    public static class Post extends PopulateChunkEvent {
+        public Post(IChunkGenerator chunkProvider, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated) {
             super(chunkProvider, world, rand, chunkX, chunkZ, hasVillageGenerated);
         }
     }
@@ -122,21 +131,19 @@ public class PopulateChunkEvent extends ChunkGeneratorEvent
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
      **/
     @HasResult
-    public static class Populate extends PopulateChunkEvent
-    {
-        public EventType getType()
-        {
+    public static class Populate extends PopulateChunkEvent {
+        public EventType getType() {
             return type;
         }
 
-        /** Use CUSTOM to filter custom event types
+        /**
+         * Use CUSTOM to filter custom event types
          */
-        public static enum EventType { DUNGEON, FIRE, GLOWSTONE, ICE, LAKE, LAVA, NETHER_LAVA, NETHER_LAVA2, NETHER_MAGMA, ANIMALS, CUSTOM }
+        public static enum EventType {DUNGEON, FIRE, GLOWSTONE, ICE, LAKE, LAVA, NETHER_LAVA, NETHER_LAVA2, NETHER_MAGMA, ANIMALS, CUSTOM}
 
         private final EventType type;
 
-        public Populate(IChunkGenerator gen, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated, EventType type)
-        {
+        public Populate(IChunkGenerator gen, World world, Random rand, int chunkX, int chunkZ, boolean hasVillageGenerated, EventType type) {
             super(gen, world, rand, chunkX, chunkZ, hasVillageGenerated);
             this.type = type;
         }

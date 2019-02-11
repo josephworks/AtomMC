@@ -1,6 +1,5 @@
 package net.minecraft.util;
 
-public interface ITickable
-{
+public interface ITickable {
     void update();
 }

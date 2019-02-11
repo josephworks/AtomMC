@@ -1,20 +1,14 @@
 package net.minecraft.pathfinding;
 
-public class PathHeap
-{
+public class PathHeap {
     private PathPoint[] pathPoints = new PathPoint[128];
     private int count;
 
-    public PathPoint addPoint(PathPoint point)
-    {
-        if (point.index >= 0)
-        {
+    public PathPoint addPoint(PathPoint point) {
+        if (point.index >= 0) {
             throw new IllegalStateException("OW KNOWS!");
-        }
-        else
-        {
-            if (this.count == this.pathPoints.length)
-            {
+        } else {
+            if (this.count == this.pathPoints.length) {
                 PathPoint[] apathpoint = new PathPoint[this.count << 1];
                 System.arraycopy(this.pathPoints, 0, apathpoint, 0, this.count);
                 this.pathPoints = apathpoint;
@@ -27,19 +21,16 @@ public class PathHeap
         }
     }
 
-    public void clearPath()
-    {
+    public void clearPath() {
         this.count = 0;
     }
 
-    public PathPoint dequeue()
-    {
+    public PathPoint dequeue() {
         PathPoint pathpoint = this.pathPoints[0];
         this.pathPoints[0] = this.pathPoints[--this.count];
         this.pathPoints[this.count] = null;
 
-        if (this.count > 0)
-        {
+        if (this.count > 0) {
             this.sortForward(0);
         }
 
@@ -47,33 +38,26 @@ public class PathHeap
         return pathpoint;
     }
 
-    public void changeDistance(PathPoint point, float distance)
-    {
+    public void changeDistance(PathPoint point, float distance) {
         float f = point.distanceToTarget;
         point.distanceToTarget = distance;
 
-        if (distance < f)
-        {
+        if (distance < f) {
             this.sortBack(point.index);
-        }
-        else
-        {
+        } else {
             this.sortForward(point.index);
         }
     }
 
-    private void sortBack(int index)
-    {
+    private void sortBack(int index) {
         PathPoint pathpoint = this.pathPoints[index];
         int i;
 
-        for (float f = pathpoint.distanceToTarget; index > 0; index = i)
-        {
+        for (float f = pathpoint.distanceToTarget; index > 0; index = i) {
             i = index - 1 >> 1;
             PathPoint pathpoint1 = this.pathPoints[i];
 
-            if (f >= pathpoint1.distanceToTarget)
-            {
+            if (f >= pathpoint1.distanceToTarget) {
                 break;
             }
 
@@ -85,18 +69,15 @@ public class PathHeap
         pathpoint.index = index;
     }
 
-    private void sortForward(int index)
-    {
+    private void sortForward(int index) {
         PathPoint pathpoint = this.pathPoints[index];
         float f = pathpoint.distanceToTarget;
 
-        while (true)
-        {
+        while (true) {
             int i = 1 + (index << 1);
             int j = i + 1;
 
-            if (i >= this.count)
-            {
+            if (i >= this.count) {
                 break;
             }
 
@@ -105,32 +86,24 @@ public class PathHeap
             PathPoint pathpoint2;
             float f2;
 
-            if (j >= this.count)
-            {
+            if (j >= this.count) {
                 pathpoint2 = null;
                 f2 = Float.POSITIVE_INFINITY;
-            }
-            else
-            {
+            } else {
                 pathpoint2 = this.pathPoints[j];
                 f2 = pathpoint2.distanceToTarget;
             }
 
-            if (f1 < f2)
-            {
-                if (f1 >= f)
-                {
+            if (f1 < f2) {
+                if (f1 >= f) {
                     break;
                 }
 
                 this.pathPoints[index] = pathpoint1;
                 pathpoint1.index = index;
                 index = i;
-            }
-            else
-            {
-                if (f2 >= f)
-                {
+            } else {
+                if (f2 >= f) {
                     break;
                 }
 
@@ -144,8 +117,7 @@ public class PathHeap
         pathpoint.index = index;
     }
 
-    public boolean isPathEmpty()
-    {
+    public boolean isPathEmpty() {
         return this.count == 0;
     }
 }

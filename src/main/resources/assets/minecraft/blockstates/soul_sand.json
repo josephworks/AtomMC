@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "soul_sand" }
+  "variants": {
+    "normal": {
+      "model": "soul_sand"
     }
+  }
 }

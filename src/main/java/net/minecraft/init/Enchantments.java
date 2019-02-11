@@ -1,11 +1,11 @@
 package net.minecraft.init;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.ResourceLocation;
 
-public class Enchantments
-{
+public class Enchantments {
     public static final Enchantment PROTECTION = getRegisteredEnchantment("protection");
     public static final Enchantment FIRE_PROTECTION = getRegisteredEnchantment("fire_protection");
     public static final Enchantment FEATHER_FALLING = getRegisteredEnchantment("feather_falling");
@@ -38,24 +38,18 @@ public class Enchantments
     public static final Enchantment VANISHING_CURSE = getRegisteredEnchantment("vanishing_curse");
 
     @Nullable
-    private static Enchantment getRegisteredEnchantment(String id)
-    {
+    private static Enchantment getRegisteredEnchantment(String id) {
         Enchantment enchantment = Enchantment.REGISTRY.getObject(new ResourceLocation(id));
 
-        if (enchantment == null)
-        {
+        if (enchantment == null) {
             throw new IllegalStateException("Invalid Enchantment requested: " + id);
-        }
-        else
-        {
+        } else {
             return enchantment;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed Enchantments before Bootstrap!");
         }
     }

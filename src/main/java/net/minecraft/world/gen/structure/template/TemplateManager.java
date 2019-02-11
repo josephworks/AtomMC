@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.structure.template;
 
 import com.google.common.collect.Maps;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import javax.annotation.Nullable;
+
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -17,24 +19,20 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import org.apache.commons.io.IOUtils;
 
-public class TemplateManager
-{
+public class TemplateManager {
     private final Map<String, Template> templates = Maps.<String, Template>newHashMap();
     private final String baseFolder;
     private final DataFixer fixer;
 
-    public TemplateManager(String p_i47239_1_, DataFixer p_i47239_2_)
-    {
+    public TemplateManager(String p_i47239_1_, DataFixer p_i47239_2_) {
         this.baseFolder = p_i47239_1_;
         this.fixer = p_i47239_2_;
     }
 
-    public Template getTemplate(@Nullable MinecraftServer server, ResourceLocation id)
-    {
+    public Template getTemplate(@Nullable MinecraftServer server, ResourceLocation id) {
         Template template = this.get(server, id);
 
-        if (template == null)
-        {
+        if (template == null) {
             template = new Template();
             this.templates.put(id.getResourcePath(), template);
         }
@@ -43,55 +41,39 @@ public class TemplateManager
     }
 
     @Nullable
-    public Template get(@Nullable MinecraftServer server, ResourceLocation templatePath)
-    {
+    public Template get(@Nullable MinecraftServer server, ResourceLocation templatePath) {
         String s = templatePath.getResourcePath();
 
-        if (this.templates.containsKey(s))
-        {
+        if (this.templates.containsKey(s)) {
             return this.templates.get(s);
-        }
-        else
-        {
-            if (server == null)
-            {
+        } else {
+            if (server == null) {
                 this.readTemplateFromJar(templatePath);
-            }
-            else
-            {
+            } else {
                 this.readTemplate(templatePath);
             }
 
-            return this.templates.containsKey(s) ? (Template)this.templates.get(s) : null;
+            return this.templates.containsKey(s) ? (Template) this.templates.get(s) : null;
         }
     }
 
-    public boolean readTemplate(ResourceLocation server)
-    {
+    public boolean readTemplate(ResourceLocation server) {
         String s = server.getResourcePath();
         File file1 = new File(this.baseFolder, s + ".nbt");
 
-        if (!file1.exists())
-        {
+        if (!file1.exists()) {
             return this.readTemplateFromJar(server);
-        }
-        else
-        {
+        } else {
             InputStream inputstream = null;
             boolean flag;
 
-            try
-            {
+            try {
                 inputstream = new FileInputStream(file1);
                 this.readTemplateFromStream(s, inputstream);
                 return true;
-            }
-            catch (Throwable var10)
-            {
+            } catch (Throwable var10) {
                 flag = false;
-            }
-            finally
-            {
+            } finally {
                 IOUtils.closeQuietly(inputstream);
             }
 
@@ -99,37 +81,29 @@ public class TemplateManager
         }
     }
 
-    private boolean readTemplateFromJar(ResourceLocation id)
-    {
+    private boolean readTemplateFromJar(ResourceLocation id) {
         String s = id.getResourceDomain();
         String s1 = id.getResourcePath();
         InputStream inputstream = null;
         boolean flag;
 
-        try
-        {
+        try {
             inputstream = MinecraftServer.class.getResourceAsStream("/assets/" + s + "/structures/" + s1 + ".nbt");
             this.readTemplateFromStream(s1, inputstream);
             return true;
-        }
-        catch (Throwable var10)
-        {
+        } catch (Throwable var10) {
             flag = false;
-        }
-        finally
-        {
+        } finally {
             IOUtils.closeQuietly(inputstream);
         }
 
         return flag;
     }
 
-    private void readTemplateFromStream(String id, InputStream stream) throws IOException
-    {
+    private void readTemplateFromStream(String id, InputStream stream) throws IOException {
         NBTTagCompound nbttagcompound = CompressedStreamTools.readCompressed(stream);
 
-        if (!nbttagcompound.hasKey("DataVersion", 99))
-        {
+        if (!nbttagcompound.hasKey("DataVersion", 99)) {
             nbttagcompound.setInteger("DataVersion", 500);
         }
 
@@ -138,23 +112,17 @@ public class TemplateManager
         this.templates.put(id, template);
     }
 
-    public boolean writeTemplate(@Nullable MinecraftServer server, ResourceLocation id)
-    {
+    public boolean writeTemplate(@Nullable MinecraftServer server, ResourceLocation id) {
         String s = id.getResourcePath();
 
-        if (server != null && this.templates.containsKey(s))
-        {
+        if (server != null && this.templates.containsKey(s)) {
             File file1 = new File(this.baseFolder);
 
-            if (!file1.exists())
-            {
-                if (!file1.mkdirs())
-                {
+            if (!file1.exists()) {
+                if (!file1.mkdirs()) {
                     return false;
                 }
-            }
-            else if (!file1.isDirectory())
-            {
+            } else if (!file1.isDirectory()) {
                 return false;
             }
 
@@ -163,32 +131,24 @@ public class TemplateManager
             OutputStream outputstream = null;
             boolean flag;
 
-            try
-            {
+            try {
                 NBTTagCompound nbttagcompound = template.writeToNBT(new NBTTagCompound());
                 outputstream = new FileOutputStream(file2);
                 CompressedStreamTools.writeCompressed(nbttagcompound, outputstream);
                 return true;
-            }
-            catch (Throwable var13)
-            {
+            } catch (Throwable var13) {
                 flag = false;
-            }
-            finally
-            {
+            } finally {
                 IOUtils.closeQuietly(outputstream);
             }
 
             return flag;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public void remove(ResourceLocation templatePath)
-    {
+    public void remove(ResourceLocation templatePath) {
         this.templates.remove(templatePath.getResourcePath());
     }
 }

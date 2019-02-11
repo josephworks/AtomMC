@@ -6,25 +6,20 @@ import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.entity.CraftEnderDragon;
 import org.bukkit.event.entity.EnderDragonChangePhaseEvent;
 
-public class PhaseManager
-{
+public class PhaseManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final EntityDragon dragon;
     private final IPhase[] phases = new IPhase[PhaseList.getTotalPhases()];
     private IPhase phase;
 
-    public PhaseManager(EntityDragon dragonIn)
-    {
+    public PhaseManager(EntityDragon dragonIn) {
         this.dragon = dragonIn;
         this.setPhase(PhaseList.HOVER);
     }
 
-    public void setPhase(PhaseList<?> phaseIn)
-    {
-        if (this.phase == null || phaseIn != this.phase.getType())
-        {
-            if (this.phase != null)
-            {
+    public void setPhase(PhaseList<?> phaseIn) {
+        if (this.phase == null || phaseIn != this.phase.getType()) {
+            if (this.phase != null) {
                 this.phase.removeAreaEffect();
             }
 
@@ -41,8 +36,7 @@ public class PhaseManager
 
             this.phase = this.getPhase(phaseIn);
 
-            if (!this.dragon.world.isRemote)
-            {
+            if (!this.dragon.world.isRemote) {
                 this.dragon.getDataManager().set(EntityDragon.PHASE, Integer.valueOf(phaseIn.getId()));
             }
 
@@ -51,20 +45,17 @@ public class PhaseManager
         }
     }
 
-    public IPhase getCurrentPhase()
-    {
+    public IPhase getCurrentPhase() {
         return this.phase;
     }
 
-    public <T extends IPhase> T getPhase(PhaseList<T> phaseIn)
-    {
+    public <T extends IPhase> T getPhase(PhaseList<T> phaseIn) {
         int i = phaseIn.getId();
 
-        if (this.phases[i] == null)
-        {
+        if (this.phases[i] == null) {
             this.phases[i] = phaseIn.createPhase(this.dragon);
         }
 
-        return (T)this.phases[i];
+        return (T) this.phases[i];
     }
 }

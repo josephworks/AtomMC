@@ -1,8 +1,10 @@
 package net.minecraft.client.gui.inventory;
 
 import io.netty.buffer.Unpooled;
+
 import java.io.IOException;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -19,8 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
-public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabCompleter
-{
+public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabCompleter {
     private GuiTextField commandField;
     private GuiTextField previousEdit;
     private final CommandBlockBaseLogic commandBlockLogic;
@@ -30,18 +31,15 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
     private boolean trackOutput;
     private TabCompleter tabCompleter;
 
-    public GuiEditCommandBlockMinecart(CommandBlockBaseLogic p_i46595_1_)
-    {
+    public GuiEditCommandBlockMinecart(CommandBlockBaseLogic p_i46595_1_) {
         this.commandBlockLogic = p_i46595_1_;
     }
 
-    public void updateScreen()
-    {
+    public void updateScreen() {
         this.commandField.updateCursorCounter();
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
         this.doneButton = this.addButton(new GuiButton(0, this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.done")));
@@ -58,32 +56,24 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
         this.trackOutput = this.commandBlockLogic.shouldTrackOutput();
         this.updateCommandOutput();
         this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
-        this.tabCompleter = new TabCompleter(this.commandField, true)
-        {
+        this.tabCompleter = new TabCompleter(this.commandField, true) {
             @Nullable
-            public BlockPos getTargetBlockPos()
-            {
+            public BlockPos getTargetBlockPos() {
                 return GuiEditCommandBlockMinecart.this.commandBlockLogic.getPosition();
             }
         };
     }
 
-    public void onGuiClosed()
-    {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.enabled)
-        {
-            if (button.id == 1)
-            {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.enabled) {
+            if (button.id == 1) {
                 this.commandBlockLogic.setTrackOutput(this.trackOutput);
-                this.mc.displayGuiScreen((GuiScreen)null);
-            }
-            else if (button.id == 0)
-            {
+                this.mc.displayGuiScreen((GuiScreen) null);
+            } else if (button.id == 0) {
                 PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
                 packetbuffer.writeByte(this.commandBlockLogic.getCommandBlockType());
                 this.commandBlockLogic.fillInInfo(packetbuffer);
@@ -91,31 +81,24 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
                 packetbuffer.writeBoolean(this.commandBlockLogic.shouldTrackOutput());
                 this.mc.getConnection().sendPacket(new CPacketCustomPayload("MC|AdvCmd", packetbuffer));
 
-                if (!this.commandBlockLogic.shouldTrackOutput())
-                {
-                    this.commandBlockLogic.setLastOutput((ITextComponent)null);
+                if (!this.commandBlockLogic.shouldTrackOutput()) {
+                    this.commandBlockLogic.setLastOutput((ITextComponent) null);
                 }
 
-                this.mc.displayGuiScreen((GuiScreen)null);
-            }
-            else if (button.id == 4)
-            {
+                this.mc.displayGuiScreen((GuiScreen) null);
+            } else if (button.id == 4) {
                 this.commandBlockLogic.setTrackOutput(!this.commandBlockLogic.shouldTrackOutput());
                 this.updateCommandOutput();
             }
         }
     }
 
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
         this.tabCompleter.resetRequested();
 
-        if (keyCode == 15)
-        {
+        if (keyCode == 15) {
             this.tabCompleter.complete();
-        }
-        else
-        {
+        } else {
             this.tabCompleter.resetDidComplete();
         }
 
@@ -123,28 +106,22 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
         this.previousEdit.textboxKeyTyped(typedChar, keyCode);
         this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
 
-        if (keyCode != 28 && keyCode != 156)
-        {
-            if (keyCode == 1)
-            {
+        if (keyCode != 28 && keyCode != 156) {
+            if (keyCode == 1) {
                 this.actionPerformed(this.cancelButton);
             }
-        }
-        else
-        {
+        } else {
             this.actionPerformed(this.doneButton);
         }
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.commandField.mouseClicked(mouseX, mouseY, mouseButton);
         this.previousEdit.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRenderer, I18n.format("advMode.setCommand"), this.width / 2, 20, 16777215);
         this.drawString(this.fontRenderer, I18n.format("advMode.command"), this.width / 2 - 150, 40, 10526880);
@@ -157,8 +134,7 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
         this.drawString(this.fontRenderer, I18n.format("advMode.allEntities"), this.width / 2 - 140, i + j++ * this.fontRenderer.FONT_HEIGHT, 10526880);
         this.drawString(this.fontRenderer, I18n.format("advMode.self"), this.width / 2 - 140, i + j++ * this.fontRenderer.FONT_HEIGHT, 10526880);
 
-        if (!this.previousEdit.getText().isEmpty())
-        {
+        if (!this.previousEdit.getText().isEmpty()) {
             i = i + j * this.fontRenderer.FONT_HEIGHT + 20;
             this.drawString(this.fontRenderer, I18n.format("advMode.previousOutput"), this.width / 2 - 150, i, 10526880);
             this.previousEdit.drawTextBox();
@@ -167,26 +143,20 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    private void updateCommandOutput()
-    {
-        if (this.commandBlockLogic.shouldTrackOutput())
-        {
+    private void updateCommandOutput() {
+        if (this.commandBlockLogic.shouldTrackOutput()) {
             this.outputButton.displayString = "O";
 
-            if (this.commandBlockLogic.getLastOutput() != null)
-            {
+            if (this.commandBlockLogic.getLastOutput() != null) {
                 this.previousEdit.setText(this.commandBlockLogic.getLastOutput().getUnformattedText());
             }
-        }
-        else
-        {
+        } else {
             this.outputButton.displayString = "X";
             this.previousEdit.setText("-");
         }
     }
 
-    public void setCompletions(String... newCompletions)
-    {
+    public void setCompletions(String... newCompletions) {
         this.tabCompleter.setCompletions(newCompletions);
     }
 }

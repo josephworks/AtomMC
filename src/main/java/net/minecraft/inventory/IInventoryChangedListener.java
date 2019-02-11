@@ -1,6 +1,5 @@
 package net.minecraft.inventory;
 
-public interface IInventoryChangedListener
-{
+public interface IInventoryChangedListener {
     void onInventoryChanged(IInventory invBasic);
 }

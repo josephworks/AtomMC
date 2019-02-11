@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "noteblock" }
+  "variants": {
+    "normal": {
+      "model": "noteblock"
     }
+  }
 }

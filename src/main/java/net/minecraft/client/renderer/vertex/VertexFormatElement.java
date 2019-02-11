@@ -6,22 +6,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
-public class VertexFormatElement
-{
+public class VertexFormatElement {
     private static final Logger LOGGER = LogManager.getLogger();
     private final EnumType type;
     private final EnumUsage usage;
     private final int index;
     private final int elementCount;
 
-    public VertexFormatElement(int indexIn, EnumType typeIn, EnumUsage usageIn, int count)
-    {
-        if (this.isFirstOrUV(indexIn, usageIn))
-        {
+    public VertexFormatElement(int indexIn, EnumType typeIn, EnumUsage usageIn, int count) {
+        if (this.isFirstOrUV(indexIn, usageIn)) {
             this.usage = usageIn;
-        }
-        else
-        {
+        } else {
             LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
             this.usage = EnumUsage.UV;
         }
@@ -31,81 +26,59 @@ public class VertexFormatElement
         this.elementCount = count;
     }
 
-    private final boolean isFirstOrUV(int p_177372_1_, EnumUsage p_177372_2_)
-    {
+    private final boolean isFirstOrUV(int p_177372_1_, EnumUsage p_177372_2_) {
         return p_177372_1_ == 0 || p_177372_2_ == EnumUsage.UV;
     }
 
-    public final EnumType getType()
-    {
+    public final EnumType getType() {
         return this.type;
     }
 
-    public final EnumUsage getUsage()
-    {
+    public final EnumUsage getUsage() {
         return this.usage;
     }
 
-    public final int getElementCount()
-    {
+    public final int getElementCount() {
         return this.elementCount;
     }
 
-    public final int getIndex()
-    {
+    public final int getIndex() {
         return this.index;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return this.elementCount + "," + this.usage.getDisplayName() + "," + this.type.getDisplayName();
     }
 
-    public final int getSize()
-    {
+    public final int getSize() {
         return this.type.getSize() * this.elementCount;
     }
 
-    public final boolean isPositionElement()
-    {
+    public final boolean isPositionElement() {
         return this.usage == EnumUsage.POSITION;
     }
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
+    public boolean equals(Object p_equals_1_) {
+        if (this == p_equals_1_) {
             return true;
-        }
-        else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
-        {
-            VertexFormatElement vertexformatelement = (VertexFormatElement)p_equals_1_;
+        } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
+            VertexFormatElement vertexformatelement = (VertexFormatElement) p_equals_1_;
 
-            if (this.elementCount != vertexformatelement.elementCount)
-            {
+            if (this.elementCount != vertexformatelement.elementCount) {
                 return false;
-            }
-            else if (this.index != vertexformatelement.index)
-            {
+            } else if (this.index != vertexformatelement.index) {
                 return false;
-            }
-            else if (this.type != vertexformatelement.type)
-            {
+            } else if (this.type != vertexformatelement.type) {
                 return false;
-            }
-            else
-            {
+            } else {
                 return this.usage == vertexformatelement.usage;
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int i = this.type.hashCode();
         i = 31 * i + this.usage.hashCode();
         i = 31 * i + this.index;
@@ -114,8 +87,7 @@ public class VertexFormatElement
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum EnumType
-    {
+    public static enum EnumType {
         FLOAT(4, "Float", 5126),
         UBYTE(1, "Unsigned Byte", 5121),
         BYTE(1, "Byte", 5120),
@@ -128,32 +100,27 @@ public class VertexFormatElement
         private final String displayName;
         private final int glConstant;
 
-        private EnumType(int sizeIn, String displayNameIn, int glConstantIn)
-        {
+        private EnumType(int sizeIn, String displayNameIn, int glConstantIn) {
             this.size = sizeIn;
             this.displayName = displayNameIn;
             this.glConstant = glConstantIn;
         }
 
-        public int getSize()
-        {
+        public int getSize() {
             return this.size;
         }
 
-        public String getDisplayName()
-        {
+        public String getDisplayName() {
             return this.displayName;
         }
 
-        public int getGlConstant()
-        {
+        public int getGlConstant() {
             return this.glConstant;
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum EnumUsage
-    {
+    public static enum EnumUsage {
         POSITION("Position"),
         NORMAL("Normal"),
         COLOR("Vertex Color"),
@@ -166,18 +133,21 @@ public class VertexFormatElement
         PADDING("Padding"),
         GENERIC("Generic");
 
-        public void preDraw(VertexFormat format, int element, int stride, java.nio.ByteBuffer buffer) { net.minecraftforge.client.ForgeHooksClient.preDraw(this, format, element, stride, buffer); }
-        public void postDraw(VertexFormat format, int element, int stride, java.nio.ByteBuffer buffer) { net.minecraftforge.client.ForgeHooksClient.postDraw(this, format, element, stride, buffer); }
+        public void preDraw(VertexFormat format, int element, int stride, java.nio.ByteBuffer buffer) {
+            net.minecraftforge.client.ForgeHooksClient.preDraw(this, format, element, stride, buffer);
+        }
+
+        public void postDraw(VertexFormat format, int element, int stride, java.nio.ByteBuffer buffer) {
+            net.minecraftforge.client.ForgeHooksClient.postDraw(this, format, element, stride, buffer);
+        }
 
         private final String displayName;
 
-        private EnumUsage(String displayNameIn)
-        {
+        private EnumUsage(String displayNameIn) {
             this.displayName = displayNameIn;
         }
 
-        public String getDisplayName()
-        {
+        public String getDisplayName() {
             return this.displayName;
         }
     }

@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "lit_redstone_lamp" }
+  "variants": {
+    "normal": {
+      "model": "lit_redstone_lamp"
     }
+  }
 }

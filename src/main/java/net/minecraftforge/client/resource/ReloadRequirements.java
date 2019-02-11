@@ -31,15 +31,13 @@ import com.google.common.collect.Sets;
  * Holds methods to create standard predicates to select {@link IResourceType}s that should be reloaded.
  */
 @SideOnly(Side.CLIENT)
-public final class ReloadRequirements
-{
+public final class ReloadRequirements {
     /**
      * Creates a reload predicate accepting all resource types.
      *
      * @return a predicate accepting all types
      */
-    public static Predicate<IResourceType> all()
-    {
+    public static Predicate<IResourceType> all() {
         return type -> true;
     }
 
@@ -49,8 +47,7 @@ public final class ReloadRequirements
      * @param inclusion the set of resource types to be included in the reload
      * @return an inclusion predicate based on the given types
      */
-    public static Predicate<IResourceType> include(IResourceType... inclusion)
-    {
+    public static Predicate<IResourceType> include(IResourceType... inclusion) {
         Set<IResourceType> inclusionSet = Sets.newHashSet(inclusion);
         return inclusionSet::contains;
     }

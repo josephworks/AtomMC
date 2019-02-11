@@ -25,10 +25,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ServerToClientConnectionEstablishedHandler extends ChannelInboundHandlerAdapter {
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception
-    {
-        if (evt instanceof NetworkHandshakeEstablished)
-        {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof NetworkHandshakeEstablished) {
             ctx.writeAndFlush(new ForgeMessage.FluidIdMapMessage());
             return;
         }

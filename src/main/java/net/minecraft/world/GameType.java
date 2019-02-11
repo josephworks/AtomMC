@@ -4,8 +4,7 @@ import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public enum GameType
-{
+public enum GameType {
     NOT_SET(-1, "", ""),
     SURVIVAL(0, "survival", "s"),
     CREATIVE(1, "creative", "c"),
@@ -16,40 +15,31 @@ public enum GameType
     String name;
     String shortName;
 
-    private GameType(int idIn, String nameIn, String shortNameIn)
-    {
+    private GameType(int idIn, String nameIn, String shortNameIn) {
         this.id = idIn;
         this.name = nameIn;
         this.shortName = shortNameIn;
     }
 
-    public int getID()
-    {
+    public int getID() {
         return this.id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
-    public void configurePlayerCapabilities(PlayerCapabilities capabilities)
-    {
-        if (this == CREATIVE)
-        {
+    public void configurePlayerCapabilities(PlayerCapabilities capabilities) {
+        if (this == CREATIVE) {
             capabilities.allowFlying = true;
             capabilities.isCreativeMode = true;
             capabilities.disableDamage = true;
-        }
-        else if (this == SPECTATOR)
-        {
+        } else if (this == SPECTATOR) {
             capabilities.allowFlying = true;
             capabilities.isCreativeMode = false;
             capabilities.disableDamage = true;
             capabilities.isFlying = true;
-        }
-        else
-        {
+        } else {
             capabilities.allowFlying = false;
             capabilities.isCreativeMode = false;
             capabilities.disableDamage = false;
@@ -59,32 +49,25 @@ public enum GameType
         capabilities.allowEdit = !this.hasLimitedInteractions();
     }
 
-    public boolean hasLimitedInteractions()
-    {
+    public boolean hasLimitedInteractions() {
         return this == ADVENTURE || this == SPECTATOR;
     }
 
-    public boolean isCreative()
-    {
+    public boolean isCreative() {
         return this == CREATIVE;
     }
 
-    public boolean isSurvivalOrAdventure()
-    {
+    public boolean isSurvivalOrAdventure() {
         return this == SURVIVAL || this == ADVENTURE;
     }
 
-    public static GameType getByID(int idIn)
-    {
+    public static GameType getByID(int idIn) {
         return parseGameTypeWithDefault(idIn, SURVIVAL);
     }
 
-    public static GameType parseGameTypeWithDefault(int targetId, GameType fallback)
-    {
-        for (GameType gametype : values())
-        {
-            if (gametype.id == targetId)
-            {
+    public static GameType parseGameTypeWithDefault(int targetId, GameType fallback) {
+        for (GameType gametype : values()) {
+            if (gametype.id == targetId) {
                 return gametype;
             }
         }
@@ -93,17 +76,13 @@ public enum GameType
     }
 
     @SideOnly(Side.CLIENT)
-    public static GameType getByName(String gamemodeName)
-    {
+    public static GameType getByName(String gamemodeName) {
         return parseGameTypeWithDefault(gamemodeName, SURVIVAL);
     }
 
-    public static GameType parseGameTypeWithDefault(String targetName, GameType fallback)
-    {
-        for (GameType gametype : values())
-        {
-            if (gametype.name.equals(targetName) || gametype.shortName.equals(targetName))
-            {
+    public static GameType parseGameTypeWithDefault(String targetName, GameType fallback) {
+        for (GameType gametype : values()) {
+            if (gametype.name.equals(targetName) || gametype.shortName.equals(targetName)) {
                 return gametype;
             }
         }

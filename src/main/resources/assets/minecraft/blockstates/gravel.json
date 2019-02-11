@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "gravel" }
+  "variants": {
+    "normal": {
+      "model": "gravel"
     }
+  }
 }

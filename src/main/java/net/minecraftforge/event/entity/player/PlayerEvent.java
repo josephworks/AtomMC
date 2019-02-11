@@ -39,17 +39,15 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * <br>
  * All children of this event are fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-public class PlayerEvent extends LivingEvent
-{
+public class PlayerEvent extends LivingEvent {
     private final EntityPlayer entityPlayer;
-    public PlayerEvent(EntityPlayer player)
-    {
+
+    public PlayerEvent(EntityPlayer player) {
         super(player);
         entityPlayer = player;
     }
 
-    public EntityPlayer getEntityPlayer()
-    {
+    public EntityPlayer getEntityPlayer() {
         return entityPlayer;
     }
 
@@ -69,21 +67,27 @@ public class PlayerEvent extends LivingEvent
      * <br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
      **/
-    public static class HarvestCheck extends PlayerEvent
-    {
+    public static class HarvestCheck extends PlayerEvent {
         private final IBlockState state;
         private boolean success;
 
-        public HarvestCheck(EntityPlayer player, IBlockState state, boolean success)
-        {
+        public HarvestCheck(EntityPlayer player, IBlockState state, boolean success) {
             super(player);
             this.state = state;
             this.success = success;
         }
 
-        public IBlockState getTargetBlock() { return this.state; }
-        public boolean canHarvest() { return this.success; }
-        public void setCanHarvest(boolean success){ this.success = success; }
+        public IBlockState getTargetBlock() {
+            return this.state;
+        }
+
+        public boolean canHarvest() {
+            return this.success;
+        }
+
+        public void setCanHarvest(boolean success) {
+            this.success = success;
+        }
     }
 
     /**
@@ -106,15 +110,13 @@ public class PlayerEvent extends LivingEvent
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
      **/
     @Cancelable
-    public static class BreakSpeed extends PlayerEvent
-    {
+    public static class BreakSpeed extends PlayerEvent {
         private final IBlockState state;
         private final float originalSpeed;
         private float newSpeed = 0.0f;
         private final BlockPos pos; // Y position of -1 notes unknown location
 
-        public BreakSpeed(EntityPlayer player, IBlockState state, float original, BlockPos pos)
-        {
+        public BreakSpeed(EntityPlayer player, IBlockState state, float original, BlockPos pos) {
             super(player);
             this.state = state;
             this.originalSpeed = original;
@@ -122,11 +124,25 @@ public class PlayerEvent extends LivingEvent
             this.pos = pos;
         }
 
-        public IBlockState getState() { return state; }
-        public float getOriginalSpeed() { return originalSpeed; }
-        public float getNewSpeed() { return newSpeed; }
-        public void setNewSpeed(float newSpeed) { this.newSpeed = newSpeed; }
-        public BlockPos getPos() { return pos; }
+        public IBlockState getState() {
+            return state;
+        }
+
+        public float getOriginalSpeed() {
+            return originalSpeed;
+        }
+
+        public float getNewSpeed() {
+            return newSpeed;
+        }
+
+        public void setNewSpeed(float newSpeed) {
+            this.newSpeed = newSpeed;
+        }
+
+        public BlockPos getPos() {
+            return pos;
+        }
     }
 
     /**
@@ -145,8 +161,7 @@ public class PlayerEvent extends LivingEvent
      * <br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
      **/
-    public static class NameFormat extends PlayerEvent
-    {
+    public static class NameFormat extends PlayerEvent {
         private final String username;
         private String displayname;
 
@@ -156,18 +171,15 @@ public class PlayerEvent extends LivingEvent
             this.setDisplayname(username);
         }
 
-        public String getUsername()
-        {
+        public String getUsername() {
             return username;
         }
 
-        public String getDisplayname()
-        {
+        public String getDisplayname() {
             return displayname;
         }
 
-        public void setDisplayname(String displayname)
-        {
+        public void setDisplayname(String displayname) {
             this.displayname = displayname;
         }
     }
@@ -176,13 +188,11 @@ public class PlayerEvent extends LivingEvent
      * Fired when the EntityPlayer is cloned, typically caused by the network sending a RESPAWN_PLAYER event.
      * Either caused by death, or by traveling from the End to the overworld.
      */
-    public static class Clone extends PlayerEvent
-    {
+    public static class Clone extends PlayerEvent {
         private final EntityPlayer original;
         private final boolean wasDeath;
 
-        public Clone(EntityPlayer _new, EntityPlayer oldPlayer, boolean wasDeath)
-        {
+        public Clone(EntityPlayer _new, EntityPlayer oldPlayer, boolean wasDeath) {
             super(_new);
             this.original = oldPlayer;
             this.wasDeath = wasDeath;
@@ -191,8 +201,7 @@ public class PlayerEvent extends LivingEvent
         /**
          * The old EntityPlayer that this new entity is a clone of.
          */
-        public EntityPlayer getOriginal()
-        {
+        public EntityPlayer getOriginal() {
             return original;
         }
 
@@ -200,22 +209,19 @@ public class PlayerEvent extends LivingEvent
          * True if this event was fired because the player died.
          * False if it was fired because the entity switched dimensions.
          */
-        public boolean isWasDeath()
-        {
+        public boolean isWasDeath() {
             return wasDeath;
         }
     }
 
     /**
      * Fired when an Entity is started to be "tracked" by this player (the player receives updates about this entity, e.g. motion).
-     *
      */
     public static class StartTracking extends PlayerEvent {
 
         private final Entity target;
 
-        public StartTracking(EntityPlayer player, Entity target)
-        {
+        public StartTracking(EntityPlayer player, Entity target) {
             super(player);
             this.target = target;
         }
@@ -223,22 +229,19 @@ public class PlayerEvent extends LivingEvent
         /**
          * The Entity now being tracked.
          */
-        public Entity getTarget()
-        {
+        public Entity getTarget() {
             return target;
         }
     }
 
     /**
      * Fired when an Entity is stopped to be "tracked" by this player (the player no longer receives updates about this entity, e.g. motion).
-     *
      */
     public static class StopTracking extends PlayerEvent {
 
         private final Entity target;
 
-        public StopTracking(EntityPlayer player, Entity target)
-        {
+        public StopTracking(EntityPlayer player, Entity target) {
             super(player);
             this.target = target;
         }
@@ -246,8 +249,7 @@ public class PlayerEvent extends LivingEvent
         /**
          * The Entity no longer being tracked.
          */
-        public Entity getTarget()
-        {
+        public Entity getTarget() {
             return target;
         }
     }
@@ -262,8 +264,7 @@ public class PlayerEvent extends LivingEvent
         private final File playerDirectory;
         private final String playerUUID;
 
-        public LoadFromFile(EntityPlayer player, File originDirectory, String playerUUID)
-        {
+        public LoadFromFile(EntityPlayer player, File originDirectory, String playerUUID) {
             super(player);
             this.playerDirectory = originDirectory;
             this.playerUUID = playerUUID;
@@ -271,21 +272,20 @@ public class PlayerEvent extends LivingEvent
 
         /**
          * Construct and return a recommended file for the supplied suffix
+         *
          * @param suffix The suffix to use.
          * @return
          */
-        public File getPlayerFile(String suffix)
-        {
+        public File getPlayerFile(String suffix) {
             if ("dat".equals(suffix)) throw new IllegalArgumentException("The suffix 'dat' is reserved");
-            return new File(this.getPlayerDirectory(), this.getPlayerUUID() +"."+suffix);
+            return new File(this.getPlayerDirectory(), this.getPlayerUUID() + "." + suffix);
         }
 
         /**
          * The directory where player data is being stored. Use this
          * to locate your mod additional file.
          */
-        public File getPlayerDirectory()
-        {
+        public File getPlayerDirectory() {
             return playerDirectory;
         }
 
@@ -293,11 +293,11 @@ public class PlayerEvent extends LivingEvent
          * The UUID is the standard for player related file storage.
          * It is broken out here for convenience for quick file generation.
          */
-        public String getPlayerUUID()
-        {
+        public String getPlayerUUID() {
             return playerUUID;
         }
     }
+
     /**
      * The player is being saved to the world store. Note that the
      * player may be in the process of logging out or otherwise departing
@@ -315,8 +315,7 @@ public class PlayerEvent extends LivingEvent
         private final File playerDirectory;
         private final String playerUUID;
 
-        public SaveToFile(EntityPlayer player, File originDirectory, String playerUUID)
-        {
+        public SaveToFile(EntityPlayer player, File originDirectory, String playerUUID) {
             super(player);
             this.playerDirectory = originDirectory;
             this.playerUUID = playerUUID;
@@ -324,21 +323,20 @@ public class PlayerEvent extends LivingEvent
 
         /**
          * Construct and return a recommended file for the supplied suffix
+         *
          * @param suffix The suffix to use.
          * @return
          */
-        public File getPlayerFile(String suffix)
-        {
+        public File getPlayerFile(String suffix) {
             if ("dat".equals(suffix)) throw new IllegalArgumentException("The suffix 'dat' is reserved");
-            return new File(this.getPlayerDirectory(), this.getPlayerUUID() +"."+suffix);
+            return new File(this.getPlayerDirectory(), this.getPlayerUUID() + "." + suffix);
         }
 
         /**
          * The directory where player data is being stored. Use this
          * to locate your mod additional file.
          */
-        public File getPlayerDirectory()
-        {
+        public File getPlayerDirectory() {
             return playerDirectory;
         }
 
@@ -346,8 +344,7 @@ public class PlayerEvent extends LivingEvent
          * The UUID is the standard for player related file storage.
          * It is broken out here for convenience for quick file generation.
          */
-        public String getPlayerUUID()
-        {
+        public String getPlayerUUID() {
             return playerUUID;
         }
     }
@@ -357,29 +354,25 @@ public class PlayerEvent extends LivingEvent
      * The resulting visibility modifier is multiplied by the one calculated by Minecraft (based on sneaking and more) and used to calculate the radius a player has to be in (targetDistance*modifier).
      * This can also be used to increase the visibility of a player, if it was decreased by Minecraft or other mods. But the resulting value cannot be higher than the standard target distance.
      */
-    public static class Visibility extends PlayerEvent
-    {
+    public static class Visibility extends PlayerEvent {
 
         private double visibilityModifier = 1D;
 
-        public Visibility(EntityPlayer player)
-        {
+        public Visibility(EntityPlayer player) {
             super(player);
         }
 
         /**
          * @param mod Is multiplied with the current modifier
          */
-        public void modifyVisibility(double mod)
-        {
+        public void modifyVisibility(double mod) {
             visibilityModifier *= mod;
         }
 
         /**
          * @return The current modifier
          */
-        public double getVisibilityModifier()
-        {
+        public double getVisibilityModifier() {
             return visibilityModifier;
         }
     }

@@ -3,6 +3,7 @@ package net.minecraft.world.gen.structure;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -14,26 +15,22 @@ import net.minecraft.world.gen.structure.template.PlacementSettings;
 import net.minecraft.world.gen.structure.template.Template;
 import net.minecraft.world.gen.structure.template.TemplateManager;
 
-public abstract class StructureComponentTemplate extends StructureComponent
-{
+public abstract class StructureComponentTemplate extends StructureComponent {
     private static final PlacementSettings DEFAULT_PLACE_SETTINGS = new PlacementSettings();
     protected Template template;
     protected PlacementSettings placeSettings;
     protected BlockPos templatePosition;
 
-    public StructureComponentTemplate()
-    {
+    public StructureComponentTemplate() {
         this.placeSettings = DEFAULT_PLACE_SETTINGS.setIgnoreEntities(true).setReplacedBlock(Blocks.AIR);
     }
 
-    public StructureComponentTemplate(int type)
-    {
+    public StructureComponentTemplate(int type) {
         super(type);
         this.placeSettings = DEFAULT_PLACE_SETTINGS.setIgnoreEntities(true).setReplacedBlock(Blocks.AIR);
     }
 
-    protected void setup(Template templateIn, BlockPos pos, PlacementSettings settings)
-    {
+    protected void setup(Template templateIn, BlockPos pos, PlacementSettings settings) {
         this.template = templateIn;
         this.setCoordBaseMode(EnumFacing.NORTH);
         this.templatePosition = pos;
@@ -41,26 +38,22 @@ public abstract class StructureComponentTemplate extends StructureComponent
         this.setBoundingBoxFromTemplate();
     }
 
-    protected void writeStructureToNBT(NBTTagCompound tagCompound)
-    {
+    protected void writeStructureToNBT(NBTTagCompound tagCompound) {
         tagCompound.setInteger("TPX", this.templatePosition.getX());
         tagCompound.setInteger("TPY", this.templatePosition.getY());
         tagCompound.setInteger("TPZ", this.templatePosition.getZ());
     }
 
-    protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
-    {
+    protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_) {
         this.templatePosition = new BlockPos(tagCompound.getInteger("TPX"), tagCompound.getInteger("TPY"), tagCompound.getInteger("TPZ"));
     }
 
-    public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn)
-    {
+    public boolean addComponentParts(World worldIn, Random randomIn, StructureBoundingBox structureBoundingBoxIn) {
         this.placeSettings.setBoundingBox(structureBoundingBoxIn);
         this.template.addBlocksToWorld(worldIn, this.templatePosition, this.placeSettings, 18);
         Map<BlockPos, String> map = this.template.getDataBlocks(this.templatePosition, this.placeSettings);
 
-        for (Entry<BlockPos, String> entry : map.entrySet())
-        {
+        for (Entry<BlockPos, String> entry : map.entrySet()) {
             String s = entry.getValue();
             this.handleDataMarker(s, entry.getKey(), worldIn, randomIn, structureBoundingBoxIn);
         }
@@ -70,15 +63,13 @@ public abstract class StructureComponentTemplate extends StructureComponent
 
     protected abstract void handleDataMarker(String function, BlockPos pos, World worldIn, Random rand, StructureBoundingBox sbb);
 
-    private void setBoundingBoxFromTemplate()
-    {
+    private void setBoundingBoxFromTemplate() {
         Rotation rotation = this.placeSettings.getRotation();
         BlockPos blockpos = this.template.transformedSize(rotation);
         Mirror mirror = this.placeSettings.getMirror();
         this.boundingBox = new StructureBoundingBox(0, 0, 0, blockpos.getX(), blockpos.getY() - 1, blockpos.getZ());
 
-        switch (rotation)
-        {
+        switch (rotation) {
             case NONE:
             default:
                 break;
@@ -92,27 +83,20 @@ public abstract class StructureComponentTemplate extends StructureComponent
                 this.boundingBox.offset(-blockpos.getX(), 0, -blockpos.getZ());
         }
 
-        switch (mirror)
-        {
+        switch (mirror) {
             case NONE:
             default:
                 break;
             case FRONT_BACK:
                 BlockPos blockpos2 = BlockPos.ORIGIN;
 
-                if (rotation != Rotation.CLOCKWISE_90 && rotation != Rotation.COUNTERCLOCKWISE_90)
-                {
-                    if (rotation == Rotation.CLOCKWISE_180)
-                    {
+                if (rotation != Rotation.CLOCKWISE_90 && rotation != Rotation.COUNTERCLOCKWISE_90) {
+                    if (rotation == Rotation.CLOCKWISE_180) {
                         blockpos2 = blockpos2.offset(EnumFacing.EAST, blockpos.getX());
-                    }
-                    else
-                    {
+                    } else {
                         blockpos2 = blockpos2.offset(EnumFacing.WEST, blockpos.getX());
                     }
-                }
-                else
-                {
+                } else {
                     blockpos2 = blockpos2.offset(rotation.rotate(EnumFacing.WEST), blockpos.getZ());
                 }
 
@@ -121,19 +105,13 @@ public abstract class StructureComponentTemplate extends StructureComponent
             case LEFT_RIGHT:
                 BlockPos blockpos1 = BlockPos.ORIGIN;
 
-                if (rotation != Rotation.CLOCKWISE_90 && rotation != Rotation.COUNTERCLOCKWISE_90)
-                {
-                    if (rotation == Rotation.CLOCKWISE_180)
-                    {
+                if (rotation != Rotation.CLOCKWISE_90 && rotation != Rotation.COUNTERCLOCKWISE_90) {
+                    if (rotation == Rotation.CLOCKWISE_180) {
                         blockpos1 = blockpos1.offset(EnumFacing.SOUTH, blockpos.getZ());
-                    }
-                    else
-                    {
+                    } else {
                         blockpos1 = blockpos1.offset(EnumFacing.NORTH, blockpos.getZ());
                     }
-                }
-                else
-                {
+                } else {
                     blockpos1 = blockpos1.offset(rotation.rotate(EnumFacing.NORTH), blockpos.getX());
                 }
 
@@ -143,8 +121,7 @@ public abstract class StructureComponentTemplate extends StructureComponent
         this.boundingBox.offset(this.templatePosition.getX(), this.templatePosition.getY(), this.templatePosition.getZ());
     }
 
-    public void offset(int x, int y, int z)
-    {
+    public void offset(int x, int y, int z) {
         super.offset(x, y, z);
         this.templatePosition = this.templatePosition.add(x, y, z);
     }

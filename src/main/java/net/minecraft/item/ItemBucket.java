@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -28,54 +29,39 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 
-public class ItemBucket extends Item
-{
+public class ItemBucket extends Item {
     private final Block containedBlock;
 
-    public ItemBucket(Block containedBlockIn)
-    {
+    public ItemBucket(Block containedBlockIn) {
         this.maxStackSize = 1;
         this.containedBlock = containedBlockIn;
         this.setCreativeTab(CreativeTabs.MISC);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         boolean flag = this.containedBlock == Blocks.AIR;
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, flag);
         ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(playerIn, worldIn, itemstack, raytraceresult);
         if (ret != null) return ret;
 
-        if (raytraceresult == null)
-        {
+        if (raytraceresult == null) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
-        }
-        else if (raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK)
-        {
+        } else if (raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
-        }
-        else
-        {
+        } else {
             BlockPos blockpos = raytraceresult.getBlockPos();
 
-            if (!worldIn.isBlockModifiable(playerIn, blockpos))
-            {
+            if (!worldIn.isBlockModifiable(playerIn, blockpos)) {
                 return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-            }
-            else if (flag)
-            {
-                if (!playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
-                {
+            } else if (flag) {
+                if (!playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack)) {
                     return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-                }
-                else
-                {
+                } else {
                     IBlockState iblockstate = worldIn.getBlockState(blockpos);
                     Material material = iblockstate.getMaterial();
 
-                    if (material == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-                    {
+                    if (material == Material.WATER && ((Integer) iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0) {
                         PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent(playerIn, blockpos.getX(), blockpos.getY(), blockpos.getZ(), null, itemstack, Items.WATER_BUCKET);
 
                         if (event.isCancelled()) {
@@ -85,9 +71,7 @@ public class ItemBucket extends Item
                         playerIn.addStat(StatList.getObjectUseStats(this));
                         playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
                         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.WATER_BUCKET, event.getItemStack()));
-                    }
-                    else if (material == Material.LAVA && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-                    {
+                    } else if (material == Material.LAVA && ((Integer) iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0) {
                         PlayerBucketFillEvent event = CraftEventFactory.callPlayerBucketFillEvent(playerIn, blockpos.getX(), blockpos.getY(), blockpos.getZ(), null, itemstack, Items.LAVA_BUCKET);
 
                         if (event.isCancelled()) {
@@ -97,58 +81,40 @@ public class ItemBucket extends Item
                         worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
                         playerIn.addStat(StatList.getObjectUseStats(this));
                         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, this.fillBucket(itemstack, playerIn, Items.LAVA_BUCKET, event.getItemStack()));
-                    }
-                    else
-                    {
+                    } else {
                         return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                     }
                 }
-            }
-            else
-            {
+            } else {
                 boolean flag1 = worldIn.getBlockState(blockpos).getBlock().isReplaceable(worldIn, blockpos);
                 BlockPos blockpos1 = flag1 && raytraceresult.sideHit == EnumFacing.UP ? blockpos : blockpos.offset(raytraceresult.sideHit);
 
-                if (!playerIn.canPlayerEdit(blockpos1, raytraceresult.sideHit, itemstack))
-                {
+                if (!playerIn.canPlayerEdit(blockpos1, raytraceresult.sideHit, itemstack)) {
                     return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
-                }
-                else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1, raytraceresult.sideHit, blockpos, itemstack))
-                {
-                    if (playerIn instanceof EntityPlayerMP)
-                    {
-                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)playerIn, blockpos1, itemstack);
+                } else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1, raytraceresult.sideHit, blockpos, itemstack)) {
+                    if (playerIn instanceof EntityPlayerMP) {
+                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) playerIn, blockpos1, itemstack);
                     }
 
                     playerIn.addStat(StatList.getObjectUseStats(this));
                     return !playerIn.capabilities.isCreativeMode ? new ActionResult(EnumActionResult.SUCCESS, new ItemStack(Items.BUCKET)) : new ActionResult(EnumActionResult.SUCCESS, itemstack);
-                }
-                else
-                {
+                } else {
                     return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                 }
             }
         }
     }
 
-    private ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket)
-    {
-        if (player.capabilities.isCreativeMode)
-        {
+    private ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket) {
+        if (player.capabilities.isCreativeMode) {
             return emptyBuckets;
-        }
-        else
-        {
+        } else {
             emptyBuckets.shrink(1);
 
-            if (emptyBuckets.isEmpty())
-            {
+            if (emptyBuckets.isEmpty()) {
                 return new ItemStack(fullBucket);
-            }
-            else
-            {
-                if (!player.inventory.addItemStackToInventory(new ItemStack(fullBucket)))
-                {
+            } else {
+                if (!player.inventory.addItemStackToInventory(new ItemStack(fullBucket))) {
                     player.dropItem(new ItemStack(fullBucket), false);
                 }
 
@@ -158,25 +124,17 @@ public class ItemBucket extends Item
     }
 
     // CraftBukkit - added ob.ItemStack result - TODO: Is this... the right way to handle this?
-    private ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket, org.bukkit.inventory.ItemStack result)
-    {
-        if (player.capabilities.isCreativeMode)
-        {
+    private ItemStack fillBucket(ItemStack emptyBuckets, EntityPlayer player, Item fullBucket, org.bukkit.inventory.ItemStack result) {
+        if (player.capabilities.isCreativeMode) {
             return emptyBuckets;
-        }
-        else
-        {
+        } else {
             emptyBuckets.shrink(1);
 
-            if (emptyBuckets.isEmpty())
-            {
+            if (emptyBuckets.isEmpty()) {
                 // return new ItemStack(fullBucket);
                 return CraftItemStack.asNMSCopy(result);
-            }
-            else
-            {
-                if (!player.inventory.addItemStackToInventory(CraftItemStack.asNMSCopy(result)))
-                {
+            } else {
+                if (!player.inventory.addItemStackToInventory(CraftItemStack.asNMSCopy(result))) {
                     player.dropItem(CraftItemStack.asNMSCopy(result), false);
                 }
 
@@ -185,29 +143,22 @@ public class ItemBucket extends Item
         }
     }
 
-    public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn)
-    {
+    public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn) {
         return tryPlaceContainedLiquid(player, worldIn, posIn, null, posIn, null);
     }
 
     public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World worldIn, BlockPos posIn, EnumFacing enumdirection, BlockPos clicked, ItemStack itemstack) {
-        if (this.containedBlock == Blocks.AIR)
-        {
+        if (this.containedBlock == Blocks.AIR) {
             return false;
-        }
-        else
-        {
+        } else {
             IBlockState iblockstate = worldIn.getBlockState(posIn);
             Material material = iblockstate.getMaterial();
             boolean flag = !material.isSolid();
             boolean flag1 = iblockstate.getBlock().isReplaceable(worldIn, posIn);
 
-            if (!worldIn.isAirBlock(posIn) && !flag && !flag1)
-            {
+            if (!worldIn.isAirBlock(posIn) && !flag && !flag1) {
                 return false;
-            }
-            else
-            {
+            } else {
                 if (player != null) {
                     PlayerBucketEmptyEvent event = CraftEventFactory.callPlayerBucketEmptyEvent(player, clicked.getX(), clicked.getY(), clicked.getZ(), enumdirection, itemstack);
                     if (event.isCancelled()) {
@@ -216,22 +167,17 @@ public class ItemBucket extends Item
                     }
                 }
 
-                if (worldIn.provider.doesWaterVaporize() && this.containedBlock == Blocks.FLOWING_WATER)
-                {
+                if (worldIn.provider.doesWaterVaporize() && this.containedBlock == Blocks.FLOWING_WATER) {
                     int l = posIn.getX();
                     int i = posIn.getY();
                     int j = posIn.getZ();
                     worldIn.playSound(player, posIn, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
 
-                    for (int k = 0; k < 8; ++k)
-                    {
-                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, (double)l + Math.random(), (double)i + Math.random(), (double)j + Math.random(), 0.0D, 0.0D, 0.0D);
+                    for (int k = 0; k < 8; ++k) {
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, (double) l + Math.random(), (double) i + Math.random(), (double) j + Math.random(), 0.0D, 0.0D, 0.0D);
                     }
-                }
-                else
-                {
-                    if (!worldIn.isRemote && (flag || flag1) && !material.isLiquid())
-                    {
+                } else {
+                    if (!worldIn.isRemote && (flag || flag1) && !material.isLiquid()) {
                         worldIn.destroyBlock(posIn, true);
                     }
 
@@ -247,12 +193,9 @@ public class ItemBucket extends Item
 
     @Override
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, @Nullable net.minecraft.nbt.NBTTagCompound nbt) {
-        if (this.getClass() == ItemBucket.class)
-        {
+        if (this.getClass() == ItemBucket.class) {
             return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
-        }
-        else
-        {
+        } else {
             return super.initCapabilities(stack, nbt);
         }
     }

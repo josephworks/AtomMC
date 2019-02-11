@@ -79,8 +79,7 @@ import net.minecraft.network.play.server.SPacketWindowItems;
 import net.minecraft.network.play.server.SPacketWindowProperty;
 import net.minecraft.network.play.server.SPacketWorldBorder;
 
-public interface INetHandlerPlayClient extends INetHandler
-{
+public interface INetHandlerPlayClient extends INetHandler {
     void handleSpawnObject(SPacketSpawnObject packetIn);
 
     void handleSpawnExperienceOrb(SPacketSpawnExperienceOrb packetIn);

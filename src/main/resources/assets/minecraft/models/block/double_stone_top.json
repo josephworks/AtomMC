@@ -1,6 +1,6 @@
 {
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "blocks/stone_slab_top"
-    }
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "blocks/stone_slab_top"
+  }
 }

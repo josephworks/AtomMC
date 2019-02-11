@@ -1,6 +1,6 @@
 {
-    "parent": "block/pane_noside_alt",
-    "textures": {
-        "pane": "blocks/glass_red"
-    }
+  "parent": "block/pane_noside_alt",
+  "textures": {
+    "pane": "blocks/glass_red"
+  }
 }

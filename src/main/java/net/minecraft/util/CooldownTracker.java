@@ -1,54 +1,46 @@
 package net.minecraft.util;
 
 import com.google.common.collect.Maps;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import net.minecraft.item.Item;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class CooldownTracker
-{
+public class CooldownTracker {
     public final Map<Item, Cooldown> cooldowns = Maps.<Item, Cooldown>newHashMap();
     public int ticks;
 
-    public boolean hasCooldown(Item itemIn)
-    {
+    public boolean hasCooldown(Item itemIn) {
         return this.getCooldown(itemIn, 0.0F) > 0.0F;
     }
 
-    public float getCooldown(Item itemIn, float partialTicks)
-    {
+    public float getCooldown(Item itemIn, float partialTicks) {
         Cooldown cooldowntracker$cooldown = this.cooldowns.get(itemIn);
 
-        if (cooldowntracker$cooldown != null)
-        {
-            float f = (float)(cooldowntracker$cooldown.expireTicks - cooldowntracker$cooldown.createTicks);
-            float f1 = (float)cooldowntracker$cooldown.expireTicks - ((float)this.ticks + partialTicks);
+        if (cooldowntracker$cooldown != null) {
+            float f = (float) (cooldowntracker$cooldown.expireTicks - cooldowntracker$cooldown.createTicks);
+            float f1 = (float) cooldowntracker$cooldown.expireTicks - ((float) this.ticks + partialTicks);
             return MathHelper.clamp(f1 / f, 0.0F, 1.0F);
-        }
-        else
-        {
+        } else {
             return 0.0F;
         }
     }
 
-    public void tick()
-    {
+    public void tick() {
         ++this.ticks;
 
-        if (!this.cooldowns.isEmpty())
-        {
+        if (!this.cooldowns.isEmpty()) {
             Iterator<Entry<Item, Cooldown>> iterator = this.cooldowns.entrySet().iterator();
 
-            while (iterator.hasNext())
-            {
-                Entry<Item, Cooldown> entry = (Entry)iterator.next();
+            while (iterator.hasNext()) {
+                Entry<Item, Cooldown> entry = (Entry) iterator.next();
 
-                if ((entry.getValue()).expireTicks <= this.ticks)
-                {
+                if ((entry.getValue()).expireTicks <= this.ticks) {
                     iterator.remove();
                     this.notifyOnRemove(entry.getKey());
                 }
@@ -56,34 +48,28 @@ public class CooldownTracker
         }
     }
 
-    public void setCooldown(Item itemIn, int ticksIn)
-    {
+    public void setCooldown(Item itemIn, int ticksIn) {
         this.cooldowns.put(itemIn, new Cooldown(this.ticks, this.ticks + ticksIn));
         this.notifyOnSet(itemIn, ticksIn);
     }
 
     @SideOnly(Side.CLIENT)
-    public void removeCooldown(Item itemIn)
-    {
+    public void removeCooldown(Item itemIn) {
         this.cooldowns.remove(itemIn);
         this.notifyOnRemove(itemIn);
     }
 
-    protected void notifyOnSet(Item itemIn, int ticksIn)
-    {
+    protected void notifyOnSet(Item itemIn, int ticksIn) {
     }
 
-    protected void notifyOnRemove(Item itemIn)
-    {
+    protected void notifyOnRemove(Item itemIn) {
     }
 
-    public class Cooldown
-    {
+    public class Cooldown {
         public final int createTicks;
         public final int expireTicks;
 
-        private Cooldown(int createTicksIn, int expireTicksIn)
-        {
+        private Cooldown(int createTicksIn, int expireTicksIn) {
             this.createTicks = createTicksIn;
             this.expireTicks = expireTicksIn;
         }

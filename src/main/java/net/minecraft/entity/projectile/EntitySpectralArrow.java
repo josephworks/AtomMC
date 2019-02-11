@@ -10,64 +10,52 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 
-public class EntitySpectralArrow extends EntityArrow
-{
+public class EntitySpectralArrow extends EntityArrow {
     public int duration = 200;
 
-    public EntitySpectralArrow(World worldIn)
-    {
+    public EntitySpectralArrow(World worldIn) {
         super(worldIn);
     }
 
-    public EntitySpectralArrow(World worldIn, EntityLivingBase shooter)
-    {
+    public EntitySpectralArrow(World worldIn, EntityLivingBase shooter) {
         super(worldIn, shooter);
     }
 
-    public EntitySpectralArrow(World worldIn, double x, double y, double z)
-    {
+    public EntitySpectralArrow(World worldIn, double x, double y, double z) {
         super(worldIn, x, y, z);
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
 
-        if (this.world.isRemote && !this.inGround)
-        {
+        if (this.world.isRemote && !this.inGround) {
             this.world.spawnParticle(EnumParticleTypes.SPELL_INSTANT, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
         }
     }
 
-    protected ItemStack getArrowStack()
-    {
+    protected ItemStack getArrowStack() {
         return new ItemStack(Items.SPECTRAL_ARROW);
     }
 
-    protected void arrowHit(EntityLivingBase living)
-    {
+    protected void arrowHit(EntityLivingBase living) {
         super.arrowHit(living);
         PotionEffect potioneffect = new PotionEffect(MobEffects.GLOWING, this.duration, 0);
         living.addPotionEffect(potioneffect);
     }
 
-    public static void registerFixesSpectralArrow(DataFixer fixer)
-    {
+    public static void registerFixesSpectralArrow(DataFixer fixer) {
         EntityArrow.registerFixesArrow(fixer, "SpectralArrow");
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
 
-        if (compound.hasKey("Duration"))
-        {
+        if (compound.hasKey("Duration")) {
             this.duration = compound.getInteger("Duration");
         }
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
+    public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         compound.setInteger("Duration", this.duration);
     }

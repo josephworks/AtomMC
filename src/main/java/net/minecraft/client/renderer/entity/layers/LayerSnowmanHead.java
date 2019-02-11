@@ -11,19 +11,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerSnowmanHead implements LayerRenderer<EntitySnowman>
-{
+public class LayerSnowmanHead implements LayerRenderer<EntitySnowman> {
     private final RenderSnowMan snowManRenderer;
 
-    public LayerSnowmanHead(RenderSnowMan snowManRendererIn)
-    {
+    public LayerSnowmanHead(RenderSnowMan snowManRendererIn) {
         this.snowManRenderer = snowManRendererIn;
     }
 
-    public void doRenderLayer(EntitySnowman entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
-        if (!entitylivingbaseIn.isInvisible() && entitylivingbaseIn.isPumpkinEquipped())
-        {
+    public void doRenderLayer(EntitySnowman entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        if (!entitylivingbaseIn.isInvisible() && entitylivingbaseIn.isPumpkinEquipped()) {
             GlStateManager.pushMatrix();
             this.snowManRenderer.getMainModel().head.postRender(0.0625F);
             float f = 0.625F;
@@ -35,8 +31,7 @@ public class LayerSnowmanHead implements LayerRenderer<EntitySnowman>
         }
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return true;
     }
 }

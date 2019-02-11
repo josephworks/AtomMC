@@ -2,6 +2,7 @@ package net.minecraft.util.text;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -9,8 +10,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
-public enum TextFormatting
-{
+public enum TextFormatting {
     BLACK("BLACK", '0', 0),
     DARK_BLUE("DARK_BLUE", '1', 1),
     DARK_GREEN("DARK_GREEN", '2', 2),
@@ -42,23 +42,19 @@ public enum TextFormatting
     private final String controlString;
     private final int colorIndex;
 
-    private static String lowercaseAlpha(String p_175745_0_)
-    {
+    private static String lowercaseAlpha(String p_175745_0_) {
         return p_175745_0_.toLowerCase(Locale.ROOT).replaceAll("[^a-z]", "");
     }
 
-    private TextFormatting(String formattingName, char formattingCodeIn, int colorIndex)
-    {
+    private TextFormatting(String formattingName, char formattingCodeIn, int colorIndex) {
         this(formattingName, formattingCodeIn, false, colorIndex);
     }
 
-    private TextFormatting(String formattingName, char formattingCodeIn, boolean fancyStylingIn)
-    {
+    private TextFormatting(String formattingName, char formattingCodeIn, boolean fancyStylingIn) {
         this(formattingName, formattingCodeIn, fancyStylingIn, -1);
     }
 
-    private TextFormatting(String formattingName, char formattingCodeIn, boolean fancyStylingIn, int colorIndex)
-    {
+    private TextFormatting(String formattingName, char formattingCodeIn, boolean fancyStylingIn, int colorIndex) {
         this.name = formattingName;
         this.formattingCode = formattingCodeIn;
         this.fancyStyling = fancyStylingIn;
@@ -66,56 +62,43 @@ public enum TextFormatting
         this.controlString = "\u00a7" + formattingCodeIn;
     }
 
-    public int getColorIndex()
-    {
+    public int getColorIndex() {
         return this.colorIndex;
     }
 
-    public boolean isFancyStyling()
-    {
+    public boolean isFancyStyling() {
         return this.fancyStyling;
     }
 
-    public boolean isColor()
-    {
+    public boolean isColor() {
         return !this.fancyStyling && this != RESET;
     }
 
-    public String getFriendlyName()
-    {
+    public String getFriendlyName() {
         return this.name().toLowerCase(Locale.ROOT);
     }
 
-    public String toString()
-    {
+    public String toString() {
         return this.controlString;
     }
 
     @Nullable
-    public static String getTextWithoutFormattingCodes(@Nullable String text)
-    {
+    public static String getTextWithoutFormattingCodes(@Nullable String text) {
         return text == null ? null : FORMATTING_CODE_PATTERN.matcher(text).replaceAll("");
     }
 
     @Nullable
-    public static TextFormatting getValueByName(@Nullable String friendlyName)
-    {
-        return friendlyName == null ? null : (TextFormatting)NAME_MAPPING.get(lowercaseAlpha(friendlyName));
+    public static TextFormatting getValueByName(@Nullable String friendlyName) {
+        return friendlyName == null ? null : (TextFormatting) NAME_MAPPING.get(lowercaseAlpha(friendlyName));
     }
 
     @Nullable
-    public static TextFormatting fromColorIndex(int index)
-    {
-        if (index < 0)
-        {
+    public static TextFormatting fromColorIndex(int index) {
+        if (index < 0) {
             return RESET;
-        }
-        else
-        {
-            for (TextFormatting textformatting : values())
-            {
-                if (textformatting.getColorIndex() == index)
-                {
+        } else {
+            for (TextFormatting textformatting : values()) {
+                if (textformatting.getColorIndex() == index) {
                     return textformatting;
                 }
             }
@@ -124,14 +107,11 @@ public enum TextFormatting
         }
     }
 
-    public static Collection<String> getValidValues(boolean p_96296_0_, boolean p_96296_1_)
-    {
+    public static Collection<String> getValidValues(boolean p_96296_0_, boolean p_96296_1_) {
         List<String> list = Lists.<String>newArrayList();
 
-        for (TextFormatting textformatting : values())
-        {
-            if ((!textformatting.isColor() || p_96296_0_) && (!textformatting.isFancyStyling() || p_96296_1_))
-            {
+        for (TextFormatting textformatting : values()) {
+            if ((!textformatting.isColor() || p_96296_0_) && (!textformatting.isFancyStyling() || p_96296_1_)) {
                 list.add(textformatting.getFriendlyName());
             }
         }
@@ -139,10 +119,8 @@ public enum TextFormatting
         return list;
     }
 
-    static
-    {
-        for (TextFormatting textformatting : values())
-        {
+    static {
+        for (TextFormatting textformatting : values()) {
             NAME_MAPPING.put(lowercaseAlpha(textformatting.name), textformatting);
         }
     }

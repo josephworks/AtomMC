@@ -9,8 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class DebugRenderer
-{
+public class DebugRenderer {
     public final IDebugRenderer pathfinding;
     public final IDebugRenderer water;
     public final IDebugRenderer chunkBorder;
@@ -26,8 +25,7 @@ public class DebugRenderer
     private boolean neighborsUpdateEnabled;
     private boolean solidFaceEnabled;
 
-    public DebugRenderer(Minecraft clientIn)
-    {
+    public DebugRenderer(Minecraft clientIn) {
         this.pathfinding = new DebugRendererPathfinding(clientIn);
         this.water = new DebugRendererWater(clientIn);
         this.chunkBorder = new DebugRendererChunkBorder(clientIn);
@@ -37,78 +35,65 @@ public class DebugRenderer
         this.solidFace = new DebugRendererSolidFace(clientIn);
     }
 
-    public boolean shouldRender()
-    {
+    public boolean shouldRender() {
         return this.chunkBorderEnabled || this.pathfindingEnabled || this.waterEnabled || this.heightMapEnabled || this.collisionBoxEnabled || this.neighborsUpdateEnabled || this.solidFaceEnabled;
     }
 
-    public boolean toggleChunkBorders()
-    {
+    public boolean toggleChunkBorders() {
         this.chunkBorderEnabled = !this.chunkBorderEnabled;
         return this.chunkBorderEnabled;
     }
 
-    public void renderDebug(float partialTicks, long finishTimeNano)
-    {
-        if (this.pathfindingEnabled)
-        {
+    public void renderDebug(float partialTicks, long finishTimeNano) {
+        if (this.pathfindingEnabled) {
             this.pathfinding.render(partialTicks, finishTimeNano);
         }
 
-        if (this.chunkBorderEnabled && !Minecraft.getMinecraft().isReducedDebug())
-        {
+        if (this.chunkBorderEnabled && !Minecraft.getMinecraft().isReducedDebug()) {
             this.chunkBorder.render(partialTicks, finishTimeNano);
         }
 
-        if (this.waterEnabled)
-        {
+        if (this.waterEnabled) {
             this.water.render(partialTicks, finishTimeNano);
         }
 
-        if (this.heightMapEnabled)
-        {
+        if (this.heightMapEnabled) {
             this.heightMap.render(partialTicks, finishTimeNano);
         }
 
-        if (this.collisionBoxEnabled)
-        {
+        if (this.collisionBoxEnabled) {
             this.collisionBox.render(partialTicks, finishTimeNano);
         }
 
-        if (this.neighborsUpdateEnabled)
-        {
+        if (this.neighborsUpdateEnabled) {
             this.neighborsUpdate.render(partialTicks, finishTimeNano);
         }
 
-        if (this.solidFaceEnabled)
-        {
+        if (this.solidFaceEnabled) {
             this.solidFace.render(partialTicks, finishTimeNano);
         }
     }
 
-    public static void renderDebugText(String str, int x, int y, int z, float partialTicks, int color)
-    {
-        renderDebugText(str, (double)x + 0.5D, (double)y + 0.5D, (double)z + 0.5D, partialTicks, color);
+    public static void renderDebugText(String str, int x, int y, int z, float partialTicks, int color) {
+        renderDebugText(str, (double) x + 0.5D, (double) y + 0.5D, (double) z + 0.5D, partialTicks, color);
     }
 
-    public static void renderDebugText(String str, double x, double y, double z, float partialTicks, int color)
-    {
+    public static void renderDebugText(String str, double x, double y, double z, float partialTicks, int color) {
         Minecraft minecraft = Minecraft.getMinecraft();
 
-        if (minecraft.player != null && minecraft.getRenderManager() != null && minecraft.getRenderManager().options != null)
-        {
+        if (minecraft.player != null && minecraft.getRenderManager() != null && minecraft.getRenderManager().options != null) {
             FontRenderer fontrenderer = minecraft.fontRenderer;
             EntityPlayer entityplayer = minecraft.player;
-            double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double)partialTicks;
-            double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double)partialTicks;
-            double d2 = entityplayer.lastTickPosZ + (entityplayer.posZ - entityplayer.lastTickPosZ) * (double)partialTicks;
+            double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double) partialTicks;
+            double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double) partialTicks;
+            double d2 = entityplayer.lastTickPosZ + (entityplayer.posZ - entityplayer.lastTickPosZ) * (double) partialTicks;
             GlStateManager.pushMatrix();
-            GlStateManager.translate((float)(x - d0), (float)(y - d1) + 0.07F, (float)(z - d2));
+            GlStateManager.translate((float) (x - d0), (float) (y - d1) + 0.07F, (float) (z - d2));
             GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
             GlStateManager.scale(0.02F, -0.02F, 0.02F);
             RenderManager rendermanager = minecraft.getRenderManager();
             GlStateManager.rotate(-rendermanager.playerViewY, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float)(rendermanager.options.thirdPersonView == 2 ? 1 : -1) * rendermanager.playerViewX, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate((float) (rendermanager.options.thirdPersonView == 2 ? 1 : -1) * rendermanager.playerViewX, 1.0F, 0.0F, 0.0F);
             GlStateManager.disableLighting();
             GlStateManager.enableTexture2D();
             GlStateManager.enableDepth();
@@ -122,8 +107,7 @@ public class DebugRenderer
     }
 
     @SideOnly(Side.CLIENT)
-    public interface IDebugRenderer
-    {
+    public interface IDebugRenderer {
         void render(float partialTicks, long finishTimeNano);
     }
 }

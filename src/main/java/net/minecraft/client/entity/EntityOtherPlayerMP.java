@@ -11,8 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class EntityOtherPlayerMP extends AbstractClientPlayer
-{
+public class EntityOtherPlayerMP extends AbstractClientPlayer {
     private int otherPlayerMPPosRotationIncrements;
     private double otherPlayerMPX;
     private double otherPlayerMPY;
@@ -20,20 +19,17 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
     private double otherPlayerMPYaw;
     private double otherPlayerMPPitch;
 
-    public EntityOtherPlayerMP(World worldIn, GameProfile gameProfileIn)
-    {
+    public EntityOtherPlayerMP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
         this.stepHeight = 1.0F;
         this.noClip = true;
         this.renderOffsetY = 0.25F;
     }
 
-    public boolean isInRangeToRenderDist(double distance)
-    {
+    public boolean isInRangeToRenderDist(double distance) {
         double d0 = this.getEntityBoundingBox().getAverageEdgeLength() * 10.0D;
 
-        if (Double.isNaN(d0))
-        {
+        if (Double.isNaN(d0)) {
             d0 = 1.0D;
         }
 
@@ -41,24 +37,21 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         return distance < d0 * d0;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount)
-    {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
         net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount);
         return true;
     }
 
-    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
-    {
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport) {
         this.otherPlayerMPX = x;
         this.otherPlayerMPY = y;
         this.otherPlayerMPZ = z;
-        this.otherPlayerMPYaw = (double)yaw;
-        this.otherPlayerMPPitch = (double)pitch;
+        this.otherPlayerMPYaw = (double) yaw;
+        this.otherPlayerMPPitch = (double) pitch;
         this.otherPlayerMPPosRotationIncrements = posRotationIncrements;
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         this.renderOffsetY = 0.0F;
         super.onUpdate();
         this.prevLimbSwingAmount = this.limbSwingAmount;
@@ -66,8 +59,7 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         double d1 = this.posZ - this.prevPosZ;
         float f = MathHelper.sqrt(d0 * d0 + d1 * d1) * 4.0F;
 
-        if (f > 1.0F)
-        {
+        if (f > 1.0F) {
             f = 1.0F;
         }
 
@@ -75,27 +67,23 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         this.limbSwing += this.limbSwingAmount;
     }
 
-    public void onLivingUpdate()
-    {
-        if (this.otherPlayerMPPosRotationIncrements > 0)
-        {
-            double d0 = this.posX + (this.otherPlayerMPX - this.posX) / (double)this.otherPlayerMPPosRotationIncrements;
-            double d1 = this.posY + (this.otherPlayerMPY - this.posY) / (double)this.otherPlayerMPPosRotationIncrements;
-            double d2 = this.posZ + (this.otherPlayerMPZ - this.posZ) / (double)this.otherPlayerMPPosRotationIncrements;
+    public void onLivingUpdate() {
+        if (this.otherPlayerMPPosRotationIncrements > 0) {
+            double d0 = this.posX + (this.otherPlayerMPX - this.posX) / (double) this.otherPlayerMPPosRotationIncrements;
+            double d1 = this.posY + (this.otherPlayerMPY - this.posY) / (double) this.otherPlayerMPPosRotationIncrements;
+            double d2 = this.posZ + (this.otherPlayerMPZ - this.posZ) / (double) this.otherPlayerMPPosRotationIncrements;
             double d3;
 
-            for (d3 = this.otherPlayerMPYaw - (double)this.rotationYaw; d3 < -180.0D; d3 += 360.0D)
-            {
+            for (d3 = this.otherPlayerMPYaw - (double) this.rotationYaw; d3 < -180.0D; d3 += 360.0D) {
                 ;
             }
 
-            while (d3 >= 180.0D)
-            {
+            while (d3 >= 180.0D) {
                 d3 -= 360.0D;
             }
 
-            this.rotationYaw = (float)((double)this.rotationYaw + d3 / (double)this.otherPlayerMPPosRotationIncrements);
-            this.rotationPitch = (float)((double)this.rotationPitch + (this.otherPlayerMPPitch - (double)this.rotationPitch) / (double)this.otherPlayerMPPosRotationIncrements);
+            this.rotationYaw = (float) ((double) this.rotationYaw + d3 / (double) this.otherPlayerMPPosRotationIncrements);
+            this.rotationPitch = (float) ((double) this.rotationPitch + (this.otherPlayerMPPitch - (double) this.rotationPitch) / (double) this.otherPlayerMPPosRotationIncrements);
             --this.otherPlayerMPPosRotationIncrements;
             this.setPosition(d0, d1, d2);
             this.setRotation(this.rotationYaw, this.rotationPitch);
@@ -104,20 +92,17 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         this.prevCameraYaw = this.cameraYaw;
         this.updateArmSwingProgress();
         float f1 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        float f = (float)Math.atan(-this.motionY * 0.20000000298023224D) * 15.0F;
+        float f = (float) Math.atan(-this.motionY * 0.20000000298023224D) * 15.0F;
 
-        if (f1 > 0.1F)
-        {
+        if (f1 > 0.1F) {
             f1 = 0.1F;
         }
 
-        if (!this.onGround || this.getHealth() <= 0.0F)
-        {
+        if (!this.onGround || this.getHealth() <= 0.0F) {
             f1 = 0.0F;
         }
 
-        if (this.onGround || this.getHealth() <= 0.0F)
-        {
+        if (this.onGround || this.getHealth() <= 0.0F) {
             f = 0.0F;
         }
 
@@ -128,18 +113,15 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         this.world.profiler.endSection();
     }
 
-    public void sendMessage(ITextComponent component)
-    {
+    public void sendMessage(ITextComponent component) {
         Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(component);
     }
 
-    public boolean canUseCommand(int permLevel, String commandName)
-    {
+    public boolean canUseCommand(int permLevel, String commandName) {
         return false;
     }
 
-    public BlockPos getPosition()
-    {
+    public BlockPos getPosition() {
         return new BlockPos(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D);
     }
 }

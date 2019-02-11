@@ -7,17 +7,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderBlaze extends RenderLiving<EntityBlaze>
-{
+public class RenderBlaze extends RenderLiving<EntityBlaze> {
     private static final ResourceLocation BLAZE_TEXTURES = new ResourceLocation("textures/entity/blaze.png");
 
-    public RenderBlaze(RenderManager renderManagerIn)
-    {
+    public RenderBlaze(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelBlaze(), 0.5F);
     }
 
-    protected ResourceLocation getEntityTexture(EntityBlaze entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityBlaze entity) {
         return BLAZE_TEXTURES;
     }
 }

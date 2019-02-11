@@ -1,6 +1,7 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
+
 import net.minecraft.inventory.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -9,8 +10,7 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
-{
+public class CPacketClickWindow implements Packet<INetHandlerPlayServer> {
     private int windowId;
     private int slotId;
     private int packedClickData;
@@ -18,13 +18,11 @@ public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
     private ItemStack clickedItem = ItemStack.EMPTY;
     private ClickType mode;
 
-    public CPacketClickWindow()
-    {
+    public CPacketClickWindow() {
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketClickWindow(int windowIdIn, int slotIdIn, int usedButtonIn, ClickType modeIn, ItemStack clickedItemIn, short actionNumberIn)
-    {
+    public CPacketClickWindow(int windowIdIn, int slotIdIn, int usedButtonIn, ClickType modeIn, ItemStack clickedItemIn, short actionNumberIn) {
         this.windowId = windowIdIn;
         this.slotId = slotIdIn;
         this.packedClickData = usedButtonIn;
@@ -33,23 +31,20 @@ public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
         this.mode = modeIn;
     }
 
-    public void processPacket(INetHandlerPlayServer handler)
-    {
+    public void processPacket(INetHandlerPlayServer handler) {
         handler.processClickWindow(this);
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.windowId = buf.readByte();
         this.slotId = buf.readShort();
         this.packedClickData = buf.readByte();
         this.actionNumber = buf.readShort();
-        this.mode = (ClickType)buf.readEnumValue(ClickType.class);
+        this.mode = (ClickType) buf.readEnumValue(ClickType.class);
         this.clickedItem = buf.readItemStack();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeByte(this.windowId);
         buf.writeShort(this.slotId);
         buf.writeByte(this.packedClickData);
@@ -58,33 +53,27 @@ public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
         net.minecraftforge.common.util.PacketUtil.writeItemStackFromClientToServer(buf, this.clickedItem);
     }
 
-    public int getWindowId()
-    {
+    public int getWindowId() {
         return this.windowId;
     }
 
-    public int getSlotId()
-    {
+    public int getSlotId() {
         return this.slotId;
     }
 
-    public int getUsedButton()
-    {
+    public int getUsedButton() {
         return this.packedClickData;
     }
 
-    public short getActionNumber()
-    {
+    public short getActionNumber() {
         return this.actionNumber;
     }
 
-    public ItemStack getClickedItem()
-    {
+    public ItemStack getClickedItem() {
         return this.clickedItem;
     }
 
-    public ClickType getClickType()
-    {
+    public ClickType getClickType() {
         return this.mode;
     }
 }

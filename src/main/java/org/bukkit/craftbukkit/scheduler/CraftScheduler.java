@@ -26,19 +26,19 @@ import org.bukkit.scheduler.BukkitWorker;
  * The fundamental concepts for this implementation:
  * <li>Main thread owns {@link #head} and {@link #currentTick}, but it may be read from any thread</li>
  * <li>Main thread exclusively controls {@link #temp} and {@link #pending}.
- *     They are never to be accessed outside of the main thread; alternatives exist to prevent locking.</li>
+ * They are never to be accessed outside of the main thread; alternatives exist to prevent locking.</li>
  * <li>{@link #head} to {@link #tail} act as a linked list/queue, with 1 consumer and infinite producers.
- *     Adding to the tail is atomic and very efficient; utility method is {@link #handle(CraftTask, long)} or {@link #addTask(CraftTask)}. </li>
+ * Adding to the tail is atomic and very efficient; utility method is {@link #handle(CraftTask, long)} or {@link #addTask(CraftTask)}. </li>
  * <li>Changing the period on a task is delicate.
- *     Any future task needs to notify waiting threads.
- *     Async tasks must be synchronized to make sure that any thread that's finishing will remove itself from {@link #runners}.
- *     Another utility method is provided for this, {@link #cancelTask(int)}</li>
+ * Any future task needs to notify waiting threads.
+ * Async tasks must be synchronized to make sure that any thread that's finishing will remove itself from {@link #runners}.
+ * Another utility method is provided for this, {@link #cancelTask(int)}</li>
  * <li>{@link #runners} provides a moderately up-to-date view of active tasks.
- *     If the linked head to tail set is read, all remaining tasks that were active at the time execution started will be located in runners.</li>
+ * If the linked head to tail set is read, all remaining tasks that were active at the time execution started will be located in runners.</li>
  * <li>Async tasks are responsible for removing themselves from runners</li>
  * <li>Sync tasks are only to be removed from runners on the main thread when coupled with a removal from pending and temp.</li>
  * <li>Most of the design in this scheduler relies on queuing special tasks to perform any data changes on the main thread.
- *     When executed from inside a synchronous method, the scheduler will be updated before next execution by virtue of the frequent {@link #parsePending()} calls.</li>
+ * When executed from inside a synchronous method, the scheduler will be updated before next execution by virtue of the frequent {@link #parsePending()} calls.</li>
  */
 public class CraftScheduler implements BukkitScheduler {
 
@@ -76,7 +76,12 @@ public class CraftScheduler implements BukkitScheduler {
     private final ConcurrentHashMap<Integer, CraftTask> runners = new ConcurrentHashMap<Integer, CraftTask>();
     private volatile int currentTick = -1;
     private final Executor executor = Executors.newCachedThreadPool();
-    private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
+    private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {
+        @Override
+        StringBuilder debugTo(StringBuilder string) {
+            return string;
+        }
+    };
     private CraftAsyncDebugger debugTail = debugHead;
     private static final int RECENT_TICKS;
 
@@ -175,6 +180,7 @@ public class CraftScheduler implements BukkitScheduler {
                             check(CraftScheduler.this.pending);
                         }
                     }
+
                     private boolean check(final Iterable<CraftTask> collection) {
                         final Iterator<CraftTask> tasks = collection.iterator();
                         while (tasks.hasNext()) {
@@ -189,7 +195,8 @@ public class CraftScheduler implements BukkitScheduler {
                             }
                         }
                         return false;
-                    }});
+                    }
+                });
         handle(task, 0L);
         for (CraftTask taskPending = head.getNext(); taskPending != null; taskPending = taskPending.getNext()) {
             if (taskPending == task) {
@@ -209,6 +216,7 @@ public class CraftScheduler implements BukkitScheduler {
                         check(CraftScheduler.this.pending);
                         check(CraftScheduler.this.temp);
                     }
+
                     void check(final Iterable<CraftTask> collection) {
                         final Iterator<CraftTask> tasks = collection.iterator();
                         while (tasks.hasNext()) {
@@ -356,9 +364,9 @@ public class CraftScheduler implements BukkitScheduler {
                     task.getOwner().getLogger().log(
                             Level.WARNING,
                             String.format(
-                                "Task #%s for %s generated an exception",
-                                task.getTaskId(),
-                                task.getOwner().getDescription().getFullName()),
+                                    "Task #%s for %s generated an exception",
+                                    task.getTaskId(),
+                                    task.getOwner().getDescription().getFullName()),
                             throwable);
                 }
                 parsePending();
@@ -423,8 +431,8 @@ public class CraftScheduler implements BukkitScheduler {
         // We split this because of the way things are ordered for all of the async calls in CraftScheduler
         // (it prevents race-conditions)
         for (task = head; task != lastTask; task = head) {
-           head = task.getNext();
-           task.setNext(null);
+            head = task.getNext();
+            task.setNext(null);
         }
         this.head = lastTask;
     }

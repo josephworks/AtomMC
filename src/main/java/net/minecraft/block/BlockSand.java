@@ -14,57 +14,46 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockSand extends BlockFalling
-{
+public class BlockSand extends BlockFalling {
     public static final PropertyEnum<EnumType> VARIANT = PropertyEnum.<EnumType>create("variant", EnumType.class);
 
-    public BlockSand()
-    {
+    public BlockSand() {
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, EnumType.SAND));
     }
 
-    public int damageDropped(IBlockState state)
-    {
-        return ((EnumType)state.getValue(VARIANT)).getMetadata();
+    public int damageDropped(IBlockState state) {
+        return ((EnumType) state.getValue(VARIANT)).getMetadata();
     }
 
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
-    {
-        for (EnumType blocksand$enumtype : EnumType.values())
-        {
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        for (EnumType blocksand$enumtype : EnumType.values()) {
             items.add(new ItemStack(this, 1, blocksand$enumtype.getMetadata()));
         }
     }
 
-    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
-        return ((EnumType)state.getValue(VARIANT)).getMapColor();
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        return ((EnumType) state.getValue(VARIANT)).getMapColor();
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(VARIANT, EnumType.byMetadata(meta));
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumType)state.getValue(VARIANT)).getMetadata();
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumType) state.getValue(VARIANT)).getMetadata();
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {VARIANT});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{VARIANT});
     }
 
     @SideOnly(Side.CLIENT)
-    public int getDustColor(IBlockState state)
-    {
-        EnumType blocksand$enumtype = (EnumType)state.getValue(VARIANT);
+    public int getDustColor(IBlockState state) {
+        EnumType blocksand$enumtype = (EnumType) state.getValue(VARIANT);
         return blocksand$enumtype.getDustColor();
     }
 
-    public static enum EnumType implements IStringSerializable
-    {
+    public static enum EnumType implements IStringSerializable {
         SAND(0, "sand", "default", MapColor.SAND, -2370656),
         RED_SAND(1, "red_sand", "red", MapColor.ADOBE, -5679071);
 
@@ -75,8 +64,7 @@ public class BlockSand extends BlockFalling
         private final String unlocalizedName;
         private final int dustColor;
 
-        private EnumType(int p_i47157_3_, String p_i47157_4_, String p_i47157_5_, MapColor p_i47157_6_, int p_i47157_7_)
-        {
+        private EnumType(int p_i47157_3_, String p_i47157_4_, String p_i47157_5_, MapColor p_i47157_6_, int p_i47157_7_) {
             this.meta = p_i47157_3_;
             this.name = p_i47157_4_;
             this.mapColor = p_i47157_6_;
@@ -85,50 +73,40 @@ public class BlockSand extends BlockFalling
         }
 
         @SideOnly(Side.CLIENT)
-        public int getDustColor()
-        {
+        public int getDustColor() {
             return this.dustColor;
         }
 
-        public int getMetadata()
-        {
+        public int getMetadata() {
             return this.meta;
         }
 
-        public String toString()
-        {
+        public String toString() {
             return this.name;
         }
 
-        public MapColor getMapColor()
-        {
+        public MapColor getMapColor() {
             return this.mapColor;
         }
 
-        public static EnumType byMetadata(int meta)
-        {
-            if (meta < 0 || meta >= META_LOOKUP.length)
-            {
+        public static EnumType byMetadata(int meta) {
+            if (meta < 0 || meta >= META_LOOKUP.length) {
                 meta = 0;
             }
 
             return META_LOOKUP[meta];
         }
 
-        public String getName()
-        {
+        public String getName() {
             return this.name;
         }
 
-        public String getUnlocalizedName()
-        {
+        public String getUnlocalizedName() {
             return this.unlocalizedName;
         }
 
-        static
-        {
-            for (EnumType blocksand$enumtype : values())
-            {
+        static {
+            for (EnumType blocksand$enumtype : values()) {
                 META_LOOKUP[blocksand$enumtype.getMetadata()] = blocksand$enumtype;
             }
         }

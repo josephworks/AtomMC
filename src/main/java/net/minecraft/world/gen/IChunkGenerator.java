@@ -2,14 +2,14 @@ package net.minecraft.world.gen;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
-public interface IChunkGenerator
-{
+public interface IChunkGenerator {
     Chunk generateChunk(int x, int z);
 
     void populate(int x, int z);

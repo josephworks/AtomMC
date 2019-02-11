@@ -6,8 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public enum EnumPlayerModelParts
-{
+public enum EnumPlayerModelParts {
     CAPE(0, "cape"),
     JACKET(1, "jacket"),
     LEFT_SLEEVE(2, "left_sleeve"),
@@ -21,31 +20,26 @@ public enum EnumPlayerModelParts
     private final String partName;
     private final ITextComponent name;
 
-    private EnumPlayerModelParts(int partIdIn, String partNameIn)
-    {
+    private EnumPlayerModelParts(int partIdIn, String partNameIn) {
         this.partId = partIdIn;
         this.partMask = 1 << partIdIn;
         this.partName = partNameIn;
         this.name = new TextComponentTranslation("options.modelPart." + partNameIn, new Object[0]);
     }
 
-    public int getPartMask()
-    {
+    public int getPartMask() {
         return this.partMask;
     }
 
-    public int getPartId()
-    {
+    public int getPartId() {
         return this.partId;
     }
 
-    public String getPartName()
-    {
+    public String getPartName() {
         return this.partName;
     }
 
-    public ITextComponent getName()
-    {
+    public ITextComponent getName() {
         return this.name;
     }
 }

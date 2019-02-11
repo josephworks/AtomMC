@@ -26,16 +26,13 @@ import java.security.Permission;
  * unexpectedly.
  *
  * @author cpw
- *
  */
 
 public class FMLSecurityManager extends SecurityManager {
     @Override
-    public void checkPermission(Permission perm)
-    {
+    public void checkPermission(Permission perm) {
         String permName = perm.getName() != null ? perm.getName() : "missing";
-        if (permName.startsWith("exitVM"))
-        {
+        if (permName.startsWith("exitVM")) {
             Class<?>[] classContexts = getClassContext();
             String callingClass = classContexts.length > 4 ? classContexts[4].getName() : "none";
             String callingParent = classContexts.length > 5 ? classContexts[5].getName() : "none";
@@ -43,25 +40,21 @@ public class FMLSecurityManager extends SecurityManager {
             if (!(callingClass.startsWith("net.minecraftforge.fml.")
                     || "net.minecraft.server.dedicated.ServerHangWatchdog$1".equals(callingClass)
                     || "net.minecraft.server.dedicated.ServerHangWatchdog".equals(callingClass)
-                    || ( "net.minecraft.client.Minecraft".equals(callingClass) && "net.minecraft.client.Minecraft".equals(callingParent))
+                    || ("net.minecraft.client.Minecraft".equals(callingClass) && "net.minecraft.client.Minecraft".equals(callingParent))
                     || ("net.minecraft.server.dedicated.DedicatedServer".equals(callingClass) && "net.minecraft.server.MinecraftServer".equals(callingParent))
                     || "com.intellij.rt.execution.junit.JUnitStarter".equals(callingClass) // JUnitStarter is needed for test running
                     || "worker.org.gradle.process.internal.worker.GradleWorkerMain".equals(callingClass)) // GradleWorkerMain is needed for test running from Gradle test task
-                    )
-            {
+            ) {
                 throw new ExitTrappedException();
             }
-        }
-        else if ("setSecurityManager".equals(permName))
-        {
+        } else if ("setSecurityManager".equals(permName)) {
             throw new SecurityException("Cannot replace the FML security manager");
         }
         return;
     }
 
     @Override
-    public void checkPermission(Permission perm, Object context)
-    {
+    public void checkPermission(Permission perm, Object context) {
         this.checkPermission(perm);
     }
 

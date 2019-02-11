@@ -20,7 +20,6 @@ package net.minecraftforge.common.util;
 
 import net.minecraft.util.datafix.IDataFixer;
 
-public interface IDataFixerData extends IDataFixer
-{
+public interface IDataFixerData extends IDataFixer {
     int getVersion(String mod);
 }

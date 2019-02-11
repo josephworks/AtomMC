@@ -1,8 +1,10 @@
 package net.minecraft.init;
 
 import com.google.common.collect.Sets;
+
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBeacon;
 import net.minecraft.block.BlockBush;
@@ -38,8 +40,7 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.util.ResourceLocation;
 
-public class Blocks
-{
+public class Blocks {
     private static final Set<Block> CACHE;
     public static final Block AIR;
     public static final Block STONE;
@@ -297,50 +298,42 @@ public class Blocks
     public static final Block STRUCTURE_BLOCK;
 
     @Nullable
-    private static Block getRegisteredBlock(String blockName)
-    {
+    private static Block getRegisteredBlock(String blockName) {
         Block block = Block.REGISTRY.getObject(new ResourceLocation(blockName));
 
-        if (!CACHE.add(block))
-        {
+        if (!CACHE.add(block)) {
             throw new IllegalStateException("Invalid Block requested: " + blockName);
-        }
-        else
-        {
+        } else {
             return block;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed Blocks before Bootstrap!");
-        }
-        else
-        {
+        } else {
             CACHE = Sets.<Block>newHashSet();
             AIR = getRegisteredBlock("air");
             STONE = getRegisteredBlock("stone");
-            GRASS = (BlockGrass)getRegisteredBlock("grass");
+            GRASS = (BlockGrass) getRegisteredBlock("grass");
             DIRT = getRegisteredBlock("dirt");
             COBBLESTONE = getRegisteredBlock("cobblestone");
             PLANKS = getRegisteredBlock("planks");
             SAPLING = getRegisteredBlock("sapling");
             BEDROCK = getRegisteredBlock("bedrock");
-            FLOWING_WATER = (BlockDynamicLiquid)getRegisteredBlock("flowing_water");
-            WATER = (BlockStaticLiquid)getRegisteredBlock("water");
-            FLOWING_LAVA = (BlockDynamicLiquid)getRegisteredBlock("flowing_lava");
-            LAVA = (BlockStaticLiquid)getRegisteredBlock("lava");
-            SAND = (BlockSand)getRegisteredBlock("sand");
+            FLOWING_WATER = (BlockDynamicLiquid) getRegisteredBlock("flowing_water");
+            WATER = (BlockStaticLiquid) getRegisteredBlock("water");
+            FLOWING_LAVA = (BlockDynamicLiquid) getRegisteredBlock("flowing_lava");
+            LAVA = (BlockStaticLiquid) getRegisteredBlock("lava");
+            SAND = (BlockSand) getRegisteredBlock("sand");
             GRAVEL = getRegisteredBlock("gravel");
             GOLD_ORE = getRegisteredBlock("gold_ore");
             IRON_ORE = getRegisteredBlock("iron_ore");
             COAL_ORE = getRegisteredBlock("coal_ore");
             LOG = getRegisteredBlock("log");
             LOG2 = getRegisteredBlock("log2");
-            LEAVES = (BlockLeaves)getRegisteredBlock("leaves");
-            LEAVES2 = (BlockLeaves)getRegisteredBlock("leaves2");
+            LEAVES = (BlockLeaves) getRegisteredBlock("leaves");
+            LEAVES2 = (BlockLeaves) getRegisteredBlock("leaves2");
             SPONGE = getRegisteredBlock("sponge");
             GLASS = getRegisteredBlock("glass");
             LAPIS_ORE = getRegisteredBlock("lapis_ore");
@@ -351,33 +344,33 @@ public class Blocks
             BED = getRegisteredBlock("bed");
             GOLDEN_RAIL = getRegisteredBlock("golden_rail");
             DETECTOR_RAIL = getRegisteredBlock("detector_rail");
-            STICKY_PISTON = (BlockPistonBase)getRegisteredBlock("sticky_piston");
+            STICKY_PISTON = (BlockPistonBase) getRegisteredBlock("sticky_piston");
             WEB = getRegisteredBlock("web");
-            TALLGRASS = (BlockTallGrass)getRegisteredBlock("tallgrass");
-            DEADBUSH = (BlockDeadBush)getRegisteredBlock("deadbush");
-            PISTON = (BlockPistonBase)getRegisteredBlock("piston");
-            PISTON_HEAD = (BlockPistonExtension)getRegisteredBlock("piston_head");
+            TALLGRASS = (BlockTallGrass) getRegisteredBlock("tallgrass");
+            DEADBUSH = (BlockDeadBush) getRegisteredBlock("deadbush");
+            PISTON = (BlockPistonBase) getRegisteredBlock("piston");
+            PISTON_HEAD = (BlockPistonExtension) getRegisteredBlock("piston_head");
             WOOL = getRegisteredBlock("wool");
-            PISTON_EXTENSION = (BlockPistonMoving)getRegisteredBlock("piston_extension");
-            YELLOW_FLOWER = (BlockFlower)getRegisteredBlock("yellow_flower");
-            RED_FLOWER = (BlockFlower)getRegisteredBlock("red_flower");
-            BROWN_MUSHROOM = (BlockBush)getRegisteredBlock("brown_mushroom");
-            RED_MUSHROOM = (BlockBush)getRegisteredBlock("red_mushroom");
+            PISTON_EXTENSION = (BlockPistonMoving) getRegisteredBlock("piston_extension");
+            YELLOW_FLOWER = (BlockFlower) getRegisteredBlock("yellow_flower");
+            RED_FLOWER = (BlockFlower) getRegisteredBlock("red_flower");
+            BROWN_MUSHROOM = (BlockBush) getRegisteredBlock("brown_mushroom");
+            RED_MUSHROOM = (BlockBush) getRegisteredBlock("red_mushroom");
             GOLD_BLOCK = getRegisteredBlock("gold_block");
             IRON_BLOCK = getRegisteredBlock("iron_block");
-            DOUBLE_STONE_SLAB = (BlockSlab)getRegisteredBlock("double_stone_slab");
-            STONE_SLAB = (BlockSlab)getRegisteredBlock("stone_slab");
+            DOUBLE_STONE_SLAB = (BlockSlab) getRegisteredBlock("double_stone_slab");
+            STONE_SLAB = (BlockSlab) getRegisteredBlock("stone_slab");
             BRICK_BLOCK = getRegisteredBlock("brick_block");
             TNT = getRegisteredBlock("tnt");
             BOOKSHELF = getRegisteredBlock("bookshelf");
             MOSSY_COBBLESTONE = getRegisteredBlock("mossy_cobblestone");
             OBSIDIAN = getRegisteredBlock("obsidian");
             TORCH = getRegisteredBlock("torch");
-            FIRE = (BlockFire)getRegisteredBlock("fire");
+            FIRE = (BlockFire) getRegisteredBlock("fire");
             MOB_SPAWNER = getRegisteredBlock("mob_spawner");
             OAK_STAIRS = getRegisteredBlock("oak_stairs");
-            CHEST = (BlockChest)getRegisteredBlock("chest");
-            REDSTONE_WIRE = (BlockRedstoneWire)getRegisteredBlock("redstone_wire");
+            CHEST = (BlockChest) getRegisteredBlock("chest");
+            REDSTONE_WIRE = (BlockRedstoneWire) getRegisteredBlock("redstone_wire");
             DIAMOND_ORE = getRegisteredBlock("diamond_ore");
             DIAMOND_BLOCK = getRegisteredBlock("diamond_block");
             CRAFTING_TABLE = getRegisteredBlock("crafting_table");
@@ -386,19 +379,19 @@ public class Blocks
             FURNACE = getRegisteredBlock("furnace");
             LIT_FURNACE = getRegisteredBlock("lit_furnace");
             STANDING_SIGN = getRegisteredBlock("standing_sign");
-            OAK_DOOR = (BlockDoor)getRegisteredBlock("wooden_door");
-            SPRUCE_DOOR = (BlockDoor)getRegisteredBlock("spruce_door");
-            BIRCH_DOOR = (BlockDoor)getRegisteredBlock("birch_door");
-            JUNGLE_DOOR = (BlockDoor)getRegisteredBlock("jungle_door");
-            ACACIA_DOOR = (BlockDoor)getRegisteredBlock("acacia_door");
-            DARK_OAK_DOOR = (BlockDoor)getRegisteredBlock("dark_oak_door");
+            OAK_DOOR = (BlockDoor) getRegisteredBlock("wooden_door");
+            SPRUCE_DOOR = (BlockDoor) getRegisteredBlock("spruce_door");
+            BIRCH_DOOR = (BlockDoor) getRegisteredBlock("birch_door");
+            JUNGLE_DOOR = (BlockDoor) getRegisteredBlock("jungle_door");
+            ACACIA_DOOR = (BlockDoor) getRegisteredBlock("acacia_door");
+            DARK_OAK_DOOR = (BlockDoor) getRegisteredBlock("dark_oak_door");
             LADDER = getRegisteredBlock("ladder");
             RAIL = getRegisteredBlock("rail");
             STONE_STAIRS = getRegisteredBlock("stone_stairs");
             WALL_SIGN = getRegisteredBlock("wall_sign");
             LEVER = getRegisteredBlock("lever");
             STONE_PRESSURE_PLATE = getRegisteredBlock("stone_pressure_plate");
-            IRON_DOOR = (BlockDoor)getRegisteredBlock("iron_door");
+            IRON_DOOR = (BlockDoor) getRegisteredBlock("iron_door");
             WOODEN_PRESSURE_PLATE = getRegisteredBlock("wooden_pressure_plate");
             REDSTONE_ORE = getRegisteredBlock("redstone_ore");
             LIT_REDSTONE_ORE = getRegisteredBlock("lit_redstone_ore");
@@ -408,9 +401,9 @@ public class Blocks
             SNOW_LAYER = getRegisteredBlock("snow_layer");
             ICE = getRegisteredBlock("ice");
             SNOW = getRegisteredBlock("snow");
-            CACTUS = (BlockCactus)getRegisteredBlock("cactus");
+            CACTUS = (BlockCactus) getRegisteredBlock("cactus");
             CLAY = getRegisteredBlock("clay");
-            REEDS = (BlockReed)getRegisteredBlock("reeds");
+            REEDS = (BlockReed) getRegisteredBlock("reeds");
             JUKEBOX = getRegisteredBlock("jukebox");
             OAK_FENCE = getRegisteredBlock("fence");
             SPRUCE_FENCE = getRegisteredBlock("spruce_fence");
@@ -422,11 +415,11 @@ public class Blocks
             NETHERRACK = getRegisteredBlock("netherrack");
             SOUL_SAND = getRegisteredBlock("soul_sand");
             GLOWSTONE = getRegisteredBlock("glowstone");
-            PORTAL = (BlockPortal)getRegisteredBlock("portal");
+            PORTAL = (BlockPortal) getRegisteredBlock("portal");
             LIT_PUMPKIN = getRegisteredBlock("lit_pumpkin");
             CAKE = getRegisteredBlock("cake");
-            UNPOWERED_REPEATER = (BlockRedstoneRepeater)getRegisteredBlock("unpowered_repeater");
-            POWERED_REPEATER = (BlockRedstoneRepeater)getRegisteredBlock("powered_repeater");
+            UNPOWERED_REPEATER = (BlockRedstoneRepeater) getRegisteredBlock("unpowered_repeater");
+            POWERED_REPEATER = (BlockRedstoneRepeater) getRegisteredBlock("powered_repeater");
             TRAPDOOR = getRegisteredBlock("trapdoor");
             MONSTER_EGG = getRegisteredBlock("monster_egg");
             STONEBRICK = getRegisteredBlock("stonebrick");
@@ -446,7 +439,7 @@ public class Blocks
             ACACIA_FENCE_GATE = getRegisteredBlock("acacia_fence_gate");
             BRICK_STAIRS = getRegisteredBlock("brick_stairs");
             STONE_BRICK_STAIRS = getRegisteredBlock("stone_brick_stairs");
-            MYCELIUM = (BlockMycelium)getRegisteredBlock("mycelium");
+            MYCELIUM = (BlockMycelium) getRegisteredBlock("mycelium");
             WATERLILY = getRegisteredBlock("waterlily");
             NETHER_BRICK = getRegisteredBlock("nether_brick");
             NETHER_BRICK_FENCE = getRegisteredBlock("nether_brick_fence");
@@ -454,44 +447,44 @@ public class Blocks
             NETHER_WART = getRegisteredBlock("nether_wart");
             ENCHANTING_TABLE = getRegisteredBlock("enchanting_table");
             BREWING_STAND = getRegisteredBlock("brewing_stand");
-            CAULDRON = (BlockCauldron)getRegisteredBlock("cauldron");
+            CAULDRON = (BlockCauldron) getRegisteredBlock("cauldron");
             END_PORTAL = getRegisteredBlock("end_portal");
             END_PORTAL_FRAME = getRegisteredBlock("end_portal_frame");
             END_STONE = getRegisteredBlock("end_stone");
             DRAGON_EGG = getRegisteredBlock("dragon_egg");
             REDSTONE_LAMP = getRegisteredBlock("redstone_lamp");
             LIT_REDSTONE_LAMP = getRegisteredBlock("lit_redstone_lamp");
-            DOUBLE_WOODEN_SLAB = (BlockSlab)getRegisteredBlock("double_wooden_slab");
-            WOODEN_SLAB = (BlockSlab)getRegisteredBlock("wooden_slab");
+            DOUBLE_WOODEN_SLAB = (BlockSlab) getRegisteredBlock("double_wooden_slab");
+            WOODEN_SLAB = (BlockSlab) getRegisteredBlock("wooden_slab");
             COCOA = getRegisteredBlock("cocoa");
             SANDSTONE_STAIRS = getRegisteredBlock("sandstone_stairs");
             EMERALD_ORE = getRegisteredBlock("emerald_ore");
             ENDER_CHEST = getRegisteredBlock("ender_chest");
-            TRIPWIRE_HOOK = (BlockTripWireHook)getRegisteredBlock("tripwire_hook");
+            TRIPWIRE_HOOK = (BlockTripWireHook) getRegisteredBlock("tripwire_hook");
             TRIPWIRE = getRegisteredBlock("tripwire");
             EMERALD_BLOCK = getRegisteredBlock("emerald_block");
             SPRUCE_STAIRS = getRegisteredBlock("spruce_stairs");
             BIRCH_STAIRS = getRegisteredBlock("birch_stairs");
             JUNGLE_STAIRS = getRegisteredBlock("jungle_stairs");
             COMMAND_BLOCK = getRegisteredBlock("command_block");
-            BEACON = (BlockBeacon)getRegisteredBlock("beacon");
+            BEACON = (BlockBeacon) getRegisteredBlock("beacon");
             COBBLESTONE_WALL = getRegisteredBlock("cobblestone_wall");
             FLOWER_POT = getRegisteredBlock("flower_pot");
             CARROTS = getRegisteredBlock("carrots");
             POTATOES = getRegisteredBlock("potatoes");
             WOODEN_BUTTON = getRegisteredBlock("wooden_button");
-            SKULL = (BlockSkull)getRegisteredBlock("skull");
+            SKULL = (BlockSkull) getRegisteredBlock("skull");
             ANVIL = getRegisteredBlock("anvil");
             TRAPPED_CHEST = getRegisteredBlock("trapped_chest");
             LIGHT_WEIGHTED_PRESSURE_PLATE = getRegisteredBlock("light_weighted_pressure_plate");
             HEAVY_WEIGHTED_PRESSURE_PLATE = getRegisteredBlock("heavy_weighted_pressure_plate");
-            UNPOWERED_COMPARATOR = (BlockRedstoneComparator)getRegisteredBlock("unpowered_comparator");
-            POWERED_COMPARATOR = (BlockRedstoneComparator)getRegisteredBlock("powered_comparator");
-            DAYLIGHT_DETECTOR = (BlockDaylightDetector)getRegisteredBlock("daylight_detector");
-            DAYLIGHT_DETECTOR_INVERTED = (BlockDaylightDetector)getRegisteredBlock("daylight_detector_inverted");
+            UNPOWERED_COMPARATOR = (BlockRedstoneComparator) getRegisteredBlock("unpowered_comparator");
+            POWERED_COMPARATOR = (BlockRedstoneComparator) getRegisteredBlock("powered_comparator");
+            DAYLIGHT_DETECTOR = (BlockDaylightDetector) getRegisteredBlock("daylight_detector");
+            DAYLIGHT_DETECTOR_INVERTED = (BlockDaylightDetector) getRegisteredBlock("daylight_detector_inverted");
             REDSTONE_BLOCK = getRegisteredBlock("redstone_block");
             QUARTZ_ORE = getRegisteredBlock("quartz_ore");
-            HOPPER = (BlockHopper)getRegisteredBlock("hopper");
+            HOPPER = (BlockHopper) getRegisteredBlock("hopper");
             QUARTZ_BLOCK = getRegisteredBlock("quartz_block");
             QUARTZ_STAIRS = getRegisteredBlock("quartz_stairs");
             ACTIVATOR_RAIL = getRegisteredBlock("activator_rail");
@@ -507,25 +500,25 @@ public class Blocks
             ACACIA_STAIRS = getRegisteredBlock("acacia_stairs");
             DARK_OAK_STAIRS = getRegisteredBlock("dark_oak_stairs");
             SLIME_BLOCK = getRegisteredBlock("slime");
-            DOUBLE_PLANT = (BlockDoublePlant)getRegisteredBlock("double_plant");
-            STAINED_GLASS = (BlockStainedGlass)getRegisteredBlock("stained_glass");
-            STAINED_GLASS_PANE = (BlockStainedGlassPane)getRegisteredBlock("stained_glass_pane");
+            DOUBLE_PLANT = (BlockDoublePlant) getRegisteredBlock("double_plant");
+            STAINED_GLASS = (BlockStainedGlass) getRegisteredBlock("stained_glass");
+            STAINED_GLASS_PANE = (BlockStainedGlassPane) getRegisteredBlock("stained_glass_pane");
             PRISMARINE = getRegisteredBlock("prismarine");
             SEA_LANTERN = getRegisteredBlock("sea_lantern");
             STANDING_BANNER = getRegisteredBlock("standing_banner");
             WALL_BANNER = getRegisteredBlock("wall_banner");
             RED_SANDSTONE = getRegisteredBlock("red_sandstone");
             RED_SANDSTONE_STAIRS = getRegisteredBlock("red_sandstone_stairs");
-            DOUBLE_STONE_SLAB2 = (BlockSlab)getRegisteredBlock("double_stone_slab2");
-            STONE_SLAB2 = (BlockSlab)getRegisteredBlock("stone_slab2");
+            DOUBLE_STONE_SLAB2 = (BlockSlab) getRegisteredBlock("double_stone_slab2");
+            STONE_SLAB2 = (BlockSlab) getRegisteredBlock("stone_slab2");
             END_ROD = getRegisteredBlock("end_rod");
             CHORUS_PLANT = getRegisteredBlock("chorus_plant");
             CHORUS_FLOWER = getRegisteredBlock("chorus_flower");
             PURPUR_BLOCK = getRegisteredBlock("purpur_block");
             PURPUR_PILLAR = getRegisteredBlock("purpur_pillar");
             PURPUR_STAIRS = getRegisteredBlock("purpur_stairs");
-            PURPUR_DOUBLE_SLAB = (BlockSlab)getRegisteredBlock("purpur_double_slab");
-            PURPUR_SLAB = (BlockSlab)getRegisteredBlock("purpur_slab");
+            PURPUR_DOUBLE_SLAB = (BlockSlab) getRegisteredBlock("purpur_double_slab");
+            PURPUR_SLAB = (BlockSlab) getRegisteredBlock("purpur_slab");
             END_BRICKS = getRegisteredBlock("end_bricks");
             BEETROOTS = getRegisteredBlock("beetroots");
             GRASS_PATH = getRegisteredBlock("grass_path");

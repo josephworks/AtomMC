@@ -15,126 +15,97 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
+
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
 
-public class CompressedStreamTools
-{
-    public static NBTTagCompound readCompressed(InputStream is) throws IOException
-    {
+public class CompressedStreamTools {
+    public static NBTTagCompound readCompressed(InputStream is) throws IOException {
         DataInputStream datainputstream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(is)));
         NBTTagCompound nbttagcompound;
 
-        try
-        {
+        try {
             nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
-        }
-        finally
-        {
+        } finally {
             datainputstream.close();
         }
 
         return nbttagcompound;
     }
 
-    public static void writeCompressed(NBTTagCompound compound, OutputStream outputStream) throws IOException
-    {
+    public static void writeCompressed(NBTTagCompound compound, OutputStream outputStream) throws IOException {
         DataOutputStream dataoutputstream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));
 
-        try
-        {
+        try {
             write(compound, dataoutputstream);
-        }
-        finally
-        {
+        } finally {
             dataoutputstream.close();
         }
     }
 
-    public static void safeWrite(NBTTagCompound compound, File fileIn) throws IOException
-    {
+    public static void safeWrite(NBTTagCompound compound, File fileIn) throws IOException {
         File file1 = new File(fileIn.getAbsolutePath() + "_tmp");
 
-        if (file1.exists())
-        {
+        if (file1.exists()) {
             file1.delete();
         }
 
         write(compound, file1);
 
-        if (fileIn.exists())
-        {
+        if (fileIn.exists()) {
             fileIn.delete();
         }
 
-        if (fileIn.exists())
-        {
+        if (fileIn.exists()) {
             throw new IOException("Failed to delete " + fileIn);
-        }
-        else
-        {
+        } else {
             file1.renameTo(fileIn);
         }
     }
 
-    public static NBTTagCompound read(DataInputStream inputStream) throws IOException
-    {
+    public static NBTTagCompound read(DataInputStream inputStream) throws IOException {
         return read(inputStream, NBTSizeTracker.INFINITE);
     }
 
-    public static NBTTagCompound read(DataInput input, NBTSizeTracker accounter) throws IOException
-    {
+    public static NBTTagCompound read(DataInput input, NBTSizeTracker accounter) throws IOException {
         NBTBase nbtbase = read(input, 0, accounter);
 
-        if (nbtbase instanceof NBTTagCompound)
-        {
-            return (NBTTagCompound)nbtbase;
-        }
-        else
-        {
+        if (nbtbase instanceof NBTTagCompound) {
+            return (NBTTagCompound) nbtbase;
+        } else {
             throw new IOException("Root tag must be a named compound tag");
         }
     }
 
-    public static void write(NBTTagCompound compound, DataOutput output) throws IOException
-    {
+    public static void write(NBTTagCompound compound, DataOutput output) throws IOException {
         writeTag(compound, output);
     }
 
-    private static void writeTag(NBTBase tag, DataOutput output) throws IOException
-    {
+    private static void writeTag(NBTBase tag, DataOutput output) throws IOException {
         output.writeByte(tag.getId());
 
-        if (tag.getId() != 0)
-        {
+        if (tag.getId() != 0) {
             output.writeUTF("");
             tag.write(output);
         }
     }
 
-    private static NBTBase read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException
-    {
+    private static NBTBase read(DataInput input, int depth, NBTSizeTracker accounter) throws IOException {
         byte b0 = input.readByte();
         accounter.read(8); // Forge: Count everything!
 
-        if (b0 == 0)
-        {
+        if (b0 == 0) {
             return new NBTTagEnd();
-        }
-        else
-        {
+        } else {
             NBTSizeTracker.readUTF(accounter, input.readUTF()); //Forge: Count this string.
             accounter.read(32); //Forge: 4 extra bytes for the object allocation.
             NBTBase nbtbase = NBTBase.createNewByType(b0);
 
-            try
-            {
+            try {
                 nbtbase.read(input, depth, accounter);
                 return nbtbase;
-            }
-            catch (IOException ioexception)
-            {
+            } catch (IOException ioexception) {
                 CrashReport crashreport = CrashReport.makeCrashReport(ioexception, "Loading NBT data");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("NBT Tag");
                 crashreportcategory.addCrashSection("Tag type", Byte.valueOf(b0));
@@ -143,38 +114,27 @@ public class CompressedStreamTools
         }
     }
 
-    public static void write(NBTTagCompound compound, File fileIn) throws IOException
-    {
+    public static void write(NBTTagCompound compound, File fileIn) throws IOException {
         DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(fileIn));
 
-        try
-        {
+        try {
             write(compound, dataoutputstream);
-        }
-        finally
-        {
+        } finally {
             dataoutputstream.close();
         }
     }
 
     @Nullable
-    public static NBTTagCompound read(File fileIn) throws IOException
-    {
-        if (!fileIn.exists())
-        {
+    public static NBTTagCompound read(File fileIn) throws IOException {
+        if (!fileIn.exists()) {
             return null;
-        }
-        else
-        {
+        } else {
             DataInputStream datainputstream = new DataInputStream(new FileInputStream(fileIn));
             NBTTagCompound nbttagcompound;
 
-            try
-            {
+            try {
                 nbttagcompound = read(datainputstream, NBTSizeTracker.INFINITE);
-            }
-            finally
-            {
+            } finally {
                 datainputstream.close();
             }
 

@@ -45,56 +45,50 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
 
-public class BlockEvent extends Event
-{
+public class BlockEvent extends Event {
     private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("forge.debugBlockEvent", "false"));
 
     private final World world;
     private final BlockPos pos;
     private final IBlockState state;
-    public BlockEvent(World world, BlockPos pos, IBlockState state)
-    {
+
+    public BlockEvent(World world, BlockPos pos, IBlockState state) {
         this.pos = pos;
         this.world = world;
         this.state = state;
     }
 
-    public World getWorld()
-    {
+    public World getWorld() {
         return world;
     }
 
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return pos;
     }
 
-    public IBlockState getState()
-    {
+    public IBlockState getState() {
         return state;
     }
 
     /**
      * Fired when a block is about to drop it's harvested items. The {@link #drops} array can be amended, as can the {@link #dropChance}.
      * <strong>Note well:</strong> the {@link #harvester} player field is null in a variety of scenarios. Code expecting null.
-     *
+     * <p>
      * The {@link #dropChance} is used to determine which items in this array will actually drop, compared to a random number. If you wish, you
      * can pre-filter yourself, and set {@link #dropChance} to 1.0f to always drop the contents of the {@link #drops} array.
-     *
+     * <p>
      * {@link #isSilkTouching} is set if this is considered a silk touch harvesting operation, vs a normal harvesting operation. Act accordingly.
      *
      * @author cpw
      */
-    public static class HarvestDropsEvent extends BlockEvent
-    {
+    public static class HarvestDropsEvent extends BlockEvent {
         private final int fortuneLevel;
         private final List<ItemStack> drops;
         private final boolean isSilkTouching;
         private float dropChance; // Change to e.g. 1.0f, if you manipulate the list and want to guarantee it always drops
         private final EntityPlayer harvester; // May be null for non-player harvesting such as explosions or machines
 
-        public HarvestDropsEvent(World world, BlockPos pos, IBlockState state, int fortuneLevel, float dropChance, List<ItemStack> drops, EntityPlayer harvester, boolean isSilkTouching)
-        {
+        public HarvestDropsEvent(World world, BlockPos pos, IBlockState state, int fortuneLevel, float dropChance, List<ItemStack> drops, EntityPlayer harvester, boolean isSilkTouching) {
             super(world, pos, state);
             this.fortuneLevel = fortuneLevel;
             this.setDropChance(dropChance);
@@ -103,12 +97,29 @@ public class BlockEvent extends Event
             this.harvester = harvester;
         }
 
-        public int getFortuneLevel() { return fortuneLevel; }
-        public List<ItemStack> getDrops() { return drops; }
-        public boolean isSilkTouching() { return isSilkTouching; }
-        public float getDropChance() { return dropChance; }
-        public void setDropChance(float dropChance) { this.dropChance = dropChance; }
-        public EntityPlayer getHarvester() { return harvester; }
+        public int getFortuneLevel() {
+            return fortuneLevel;
+        }
+
+        public List<ItemStack> getDrops() {
+            return drops;
+        }
+
+        public boolean isSilkTouching() {
+            return isSilkTouching;
+        }
+
+        public float getDropChance() {
+            return dropChance;
+        }
+
+        public void setDropChance(float dropChance) {
+            this.dropChance = dropChance;
+        }
+
+        public EntityPlayer getHarvester() {
+            return harvester;
+        }
     }
 
     /**
@@ -116,31 +127,28 @@ public class BlockEvent extends Event
      * Canceling this event will prevent the Block from being broken.
      */
     @Cancelable
-    public static class BreakEvent extends BlockEvent
-    {
-        /** Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer */
+    public static class BreakEvent extends BlockEvent {
+        /**
+         * Reference to the Player who broke the block. If no player is available, use a EntityFakePlayer
+         */
         private final EntityPlayer player;
         private int exp;
 
-        public BreakEvent(World world, BlockPos pos, IBlockState state, EntityPlayer player)
-        {
+        public BreakEvent(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
             super(world, pos, state);
             this.player = player;
 
             if (state == null || !ForgeHooks.canHarvestBlock(state.getBlock(), player, world, pos) || // Handle empty block or player unable to break block scenario
-                (state.getBlock().canSilkHarvest(world, pos, world.getBlockState(pos), player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, player.getHeldItemMainhand()) > 0)) // If the block is being silk harvested, the exp dropped is 0
+                    (state.getBlock().canSilkHarvest(world, pos, world.getBlockState(pos), player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, player.getHeldItemMainhand()) > 0)) // If the block is being silk harvested, the exp dropped is 0
             {
                 this.exp = 0;
-            }
-            else
-            {
+            } else {
                 int bonusLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, player.getHeldItemMainhand());
                 this.exp = state.getBlock().getExpDrop(state, world, pos, bonusLevel);
             }
         }
 
-        public EntityPlayer getPlayer()
-        {
+        public EntityPlayer getPlayer() {
             return player;
         }
 
@@ -149,8 +157,7 @@ public class BlockEvent extends Event
          *
          * @return The experience to drop or 0 if the event was canceled
          */
-        public int getExpToDrop()
-        {
+        public int getExpToDrop() {
             return this.isCanceled() ? 0 : exp;
         }
 
@@ -159,20 +166,18 @@ public class BlockEvent extends Event
          *
          * @param exp 1 or higher to drop experience, else nothing will drop
          */
-        public void setExpToDrop(int exp)
-        {
+        public void setExpToDrop(int exp) {
             this.exp = exp;
         }
     }
 
     /**
      * Called when a block is placed by a player.
-     *
+     * <p>
      * If a Block Place event is cancelled, the block will not be placed.
      */
     @Cancelable
-    public static class PlaceEvent extends BlockEvent
-    {
+    public static class PlaceEvent extends BlockEvent {
         private final EntityPlayer player;
         private final BlockSnapshot blockSnapshot;
         private final IBlockState placedBlock;
@@ -186,20 +191,36 @@ public class BlockEvent extends Event
             this.placedBlock = blockSnapshot.getCurrentBlock();
             this.placedAgainst = placedAgainst;
             this.hand = hand;
-            if (DEBUG)
-            {
+            if (DEBUG) {
                 System.out.printf("Created PlaceEvent - [PlacedBlock: %s ][PlacedAgainst: %s ][ItemStack: %s ][Player: %s ][Hand: %s]\n", getPlacedBlock(), placedAgainst, player.getHeldItem(hand), player, hand);
             }
         }
 
-        public EntityPlayer getPlayer() { return player; }
+        public EntityPlayer getPlayer() {
+            return player;
+        }
+
         @Nonnull
         @Deprecated
-        public ItemStack getItemInHand() { return player.getHeldItem(hand); }
-        public BlockSnapshot getBlockSnapshot() { return blockSnapshot; }
-        public IBlockState getPlacedBlock() { return placedBlock; }
-        public IBlockState getPlacedAgainst() { return placedAgainst; }
-        public EnumHand getHand() { return hand; }
+        public ItemStack getItemInHand() {
+            return player.getHeldItem(hand);
+        }
+
+        public BlockSnapshot getBlockSnapshot() {
+            return blockSnapshot;
+        }
+
+        public IBlockState getPlacedBlock() {
+            return placedBlock;
+        }
+
+        public IBlockState getPlacedAgainst() {
+            return placedAgainst;
+        }
+
+        public EnumHand getHand() {
+            return hand;
+        }
     }
 
     /**
@@ -210,15 +231,13 @@ public class BlockEvent extends Event
      * block.
      */
     @Cancelable
-    public static class MultiPlaceEvent extends PlaceEvent
-    {
+    public static class MultiPlaceEvent extends PlaceEvent {
         private final List<BlockSnapshot> blockSnapshots;
 
         public MultiPlaceEvent(@Nonnull List<BlockSnapshot> blockSnapshots, @Nonnull IBlockState placedAgainst, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
             super(blockSnapshots.get(0), placedAgainst, player, hand);
             this.blockSnapshots = ImmutableList.copyOf(blockSnapshots);
-            if (DEBUG)
-            {
+            if (DEBUG) {
                 System.out.printf("Created MultiPlaceEvent - [PlacedAgainst: %s ][ItemInHand: %s ][Player: %s ]\n", placedAgainst, player.getHeldItem(hand), player);
             }
         }
@@ -229,8 +248,7 @@ public class BlockEvent extends Event
          *
          * @return immutable list of replaced BlockSnapshots
          */
-        public List<BlockSnapshot> getReplacedBlockSnapshots()
-        {
+        public List<BlockSnapshot> getReplacedBlockSnapshots() {
             return blockSnapshots;
         }
     }
@@ -241,13 +259,11 @@ public class BlockEvent extends Event
      * does. This event is only called on the server.
      */
     @Cancelable
-    public static class NeighborNotifyEvent extends BlockEvent
-    {
+    public static class NeighborNotifyEvent extends BlockEvent {
         private final EnumSet<EnumFacing> notifiedSides;
         private final boolean forceRedstoneUpdate;
 
-        public NeighborNotifyEvent(World world, BlockPos pos, IBlockState state, EnumSet<EnumFacing> notifiedSides, boolean forceRedstoneUpdate)
-        {
+        public NeighborNotifyEvent(World world, BlockPos pos, IBlockState state, EnumSet<EnumFacing> notifiedSides, boolean forceRedstoneUpdate) {
             super(world, pos, state);
             this.notifiedSides = notifiedSides;
             this.forceRedstoneUpdate = forceRedstoneUpdate;
@@ -258,17 +274,16 @@ public class BlockEvent extends Event
          *
          * @return list of notified directions
          */
-        public EnumSet<EnumFacing> getNotifiedSides()
-        {
+        public EnumSet<EnumFacing> getNotifiedSides() {
             return notifiedSides;
         }
 
         /**
          * Get if redstone update was forced during setBlock call (0x16 to flags)
+         *
          * @return if the flag was set
          */
-        public boolean getForceRedstoneUpdate()
-        {
+        public boolean getForceRedstoneUpdate() {
             return forceRedstoneUpdate;
         }
     }
@@ -280,10 +295,8 @@ public class BlockEvent extends Event
      * even if the liquid usually does do that (like water).
      */
     @HasResult
-    public static class CreateFluidSourceEvent extends BlockEvent
-    {
-        public CreateFluidSourceEvent(World world, BlockPos pos, IBlockState state)
-        {
+    public static class CreateFluidSourceEvent extends BlockEvent {
+        public CreateFluidSourceEvent(World world, BlockPos pos, IBlockState state) {
             super(world, pos, state);
         }
     }
@@ -292,19 +305,17 @@ public class BlockEvent extends Event
      * Fired when a liquid places a block. Use {@link #setNewState(IBlockState)} to change the result of
      * a cobblestone generator or add variants of obsidian. Alternatively, you  could execute
      * arbitrary code when lava sets blocks on fire, even preventing it.
-     *
+     * <p>
      * {@link #getState()} will return the block that was originally going to be placed.
      * {@link #getPos()} will return the position of the block to be changed.
      */
     @Cancelable
-    public static class FluidPlaceBlockEvent extends BlockEvent
-    {
+    public static class FluidPlaceBlockEvent extends BlockEvent {
         private final BlockPos liquidPos;
         private IBlockState newState;
         private IBlockState origState;
 
-        public FluidPlaceBlockEvent(World world, BlockPos pos, BlockPos liquidPos, IBlockState state)
-        {
+        public FluidPlaceBlockEvent(World world, BlockPos pos, BlockPos liquidPos, IBlockState state) {
             super(world, pos, state);
             this.liquidPos = liquidPos;
             this.newState = state;
@@ -314,41 +325,34 @@ public class BlockEvent extends Event
         /**
          * @return The position of the liquid this event originated from. This may be the same as {@link #getPos()}.
          */
-        public BlockPos getLiquidPos()
-        {
+        public BlockPos getLiquidPos() {
             return liquidPos;
         }
 
         /**
          * @return The block state that will be placed after this event resolves.
          */
-        public IBlockState getNewState()
-        {
+        public IBlockState getNewState() {
             return newState;
         }
 
-        public void setNewState(IBlockState state)
-        {
+        public void setNewState(IBlockState state) {
             this.newState = state;
         }
 
         /**
          * @return The state of the block to be changed before the event was fired.
          */
-        public IBlockState getOriginalState()
-        {
+        public IBlockState getOriginalState() {
             return origState;
         }
     }
 
     /**
      * Fired when a crop block grows.  See subevents.
-     *
      */
-    public static class CropGrowEvent extends BlockEvent
-    {
-        public CropGrowEvent(World world, BlockPos pos, IBlockState state)
-        {
+    public static class CropGrowEvent extends BlockEvent {
+        public CropGrowEvent(World world, BlockPos pos, IBlockState state) {
             super(world, pos, state);
         }
 
@@ -364,10 +368,8 @@ public class BlockEvent extends Event
          * <br>
          */
         @HasResult
-        public static class Pre extends CropGrowEvent
-        {
-            public Pre(World world, BlockPos pos, IBlockState state)
-            {
+        public static class Pre extends CropGrowEvent {
+            public Pre(World world, BlockPos pos, IBlockState state) {
                 super(world, pos, state);
             }
         }
@@ -381,17 +383,15 @@ public class BlockEvent extends Event
          * <br>
          * This event does not have a result. {@link HasResult}<br>
          */
-        public static class Post extends CropGrowEvent
-        {
+        public static class Post extends CropGrowEvent {
             private final IBlockState originalState;
-            public Post(World world, BlockPos pos, IBlockState original, IBlockState state)
-            {
+
+            public Post(World world, BlockPos pos, IBlockState original, IBlockState state) {
                 super(world, pos, state);
                 originalState = original;
             }
 
-            public IBlockState getOriginalState()
-            {
+            public IBlockState getOriginalState() {
                 return originalState;
             }
         }
@@ -402,14 +402,12 @@ public class BlockEvent extends Event
      * This event is {@link Cancelable}
      */
     @Cancelable
-    public static class FarmlandTrampleEvent extends BlockEvent
-    {
+    public static class FarmlandTrampleEvent extends BlockEvent {
 
         private final Entity entity;
         private final float fallDistance;
 
-        public FarmlandTrampleEvent(World world, BlockPos pos, IBlockState state, float fallDistance, Entity entity)
-        {
+        public FarmlandTrampleEvent(World world, BlockPos pos, IBlockState state, float fallDistance, Entity entity) {
             super(world, pos, state);
             this.entity = entity;
             this.fallDistance = fallDistance;
@@ -431,16 +429,15 @@ public class BlockEvent extends Event
      * If cancelled, the portal will not be spawned.
      */
     @Cancelable
-    public static class PortalSpawnEvent extends BlockEvent
-    {
+    public static class PortalSpawnEvent extends BlockEvent {
         private final BlockPortal.Size size;
-        public PortalSpawnEvent(World world, BlockPos pos, IBlockState state, BlockPortal.Size size)
-        {
+
+        public PortalSpawnEvent(World world, BlockPos pos, IBlockState state, BlockPortal.Size size) {
             super(world, pos, state);
             this.size = size;
         }
-        public BlockPortal.Size getPortalSize()
-        {
+
+        public BlockPortal.Size getPortalSize() {
             return size;
         }
     }

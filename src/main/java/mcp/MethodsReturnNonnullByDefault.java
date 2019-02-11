@@ -1,4 +1,5 @@
 package mcp;
+
 import javax.annotation.Nonnull;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -17,10 +18,11 @@ import javax.annotation.meta.TypeQualifierDefault;
  * <li> there is a default parameter annotation applied to a more tightly nested
  * element.
  * </ul>
- *
  */
 @Documented
 @Nonnull
-@TypeQualifierDefault(ElementType.METHOD) // Note: This is a copy of javax.annotation.ParametersAreNonnullByDefault with target changed to METHOD
+@TypeQualifierDefault(ElementType.METHOD)
+// Note: This is a copy of javax.annotation.ParametersAreNonnullByDefault with target changed to METHOD
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MethodsReturnNonnullByDefault {}
+public @interface MethodsReturnNonnullByDefault {
+}

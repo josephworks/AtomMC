@@ -1,6 +1,6 @@
 {
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "items/record_mellohi"
-    }
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "items/record_mellohi"
+  }
 }

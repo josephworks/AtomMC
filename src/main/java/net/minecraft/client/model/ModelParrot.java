@@ -8,8 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelParrot extends ModelBase
-{
+public class ModelParrot extends ModelBase {
     ModelRenderer body;
     ModelRenderer tail;
     ModelRenderer wingLeft;
@@ -23,8 +22,7 @@ public class ModelParrot extends ModelBase
     ModelRenderer legRight;
     private State state = State.STANDING;
 
-    public ModelParrot()
-    {
+    public ModelParrot() {
         this.textureWidth = 32;
         this.textureHeight = 32;
         this.body = new ModelRenderer(this, 2, 8);
@@ -66,8 +64,7 @@ public class ModelParrot extends ModelBase
         this.legRight.setRotationPoint(-1.0F, 22.0F, -1.05F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.body.render(scale);
         this.wingLeft.render(scale);
         this.wingRight.render(scale);
@@ -77,8 +74,7 @@ public class ModelParrot extends ModelBase
         this.legRight.render(scale);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         float f = ageInTicks * 0.3F;
         this.head.rotateAngleX = headPitch * 0.017453292F;
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
@@ -89,22 +85,19 @@ public class ModelParrot extends ModelBase
         this.wingRight.rotationPointX = -1.5F;
         this.wingLeft.rotationPointX = 1.5F;
 
-        if (this.state != State.FLYING)
-        {
-            if (this.state == State.SITTING)
-            {
+        if (this.state != State.FLYING) {
+            if (this.state == State.SITTING) {
                 return;
             }
 
-            if (this.state == State.PARTY)
-            {
-                float f1 = MathHelper.cos((float)entityIn.ticksExisted);
-                float f2 = MathHelper.sin((float)entityIn.ticksExisted);
+            if (this.state == State.PARTY) {
+                float f1 = MathHelper.cos((float) entityIn.ticksExisted);
+                float f2 = MathHelper.sin((float) entityIn.ticksExisted);
                 this.head.rotationPointX = f1;
                 this.head.rotationPointY = 15.69F + f2;
                 this.head.rotateAngleX = 0.0F;
                 this.head.rotateAngleY = 0.0F;
-                this.head.rotateAngleZ = MathHelper.sin((float)entityIn.ticksExisted) * 0.4F;
+                this.head.rotateAngleZ = MathHelper.sin((float) entityIn.ticksExisted) * 0.4F;
                 this.body.rotationPointX = f1;
                 this.body.rotationPointY = 16.5F + f2;
                 this.wingLeft.rotateAngleZ = -0.0873F - ageInTicks;
@@ -119,7 +112,7 @@ public class ModelParrot extends ModelBase
             }
 
             this.legLeft.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-            this.legRight.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+            this.legRight.rotateAngleX += MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
         }
 
         this.head.rotationPointY = 15.69F + f;
@@ -134,33 +127,29 @@ public class ModelParrot extends ModelBase
         this.legRight.rotationPointY = 22.0F + f;
     }
 
-    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
-    {
+    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
         this.feather.rotateAngleX = -0.2214F;
         this.body.rotateAngleX = 0.4937F;
-        this.wingLeft.rotateAngleX = -((float)Math.PI * 2F / 9F);
-        this.wingLeft.rotateAngleY = -(float)Math.PI;
-        this.wingRight.rotateAngleX = -((float)Math.PI * 2F / 9F);
-        this.wingRight.rotateAngleY = -(float)Math.PI;
+        this.wingLeft.rotateAngleX = -((float) Math.PI * 2F / 9F);
+        this.wingLeft.rotateAngleY = -(float) Math.PI;
+        this.wingRight.rotateAngleX = -((float) Math.PI * 2F / 9F);
+        this.wingRight.rotateAngleY = -(float) Math.PI;
         this.legLeft.rotateAngleX = -0.0299F;
         this.legRight.rotateAngleX = -0.0299F;
         this.legLeft.rotationPointY = 22.0F;
         this.legRight.rotationPointY = 22.0F;
 
-        if (entitylivingbaseIn instanceof EntityParrot)
-        {
-            EntityParrot entityparrot = (EntityParrot)entitylivingbaseIn;
+        if (entitylivingbaseIn instanceof EntityParrot) {
+            EntityParrot entityparrot = (EntityParrot) entitylivingbaseIn;
 
-            if (entityparrot.isPartying())
-            {
+            if (entityparrot.isPartying()) {
                 this.legLeft.rotateAngleZ = -0.34906584F;
                 this.legRight.rotateAngleZ = 0.34906584F;
                 this.state = State.PARTY;
                 return;
             }
 
-            if (entityparrot.isSitting())
-            {
+            if (entityparrot.isSitting()) {
                 float f = 1.9F;
                 this.head.rotationPointY = 17.59F;
                 this.tail.rotateAngleX = 1.5388988F;
@@ -175,15 +164,11 @@ public class ModelParrot extends ModelBase
                 ++this.legLeft.rotateAngleX;
                 ++this.legRight.rotateAngleX;
                 this.state = State.SITTING;
-            }
-            else if (entityparrot.isFlying())
-            {
-                this.legLeft.rotateAngleX += ((float)Math.PI * 2F / 9F);
-                this.legRight.rotateAngleX += ((float)Math.PI * 2F / 9F);
+            } else if (entityparrot.isFlying()) {
+                this.legLeft.rotateAngleX += ((float) Math.PI * 2F / 9F);
+                this.legRight.rotateAngleX += ((float) Math.PI * 2F / 9F);
                 this.state = State.FLYING;
-            }
-            else
-            {
+            } else {
                 this.state = State.STANDING;
             }
 
@@ -193,8 +178,7 @@ public class ModelParrot extends ModelBase
     }
 
     @SideOnly(Side.CLIENT)
-    static enum State
-    {
+    static enum State {
         FLYING,
         STANDING,
         SITTING,

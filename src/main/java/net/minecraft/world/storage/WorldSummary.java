@@ -7,8 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class WorldSummary implements Comparable<WorldSummary>
-{
+public class WorldSummary implements Comparable<WorldSummary> {
     private final String fileName;
     private final String displayName;
     private final long lastTimePlayed;
@@ -21,8 +20,7 @@ public class WorldSummary implements Comparable<WorldSummary>
     private final int versionId;
     private final boolean versionSnapshot;
 
-    public WorldSummary(WorldInfo info, String fileNameIn, String displayNameIn, long sizeOnDiskIn, boolean requiresConversionIn)
-    {
+    public WorldSummary(WorldInfo info, String fileNameIn, String displayNameIn, long sizeOnDiskIn, boolean requiresConversionIn) {
         this.fileName = fileNameIn;
         this.displayName = displayNameIn;
         this.lastTimePlayed = info.getLastTimePlayed();
@@ -36,70 +34,55 @@ public class WorldSummary implements Comparable<WorldSummary>
         this.versionSnapshot = info.isVersionSnapshot();
     }
 
-    public String getFileName()
-    {
+    public String getFileName() {
         return this.fileName;
     }
 
-    public String getDisplayName()
-    {
+    public String getDisplayName() {
         return this.displayName;
     }
 
-    public long getSizeOnDisk()
-    {
+    public long getSizeOnDisk() {
         return this.sizeOnDisk;
     }
 
-    public boolean requiresConversion()
-    {
+    public boolean requiresConversion() {
         return this.requiresConversion;
     }
 
-    public long getLastTimePlayed()
-    {
+    public long getLastTimePlayed() {
         return this.lastTimePlayed;
     }
 
-    public int compareTo(WorldSummary p_compareTo_1_)
-    {
-        if (this.lastTimePlayed < p_compareTo_1_.lastTimePlayed)
-        {
+    public int compareTo(WorldSummary p_compareTo_1_) {
+        if (this.lastTimePlayed < p_compareTo_1_.lastTimePlayed) {
             return 1;
-        }
-        else
-        {
+        } else {
             return this.lastTimePlayed > p_compareTo_1_.lastTimePlayed ? -1 : this.fileName.compareTo(p_compareTo_1_.fileName);
         }
     }
 
-    public GameType getEnumGameType()
-    {
+    public GameType getEnumGameType() {
         return this.gameType;
     }
 
-    public boolean isHardcoreModeEnabled()
-    {
+    public boolean isHardcoreModeEnabled() {
         return this.hardcore;
     }
 
-    public boolean getCheatsEnabled()
-    {
+    public boolean getCheatsEnabled() {
         return this.cheatsEnabled;
     }
 
-    public String getVersionName()
-    {
+    public String getVersionName() {
         return StringUtils.isNullOrEmpty(this.versionName) ? I18n.translateToLocal("selectWorld.versionUnknown") : this.versionName;
     }
 
-    public boolean markVersionInList()
-    {
+    public boolean markVersionInList() {
         return this.askToOpenWorld();
     }
 
-    public boolean askToOpenWorld()
-    {
+    public boolean askToOpenWorld() {
         return this.versionId > 1343;
     }
 }

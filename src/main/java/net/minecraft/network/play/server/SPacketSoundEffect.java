@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -10,8 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.Validate;
 
-public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
-{
+public class SPacketSoundEffect implements Packet<INetHandlerPlayClient> {
     private SoundEvent sound;
     private SoundCategory category;
     private int posX;
@@ -20,26 +20,23 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
     private float soundVolume;
     private float soundPitch;
 
-    public SPacketSoundEffect()
-    {
+    public SPacketSoundEffect() {
     }
 
-    public SPacketSoundEffect(SoundEvent soundIn, SoundCategory categoryIn, double xIn, double yIn, double zIn, float volumeIn, float pitchIn)
-    {
+    public SPacketSoundEffect(SoundEvent soundIn, SoundCategory categoryIn, double xIn, double yIn, double zIn, float volumeIn, float pitchIn) {
         Validate.notNull(soundIn, "sound");
         this.sound = soundIn;
         this.category = categoryIn;
-        this.posX = (int)(xIn * 8.0D);
-        this.posY = (int)(yIn * 8.0D);
-        this.posZ = (int)(zIn * 8.0D);
+        this.posX = (int) (xIn * 8.0D);
+        this.posY = (int) (yIn * 8.0D);
+        this.posZ = (int) (zIn * 8.0D);
         this.soundVolume = volumeIn;
         this.soundPitch = pitchIn;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.sound = SoundEvent.REGISTRY.getObjectById(buf.readVarInt());
-        this.category = (SoundCategory)buf.readEnumValue(SoundCategory.class);
+        this.category = (SoundCategory) buf.readEnumValue(SoundCategory.class);
         this.posX = buf.readInt();
         this.posY = buf.readInt();
         this.posZ = buf.readInt();
@@ -47,8 +44,7 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
         this.soundPitch = buf.readFloat();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeVarInt(SoundEvent.REGISTRY.getIDForObject(this.sound));
         buf.writeEnumValue(this.category);
         buf.writeInt(this.posX);
@@ -59,49 +55,41 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public SoundEvent getSound()
-    {
+    public SoundEvent getSound() {
         return this.sound;
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleSoundEffect(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public SoundCategory getCategory()
-    {
+    public SoundCategory getCategory() {
         return this.category;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getX()
-    {
-        return (double)((float)this.posX / 8.0F);
+    public double getX() {
+        return (double) ((float) this.posX / 8.0F);
     }
 
     @SideOnly(Side.CLIENT)
-    public double getY()
-    {
-        return (double)((float)this.posY / 8.0F);
+    public double getY() {
+        return (double) ((float) this.posY / 8.0F);
     }
 
     @SideOnly(Side.CLIENT)
-    public double getZ()
-    {
-        return (double)((float)this.posZ / 8.0F);
+    public double getZ() {
+        return (double) ((float) this.posZ / 8.0F);
     }
 
     @SideOnly(Side.CLIENT)
-    public float getVolume()
-    {
+    public float getVolume() {
         return this.soundVolume;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getPitch()
-    {
+    public float getPitch() {
         return this.soundPitch;
     }
 }

@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
 
 public class MojangNameLookup {

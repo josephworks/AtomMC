@@ -1,26 +1,21 @@
 package net.minecraft.block.material;
 
-public class MaterialLiquid extends Material
-{
-    public MaterialLiquid(MapColor color)
-    {
+public class MaterialLiquid extends Material {
+    public MaterialLiquid(MapColor color) {
         super(color);
         this.setReplaceable();
         this.setNoPushMobility();
     }
 
-    public boolean isLiquid()
-    {
+    public boolean isLiquid() {
         return true;
     }
 
-    public boolean blocksMovement()
-    {
+    public boolean blocksMovement() {
         return false;
     }
 
-    public boolean isSolid()
-    {
+    public boolean isSolid() {
         return false;
     }
 }

@@ -19,31 +19,24 @@ import org.bukkit.entity.Player;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 
-public class NetHandlerStatusServer implements INetHandlerStatusServer
-{
+public class NetHandlerStatusServer implements INetHandlerStatusServer {
     private static final ITextComponent EXIT_MESSAGE = new TextComponentString("Status request has been handled.");
     private final MinecraftServer server;
     private final NetworkManager networkManager;
     private boolean handled;
 
-    public NetHandlerStatusServer(MinecraftServer serverIn, NetworkManager netManager)
-    {
+    public NetHandlerStatusServer(MinecraftServer serverIn, NetworkManager netManager) {
         this.server = serverIn;
         this.networkManager = netManager;
     }
 
-    public void onDisconnect(ITextComponent reason)
-    {
+    public void onDisconnect(ITextComponent reason) {
     }
 
-    public void processServerQuery(CPacketServerQuery packetIn)
-    {
-        if (this.handled)
-        {
+    public void processServerQuery(CPacketServerQuery packetIn) {
+        if (this.handled) {
             this.networkManager.closeChannel(EXIT_MESSAGE);
-        }
-        else
-        {
+        } else {
             this.handled = true;
             // CraftBukkit start
             // this.networkManager.sendPacket(new SPacketServerInfo(this.server.getServerStatusResponse()));
@@ -137,8 +130,7 @@ public class NetHandlerStatusServer implements INetHandlerStatusServer
         // CraftBukkit end
     }
 
-    public void processPing(CPacketPing packetIn)
-    {
+    public void processPing(CPacketPing packetIn) {
         this.networkManager.sendPacket(new SPacketPong(packetIn.getClientTime()));
         this.networkManager.closeChannel(EXIT_MESSAGE);
     }

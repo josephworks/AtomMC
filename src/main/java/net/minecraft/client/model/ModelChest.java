@@ -4,14 +4,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelChest extends ModelBase
-{
+public class ModelChest extends ModelBase {
     public ModelRenderer chestLid = (new ModelRenderer(this, 0, 0)).setTextureSize(64, 64);
     public ModelRenderer chestBelow;
     public ModelRenderer chestKnob;
 
-    public ModelChest()
-    {
+    public ModelChest() {
         this.chestLid.addBox(0.0F, -5.0F, -14.0F, 14, 5, 14, 0.0F);
         this.chestLid.rotationPointX = 1.0F;
         this.chestLid.rotationPointY = 7.0F;
@@ -28,8 +26,7 @@ public class ModelChest extends ModelBase
         this.chestBelow.rotationPointZ = 1.0F;
     }
 
-    public void renderAll()
-    {
+    public void renderAll() {
         this.chestKnob.rotateAngleX = this.chestLid.rotateAngleX;
         this.chestLid.render(0.0625F);
         this.chestKnob.render(0.0625F);

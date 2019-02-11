@@ -7,15 +7,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderList extends ChunkRenderContainer
-{
-    public void renderChunkLayer(BlockRenderLayer layer)
-    {
-        if (this.initialized)
-        {
-            for (RenderChunk renderchunk : this.renderChunks)
-            {
-                ListedRenderChunk listedrenderchunk = (ListedRenderChunk)renderchunk;
+public class RenderList extends ChunkRenderContainer {
+    public void renderChunkLayer(BlockRenderLayer layer) {
+        if (this.initialized) {
+            for (RenderChunk renderchunk : this.renderChunks) {
+                ListedRenderChunk listedrenderchunk = (ListedRenderChunk) renderchunk;
                 GlStateManager.pushMatrix();
                 this.preRenderChunk(renderchunk);
                 GlStateManager.callList(listedrenderchunk.getDisplayList(layer, listedrenderchunk.getCompiledChunk()));

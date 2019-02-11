@@ -8,49 +8,40 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ParticleExplosionHuge extends Particle
-{
+public class ParticleExplosionHuge extends Particle {
     private int timeSinceStart;
     private final int maximumTime = 8;
 
-    protected ParticleExplosionHuge(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double p_i1214_8_, double p_i1214_10_, double p_i1214_12_)
-    {
+    protected ParticleExplosionHuge(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double p_i1214_8_, double p_i1214_10_, double p_i1214_12_) {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
     }
 
-    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
-    {
+    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
     }
 
-    public void onUpdate()
-    {
-        for (int i = 0; i < 6; ++i)
-        {
+    public void onUpdate() {
+        for (int i = 0; i < 6; ++i) {
             double d0 = this.posX + (this.rand.nextDouble() - this.rand.nextDouble()) * 4.0D;
             double d1 = this.posY + (this.rand.nextDouble() - this.rand.nextDouble()) * 4.0D;
             double d2 = this.posZ + (this.rand.nextDouble() - this.rand.nextDouble()) * 4.0D;
-            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, d0, d1, d2, (double)((float)this.timeSinceStart / (float)this.maximumTime), 0.0D, 0.0D);
+            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, d0, d1, d2, (double) ((float) this.timeSinceStart / (float) this.maximumTime), 0.0D, 0.0D);
         }
 
         ++this.timeSinceStart;
 
-        if (this.timeSinceStart == this.maximumTime)
-        {
+        if (this.timeSinceStart == this.maximumTime) {
             this.setExpired();
         }
     }
 
-    public int getFXLayer()
-    {
+    public int getFXLayer() {
         return 1;
     }
 
     @SideOnly(Side.CLIENT)
-    public static class Factory implements IParticleFactory
-        {
-            public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... p_178902_15_)
-            {
-                return new ParticleExplosionHuge(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
-            }
+    public static class Factory implements IParticleFactory {
+        public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... p_178902_15_) {
+            return new ParticleExplosionHuge(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
         }
+    }
 }

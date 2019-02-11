@@ -3,9 +3,11 @@ package net.minecraft.util;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
+
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.util.RecipeItemHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -22,8 +24,7 @@ import net.minecraft.network.play.server.SPacketPlaceGhostRecipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerRecipeBookHelper
-{
+public class ServerRecipeBookHelper {
     private final Logger field_194330_a = LogManager.getLogger();
     private final RecipeItemHelper field_194331_b = new RecipeItemHelper();
     private EntityPlayerMP field_194332_c;
@@ -33,10 +34,8 @@ public class ServerRecipeBookHelper
     private InventoryCrafting field_194336_g;
     private List<Slot> field_194337_h;
 
-    public void func_194327_a(EntityPlayerMP p_194327_1_, @Nullable IRecipe p_194327_2_, boolean p_194327_3_)
-    {
-        if (p_194327_2_ != null && p_194327_1_.getRecipeBook().isUnlocked(p_194327_2_))
-        {
+    public void func_194327_a(EntityPlayerMP p_194327_1_, @Nullable IRecipe p_194327_2_, boolean p_194327_3_) {
+        if (p_194327_2_ != null && p_194327_1_.getRecipeBook().isUnlocked(p_194327_2_)) {
             this.field_194332_c = p_194327_1_;
             this.field_194333_d = p_194327_2_;
             this.field_194334_e = p_194327_3_;
@@ -45,36 +44,26 @@ public class ServerRecipeBookHelper
             this.field_194335_f = null;
             this.field_194336_g = null;
 
-            if (container instanceof ContainerWorkbench)
-            {
-                this.field_194335_f = ((ContainerWorkbench)container).craftResult;
-                this.field_194336_g = ((ContainerWorkbench)container).craftMatrix;
-            }
-            else if (container instanceof ContainerPlayer)
-            {
-                this.field_194335_f = ((ContainerPlayer)container).craftResult;
-                this.field_194336_g = ((ContainerPlayer)container).craftMatrix;
-            }
-            else if (container instanceof net.minecraftforge.common.crafting.IRecipeContainer)
-            {
-                this.field_194335_f = ((net.minecraftforge.common.crafting.IRecipeContainer)container).getCraftResult();
-                this.field_194336_g = ((net.minecraftforge.common.crafting.IRecipeContainer)container).getCraftMatrix();
+            if (container instanceof ContainerWorkbench) {
+                this.field_194335_f = ((ContainerWorkbench) container).craftResult;
+                this.field_194336_g = ((ContainerWorkbench) container).craftMatrix;
+            } else if (container instanceof ContainerPlayer) {
+                this.field_194335_f = ((ContainerPlayer) container).craftResult;
+                this.field_194336_g = ((ContainerPlayer) container).craftMatrix;
+            } else if (container instanceof net.minecraftforge.common.crafting.IRecipeContainer) {
+                this.field_194335_f = ((net.minecraftforge.common.crafting.IRecipeContainer) container).getCraftResult();
+                this.field_194336_g = ((net.minecraftforge.common.crafting.IRecipeContainer) container).getCraftMatrix();
             }
 
-            if (this.field_194335_f != null && this.field_194336_g != null)
-            {
-                if (this.func_194328_c() || p_194327_1_.isCreative())
-                {
+            if (this.field_194335_f != null && this.field_194336_g != null) {
+                if (this.func_194328_c() || p_194327_1_.isCreative()) {
                     this.field_194331_b.clear();
                     p_194327_1_.inventory.fillStackedContents(this.field_194331_b, false);
                     this.field_194336_g.fillStackedContents(this.field_194331_b);
 
-                    if (this.field_194331_b.canCraft(p_194327_2_, (IntList)null))
-                    {
+                    if (this.field_194331_b.canCraft(p_194327_2_, (IntList) null)) {
                         this.func_194329_b();
-                    }
-                    else
-                    {
+                    } else {
                         this.func_194326_a();
                         p_194327_1_.connection.sendPacket(new SPacketPlaceGhostRecipe(p_194327_1_.openContainer.windowId, p_194327_2_));
                     }
@@ -85,22 +74,17 @@ public class ServerRecipeBookHelper
         }
     }
 
-    private void func_194326_a()
-    {
+    private void func_194326_a() {
         InventoryPlayer inventoryplayer = this.field_194332_c.inventory;
 
-        for (int i = 0; i < this.field_194336_g.getSizeInventory(); ++i)
-        {
+        for (int i = 0; i < this.field_194336_g.getSizeInventory(); ++i) {
             ItemStack itemstack = this.field_194336_g.getStackInSlot(i);
 
-            if (!itemstack.isEmpty())
-            {
-                while (itemstack.getCount() > 0)
-                {
+            if (!itemstack.isEmpty()) {
+                while (itemstack.getCount() > 0) {
                     int j = inventoryplayer.storeItemStack(itemstack);
 
-                    if (j == -1)
-                    {
+                    if (j == -1) {
                         j = inventoryplayer.getFirstEmptyStack();
                     }
 
@@ -116,27 +100,22 @@ public class ServerRecipeBookHelper
         this.field_194335_f.clear();
     }
 
-    private void func_194329_b()
-    {
+    private void func_194329_b() {
         boolean flag = this.field_194333_d.matches(this.field_194336_g, this.field_194332_c.world);
-        int i = this.field_194331_b.getBiggestCraftableStack(this.field_194333_d, (IntList)null);
+        int i = this.field_194331_b.getBiggestCraftableStack(this.field_194333_d, (IntList) null);
 
-        if (flag)
-        {
+        if (flag) {
             boolean flag1 = true;
 
-            for (int j = 0; j < this.field_194336_g.getSizeInventory(); ++j)
-            {
+            for (int j = 0; j < this.field_194336_g.getSizeInventory(); ++j) {
                 ItemStack itemstack = this.field_194336_g.getStackInSlot(j);
 
-                if (!itemstack.isEmpty() && Math.min(i, itemstack.getMaxStackSize()) > itemstack.getCount())
-                {
+                if (!itemstack.isEmpty() && Math.min(i, itemstack.getMaxStackSize()) > itemstack.getCount()) {
                     flag1 = false;
                 }
             }
 
-            if (flag1)
-            {
+            if (flag1) {
                 return;
             }
         }
@@ -144,54 +123,43 @@ public class ServerRecipeBookHelper
         int i1 = this.func_194324_a(i, flag);
         IntList intlist = new IntArrayList();
 
-        if (this.field_194331_b.canCraft(this.field_194333_d, intlist, i1))
-        {
+        if (this.field_194331_b.canCraft(this.field_194333_d, intlist, i1)) {
             int j1 = i1;
             IntListIterator intlistiterator = intlist.iterator();
 
-            while (intlistiterator.hasNext())
-            {
-                int k = ((Integer)intlistiterator.next()).intValue();
+            while (intlistiterator.hasNext()) {
+                int k = ((Integer) intlistiterator.next()).intValue();
                 int l = RecipeItemHelper.unpack(k).getMaxStackSize();
 
-                if (l < j1)
-                {
+                if (l < j1) {
                     j1 = l;
                 }
             }
 
-            if (this.field_194331_b.canCraft(this.field_194333_d, intlist, j1))
-            {
+            if (this.field_194331_b.canCraft(this.field_194333_d, intlist, j1)) {
                 this.func_194326_a();
                 this.func_194323_a(j1, intlist);
             }
         }
     }
 
-    private int func_194324_a(int p_194324_1_, boolean p_194324_2_)
-    {
+    private int func_194324_a(int p_194324_1_, boolean p_194324_2_) {
         int i = 1;
 
-        if (this.field_194334_e)
-        {
+        if (this.field_194334_e) {
             i = p_194324_1_;
-        }
-        else if (p_194324_2_)
-        {
+        } else if (p_194324_2_) {
             i = 64;
 
-            for (int j = 0; j < this.field_194336_g.getSizeInventory(); ++j)
-            {
+            for (int j = 0; j < this.field_194336_g.getSizeInventory(); ++j) {
                 ItemStack itemstack = this.field_194336_g.getStackInSlot(j);
 
-                if (!itemstack.isEmpty() && i > itemstack.getCount())
-                {
+                if (!itemstack.isEmpty() && i > itemstack.getCount()) {
                     i = itemstack.getCount();
                 }
             }
 
-            if (i < 64)
-            {
+            if (i < 64) {
                 ++i;
             }
         }
@@ -199,14 +167,12 @@ public class ServerRecipeBookHelper
         return i;
     }
 
-    private void func_194323_a(int p_194323_1_, IntList p_194323_2_)
-    {
+    private void func_194323_a(int p_194323_1_, IntList p_194323_2_) {
         int i = this.field_194336_g.getWidth();
         int j = this.field_194336_g.getHeight();
 
-        if (this.field_194333_d instanceof net.minecraftforge.common.crafting.IShapedRecipe)
-        {
-            net.minecraftforge.common.crafting.IShapedRecipe shapedrecipes = (net.minecraftforge.common.crafting.IShapedRecipe)this.field_194333_d;
+        if (this.field_194333_d instanceof net.minecraftforge.common.crafting.IShapedRecipe) {
+            net.minecraftforge.common.crafting.IShapedRecipe shapedrecipes = (net.minecraftforge.common.crafting.IShapedRecipe) this.field_194333_d;
             i = shapedrecipes.getRecipeWidth();
             j = shapedrecipes.getRecipeHeight();
         }
@@ -214,27 +180,20 @@ public class ServerRecipeBookHelper
         int j1 = 1;
         Iterator<Integer> iterator = p_194323_2_.iterator();
 
-        for (int k = 0; k < this.field_194336_g.getWidth() && j != k; ++k)
-        {
-            for (int l = 0; l < this.field_194336_g.getHeight(); ++l)
-            {
-                if (i == l || !iterator.hasNext())
-                {
+        for (int k = 0; k < this.field_194336_g.getWidth() && j != k; ++k) {
+            for (int l = 0; l < this.field_194336_g.getHeight(); ++l) {
+                if (i == l || !iterator.hasNext()) {
                     j1 += this.field_194336_g.getWidth() - l;
                     break;
                 }
 
                 Slot slot = this.field_194337_h.get(j1);
-                ItemStack itemstack = RecipeItemHelper.unpack(((Integer)iterator.next()).intValue());
+                ItemStack itemstack = RecipeItemHelper.unpack(((Integer) iterator.next()).intValue());
 
-                if (itemstack.isEmpty())
-                {
+                if (itemstack.isEmpty()) {
                     ++j1;
-                }
-                else
-                {
-                    for (int i1 = 0; i1 < p_194323_1_; ++i1)
-                    {
+                } else {
+                    for (int i1 = 0; i1 < p_194323_1_; ++i1) {
                         this.func_194325_a(slot, itemstack);
                     }
 
@@ -242,66 +201,51 @@ public class ServerRecipeBookHelper
                 }
             }
 
-            if (!iterator.hasNext())
-            {
+            if (!iterator.hasNext()) {
                 break;
             }
         }
     }
 
-    private void func_194325_a(Slot p_194325_1_, ItemStack p_194325_2_)
-    {
+    private void func_194325_a(Slot p_194325_1_, ItemStack p_194325_2_) {
         InventoryPlayer inventoryplayer = this.field_194332_c.inventory;
         int i = inventoryplayer.findSlotMatchingUnusedItem(p_194325_2_);
 
-        if (i != -1)
-        {
+        if (i != -1) {
             ItemStack itemstack = inventoryplayer.getStackInSlot(i).copy();
 
-            if (!itemstack.isEmpty())
-            {
-                if (itemstack.getCount() > 1)
-                {
+            if (!itemstack.isEmpty()) {
+                if (itemstack.getCount() > 1) {
                     inventoryplayer.decrStackSize(i, 1);
-                }
-                else
-                {
+                } else {
                     inventoryplayer.removeStackFromSlot(i);
                 }
 
                 itemstack.setCount(1);
 
-                if (p_194325_1_.getStack().isEmpty())
-                {
+                if (p_194325_1_.getStack().isEmpty()) {
                     p_194325_1_.putStack(itemstack);
-                }
-                else
-                {
+                } else {
                     p_194325_1_.getStack().grow(1);
                 }
             }
         }
     }
 
-    private boolean func_194328_c()
-    {
+    private boolean func_194328_c() {
         InventoryPlayer inventoryplayer = this.field_194332_c.inventory;
 
-        for (int i = 0; i < this.field_194336_g.getSizeInventory(); ++i)
-        {
+        for (int i = 0; i < this.field_194336_g.getSizeInventory(); ++i) {
             ItemStack itemstack = this.field_194336_g.getStackInSlot(i);
 
-            if (!itemstack.isEmpty())
-            {
+            if (!itemstack.isEmpty()) {
                 int j = inventoryplayer.storeItemStack(itemstack);
 
-                if (j == -1)
-                {
+                if (j == -1) {
                     j = inventoryplayer.getFirstEmptyStack();
                 }
 
-                if (j == -1)
-                {
+                if (j == -1) {
                     return false;
                 }
             }

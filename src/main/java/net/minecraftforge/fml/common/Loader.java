@@ -122,16 +122,14 @@ import javax.annotation.Nullable;
  * but it attempts to continue loading before abandoning and giving a fatal
  * error.</li>
  * </ol>
- *
+ * <p>
  * Phase 1 code triggers the LOADING and PREINIT states. Phase 2 code triggers
  * the INIT and POSTINIT states.
  *
  * @author cpw
- *
  */
 @SuppressWarnings("unused")
-public class Loader
-{
+public class Loader {
     public static final String MC_VERSION = ForgeVersion.mcVersion;
     /**
      * The singleton instance
@@ -179,10 +177,8 @@ public class Loader
     private ModDiscoverer discoverer;
     private ProgressBar progressBar;
 
-    public static Loader instance()
-    {
-        if (instance == null)
-        {
+    public static Loader instance() {
+        if (instance == null) {
             instance = new Loader();
         }
 
@@ -190,8 +186,7 @@ public class Loader
     }
 
     @SuppressWarnings("unchecked")
-    public static void injectData(Object... data)
-    {
+    public static void injectData(Object... data) {
         major = (String) data[0];
         minor = (String) data[1];
         rev = (String) data[2];
@@ -199,26 +194,21 @@ public class Loader
         mccversion = (String) data[4];
         mcpversion = (String) data[5];
         minecraftDir = (File) data[6];
-        injectedContainers = (List<String>)data[7];
+        injectedContainers = (List<String>) data[7];
     }
 
-    private Loader()
-    {
+    private Loader() {
         modClassLoader = new ModClassLoader(getClass().getClassLoader());
-        if (mccversion !=null && !mccversion.equals(MC_VERSION))
-        {
+        if (mccversion != null && !mccversion.equals(MC_VERSION)) {
             FMLLog.log.fatal("This version of FML is built for Minecraft {}, we have detected Minecraft {} in your minecraft jar file", mccversion, MC_VERSION);
             throw new LoaderException(String.format("This version of FML is built for Minecraft %s, we have detected Minecraft %s in your minecraft jar file", mccversion, MC_VERSION));
         }
 
         minecraft = new MinecraftDummyContainer(MC_VERSION);
         InputStream mcpModInputStream = getClass().getResourceAsStream("/mcpmod.info");
-        try
-        {
+        try {
             mcp = new MCPDummyContainer(MetadataCollection.from(mcpModInputStream, "MCP").getMetadataForId("mcp", null));
-        }
-        finally
-        {
+        } finally {
             IOUtils.closeQuietly(mcpModInputStream);
         }
     }
@@ -228,24 +218,19 @@ public class Loader
      * containers. The sorting is performed using a {@link TopologicalSort}
      * based on the pre- and post- dependency information provided by the mods.
      */
-    private void sortModList()
-    {
+    private void sortModList() {
         FMLLog.log.trace("Verifying mod requirements are satisfied");
         List<WrongMinecraftVersionException> wrongMinecraftExceptions = new ArrayList<>();
         List<MissingModsException> missingModsExceptions = new ArrayList<>();
-        try
-        {
+        try {
             BiMap<String, ArtifactVersion> modVersions = HashBiMap.create();
-            for (ModContainer mod : Iterables.concat(getActiveModList(), ModAPIManager.INSTANCE.getAPIList()))
-            {
+            for (ModContainer mod : Iterables.concat(getActiveModList(), ModAPIManager.INSTANCE.getAPIList())) {
                 modVersions.put(mod.getModId(), mod.getProcessedVersion());
             }
 
             ArrayListMultimap<String, String> reqList = ArrayListMultimap.create();
-            for (ModContainer mod : getActiveModList())
-            {
-                if (!mod.acceptableMinecraftVersionRange().containsVersion(minecraft.getProcessedVersion()))
-                {
+            for (ModContainer mod : getActiveModList()) {
+                if (!mod.acceptableMinecraftVersionRange().containsVersion(minecraft.getProcessedVersion())) {
                     FMLLog.log.fatal("The mod {} does not wish to run in Minecraft version {}. You will have to remove it to play.", mod.getModId(), getMCVersionString());
                     WrongMinecraftVersionException ret = new WrongMinecraftVersionException(mod, getMCVersionString());
                     FMLLog.log.fatal(ret.getMessage());
@@ -262,47 +247,35 @@ public class Loader
                 allDeps.addAll(mod.getRequirements());
 
                 MissingModsException missingModsException = new MissingModsException(mod.getModId(), mod.getName());
-                for (ArtifactVersion acceptedVersion : allDeps)
-                {
+                for (ArtifactVersion acceptedVersion : allDeps) {
                     boolean required = mod.getRequirements().contains(acceptedVersion);
-                    if (required || modVersions.containsKey(acceptedVersion.getLabel()))
-                    {
+                    if (required || modVersions.containsKey(acceptedVersion.getLabel())) {
                         ArtifactVersion currentVersion = modVersions.get(acceptedVersion.getLabel());
-                        if (currentVersion == null || !acceptedVersion.containsVersion(currentVersion))
-                        {
+                        if (currentVersion == null || !acceptedVersion.containsVersion(currentVersion)) {
                             missingModsException.addMissingMod(acceptedVersion, currentVersion, required);
                         }
                     }
                 }
-                if (!missingModsException.getMissingModInfos().isEmpty())
-                {
+                if (!missingModsException.getMissingModInfos().isEmpty()) {
                     FMLLog.log.fatal(missingModsException.toString());
                     missingModsExceptions.add(missingModsException);
                 }
             }
 
-            if (wrongMinecraftExceptions.isEmpty() && missingModsExceptions.isEmpty())
-            {
+            if (wrongMinecraftExceptions.isEmpty() && missingModsExceptions.isEmpty()) {
                 FMLLog.log.trace("All mod requirements are satisfied");
-            }
-            else if (missingModsExceptions.size()==1 && wrongMinecraftExceptions.isEmpty())
-            {
+            } else if (missingModsExceptions.size() == 1 && wrongMinecraftExceptions.isEmpty()) {
                 throw missingModsExceptions.get(0);
-            }
-            else if (wrongMinecraftExceptions.size()==1 && missingModsExceptions.isEmpty())
-            {
+            } else if (wrongMinecraftExceptions.size() == 1 && missingModsExceptions.isEmpty()) {
                 throw wrongMinecraftExceptions.get(0);
-            }
-            else
-            {
+            } else {
                 throw new MultipleModsErrored(wrongMinecraftExceptions, missingModsExceptions);
             }
 
             reverseDependencies = Multimaps.invertFrom(reqList, ArrayListMultimap.create());
             ModSorter sorter = new ModSorter(getActiveModList(), namedMods);
 
-            try
-            {
+            try {
                 FMLLog.log.trace("Sorting mods into an ordered list");
                 List<ModContainer> sortedMods = sorter.sort();
                 // Reset active list to the sorted list
@@ -313,35 +286,27 @@ public class Loader
                 sortedMods.addAll(mods);
                 mods = sortedMods;
                 FMLLog.log.trace("Mod sorting completed successfully");
-            }
-            catch (ModSortingException sortException)
-            {
+            } catch (ModSortingException sortException) {
                 FMLLog.log.fatal("A dependency cycle was detected in the input mod set so an ordering cannot be determined");
                 SortingExceptionData<ModContainer> exceptionData = sortException.getExceptionData();
                 FMLLog.log.fatal("The first mod in the cycle is {}", exceptionData.getFirstBadNode());
                 FMLLog.log.fatal("The mod cycle involves");
-                for (ModContainer mc : exceptionData.getVisitedNodes())
-                {
+                for (ModContainer mc : exceptionData.getVisitedNodes()) {
                     FMLLog.log.fatal("{} : before: {}, after: {}", mc.toString(), mc.getDependants(), mc.getDependencies());
                 }
                 FMLLog.log.error("The full error", sortException);
                 throw sortException;
             }
-        }
-        finally
-        {
+        } finally {
             FMLLog.log.debug("Mod sorting data");
             int unprintedMods = mods.size();
-            for (ModContainer mod : getActiveModList())
-            {
-                if (!mod.isImmutable())
-                {
+            for (ModContainer mod : getActiveModList()) {
+                if (!mod.isImmutable()) {
                     FMLLog.log.debug("\t{}({}:{}): {} ({})", mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName(), mod.getSortingRules());
                     unprintedMods--;
                 }
             }
-            if (unprintedMods == mods.size())
-            {
+            if (unprintedMods == mods.size()) {
                 FMLLog.log.debug("No user mods found to sort");
             }
         }
@@ -350,38 +315,33 @@ public class Loader
 
     /**
      * The primary loading code
-     *
-     *
+     * <p>
+     * <p>
      * The found resources are first loaded into the {@link #modClassLoader}
      * (always) then scanned for class resources matching the specification
      * above.
-     *
+     * <p>
      * If they provide the {@link Mod} annotation, they will be loaded as
      * "FML mods"
-     *
+     * <p>
      * Finally, if they are successfully loaded as classes, they are then added
      * to the available mod list.
      */
-    private ModDiscoverer identifyMods(List<String> additionalContainers)
-    {
+    private ModDiscoverer identifyMods(List<String> additionalContainers) {
         injectedContainers.addAll(additionalContainers);
         FMLLog.log.debug("Building injected Mod Containers {}", injectedContainers);
         mods.add(minecraft);
         // Add in the MCP mod container
-        mods.add(new InjectedModContainer(mcp,new File("minecraft.jar")));
-        for (String cont : injectedContainers)
-        {
+        mods.add(new InjectedModContainer(mcp, new File("minecraft.jar")));
+        for (String cont : injectedContainers) {
             ModContainer mc;
-            try
-            {
-                mc = (ModContainer) Class.forName(cont,true,modClassLoader).newInstance();
-            }
-            catch (Exception e)
-            {
+            try {
+                mc = (ModContainer) Class.forName(cont, true, modClassLoader).newInstance();
+            } catch (Exception e) {
                 FMLLog.log.error("A problem occurred instantiating the injected mod container {}", cont, e);
                 throw new LoaderException(e);
             }
-            mods.add(new InjectedModContainer(mc,mc.getSource()));
+            mods.add(new InjectedModContainer(mc, mc.getSource()));
         }
         ModDiscoverer discoverer = new ModDiscoverer();
 
@@ -395,11 +355,9 @@ public class Loader
         List<Artifact> maven_canidates = LibraryManager.flattenLists(minecraftDir);
         List<File> file_canidates = LibraryManager.gatherLegacyCanidates(minecraftDir);
 
-        for (Artifact artifact : maven_canidates)
-        {
+        for (Artifact artifact : maven_canidates) {
             artifact = Repository.resolveAll(artifact);
-            if (artifact != null)
-            {
+            if (artifact != null) {
                 File target = artifact.getFile();
                 if (!file_canidates.contains(target))
                     file_canidates.add(target);
@@ -408,15 +366,11 @@ public class Loader
         //Do we want to sort the full list after resolving artifacts?
         //TODO: Add dependency gathering?
 
-        for (File mod : file_canidates)
-        {
+        for (File mod : file_canidates) {
             // skip loaded coremods
-            if (CoreModManager.getIgnoredMods().contains(mod.getName()))
-            {
+            if (CoreModManager.getIgnoredMods().contains(mod.getName())) {
                 FMLLog.log.trace("Skipping already parsed coremod or tweaker {}", mod.getName());
-            }
-            else
-            {
+            } else {
                 FMLLog.log.debug("Found a candidate zip or jar file {}", mod.getName());
                 discoverer.addCandidate(new ModCandidate(mod, mod, ContainerType.JAR));
             }
@@ -429,38 +383,30 @@ public class Loader
         return discoverer;
     }
 
-    private class ModIdComparator implements Comparator<ModContainer>
-    {
+    private class ModIdComparator implements Comparator<ModContainer> {
         @Override
-        public int compare(ModContainer o1, ModContainer o2)
-        {
+        public int compare(ModContainer o1, ModContainer o2) {
             return o1.getModId().compareTo(o2.getModId());
         }
     }
 
-    private void identifyDuplicates(List<ModContainer> mods)
-    {
+    private void identifyDuplicates(List<ModContainer> mods) {
         TreeMultimap<ModContainer, File> dupsearch = TreeMultimap.create(new ModIdComparator(), Ordering.arbitrary());
-        for (ModContainer mc : mods)
-        {
-            if (mc.getSource() != null)
-            {
+        for (ModContainer mc : mods) {
+            if (mc.getSource() != null) {
                 dupsearch.put(mc, mc.getSource());
             }
         }
 
         ImmutableMultiset<ModContainer> duplist = Multisets.copyHighestCountFirst(dupsearch.keys());
         SetMultimap<ModContainer, File> dupes = LinkedHashMultimap.create();
-        for (Entry<ModContainer> e : duplist.entrySet())
-        {
-            if (e.getCount() > 1)
-            {
+        for (Entry<ModContainer> e : duplist.entrySet()) {
+            if (e.getCount() > 1) {
                 FMLLog.log.fatal("Found a duplicate mod {} at {}", e.getElement().getModId(), dupsearch.get(e.getElement()));
-                dupes.putAll(e.getElement(),dupsearch.get(e.getElement()));
+                dupes.putAll(e.getElement(), dupsearch.get(e.getElement()));
             }
         }
-        if (!dupes.isEmpty())
-        {
+        if (!dupes.isEmpty()) {
             throw new DuplicateModsFoundException(dupes);
         }
     }
@@ -468,59 +414,49 @@ public class Loader
     /**
      *
      */
-    private void initializeLoader()
-    {
+    private void initializeLoader() {
         File modsDir = new File(minecraftDir, "mods");
         File configDir = new File(minecraftDir, "config");
         String canonicalModsPath;
         String canonicalConfigPath;
 
-        try
-        {
+        try {
             canonicalModsPath = modsDir.getCanonicalPath();
             canonicalConfigPath = configDir.getCanonicalPath();
             canonicalConfigDir = configDir.getCanonicalFile();
             canonicalModsDir = modsDir.getCanonicalFile();
-        }
-        catch (IOException ioe)
-        {
+        } catch (IOException ioe) {
             FMLLog.log.error("Failed to resolve loader directories: mods : {} ; config {}", canonicalModsDir.getAbsolutePath(),
-                            configDir.getAbsolutePath(), ioe);
+                    configDir.getAbsolutePath(), ioe);
             throw new LoaderException(ioe);
         }
 
-        if (!canonicalModsDir.exists())
-        {
+        if (!canonicalModsDir.exists()) {
             FMLLog.log.info("No mod directory found, creating one: {}", canonicalModsPath);
             boolean dirMade = canonicalModsDir.mkdir();
-            if (!dirMade)
-            {
+            if (!dirMade) {
                 FMLLog.log.fatal("Unable to create the mod directory {}", canonicalModsPath);
                 throw new LoaderException(String.format("Unable to create the mod directory %s", canonicalModsPath));
             }
             FMLLog.log.info("Mod directory created successfully");
         }
 
-        if (!canonicalConfigDir.exists())
-        {
+        if (!canonicalConfigDir.exists()) {
             FMLLog.log.debug("No config directory found, creating one: {}", canonicalConfigPath);
             boolean dirMade = canonicalConfigDir.mkdir();
-            if (!dirMade)
-            {
+            if (!dirMade) {
                 FMLLog.log.fatal("Unable to create the config directory {}", canonicalConfigPath);
                 throw new LoaderException();
             }
             FMLLog.log.info("Config directory created successfully");
         }
 
-        if (!canonicalModsDir.isDirectory())
-        {
+        if (!canonicalModsDir.isDirectory()) {
             FMLLog.log.fatal("Attempting to load mods from {}, which is not a directory", canonicalModsPath);
             throw new LoaderException();
         }
 
-        if (!configDir.isDirectory())
-        {
+        if (!configDir.isDirectory()) {
             FMLLog.log.fatal("Attempting to load configuration from {}, which is not a directory", canonicalConfigPath);
             throw new LoaderException();
         }
@@ -528,17 +464,16 @@ public class Loader
         readInjectedDependencies();
     }
 
-    public List<ModContainer> getModList()
-    {
+    public List<ModContainer> getModList() {
         return instance().mods != null ? ImmutableList.copyOf(instance().mods) : ImmutableList.<ModContainer>of();
     }
 
     /**
      * Used to setup a testharness with a single dummy mod instance for use with various testing hooks
+     *
      * @param containers A list of dummy containers that will be returned as "active" for all queries
      */
-    public void setupTestHarness(ModContainer... containers)
-    {
+    public void setupTestHarness(ModContainer... containers) {
         modController = new LoadController(this);
         mods = Lists.newArrayList(containers);
         namedMods = Maps.uniqueIndex(mods, ModContainer::getModId);
@@ -552,10 +487,10 @@ public class Loader
      * Called from the hook to start mod loading. We trigger the
      * {@link #identifyMods(List)} and Constructing, Preinitalization, and Initalization phases here. Finally,
      * the mod list is frozen completely and is consider immutable from then on.
+     *
      * @param injectedModContainers containers to inject
      */
-    public void loadMods(List<String> injectedModContainers)
-    {
+    public void loadMods(List<String> injectedModContainers) {
         progressBar = ProgressManager.push("Loading", 7);
         progressBar.step("Constructing Mods");
         initializeLoader();
@@ -571,17 +506,12 @@ public class Loader
         ModAPIManager.INSTANCE.cleanupAPIContainers(modController.getActiveModList());
         ModAPIManager.INSTANCE.cleanupAPIContainers(mods);
         mods = ImmutableList.copyOf(mods);
-        for (File nonMod : discoverer.getNonModLibs())
-        {
-            if (nonMod.isFile())
-            {
+        for (File nonMod : discoverer.getNonModLibs()) {
+            if (nonMod.isFile()) {
                 FMLLog.log.info("FML has found a non-mod file {} in your mods directory. It will now be injected into your classpath. This could severe stability issues, it should be removed if possible.", nonMod.getName());
-                try
-                {
+                try {
                     modClassLoader.addFile(nonMod);
-                }
-                catch (MalformedURLException e)
-                {
+                } catch (MalformedURLException e) {
                     FMLLog.log.error("Encountered a weird problem with non-mod file injection : {}", nonMod.getName(), e);
                 }
             }
@@ -594,29 +524,24 @@ public class Loader
 
         FMLLog.log.debug("Mod signature data");
         FMLLog.log.debug(" \tValid Signatures:");
-        for (ModContainer mod : getActiveModList())
-        {
+        for (ModContainer mod : getActiveModList()) {
             if (mod.getSigningCertificate() != null)
                 FMLLog.log.debug("\t\t({}) {}\t({}\t{})\t{}", CertificateHelper.getFingerprint(mod.getSigningCertificate()), mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName());
         }
         FMLLog.log.debug(" \tMissing Signatures:");
-        for (ModContainer mod : getActiveModList())
-        {
+        for (ModContainer mod : getActiveModList()) {
             if (mod.getSigningCertificate() == null)
                 FMLLog.log.debug("\t\t{}\t({}\t{})\t{}", mod.getModId(), mod.getName(), mod.getVersion(), mod.getSource().getName());
         }
-        if (getActiveModList().isEmpty())
-        {
+        if (getActiveModList().isEmpty()) {
             FMLLog.log.debug("No user mod signature data found");
         }
         progressBar.step("Initializing mods Phase 1");
         modController.transition(LoaderState.PREINITIALIZATION, false);
     }
 
-    public void preinitializeMods()
-    {
-        if (!modController.isInState(LoaderState.PREINITIALIZATION))
-        {
+    public void preinitializeMods() {
+        if (!modController.isInState(LoaderState.PREINITIALIZATION)) {
             FMLLog.log.warn("There were errors previously. Not beginning mod initialization phase");
             return;
         }
@@ -633,10 +558,9 @@ public class Loader
         progressBar.step("Initializing Minecraft Engine");
     }
 
-    private void disableRequestedMods()
-    {
+    private void disableRequestedMods() {
         String forcedModList = System.getProperty("fml.modStates", "");
-        FMLLog.log.trace("Received a system property request \'{}\'",forcedModList);
+        FMLLog.log.trace("Received a system property request \'{}\'", forcedModList);
         Map<String, String> sysPropertyStateList = Splitter.on(CharMatcher.anyOf(";:"))
                 .omitEmptyStrings().trimResults().withKeyValueSeparator("=")
                 .split(forcedModList);
@@ -645,16 +569,12 @@ public class Loader
 
         forcedModFile = new File(canonicalConfigDir, "fmlModState.properties");
         Properties forcedModListProperties = new Properties();
-        if (forcedModFile.exists() && forcedModFile.isFile())
-        {
+        if (forcedModFile.exists() && forcedModFile.isFile()) {
             FMLLog.log.trace("Found a mod state file {}", forcedModFile.getName());
-            try
-            {
+            try {
                 forcedModListProperties.load(new InputStreamReader(new FileInputStream(forcedModFile), StandardCharsets.UTF_8));
                 FMLLog.log.trace("Loaded states for {} mods from file", forcedModListProperties.size());
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 FMLLog.log.info("An error occurred reading the fmlModState.properties file", e);
             }
         }
@@ -664,10 +584,8 @@ public class Loader
 
         Map<String, Boolean> isEnabled = Maps.transformValues(modStates, Boolean::parseBoolean);
 
-        for (Map.Entry<String, Boolean> entry : isEnabled.entrySet())
-        {
-            if (namedMods.containsKey(entry.getKey()))
-            {
+        for (Map.Entry<String, Boolean> entry : isEnabled.entrySet()) {
+            if (namedMods.containsKey(entry.getKey())) {
                 FMLLog.log.info("Setting mod {} to enabled state {}", entry.getKey(), entry.getValue());
                 namedMods.get(entry.getKey()).setEnabledState(entry.getValue());
             }
@@ -680,41 +598,34 @@ public class Loader
      * @param modname
      * @return If the mod is loaded
      */
-    public static boolean isModLoaded(String modname)
-    {
-        return instance().namedMods.containsKey(modname) && instance().modController.getModState(instance.namedMods.get(modname))!=ModState.DISABLED;
+    public static boolean isModLoaded(String modname) {
+        return instance().namedMods.containsKey(modname) && instance().modController.getModState(instance.namedMods.get(modname)) != ModState.DISABLED;
     }
 
-    public File getConfigDir()
-    {
+    public File getConfigDir() {
         return canonicalConfigDir;
     }
 
-    public String getCrashInformation()
-    {
+    public String getCrashInformation() {
         // Handle being called before we've begun setup
-        if (modController == null)
-        {
+        if (modController == null) {
             return "";
         }
         StringBuilder ret = new StringBuilder();
         List<String> branding = FMLCommonHandler.instance().getBrandings(false);
 
         Joiner.on(' ').skipNulls().appendTo(ret, branding);
-        if (modController != null)
-        {
+        if (modController != null) {
             modController.printModStates(ret);
         }
         return ret.toString();
     }
 
-    public String getFMLVersionString()
-    {
+    public String getFMLVersionString() {
         return "8.0.99.99";
     }
 
-    public ModClassLoader getModClassLoader()
-    {
+    public ModClassLoader getModClassLoader() {
         return modClassLoader;
     }
 
@@ -722,8 +633,7 @@ public class Loader
      * @deprecated use {@link DependencyParser#parseDependencies(String)}
      */
     @Deprecated // TODO: remove in 1.13
-    public void computeDependencies(String dependencyString, Set<ArtifactVersion> requirements, List<ArtifactVersion> dependencies, List<ArtifactVersion> dependants)
-    {
+    public void computeDependencies(String dependencyString, Set<ArtifactVersion> requirements, List<ArtifactVersion> dependencies, List<ArtifactVersion> dependants) {
         DependencyParser dependencyParser = new DependencyParser("unknown", FMLCommonHandler.instance().getSide());
         DependencyParser.DependencyInfo info = dependencyParser.parseDependencies(dependencyString);
         requirements.addAll(info.requirements);
@@ -731,13 +641,11 @@ public class Loader
         dependants.addAll(info.dependants);
     }
 
-    public Map<String,ModContainer> getIndexedModList()
-    {
+    public Map<String, ModContainer> getIndexedModList() {
         return namedMods != null ? ImmutableMap.copyOf(namedMods) : ImmutableMap.of();
     }
 
-    public void initializeMods()
-    {
+    public void initializeMods() {
         progressBar.step("Initializing mods Phase 2");
         CraftingHelper.loadRecipes(false);
         // Mod controller should be in the initialization state here
@@ -755,134 +663,105 @@ public class Loader
         progressBar.step("Completing Minecraft initialization");
     }
 
-    public ICrashCallable getCallableCrashInformation()
-    {
+    public ICrashCallable getCallableCrashInformation() {
         return new ICrashCallable() {
             @Override
-            public String call() throws Exception
-            {
+            public String call() throws Exception {
                 return getCrashInformation();
             }
 
             @Override
-            public String getLabel()
-            {
+            public String getLabel() {
                 return "FML";
             }
         };
     }
 
-    public List<ModContainer> getActiveModList()
-    {
+    public List<ModContainer> getActiveModList() {
         return modController != null ? modController.getActiveModList() : ImmutableList.<ModContainer>of();
     }
 
-    public ModState getModState(ModContainer selectedMod)
-    {
+    public ModState getModState(ModContainer selectedMod) {
         return modController.getModState(selectedMod);
     }
 
-    public String getMCVersionString()
-    {
+    public String getMCVersionString() {
         return "Minecraft " + mccversion;
     }
 
-    public boolean serverStarting(Object server)
-    {
-        try
-        {
+    public boolean serverStarting(Object server) {
+        try {
             modController.distributeStateMessage(LoaderState.SERVER_STARTING, server);
             modController.transition(LoaderState.SERVER_STARTING, false);
-        }
-        catch (Throwable t)
-        {
+        } catch (Throwable t) {
             FMLLog.log.error("A fatal exception occurred during the server starting event", t);
             return false;
         }
         return true;
     }
 
-    public void serverStarted()
-    {
+    public void serverStarted() {
         modController.distributeStateMessage(LoaderState.SERVER_STARTED);
         modController.transition(LoaderState.SERVER_STARTED, false);
     }
 
-    public void serverStopping()
-    {
+    public void serverStopping() {
         modController.distributeStateMessage(LoaderState.SERVER_STOPPING);
         modController.transition(LoaderState.SERVER_STOPPING, false);
     }
 
-    public BiMap<ModContainer, Object> getModObjectList()
-    {
+    public BiMap<ModContainer, Object> getModObjectList() {
         return modController.getModObjectList();
     }
 
-    public BiMap<Object, ModContainer> getReversedModObjectList()
-    {
+    public BiMap<Object, ModContainer> getReversedModObjectList() {
         return getModObjectList().inverse();
     }
 
     @Nullable
-    public ModContainer activeModContainer()
-    {
+    public ModContainer activeModContainer() {
         return modController != null ? modController.activeContainer() : null;
     }
 
-    public boolean isInState(LoaderState state)
-    {
+    public boolean isInState(LoaderState state) {
         return modController.isInState(state);
     }
 
-    public MinecraftDummyContainer getMinecraftModContainer()
-    {
+    public MinecraftDummyContainer getMinecraftModContainer() {
         return minecraft;
     }
 
-    public boolean hasReachedState(LoaderState state)
-    {
+    public boolean hasReachedState(LoaderState state) {
         return modController != null ? modController.hasReachedState(state) : false;
     }
 
-    public String getMCPVersionString()
-    {
+    public String getMCPVersionString() {
         return String.format("MCP %s", mcpversion);
     }
 
-    public void serverStopped()
-    {
+    public void serverStopped() {
         modController.distributeStateMessage(LoaderState.SERVER_STOPPED);
         modController.transition(LoaderState.SERVER_STOPPED, true);
         modController.transition(LoaderState.AVAILABLE, true);
     }
 
-    public boolean serverAboutToStart(Object server)
-    {
-        try
-        {
+    public boolean serverAboutToStart(Object server) {
+        try {
             modController.distributeStateMessage(LoaderState.SERVER_ABOUT_TO_START, server);
             modController.transition(LoaderState.SERVER_ABOUT_TO_START, false);
-        }
-        catch (Throwable t)
-        {
+        } catch (Throwable t) {
             FMLLog.log.error("A fatal exception occurred during the server about to start event", t);
             return false;
         }
         return true;
     }
 
-    public Map<String,String> getFMLBrandingProperties()
-    {
-        if (fmlBrandingProperties == null)
-        {
+    public Map<String, String> getFMLBrandingProperties() {
+        if (fmlBrandingProperties == null) {
             Properties loaded = new Properties();
-            try
-            {
+            try {
                 loaded.load(getClass().getClassLoader().getResourceAsStream("fmlbranding.properties"));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 // File not found - ignore
             }
             fmlBrandingProperties = Maps.fromProperties(loaded);
@@ -891,23 +770,19 @@ public class Loader
     }
 
 
-    public Map<String,String> getCustomModProperties(String modId)
-    {
+    public Map<String, String> getCustomModProperties(String modId) {
         return getIndexedModList().get(modId).getCustomModProperties();
     }
 
-    boolean checkRemoteModList(Map<String, String> modList, Side side)
-    {
+    boolean checkRemoteModList(Map<String, String> modList, Side side) {
         Set<String> remoteModIds = modList.keySet();
         Set<String> localModIds = namedMods.keySet();
 
         Set<String> difference = Sets.newLinkedHashSet(Sets.difference(localModIds, remoteModIds));
-        for (Iterator<String> iterator = difference.iterator(); iterator.hasNext();)
-        {
+        for (Iterator<String> iterator = difference.iterator(); iterator.hasNext(); ) {
             String missingRemotely = iterator.next();
             ModState modState = modController.getModState(namedMods.get(missingRemotely));
-            if (modState == ModState.DISABLED)
-            {
+            if (modState == ModState.DISABLED) {
                 iterator.remove();
             }
         }
@@ -917,30 +792,24 @@ public class Loader
         return true;
     }
 
-    public void fireRemapEvent(Map<ResourceLocation, Map<ResourceLocation, Integer[]>> remaps, boolean isFreezing)
-    {
-        if (modController!=null)
-        {
+    public void fireRemapEvent(Map<ResourceLocation, Map<ResourceLocation, Integer[]>> remaps, boolean isFreezing) {
+        if (modController != null) {
             modController.propogateStateMessage(new FMLModIdMappingEvent(remaps, isFreezing));
         }
     }
 
-    public void runtimeDisableMod(String modId)
-    {
+    public void runtimeDisableMod(String modId) {
         ModContainer mc = namedMods.get(modId);
         Disableable disableable = mc.canBeDisabled();
-        if (disableable == Disableable.NEVER)
-        {
+        if (disableable == Disableable.NEVER) {
             FMLLog.log.info("Cannot disable mod {} - it is never allowed to be disabled", modId);
             return;
         }
-        if (disableable == Disableable.DEPENDENCIES)
-        {
+        if (disableable == Disableable.DEPENDENCIES) {
             FMLLog.log.info("Cannot disable mod {} - there are dependent mods that require its presence", modId);
             return;
         }
-        if (disableable == Disableable.YES)
-        {
+        if (disableable == Disableable.YES) {
             FMLLog.log.info("Runtime disabling mod {}", modId);
             modController.disableMod(mc);
             List<ModContainer> localmods = Lists.newArrayList(mods);
@@ -948,48 +817,39 @@ public class Loader
             mods = ImmutableList.copyOf(localmods);
         }
 
-        try
-        {
+        try {
             Properties props = new Properties();
             props.load(new InputStreamReader(new FileInputStream(forcedModFile), StandardCharsets.UTF_8));
             props.put(modId, "false");
             props.store(new OutputStreamWriter(new FileOutputStream(forcedModFile), StandardCharsets.UTF_8), null);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             FMLLog.log.info("An error occurred writing the fml mod states file, your disabled change won't persist", e);
         }
     }
 
-    public void loadingComplete()
-    {
+    public void loadingComplete() {
         ProgressManager.pop(progressBar);
         progressBar = null;
     }
 
-    private ListMultimap<String,ArtifactVersion> injectedBefore = ArrayListMultimap.create();
-    private ListMultimap<String,ArtifactVersion> injectedAfter = ArrayListMultimap.create();
+    private ListMultimap<String, ArtifactVersion> injectedBefore = ArrayListMultimap.create();
+    private ListMultimap<String, ArtifactVersion> injectedAfter = ArrayListMultimap.create();
 
-    private void readInjectedDependencies()
-    {
-        File injectedDepFile = new File(getConfigDir(),"injectedDependencies.json");
-        if (!injectedDepFile.exists())
-        {
+    private void readInjectedDependencies() {
+        File injectedDepFile = new File(getConfigDir(), "injectedDependencies.json");
+        if (!injectedDepFile.exists()) {
             FMLLog.log.debug("File {} not found. No dependencies injected", injectedDepFile.getAbsolutePath());
             return;
         }
         JsonParser parser = new JsonParser();
         JsonElement injectedDeps;
-        try
-        {
+        try {
             injectedDeps = parser.parse(new InputStreamReader(new FileInputStream(injectedDepFile), StandardCharsets.UTF_8));
-            for (JsonElement el : injectedDeps.getAsJsonArray())
-            {
+            for (JsonElement el : injectedDeps.getAsJsonArray()) {
                 JsonObject jo = el.getAsJsonObject();
                 String modId = jo.get("modId").getAsString();
                 JsonArray deps = jo.get("deps").getAsJsonArray();
-                for (JsonElement dep : deps)
-                {
+                for (JsonElement dep : deps) {
                     JsonObject depObj = dep.getAsJsonObject();
                     String type = depObj.get("type").getAsString();
                     if (type.equals("before")) {
@@ -1002,8 +862,7 @@ public class Loader
                     }
                 }
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             FMLLog.log.error("Unable to parse {} - skipping", injectedDepFile);
             FMLLog.log.throwing(Level.ERROR, e);
             return;
@@ -1011,22 +870,19 @@ public class Loader
         FMLLog.log.debug("Loaded {} injected dependencies on modIds: {}", injectedBefore.size(), injectedBefore.keySet());
     }
 
-    List<ArtifactVersion> getInjectedBefore(String modId)
-    {
+    List<ArtifactVersion> getInjectedBefore(String modId) {
         return injectedBefore.get(modId);
     }
-    List<ArtifactVersion> getInjectedAfter(String modId)
-    {
+
+    List<ArtifactVersion> getInjectedAfter(String modId) {
         return injectedAfter.get(modId);
     }
 
-    public final LoaderState getLoaderState()
-    {
+    public final LoaderState getLoaderState() {
         return modController != null ? modController.getState() : LoaderState.NOINIT;
     }
 
-    public void setActiveModContainer(@Nullable ModContainer container)
-    {
+    public void setActiveModContainer(@Nullable ModContainer container) {
         this.modController.forceActiveContainer(container);
     }
 }

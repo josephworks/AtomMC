@@ -10,41 +10,33 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockBreakable extends Block
-{
+public class BlockBreakable extends Block {
     private final boolean ignoreSimilarity;
 
-    protected BlockBreakable(Material materialIn, boolean ignoreSimilarityIn)
-    {
+    protected BlockBreakable(Material materialIn, boolean ignoreSimilarityIn) {
         this(materialIn, ignoreSimilarityIn, materialIn.getMaterialMapColor());
     }
 
-    protected BlockBreakable(Material materialIn, boolean ignoreSimilarityIn, MapColor mapColorIn)
-    {
+    protected BlockBreakable(Material materialIn, boolean ignoreSimilarityIn, MapColor mapColorIn) {
         super(materialIn, mapColorIn);
         this.ignoreSimilarity = ignoreSimilarityIn;
     }
 
-    public boolean isOpaqueCube(IBlockState state)
-    {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
-    {
+    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
         IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
         Block block = iblockstate.getBlock();
 
-        if (this == Blocks.GLASS || this == Blocks.STAINED_GLASS)
-        {
-            if (blockState != iblockstate)
-            {
+        if (this == Blocks.GLASS || this == Blocks.STAINED_GLASS) {
+            if (blockState != iblockstate) {
                 return true;
             }
 
-            if (block == this)
-            {
+            if (block == this) {
                 return false;
             }
         }

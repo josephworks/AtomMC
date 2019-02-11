@@ -1,33 +1,30 @@
 package net.minecraft.util.datafix.fixes;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
-public class EntityId implements IFixableData
-{
+public class EntityId implements IFixableData {
     private static final Map<String, String> OLD_TO_NEW_ID_MAP = Maps.<String, String>newHashMap();
 
-    public int getFixVersion()
-    {
+    public int getFixVersion() {
         return 704;
     }
 
-    public NBTTagCompound fixTagCompound(NBTTagCompound compound)
-    {
+    public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
         String s = OLD_TO_NEW_ID_MAP.get(compound.getString("id"));
 
-        if (s != null)
-        {
+        if (s != null) {
             compound.setString("id", s);
         }
 
         return compound;
     }
 
-    static
-    {
+    static {
         OLD_TO_NEW_ID_MAP.put("AreaEffectCloud", "minecraft:area_effect_cloud");
         OLD_TO_NEW_ID_MAP.put("ArmorStand", "minecraft:armor_stand");
         OLD_TO_NEW_ID_MAP.put("Arrow", "minecraft:arrow");

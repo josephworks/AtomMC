@@ -5,6 +5,7 @@
 package org.bukkit.craftbukkit.generator;
 
 import java.util.Arrays;
+
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;

@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "packed_ice" }
+  "variants": {
+    "normal": {
+      "model": "packed_ice"
     }
+  }
 }

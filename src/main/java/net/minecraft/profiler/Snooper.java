@@ -1,6 +1,7 @@
 package net.minecraft.profiler;
 
 import com.google.common.collect.Maps;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
@@ -11,13 +12,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.Map.Entry;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.HttpUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class Snooper
-{
+public class Snooper {
     private final Map<String, Object> snooperStats = Maps.<String, Object>newHashMap();
     private final Map<String, Object> clientStats = Maps.<String, Object>newHashMap();
     private final String uniqueID = UUID.randomUUID().toString();
@@ -29,14 +30,10 @@ public class Snooper
     private boolean isRunning;
     private int selfCounter;
 
-    public Snooper(String side, ISnooperInfo playerStatCollector, long startTime)
-    {
-        try
-        {
+    public Snooper(String side, ISnooperInfo playerStatCollector, long startTime) {
+        try {
             this.serverUrl = new URL("http://snoop.minecraft.net/" + side + "?version=" + 2);
-        }
-        catch (MalformedURLException var6)
-        {
+        } catch (MalformedURLException var6) {
             throw new IllegalArgumentException();
         }
 
@@ -44,26 +41,19 @@ public class Snooper
         this.minecraftStartTimeMilis = startTime;
     }
 
-    public void startSnooper()
-    {
-        if (!this.isRunning)
-        {
+    public void startSnooper() {
+        if (!this.isRunning) {
             this.isRunning = true;
             this.addOSData();
-            this.threadTrigger.schedule(new TimerTask()
-            {
-                public void run()
-                {
-                    if (Snooper.this.playerStatsCollector.isSnooperEnabled())
-                    {
+            this.threadTrigger.schedule(new TimerTask() {
+                public void run() {
+                    if (Snooper.this.playerStatsCollector.isSnooperEnabled()) {
                         Map<String, Object> map;
 
-                        synchronized (Snooper.this.syncLock)
-                        {
+                        synchronized (Snooper.this.syncLock) {
                             map = Maps.<String, Object>newHashMap(Snooper.this.clientStats);
 
-                            if (Snooper.this.selfCounter == 0)
-                            {
+                            if (Snooper.this.selfCounter == 0) {
                                 map.putAll(Snooper.this.snooperStats);
                             }
 
@@ -71,7 +61,7 @@ public class Snooper
                             map.put("snooper_token", Snooper.this.uniqueID);
                         }
 
-                        MinecraftServer minecraftserver = Snooper.this.playerStatsCollector instanceof MinecraftServer ? (MinecraftServer)Snooper.this.playerStatsCollector : null;
+                        MinecraftServer minecraftserver = Snooper.this.playerStatsCollector instanceof MinecraftServer ? (MinecraftServer) Snooper.this.playerStatsCollector : null;
                         HttpUtil.postMap(Snooper.this.serverUrl, map, true, minecraftserver == null ? null : minecraftserver.getServerProxy());
                     }
                 }
@@ -79,8 +69,7 @@ public class Snooper
         }
     }
 
-    private void addOSData()
-    {
+    private void addOSData() {
         this.addJvmArgsToSnooper();
         this.addClientStat("snooper_token", this.uniqueID);
         this.addStatToSnooper("snooper_token", this.uniqueID);
@@ -92,16 +81,13 @@ public class Snooper
         this.playerStatsCollector.addServerTypeToSnooper(this);
     }
 
-    private void addJvmArgsToSnooper()
-    {
+    private void addJvmArgsToSnooper() {
         RuntimeMXBean runtimemxbean = ManagementFactory.getRuntimeMXBean();
         List<String> list = runtimemxbean.getInputArguments();
         int i = 0;
 
-        for (String s : list)
-        {
-            if (s.startsWith("-X"))
-            {
+        for (String s : list) {
+            if (s.startsWith("-X")) {
                 this.addClientStat("jvm_arg[" + i++ + "]", s);
             }
         }
@@ -109,8 +95,7 @@ public class Snooper
         this.addClientStat("jvm_args", Integer.valueOf(i));
     }
 
-    public void addMemoryStatsToSnooper()
-    {
+    public void addMemoryStatsToSnooper() {
         this.addStatToSnooper("memory_total", Long.valueOf(Runtime.getRuntime().totalMemory()));
         this.addStatToSnooper("memory_max", Long.valueOf(Runtime.getRuntime().maxMemory()));
         this.addStatToSnooper("memory_free", Long.valueOf(Runtime.getRuntime().freeMemory()));
@@ -118,38 +103,30 @@ public class Snooper
         this.playerStatsCollector.addServerStatsToSnooper(this);
     }
 
-    public void addClientStat(String statName, Object statValue)
-    {
-        synchronized (this.syncLock)
-        {
+    public void addClientStat(String statName, Object statValue) {
+        synchronized (this.syncLock) {
             this.clientStats.put(statName, statValue);
         }
     }
 
-    public void addStatToSnooper(String statName, Object statValue)
-    {
-        synchronized (this.syncLock)
-        {
+    public void addStatToSnooper(String statName, Object statValue) {
+        synchronized (this.syncLock) {
             this.snooperStats.put(statName, statValue);
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public Map<String, String> getCurrentStats()
-    {
+    public Map<String, String> getCurrentStats() {
         Map<String, String> map = Maps.<String, String>newLinkedHashMap();
 
-        synchronized (this.syncLock)
-        {
+        synchronized (this.syncLock) {
             this.addMemoryStatsToSnooper();
 
-            for (Entry<String, Object> entry : this.snooperStats.entrySet())
-            {
+            for (Entry<String, Object> entry : this.snooperStats.entrySet()) {
                 map.put(entry.getKey(), entry.getValue().toString());
             }
 
-            for (Entry<String, Object> entry1 : this.clientStats.entrySet())
-            {
+            for (Entry<String, Object> entry1 : this.clientStats.entrySet()) {
                 map.put(entry1.getKey(), entry1.getValue().toString());
             }
 
@@ -157,24 +134,20 @@ public class Snooper
         }
     }
 
-    public boolean isSnooperRunning()
-    {
+    public boolean isSnooperRunning() {
         return this.isRunning;
     }
 
-    public void stopSnooper()
-    {
+    public void stopSnooper() {
         this.threadTrigger.cancel();
     }
 
     @SideOnly(Side.CLIENT)
-    public String getUniqueID()
-    {
+    public String getUniqueID() {
         return this.uniqueID;
     }
 
-    public long getMinecraftStartTimeMillis()
-    {
+    public long getMinecraftStartTimeMillis() {
         return this.minecraftStartTimeMilis;
     }
 }

@@ -32,7 +32,7 @@ import java.io.IOException;
  * Thrown when a patch is invalid.
  */
 public class PatchException extends IOException {
-    
+
     private static final long serialVersionUID = 1;
 
     /**
@@ -40,9 +40,10 @@ public class PatchException extends IOException {
      */
     public PatchException() {
     }
-    
+
     /**
      * Constructs an instance of <code>PatchException</code> with the specified detail message.
+     *
      * @param msg the detail message.
      */
     public PatchException(String msg) {

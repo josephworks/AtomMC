@@ -1,7 +1,9 @@
 package net.minecraft.entity.ai;
 
 import com.google.common.collect.Sets;
+
 import java.util.Set;
+
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
@@ -12,8 +14,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 
-public class EntityAITempt extends EntityAIBase
-{
+public class EntityAITempt extends EntityAIBase {
     private final EntityCreature temptedEntity;
     private final double speed;
     private double targetX;
@@ -27,34 +28,27 @@ public class EntityAITempt extends EntityAIBase
     private final Set<Item> temptItem;
     private final boolean scaredByPlayerMovement;
 
-    public EntityAITempt(EntityCreature temptedEntityIn, double speedIn, Item temptItemIn, boolean scaredByPlayerMovementIn)
-    {
+    public EntityAITempt(EntityCreature temptedEntityIn, double speedIn, Item temptItemIn, boolean scaredByPlayerMovementIn) {
         this(temptedEntityIn, speedIn, scaredByPlayerMovementIn, Sets.newHashSet(temptItemIn));
     }
 
-    public EntityAITempt(EntityCreature temptedEntityIn, double speedIn, boolean scaredByPlayerMovementIn, Set<Item> temptItemIn)
-    {
+    public EntityAITempt(EntityCreature temptedEntityIn, double speedIn, boolean scaredByPlayerMovementIn, Set<Item> temptItemIn) {
         this.temptedEntity = temptedEntityIn;
         this.speed = speedIn;
         this.temptItem = temptItemIn;
         this.scaredByPlayerMovement = scaredByPlayerMovementIn;
         this.setMutexBits(3);
 
-        if (!(temptedEntityIn.getNavigator() instanceof PathNavigateGround))
-        {
+        if (!(temptedEntityIn.getNavigator() instanceof PathNavigateGround)) {
             throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
         }
     }
 
-    public boolean shouldExecute()
-    {
-        if (this.delayTemptCounter > 0)
-        {
+    public boolean shouldExecute() {
+        if (this.delayTemptCounter > 0) {
             --this.delayTemptCounter;
             return false;
-        }
-        else
-        {
+        } else {
             this.temptingPlayer = this.temptedEntity.world.getClosestPlayerToEntity(this.temptedEntity, 10.0D);
 
             /*
@@ -79,73 +73,58 @@ public class EntityAITempt extends EntityAIBase
         }
     }
 
-    protected boolean isTempting(ItemStack stack)
-    {
+    protected boolean isTempting(ItemStack stack) {
         return this.temptItem.contains(stack.getItem());
     }
 
-    public boolean shouldContinueExecuting()
-    {
-        if (this.scaredByPlayerMovement)
-        {
-            if (this.temptedEntity.getDistanceSq(this.temptingPlayer) < 36.0D)
-            {
-                if (this.temptingPlayer.getDistanceSq(this.targetX, this.targetY, this.targetZ) > 0.010000000000000002D)
-                {
+    public boolean shouldContinueExecuting() {
+        if (this.scaredByPlayerMovement) {
+            if (this.temptedEntity.getDistanceSq(this.temptingPlayer) < 36.0D) {
+                if (this.temptingPlayer.getDistanceSq(this.targetX, this.targetY, this.targetZ) > 0.010000000000000002D) {
                     return false;
                 }
 
-                if (Math.abs((double)this.temptingPlayer.rotationPitch - this.pitch) > 5.0D || Math.abs((double)this.temptingPlayer.rotationYaw - this.yaw) > 5.0D)
-                {
+                if (Math.abs((double) this.temptingPlayer.rotationPitch - this.pitch) > 5.0D || Math.abs((double) this.temptingPlayer.rotationYaw - this.yaw) > 5.0D) {
                     return false;
                 }
-            }
-            else
-            {
+            } else {
                 this.targetX = this.temptingPlayer.posX;
                 this.targetY = this.temptingPlayer.posY;
                 this.targetZ = this.temptingPlayer.posZ;
             }
 
-            this.pitch = (double)this.temptingPlayer.rotationPitch;
-            this.yaw = (double)this.temptingPlayer.rotationYaw;
+            this.pitch = (double) this.temptingPlayer.rotationPitch;
+            this.yaw = (double) this.temptingPlayer.rotationYaw;
         }
 
         return this.shouldExecute();
     }
 
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.targetX = this.temptingPlayer.posX;
         this.targetY = this.temptingPlayer.posY;
         this.targetZ = this.temptingPlayer.posZ;
         this.isRunning = true;
     }
 
-    public void resetTask()
-    {
+    public void resetTask() {
         this.temptingPlayer = null;
         this.temptedEntity.getNavigator().clearPath();
         this.delayTemptCounter = 100;
         this.isRunning = false;
     }
 
-    public void updateTask()
-    {
-        this.temptedEntity.getLookHelper().setLookPositionWithEntity(this.temptingPlayer, (float)(this.temptedEntity.getHorizontalFaceSpeed() + 20), (float)this.temptedEntity.getVerticalFaceSpeed());
+    public void updateTask() {
+        this.temptedEntity.getLookHelper().setLookPositionWithEntity(this.temptingPlayer, (float) (this.temptedEntity.getHorizontalFaceSpeed() + 20), (float) this.temptedEntity.getVerticalFaceSpeed());
 
-        if (this.temptedEntity.getDistanceSq(this.temptingPlayer) < 6.25D)
-        {
+        if (this.temptedEntity.getDistanceSq(this.temptingPlayer) < 6.25D) {
             this.temptedEntity.getNavigator().clearPath();
-        }
-        else
-        {
+        } else {
             this.temptedEntity.getNavigator().tryMoveToEntityLiving(this.temptingPlayer, this.speed);
         }
     }
 
-    public boolean isRunning()
-    {
+    public boolean isRunning() {
         return this.isRunning;
     }
 }

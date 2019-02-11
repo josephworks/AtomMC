@@ -14,28 +14,22 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockRotatedPillar extends Block
-{
+public class BlockRotatedPillar extends Block {
     public static final PropertyEnum<EnumFacing.Axis> AXIS = PropertyEnum.<EnumFacing.Axis>create("axis", EnumFacing.Axis.class);
 
-    protected BlockRotatedPillar(Material materialIn)
-    {
+    protected BlockRotatedPillar(Material materialIn) {
         super(materialIn, materialIn.getMaterialMapColor());
     }
 
-    protected BlockRotatedPillar(Material materialIn, MapColor color)
-    {
+    protected BlockRotatedPillar(Material materialIn, MapColor color) {
         super(materialIn, color);
     }
 
     @Override
-    public boolean rotateBlock(net.minecraft.world.World world, BlockPos pos, EnumFacing axis)
-    {
+    public boolean rotateBlock(net.minecraft.world.World world, BlockPos pos, EnumFacing axis) {
         IBlockState state = world.getBlockState(pos);
-        for (IProperty<?> prop : state.getProperties().keySet())
-        {
-            if (prop.getName().equals("axis"))
-            {
+        for (IProperty<?> prop : state.getProperties().keySet()) {
+            if (prop.getName().equals("axis")) {
                 world.setBlockState(pos, state.cycleProperty(prop));
                 return true;
             }
@@ -43,15 +37,12 @@ public class BlockRotatedPillar extends Block
         return false;
     }
 
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        switch (rot)
-        {
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        switch (rot) {
             case COUNTERCLOCKWISE_90:
             case CLOCKWISE_90:
 
-                switch ((EnumFacing.Axis)state.getValue(AXIS))
-                {
+                switch ((EnumFacing.Axis) state.getValue(AXIS)) {
                     case X:
                         return state.withProperty(AXIS, EnumFacing.Axis.Z);
                     case Z:
@@ -65,52 +56,41 @@ public class BlockRotatedPillar extends Block
         }
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         EnumFacing.Axis enumfacing$axis = EnumFacing.Axis.Y;
         int i = meta & 12;
 
-        if (i == 4)
-        {
+        if (i == 4) {
             enumfacing$axis = EnumFacing.Axis.X;
-        }
-        else if (i == 8)
-        {
+        } else if (i == 8) {
             enumfacing$axis = EnumFacing.Axis.Z;
         }
 
         return this.getDefaultState().withProperty(AXIS, enumfacing$axis);
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
-        EnumFacing.Axis enumfacing$axis = (EnumFacing.Axis)state.getValue(AXIS);
+        EnumFacing.Axis enumfacing$axis = (EnumFacing.Axis) state.getValue(AXIS);
 
-        if (enumfacing$axis == EnumFacing.Axis.X)
-        {
+        if (enumfacing$axis == EnumFacing.Axis.X) {
             i |= 4;
-        }
-        else if (enumfacing$axis == EnumFacing.Axis.Z)
-        {
+        } else if (enumfacing$axis == EnumFacing.Axis.Z) {
             i |= 8;
         }
 
         return i;
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {AXIS});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{AXIS});
     }
 
-    protected ItemStack getSilkTouchDrop(IBlockState state)
-    {
+    protected ItemStack getSilkTouchDrop(IBlockState state) {
         return new ItemStack(Item.getItemFromBlock(this));
     }
 
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(AXIS, facing.getAxis());
     }
 }

@@ -1,8 +1,10 @@
 package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Lists;
+
 import java.nio.FloatBuffer;
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelBase;
@@ -23,8 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
-public abstract class RenderLivingBase<T extends EntityLivingBase> extends Render<T>
-{
+public abstract class RenderLivingBase<T extends EntityLivingBase> extends Render<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
     protected ModelBase mainModel;
@@ -35,47 +36,40 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
     public static float NAME_TAG_RANGE = 64.0f;
     public static float NAME_TAG_RANGE_SNEAK = 32.0f;
 
-    public RenderLivingBase(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn)
-    {
+    public RenderLivingBase(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
         super(renderManagerIn);
         this.mainModel = modelBaseIn;
         this.shadowSize = shadowSizeIn;
     }
 
-    public <V extends EntityLivingBase, U extends LayerRenderer<V>> boolean addLayer(U layer)
-    {
-        return this.layerRenderers.add((LayerRenderer<T>)layer);
+    public <V extends EntityLivingBase, U extends LayerRenderer<V>> boolean addLayer(U layer) {
+        return this.layerRenderers.add((LayerRenderer<T>) layer);
     }
 
-    public ModelBase getMainModel()
-    {
+    public ModelBase getMainModel() {
         return this.mainModel;
     }
 
-    protected float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks)
-    {
+    protected float interpolateRotation(float prevYawOffset, float yawOffset, float partialTicks) {
         float f;
 
-        for (f = yawOffset - prevYawOffset; f < -180.0F; f += 360.0F)
-        {
+        for (f = yawOffset - prevYawOffset; f < -180.0F; f += 360.0F) {
             ;
         }
 
-        while (f >= 180.0F)
-        {
+        while (f >= 180.0F) {
             f -= 360.0F;
         }
 
         return prevYawOffset + partialTicks * f;
     }
 
-    public void transformHeldFull3DItemLayer()
-    {
+    public void transformHeldFull3DItemLayer() {
     }
 
-    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
-    {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<T>(entity, this, partialTicks, x, y, z))) return;
+    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<T>(entity, this, partialTicks, x, y, z)))
+            return;
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
         this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
@@ -83,33 +77,28 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         this.mainModel.isRiding = shouldSit;
         this.mainModel.isChild = entity.isChild();
 
-        try
-        {
+        try {
             float f = this.interpolateRotation(entity.prevRenderYawOffset, entity.renderYawOffset, partialTicks);
             float f1 = this.interpolateRotation(entity.prevRotationYawHead, entity.rotationYawHead, partialTicks);
             float f2 = f1 - f;
 
-            if (shouldSit && entity.getRidingEntity() instanceof EntityLivingBase)
-            {
-                EntityLivingBase entitylivingbase = (EntityLivingBase)entity.getRidingEntity();
+            if (shouldSit && entity.getRidingEntity() instanceof EntityLivingBase) {
+                EntityLivingBase entitylivingbase = (EntityLivingBase) entity.getRidingEntity();
                 f = this.interpolateRotation(entitylivingbase.prevRenderYawOffset, entitylivingbase.renderYawOffset, partialTicks);
                 f2 = f1 - f;
                 float f3 = MathHelper.wrapDegrees(f2);
 
-                if (f3 < -85.0F)
-                {
+                if (f3 < -85.0F) {
                     f3 = -85.0F;
                 }
 
-                if (f3 >= 85.0F)
-                {
+                if (f3 >= 85.0F) {
                     f3 = 85.0F;
                 }
 
                 f = f1 - f3;
 
-                if (f3 * f3 > 2500.0F)
-                {
+                if (f3 * f3 > 2500.0F) {
                     f += f3 * 0.2F;
                 }
 
@@ -124,18 +113,15 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
             float f5 = 0.0F;
             float f6 = 0.0F;
 
-            if (!entity.isRiding())
-            {
+            if (!entity.isRiding()) {
                 f5 = entity.prevLimbSwingAmount + (entity.limbSwingAmount - entity.prevLimbSwingAmount) * partialTicks;
                 f6 = entity.limbSwing - entity.limbSwingAmount * (1.0F - partialTicks);
 
-                if (entity.isChild())
-                {
+                if (entity.isChild()) {
                     f6 *= 3.0F;
                 }
 
-                if (f5 > 1.0F)
-                {
+                if (f5 > 1.0F) {
                     f5 = 1.0F;
                 }
                 f2 = f1 - f; // Forge: Fix MC-1207
@@ -145,53 +131,43 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
             this.mainModel.setLivingAnimations(entity, f6, f5, partialTicks);
             this.mainModel.setRotationAngles(f6, f5, f8, f2, f7, f4, entity);
 
-            if (this.renderOutlines)
-            {
+            if (this.renderOutlines) {
                 boolean flag1 = this.setScoreTeamColor(entity);
                 GlStateManager.enableColorMaterial();
                 GlStateManager.enableOutlineMode(this.getTeamColor(entity));
 
-                if (!this.renderMarker)
-                {
+                if (!this.renderMarker) {
                     this.renderModel(entity, f6, f5, f8, f2, f7, f4);
                 }
 
-                if (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isSpectator())
-                {
+                if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isSpectator()) {
                     this.renderLayers(entity, f6, f5, partialTicks, f8, f2, f7, f4);
                 }
 
                 GlStateManager.disableOutlineMode();
                 GlStateManager.disableColorMaterial();
 
-                if (flag1)
-                {
+                if (flag1) {
                     this.unsetScoreTeamColor();
                 }
-            }
-            else
-            {
+            } else {
                 boolean flag = this.setDoRenderBrightness(entity, partialTicks);
                 this.renderModel(entity, f6, f5, f8, f2, f7, f4);
 
-                if (flag)
-                {
+                if (flag) {
                     this.unsetBrightness();
                 }
 
                 GlStateManager.depthMask(true);
 
-                if (!(entity instanceof EntityPlayer) || !((EntityPlayer)entity).isSpectator())
-                {
+                if (!(entity instanceof EntityPlayer) || !((EntityPlayer) entity).isSpectator()) {
                     this.renderLayers(entity, f6, f5, partialTicks, f8, f2, f7, f4);
                 }
             }
 
             GlStateManager.disableRescaleNormal();
-        }
-        catch (Exception exception)
-        {
-            LOGGER.error("Couldn't render entity", (Throwable)exception);
+        } catch (Exception exception) {
+            LOGGER.error("Couldn't render entity", (Throwable) exception);
         }
 
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
@@ -203,8 +179,7 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<T>(entity, this, partialTicks, x, y, z));
     }
 
-    public float prepareScale(T entitylivingbaseIn, float partialTicks)
-    {
+    public float prepareScale(T entitylivingbaseIn, float partialTicks) {
         GlStateManager.enableRescaleNormal();
         GlStateManager.scale(-1.0F, -1.0F, 1.0F);
         this.preRenderCallback(entitylivingbaseIn, partialTicks);
@@ -213,8 +188,7 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         return 0.0625F;
     }
 
-    protected boolean setScoreTeamColor(T entityLivingBaseIn)
-    {
+    protected boolean setScoreTeamColor(T entityLivingBaseIn) {
         GlStateManager.disableLighting();
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
@@ -222,67 +196,53 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         return true;
     }
 
-    protected void unsetScoreTeamColor()
-    {
+    protected void unsetScoreTeamColor() {
         GlStateManager.enableLighting();
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.enableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
-    protected void renderModel(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor)
-    {
+    protected void renderModel(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         boolean flag = this.isVisible(entitylivingbaseIn);
         boolean flag1 = !flag && !entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().player);
 
-        if (flag || flag1)
-        {
-            if (!this.bindEntityTexture(entitylivingbaseIn))
-            {
+        if (flag || flag1) {
+            if (!this.bindEntityTexture(entitylivingbaseIn)) {
                 return;
             }
 
-            if (flag1)
-            {
+            if (flag1) {
                 GlStateManager.enableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
             }
 
             this.mainModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
 
-            if (flag1)
-            {
+            if (flag1) {
                 GlStateManager.disableBlendProfile(GlStateManager.Profile.TRANSPARENT_MODEL);
             }
         }
     }
 
-    protected boolean isVisible(T p_193115_1_)
-    {
+    protected boolean isVisible(T p_193115_1_) {
         return !p_193115_1_.isInvisible() || this.renderOutlines;
     }
 
-    protected boolean setDoRenderBrightness(T entityLivingBaseIn, float partialTicks)
-    {
+    protected boolean setDoRenderBrightness(T entityLivingBaseIn, float partialTicks) {
         return this.setBrightness(entityLivingBaseIn, partialTicks, true);
     }
 
-    protected boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures)
-    {
+    protected boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures) {
         float f = entitylivingbaseIn.getBrightness();
         int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
         boolean flag = (i >> 24 & 255) > 0;
         boolean flag1 = entitylivingbaseIn.hurtTime > 0 || entitylivingbaseIn.deathTime > 0;
 
-        if (!flag && !flag1)
-        {
+        if (!flag && !flag1) {
             return false;
-        }
-        else if (!flag && !combineTextures)
-        {
+        } else if (!flag && !combineTextures) {
             return false;
-        }
-        else
-        {
+        } else {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
             GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -309,19 +269,16 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
             GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
 
-            if (flag1)
-            {
+            if (flag1) {
                 this.brightnessBuffer.put(1.0F);
                 this.brightnessBuffer.put(0.0F);
                 this.brightnessBuffer.put(0.0F);
                 this.brightnessBuffer.put(0.3F);
-            }
-            else
-            {
-                float f1 = (float)(i >> 24 & 255) / 255.0F;
-                float f2 = (float)(i >> 16 & 255) / 255.0F;
-                float f3 = (float)(i >> 8 & 255) / 255.0F;
-                float f4 = (float)(i & 255) / 255.0F;
+            } else {
+                float f1 = (float) (i >> 24 & 255) / 255.0F;
+                float f2 = (float) (i >> 16 & 255) / 255.0F;
+                float f3 = (float) (i >> 8 & 255) / 255.0F;
+                float f4 = (float) (i & 255) / 255.0F;
                 this.brightnessBuffer.put(f2);
                 this.brightnessBuffer.put(f3);
                 this.brightnessBuffer.put(f4);
@@ -347,8 +304,7 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         }
     }
 
-    protected void unsetBrightness()
-    {
+    protected void unsetBrightness() {
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
         GlStateManager.enableTexture2D();
         GlStateManager.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -388,87 +344,70 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
-    protected void renderLivingAt(T entityLivingBaseIn, double x, double y, double z)
-    {
-        GlStateManager.translate((float)x, (float)y, (float)z);
+    protected void renderLivingAt(T entityLivingBaseIn, double x, double y, double z) {
+        GlStateManager.translate((float) x, (float) y, (float) z);
     }
 
-    protected void applyRotations(T entityLiving, float p_77043_2_, float rotationYaw, float partialTicks)
-    {
+    protected void applyRotations(T entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
         GlStateManager.rotate(180.0F - rotationYaw, 0.0F, 1.0F, 0.0F);
 
-        if (entityLiving.deathTime > 0)
-        {
-            float f = ((float)entityLiving.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
+        if (entityLiving.deathTime > 0) {
+            float f = ((float) entityLiving.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
             f = MathHelper.sqrt(f);
 
-            if (f > 1.0F)
-            {
+            if (f > 1.0F) {
                 f = 1.0F;
             }
 
             GlStateManager.rotate(f * this.getDeathMaxRotation(entityLiving), 0.0F, 0.0F, 1.0F);
-        }
-        else
-        {
+        } else {
             String s = TextFormatting.getTextWithoutFormattingCodes(entityLiving.getName());
 
-            if (s != null && ("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof EntityPlayer) || ((EntityPlayer)entityLiving).isWearing(EnumPlayerModelParts.CAPE)))
-            {
+            if (s != null && ("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof EntityPlayer) || ((EntityPlayer) entityLiving).isWearing(EnumPlayerModelParts.CAPE))) {
                 GlStateManager.translate(0.0F, entityLiving.height + 0.1F, 0.0F);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
             }
         }
     }
 
-    protected float getSwingProgress(T livingBase, float partialTickTime)
-    {
+    protected float getSwingProgress(T livingBase, float partialTickTime) {
         return livingBase.getSwingProgress(partialTickTime);
     }
 
-    protected float handleRotationFloat(T livingBase, float partialTicks)
-    {
-        return (float)livingBase.ticksExisted + partialTicks;
+    protected float handleRotationFloat(T livingBase, float partialTicks) {
+        return (float) livingBase.ticksExisted + partialTicks;
     }
 
-    protected void renderLayers(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn)
-    {
-        for (LayerRenderer<T> layerrenderer : this.layerRenderers)
-        {
+    protected void renderLayers(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn) {
+        for (LayerRenderer<T> layerrenderer : this.layerRenderers) {
             boolean flag = this.setBrightness(entitylivingbaseIn, partialTicks, layerrenderer.shouldCombineTextures());
             layerrenderer.doRenderLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scaleIn);
 
-            if (flag)
-            {
+            if (flag) {
                 this.unsetBrightness();
             }
         }
     }
 
-    protected float getDeathMaxRotation(T entityLivingBaseIn)
-    {
+    protected float getDeathMaxRotation(T entityLivingBaseIn) {
         return 90.0F;
     }
 
-    protected int getColorMultiplier(T entitylivingbaseIn, float lightBrightness, float partialTickTime)
-    {
+    protected int getColorMultiplier(T entitylivingbaseIn, float lightBrightness, float partialTickTime) {
         return 0;
     }
 
-    protected void preRenderCallback(T entitylivingbaseIn, float partialTickTime)
-    {
+    protected void preRenderCallback(T entitylivingbaseIn, float partialTickTime) {
     }
 
-    public void renderName(T entity, double x, double y, double z)
-    {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Pre<T>(entity, this, x, y, z))) return;
-        if (this.canRenderName(entity))
-        {
+    public void renderName(T entity, double x, double y, double z) {
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Pre<T>(entity, this, x, y, z)))
+            return;
+        if (this.canRenderName(entity)) {
             double d0 = entity.getDistanceSq(this.renderManager.renderViewEntity);
             float f = entity.isSneaking() ? NAME_TAG_RANGE_SNEAK : NAME_TAG_RANGE;
 
-            if (d0 < (double)(f * f))
-            {
+            if (d0 < (double) (f * f)) {
                 String s = entity.getDisplayName().getFormattedText();
                 GlStateManager.alphaFunc(516, 0.1F);
                 this.renderEntityName(entity, x, y, z, s, d0);
@@ -477,22 +416,18 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Specials.Post<T>(entity, this, x, y, z));
     }
 
-    protected boolean canRenderName(T entity)
-    {
+    protected boolean canRenderName(T entity) {
         EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
         boolean flag = !entity.isInvisibleToPlayer(entityplayersp);
 
-        if (entity != entityplayersp)
-        {
+        if (entity != entityplayersp) {
             Team team = entity.getTeam();
             Team team1 = entityplayersp.getTeam();
 
-            if (team != null)
-            {
+            if (team != null) {
                 Team.EnumVisible team$enumvisible = team.getNameTagVisibility();
 
-                switch (team$enumvisible)
-                {
+                switch (team$enumvisible) {
                     case ALWAYS:
                         return flag;
                     case NEVER:
@@ -510,12 +445,10 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         return Minecraft.isGuiEnabled() && entity != this.renderManager.renderViewEntity && flag && !entity.isBeingRidden();
     }
 
-    static
-    {
+    static {
         int[] aint = TEXTURE_BRIGHTNESS.getTextureData();
 
-        for (int i = 0; i < 256; ++i)
-        {
+        for (int i = 0; i < 256; ++i) {
             aint[i] = -1;
         }
 

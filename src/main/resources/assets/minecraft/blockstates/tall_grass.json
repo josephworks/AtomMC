@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "tall_grass" }
+  "variants": {
+    "normal": {
+      "model": "tall_grass"
     }
+  }
 }

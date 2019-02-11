@@ -57,8 +57,10 @@ public class MinecraftServerRunner extends BlockJUnit4ClassRunner {
                 runnable.run();
         });
 
-        addTask(() -> { });
-        addTask(() -> { }); // awaits previous task
+        addTask(() -> {
+        });
+        addTask(() -> {
+        }); // awaits previous task
     }
 
     private void addTask(Runnable task) {

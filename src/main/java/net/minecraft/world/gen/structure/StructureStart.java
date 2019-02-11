@@ -1,68 +1,59 @@
 package net.minecraft.world.gen.structure;
 
 import com.google.common.collect.Lists;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-public abstract class StructureStart
-{
+public abstract class StructureStart {
     protected List<StructureComponent> components = Lists.<StructureComponent>newLinkedList();
     protected StructureBoundingBox boundingBox;
     private int chunkPosX;
     private int chunkPosZ;
 
-    public StructureStart()
-    {
+    public StructureStart() {
     }
 
-    public StructureStart(int chunkX, int chunkZ)
-    {
+    public StructureStart(int chunkX, int chunkZ) {
         this.chunkPosX = chunkX;
         this.chunkPosZ = chunkZ;
     }
 
-    public StructureBoundingBox getBoundingBox()
-    {
+    public StructureBoundingBox getBoundingBox() {
         return this.boundingBox;
     }
 
-    public List<StructureComponent> getComponents()
-    {
+    public List<StructureComponent> getComponents() {
         return this.components;
     }
 
-    public void generateStructure(World worldIn, Random rand, StructureBoundingBox structurebb)
-    {
+    public void generateStructure(World worldIn, Random rand, StructureBoundingBox structurebb) {
         Iterator<StructureComponent> iterator = this.components.iterator();
 
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             StructureComponent structurecomponent = iterator.next();
 
-            if (structurecomponent.getBoundingBox().intersectsWith(structurebb) && !structurecomponent.addComponentParts(worldIn, rand, structurebb))
-            {
+            if (structurecomponent.getBoundingBox().intersectsWith(structurebb) && !structurecomponent.addComponentParts(worldIn, rand, structurebb)) {
                 iterator.remove();
             }
         }
     }
 
-    protected void updateBoundingBox()
-    {
+    protected void updateBoundingBox() {
         this.boundingBox = StructureBoundingBox.getNewBoundingBox();
 
-        for (StructureComponent structurecomponent : this.components)
-        {
+        for (StructureComponent structurecomponent : this.components) {
             this.boundingBox.expandTo(structurecomponent.getBoundingBox());
         }
     }
 
-    public NBTTagCompound writeStructureComponentsToNBT(int chunkX, int chunkZ)
-    {
+    public NBTTagCompound writeStructureComponentsToNBT(int chunkX, int chunkZ) {
         if (MapGenStructureIO.getStructureStartName(this) == null) // This is just a more friendly error instead of the 'Null String' below
         {
             throw new RuntimeException("StructureStart \"" + this.getClass().getName() + "\" missing ID Mapping, Modder see MapGenStructureIO");
@@ -74,8 +65,7 @@ public abstract class StructureStart
         nbttagcompound.setTag("BB", this.boundingBox.toNBTTagIntArray());
         NBTTagList nbttaglist = new NBTTagList();
 
-        for (StructureComponent structurecomponent : this.components)
-        {
+        for (StructureComponent structurecomponent : this.components) {
             nbttaglist.appendTag(structurecomponent.createStructureBaseNBT());
         }
 
@@ -84,98 +74,81 @@ public abstract class StructureStart
         return nbttagcompound;
     }
 
-    public void writeToNBT(NBTTagCompound tagCompound)
-    {
+    public void writeToNBT(NBTTagCompound tagCompound) {
     }
 
-    public void readStructureComponentsFromNBT(World worldIn, NBTTagCompound tagCompound)
-    {
+    public void readStructureComponentsFromNBT(World worldIn, NBTTagCompound tagCompound) {
         this.chunkPosX = tagCompound.getInteger("ChunkX");
         this.chunkPosZ = tagCompound.getInteger("ChunkZ");
 
-        if (tagCompound.hasKey("BB"))
-        {
+        if (tagCompound.hasKey("BB")) {
             this.boundingBox = new StructureBoundingBox(tagCompound.getIntArray("BB"));
         }
 
         NBTTagList nbttaglist = tagCompound.getTagList("Children", 10);
 
-        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-        {
+        for (int i = 0; i < nbttaglist.tagCount(); ++i) {
             StructureComponent tmp = MapGenStructureIO.getStructureComponent(nbttaglist.getCompoundTagAt(i), worldIn);
-            if (tmp != null) this.components.add(tmp); //Forge: Prevent NPEs further down the line when a componenet can't be loaded.
+            if (tmp != null)
+                this.components.add(tmp); //Forge: Prevent NPEs further down the line when a componenet can't be loaded.
         }
 
         this.readFromNBT(tagCompound);
     }
 
-    public void readFromNBT(NBTTagCompound tagCompound)
-    {
+    public void readFromNBT(NBTTagCompound tagCompound) {
     }
 
-    protected void markAvailableHeight(World worldIn, Random rand, int p_75067_3_)
-    {
+    protected void markAvailableHeight(World worldIn, Random rand, int p_75067_3_) {
         int i = worldIn.getSeaLevel() - p_75067_3_;
         int j = this.boundingBox.getYSize() + 1;
 
-        if (j < i)
-        {
+        if (j < i) {
             j += rand.nextInt(i - j);
         }
 
         int k = j - this.boundingBox.maxY;
         this.boundingBox.offset(0, k, 0);
 
-        for (StructureComponent structurecomponent : this.components)
-        {
+        for (StructureComponent structurecomponent : this.components) {
             structurecomponent.offset(0, k, 0);
         }
     }
 
-    protected void setRandomHeight(World worldIn, Random rand, int p_75070_3_, int p_75070_4_)
-    {
+    protected void setRandomHeight(World worldIn, Random rand, int p_75070_3_, int p_75070_4_) {
         int i = p_75070_4_ - p_75070_3_ + 1 - this.boundingBox.getYSize();
         int j;
 
-        if (i > 1)
-        {
+        if (i > 1) {
             j = p_75070_3_ + rand.nextInt(i);
-        }
-        else
-        {
+        } else {
             j = p_75070_3_;
         }
 
         int k = j - this.boundingBox.minY;
         this.boundingBox.offset(0, k, 0);
 
-        for (StructureComponent structurecomponent : this.components)
-        {
+        for (StructureComponent structurecomponent : this.components) {
             structurecomponent.offset(0, k, 0);
         }
     }
 
-    public boolean isSizeableStructure()
-    {
+    public boolean isSizeableStructure() {
         return true;
     }
 
-    public boolean isValidForPostProcess(ChunkPos pair)
-    {
+    public boolean isValidForPostProcess(ChunkPos pair) {
         return true;
     }
 
-    public void notifyPostProcessAt(ChunkPos pair)
-    {
+    public void notifyPostProcessAt(ChunkPos pair) {
     }
 
-    public int getChunkPosX()
-    {
+    public int getChunkPosX() {
         return this.chunkPosX;
     }
 
-    public int getChunkPosZ()
-    {
+    public int getChunkPosZ() {
         return this.chunkPosZ;
     }
 }

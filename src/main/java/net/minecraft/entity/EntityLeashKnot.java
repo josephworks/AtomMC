@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockFence;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -18,17 +19,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 
-public class EntityLeashKnot extends EntityHanging
-{
-    public EntityLeashKnot(World worldIn)
-    {
+public class EntityLeashKnot extends EntityHanging {
+    public EntityLeashKnot(World worldIn) {
         super(worldIn);
     }
 
-    public EntityLeashKnot(World worldIn, BlockPos hangingPositionIn)
-    {
+    public EntityLeashKnot(World worldIn, BlockPos hangingPositionIn) {
         super(worldIn, hangingPositionIn);
-        this.setPosition((double)hangingPositionIn.getX() + 0.5D, (double)hangingPositionIn.getY() + 0.5D, (double)hangingPositionIn.getZ() + 0.5D);
+        this.setPosition((double) hangingPositionIn.getX() + 0.5D, (double) hangingPositionIn.getY() + 0.5D, (double) hangingPositionIn.getZ() + 0.5D);
         float f = 0.125F;
         float f1 = 0.1875F;
         float f2 = 0.25F;
@@ -36,78 +34,62 @@ public class EntityLeashKnot extends EntityHanging
         this.forceSpawn = true;
     }
 
-    public void setPosition(double x, double y, double z)
-    {
-        super.setPosition((double)MathHelper.floor(x) + 0.5D, (double)MathHelper.floor(y) + 0.5D, (double)MathHelper.floor(z) + 0.5D);
+    public void setPosition(double x, double y, double z) {
+        super.setPosition((double) MathHelper.floor(x) + 0.5D, (double) MathHelper.floor(y) + 0.5D, (double) MathHelper.floor(z) + 0.5D);
     }
 
-    protected void updateBoundingBox()
-    {
-        this.posX = (double)this.hangingPosition.getX() + 0.5D;
-        this.posY = (double)this.hangingPosition.getY() + 0.5D;
-        this.posZ = (double)this.hangingPosition.getZ() + 0.5D;
-        if (this.isAddedToWorld() && !this.world.isRemote) this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
+    protected void updateBoundingBox() {
+        this.posX = (double) this.hangingPosition.getX() + 0.5D;
+        this.posY = (double) this.hangingPosition.getY() + 0.5D;
+        this.posZ = (double) this.hangingPosition.getZ() + 0.5D;
+        if (this.isAddedToWorld() && !this.world.isRemote)
+            this.world.updateEntityWithOptionalForce(this, false); // Forge - Process chunk registration after moving.
     }
 
-    public void updateFacingWithBoundingBox(EnumFacing facingDirectionIn)
-    {
+    public void updateFacingWithBoundingBox(EnumFacing facingDirectionIn) {
     }
 
-    public int getWidthPixels()
-    {
+    public int getWidthPixels() {
         return 9;
     }
 
-    public int getHeightPixels()
-    {
+    public int getHeightPixels() {
         return 9;
     }
 
-    public float getEyeHeight()
-    {
+    public float getEyeHeight() {
         return -0.0625F;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean isInRangeToRenderDist(double distance)
-    {
+    public boolean isInRangeToRenderDist(double distance) {
         return distance < 1024.0D;
     }
 
-    public void onBroken(@Nullable Entity brokenEntity)
-    {
+    public void onBroken(@Nullable Entity brokenEntity) {
         this.playSound(SoundEvents.ENTITY_LEASHKNOT_BREAK, 1.0F, 1.0F);
     }
 
-    public boolean writeToNBTOptional(NBTTagCompound compound)
-    {
+    public boolean writeToNBTOptional(NBTTagCompound compound) {
         return false;
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
+    public void writeEntityToNBT(NBTTagCompound compound) {
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
     }
 
-    public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
-    {
-        if (this.world.isRemote)
-        {
+    public boolean processInitialInteract(EntityPlayer player, EnumHand hand) {
+        if (this.world.isRemote) {
             return true;
-        }
-        else
-        {
+        } else {
             boolean flag = false;
             double d0 = 7.0D;
             List<EntityLiving> list = this.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D));
 
-            for (EntityLiving entityliving : list)
-            {
-                if (entityliving.getLeashed() && entityliving.getLeashHolder() == player)
-                {
+            for (EntityLiving entityliving : list) {
+                if (entityliving.getLeashed() && entityliving.getLeashHolder() == player) {
                     if (CraftEventFactory.callPlayerLeashEntityEvent(entityliving, this, player).isCancelled()) {
                         ((EntityPlayerMP) player).connection.sendPacket(new SPacketEntityAttach(entityliving, entityliving.getLeashHolder()));
                         continue;
@@ -117,16 +99,13 @@ public class EntityLeashKnot extends EntityHanging
                 }
             }
 
-            if (!flag)
-            {
+            if (!flag) {
                 // CraftBukkit start - Move below
                 // this.setDead();
                 if (true || player.capabilities.isCreativeMode) { // CraftBukkit - Process for non-creative as well
-                boolean die = true;
-                    for (EntityLiving entityliving1 : list)
-                    {
-                        if (entityliving1.getLeashed() && entityliving1.getLeashHolder() == this)
-                        {
+                    boolean die = true;
+                    for (EntityLiving entityliving1 : list) {
+                        if (entityliving1.getLeashed() && entityliving1.getLeashHolder() == this) {
                             // entityliving1.clearLeashed(true, false);
                             if (CraftEventFactory.callPlayerUnleashEntityEvent(entityliving1, player).isCancelled()) {
                                 die = false;
@@ -145,13 +124,11 @@ public class EntityLeashKnot extends EntityHanging
         }
     }
 
-    public boolean onValidSurface()
-    {
+    public boolean onValidSurface() {
         return this.world.getBlockState(this.hangingPosition).getBlock() instanceof BlockFence;
     }
 
-    public static EntityLeashKnot createKnot(World worldIn, BlockPos fence)
-    {
+    public static EntityLeashKnot createKnot(World worldIn, BlockPos fence) {
         EntityLeashKnot entityleashknot = new EntityLeashKnot(worldIn, fence);
         worldIn.spawnEntity(entityleashknot);
         entityleashknot.playPlaceSound();
@@ -159,16 +136,13 @@ public class EntityLeashKnot extends EntityHanging
     }
 
     @Nullable
-    public static EntityLeashKnot getKnotForPosition(World worldIn, BlockPos pos)
-    {
+    public static EntityLeashKnot getKnotForPosition(World worldIn, BlockPos pos) {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
 
-        for (EntityLeashKnot entityleashknot : worldIn.getEntitiesWithinAABB(EntityLeashKnot.class, new AxisAlignedBB((double)i - 1.0D, (double)j - 1.0D, (double)k - 1.0D, (double)i + 1.0D, (double)j + 1.0D, (double)k + 1.0D)))
-        {
-            if (entityleashknot.getHangingPosition().equals(pos))
-            {
+        for (EntityLeashKnot entityleashknot : worldIn.getEntitiesWithinAABB(EntityLeashKnot.class, new AxisAlignedBB((double) i - 1.0D, (double) j - 1.0D, (double) k - 1.0D, (double) i + 1.0D, (double) j + 1.0D, (double) k + 1.0D))) {
+            if (entityleashknot.getHangingPosition().equals(pos)) {
                 return entityleashknot;
             }
         }
@@ -176,8 +150,7 @@ public class EntityLeashKnot extends EntityHanging
         return null;
     }
 
-    public void playPlaceSound()
-    {
+    public void playPlaceSound() {
         this.playSound(SoundEvents.ENTITY_LEASHKNOT_PLACE, 1.0F, 1.0F);
     }
 }

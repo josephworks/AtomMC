@@ -29,14 +29,12 @@ import com.google.common.io.ByteSource;
 public class LZMAInputSupplier extends ByteSource {
     private InputStream compressedData;
 
-    public LZMAInputSupplier(InputStream compressedData)
-    {
+    public LZMAInputSupplier(InputStream compressedData) {
         this.compressedData = compressedData;
     }
 
     @Override
-    public InputStream openStream() throws IOException
-    {
+    public InputStream openStream() throws IOException {
         return new LzmaInputStream(this.compressedData);
     }
 

@@ -1,6 +1,7 @@
 package net.minecraft.command;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Score;
@@ -12,94 +13,82 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
-public class CommandResultStats
-{
+public class CommandResultStats {
     private static final int NUM_RESULT_TYPES = Type.values().length;
     private static final String[] STRING_RESULT_TYPES = new String[NUM_RESULT_TYPES];
     private String[] entitiesID;
     private String[] objectives;
 
-    public CommandResultStats()
-    {
+    public CommandResultStats() {
         this.entitiesID = STRING_RESULT_TYPES;
         this.objectives = STRING_RESULT_TYPES;
     }
 
-    public void setCommandStatForSender(MinecraftServer server, final ICommandSender sender, Type typeIn, int p_184932_4_)
-    {
+    public void setCommandStatForSender(MinecraftServer server, final ICommandSender sender, Type typeIn, int p_184932_4_) {
         String s = this.entitiesID[typeIn.getTypeID()];
 
-        if (s != null)
-        {
-            ICommandSender icommandsender = new ICommandSender()
-            {
-                public String getName()
-                {
+        if (s != null) {
+            ICommandSender icommandsender = new ICommandSender() {
+                public String getName() {
                     return sender.getName();
                 }
-                public ITextComponent getDisplayName()
-                {
+
+                public ITextComponent getDisplayName() {
                     return sender.getDisplayName();
                 }
-                public void sendMessage(ITextComponent component)
-                {
+
+                public void sendMessage(ITextComponent component) {
                     sender.sendMessage(component);
                 }
-                public boolean canUseCommand(int permLevel, String commandName)
-                {
+
+                public boolean canUseCommand(int permLevel, String commandName) {
                     return true;
                 }
-                public BlockPos getPosition()
-                {
+
+                public BlockPos getPosition() {
                     return sender.getPosition();
                 }
-                public Vec3d getPositionVector()
-                {
+
+                public Vec3d getPositionVector() {
                     return sender.getPositionVector();
                 }
-                public World getEntityWorld()
-                {
+
+                public World getEntityWorld() {
                     return sender.getEntityWorld();
                 }
-                public Entity getCommandSenderEntity()
-                {
+
+                public Entity getCommandSenderEntity() {
                     return sender.getCommandSenderEntity();
                 }
-                public boolean sendCommandFeedback()
-                {
+
+                public boolean sendCommandFeedback() {
                     return sender.sendCommandFeedback();
                 }
-                public void setCommandStat(Type type, int amount)
-                {
+
+                public void setCommandStat(Type type, int amount) {
                     sender.setCommandStat(type, amount);
                 }
-                public MinecraftServer getServer()
-                {
+
+                public MinecraftServer getServer() {
                     return sender.getServer();
                 }
             };
             String s1;
 
-            try
-            {
+            try {
                 s1 = CommandBase.getEntityName(server, icommandsender, s);
-            }
-            catch (CommandException var12)
-            {
+            } catch (CommandException var12) {
                 return;
             }
 
             String s2 = this.objectives[typeIn.getTypeID()];
 
-            if (s2 != null)
-            {
+            if (s2 != null) {
                 Scoreboard scoreboard = sender.getEntityWorld().getScoreboard();
                 ScoreObjective scoreobjective = scoreboard.getObjective(s2);
 
-                if (scoreobjective != null)
-                {
-                    if (scoreboard.entityHasObjective(s1, scoreobjective))
-                    {
+                if (scoreobjective != null) {
+                    if (scoreboard.entityHasObjective(s1, scoreobjective)) {
                         Score score = scoreboard.getOrCreateScore(s1, scoreobjective);
                         score.setScorePoints(p_184932_4_);
                     }
@@ -108,19 +97,15 @@ public class CommandResultStats
         }
     }
 
-    public void readStatsFromNBT(NBTTagCompound tagcompound)
-    {
-        if (tagcompound.hasKey("CommandStats", 10))
-        {
+    public void readStatsFromNBT(NBTTagCompound tagcompound) {
+        if (tagcompound.hasKey("CommandStats", 10)) {
             NBTTagCompound nbttagcompound = tagcompound.getCompoundTag("CommandStats");
 
-            for (Type commandresultstats$type : Type.values())
-            {
+            for (Type commandresultstats$type : Type.values()) {
                 String s = commandresultstats$type.getTypeName() + "Name";
                 String s1 = commandresultstats$type.getTypeName() + "Objective";
 
-                if (nbttagcompound.hasKey(s, 8) && nbttagcompound.hasKey(s1, 8))
-                {
+                if (nbttagcompound.hasKey(s, 8) && nbttagcompound.hasKey(s1, 8)) {
                     String s2 = nbttagcompound.getString(s);
                     String s3 = nbttagcompound.getString(s1);
                     setScoreBoardStat(this, commandresultstats$type, s2, s3);
@@ -129,82 +114,65 @@ public class CommandResultStats
         }
     }
 
-    public void writeStatsToNBT(NBTTagCompound tagcompound)
-    {
+    public void writeStatsToNBT(NBTTagCompound tagcompound) {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
 
-        for (Type commandresultstats$type : Type.values())
-        {
+        for (Type commandresultstats$type : Type.values()) {
             String s = this.entitiesID[commandresultstats$type.getTypeID()];
             String s1 = this.objectives[commandresultstats$type.getTypeID()];
 
-            if (s != null && s1 != null)
-            {
+            if (s != null && s1 != null) {
                 nbttagcompound.setString(commandresultstats$type.getTypeName() + "Name", s);
                 nbttagcompound.setString(commandresultstats$type.getTypeName() + "Objective", s1);
             }
         }
 
-        if (!nbttagcompound.hasNoTags())
-        {
+        if (!nbttagcompound.hasNoTags()) {
             tagcompound.setTag("CommandStats", nbttagcompound);
         }
     }
 
-    public static void setScoreBoardStat(CommandResultStats stats, Type resultType, @Nullable String entityID, @Nullable String objectiveName)
-    {
-        if (entityID != null && !entityID.isEmpty() && objectiveName != null && !objectiveName.isEmpty())
-        {
-            if (stats.entitiesID == STRING_RESULT_TYPES || stats.objectives == STRING_RESULT_TYPES)
-            {
+    public static void setScoreBoardStat(CommandResultStats stats, Type resultType, @Nullable String entityID, @Nullable String objectiveName) {
+        if (entityID != null && !entityID.isEmpty() && objectiveName != null && !objectiveName.isEmpty()) {
+            if (stats.entitiesID == STRING_RESULT_TYPES || stats.objectives == STRING_RESULT_TYPES) {
                 stats.entitiesID = new String[NUM_RESULT_TYPES];
                 stats.objectives = new String[NUM_RESULT_TYPES];
             }
 
             stats.entitiesID[resultType.getTypeID()] = entityID;
             stats.objectives[resultType.getTypeID()] = objectiveName;
-        }
-        else
-        {
+        } else {
             removeScoreBoardStat(stats, resultType);
         }
     }
 
-    private static void removeScoreBoardStat(CommandResultStats resultStatsIn, Type resultTypeIn)
-    {
-        if (resultStatsIn.entitiesID != STRING_RESULT_TYPES && resultStatsIn.objectives != STRING_RESULT_TYPES)
-        {
+    private static void removeScoreBoardStat(CommandResultStats resultStatsIn, Type resultTypeIn) {
+        if (resultStatsIn.entitiesID != STRING_RESULT_TYPES && resultStatsIn.objectives != STRING_RESULT_TYPES) {
             resultStatsIn.entitiesID[resultTypeIn.getTypeID()] = null;
             resultStatsIn.objectives[resultTypeIn.getTypeID()] = null;
             boolean flag = true;
 
-            for (Type commandresultstats$type : Type.values())
-            {
-                if (resultStatsIn.entitiesID[commandresultstats$type.getTypeID()] != null && resultStatsIn.objectives[commandresultstats$type.getTypeID()] != null)
-                {
+            for (Type commandresultstats$type : Type.values()) {
+                if (resultStatsIn.entitiesID[commandresultstats$type.getTypeID()] != null && resultStatsIn.objectives[commandresultstats$type.getTypeID()] != null) {
                     flag = false;
                     break;
                 }
             }
 
-            if (flag)
-            {
+            if (flag) {
                 resultStatsIn.entitiesID = STRING_RESULT_TYPES;
                 resultStatsIn.objectives = STRING_RESULT_TYPES;
             }
         }
     }
 
-    public void addAllStats(CommandResultStats resultStatsIn)
-    {
-        for (Type commandresultstats$type : Type.values())
-        {
+    public void addAllStats(CommandResultStats resultStatsIn) {
+        for (Type commandresultstats$type : Type.values()) {
             setScoreBoardStat(this, commandresultstats$type, resultStatsIn.entitiesID[commandresultstats$type.getTypeID()], resultStatsIn.objectives[commandresultstats$type.getTypeID()]);
         }
     }
 
-    public static enum Type
-    {
+    public static enum Type {
         SUCCESS_COUNT(0, "SuccessCount"),
         AFFECTED_BLOCKS(1, "AffectedBlocks"),
         AFFECTED_ENTITIES(2, "AffectedEntities"),
@@ -214,29 +182,24 @@ public class CommandResultStats
         final int typeID;
         final String typeName;
 
-        private Type(int id, String name)
-        {
+        private Type(int id, String name) {
             this.typeID = id;
             this.typeName = name;
         }
 
-        public int getTypeID()
-        {
+        public int getTypeID() {
             return this.typeID;
         }
 
-        public String getTypeName()
-        {
+        public String getTypeName() {
             return this.typeName;
         }
 
-        public static String[] getTypeNames()
-        {
+        public static String[] getTypeNames() {
             String[] astring = new String[values().length];
             int i = 0;
 
-            for (Type commandresultstats$type : values())
-            {
+            for (Type commandresultstats$type : values()) {
                 astring[i++] = commandresultstats$type.getTypeName();
             }
 
@@ -244,12 +207,9 @@ public class CommandResultStats
         }
 
         @Nullable
-        public static CommandResultStats.Type getTypeByName(String name)
-        {
-            for (Type commandresultstats$type : values())
-            {
-                if (commandresultstats$type.getTypeName().equals(name))
-                {
+        public static CommandResultStats.Type getTypeByName(String name) {
+            for (Type commandresultstats$type : values()) {
+                if (commandresultstats$type.getTypeName().equals(name)) {
                     return commandresultstats$type;
                 }
             }

@@ -2,10 +2,12 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,8 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
-public class GuiFlatPresets extends GuiScreen
-{
+public class GuiFlatPresets extends GuiScreen {
     private static final List<LayerItem> FLAT_WORLD_PRESETS = Lists.<LayerItem>newArrayList();
     private final GuiCreateFlatWorld parentScreen;
     private String presetsTitle;
@@ -37,13 +38,11 @@ public class GuiFlatPresets extends GuiScreen
     private GuiButton btnSelect;
     private GuiTextField export;
 
-    public GuiFlatPresets(GuiCreateFlatWorld p_i46318_1_)
-    {
+    public GuiFlatPresets(GuiCreateFlatWorld p_i46318_1_) {
         this.parentScreen = p_i46318_1_;
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
         this.presetsTitle = I18n.format("createWorld.customize.presets.title");
@@ -58,46 +57,36 @@ public class GuiFlatPresets extends GuiScreen
         this.updateButtonValidity();
     }
 
-    public void handleMouseInput() throws IOException
-    {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         this.list.handleMouseInput();
     }
 
-    public void onGuiClosed()
-    {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         this.export.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
-        if (!this.export.textboxKeyTyped(typedChar, keyCode))
-        {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (!this.export.textboxKeyTyped(typedChar, keyCode)) {
             super.keyTyped(typedChar, keyCode);
         }
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.id == 0 && this.hasValidSelection())
-        {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.id == 0 && this.hasValidSelection()) {
             this.parentScreen.setPreset(this.export.getText());
             this.mc.displayGuiScreen(this.parentScreen);
-        }
-        else if (button.id == 1)
-        {
+        } else if (button.id == 1) {
             this.mc.displayGuiScreen(this.parentScreen);
         }
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         this.list.drawScreen(mouseX, mouseY, partialTicks);
         this.drawCenteredString(this.fontRenderer, this.presetsTitle, this.width / 2, 8, 16777215);
@@ -107,49 +96,41 @@ public class GuiFlatPresets extends GuiScreen
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public void updateScreen()
-    {
+    public void updateScreen() {
         this.export.updateCursorCounter();
         super.updateScreen();
     }
 
-    public void updateButtonValidity()
-    {
+    public void updateButtonValidity() {
         this.btnSelect.enabled = this.hasValidSelection();
     }
 
-    private boolean hasValidSelection()
-    {
+    private boolean hasValidSelection() {
         return this.list.selected > -1 && this.list.selected < FLAT_WORLD_PRESETS.size() || this.export.getText().length() > 1;
     }
 
-    private static void registerPreset(String name, Item icon, Biome biome, List<String> features, FlatLayerInfo... layers)
-    {
+    private static void registerPreset(String name, Item icon, Biome biome, List<String> features, FlatLayerInfo... layers) {
         registerPreset(name, icon, 0, biome, features, layers);
     }
 
-    private static void registerPreset(String name, Item icon, int iconMetadata, Biome biome, List<String> features, FlatLayerInfo... layers)
-    {
+    private static void registerPreset(String name, Item icon, int iconMetadata, Biome biome, List<String> features, FlatLayerInfo... layers) {
         FlatGeneratorInfo flatgeneratorinfo = new FlatGeneratorInfo();
 
-        for (int i = layers.length - 1; i >= 0; --i)
-        {
+        for (int i = layers.length - 1; i >= 0; --i) {
             flatgeneratorinfo.getFlatLayers().add(layers[i]);
         }
 
         flatgeneratorinfo.setBiome(Biome.getIdForBiome(biome));
         flatgeneratorinfo.updateLayers();
 
-        for (String s : features)
-        {
+        for (String s : features) {
             flatgeneratorinfo.getWorldFeatures().put(s, Maps.newHashMap());
         }
 
         FLAT_WORLD_PRESETS.add(new LayerItem(icon, iconMetadata, name, flatgeneratorinfo.toString()));
     }
 
-    static
-    {
+    static {
         registerPreset(I18n.format("createWorld.customize.preset.classic_flat"), Item.getItemFromBlock(Blocks.GRASS), Biomes.PLAINS, Arrays.asList("village"), new FlatLayerInfo(1, Blocks.GRASS), new FlatLayerInfo(2, Blocks.DIRT), new FlatLayerInfo(1, Blocks.BEDROCK));
         registerPreset(I18n.format("createWorld.customize.preset.tunnelers_dream"), Item.getItemFromBlock(Blocks.STONE), Biomes.EXTREME_HILLS, Arrays.asList("biome_1", "dungeon", "decoration", "stronghold", "mineshaft"), new FlatLayerInfo(1, Blocks.GRASS), new FlatLayerInfo(5, Blocks.DIRT), new FlatLayerInfo(230, Blocks.STONE), new FlatLayerInfo(1, Blocks.BEDROCK));
         registerPreset(I18n.format("createWorld.customize.preset.water_world"), Items.WATER_BUCKET, Biomes.DEEP_OCEAN, Arrays.asList("biome_1", "oceanmonument"), new FlatLayerInfo(90, Blocks.WATER), new FlatLayerInfo(5, Blocks.SAND), new FlatLayerInfo(5, Blocks.DIRT), new FlatLayerInfo(5, Blocks.STONE), new FlatLayerInfo(1, Blocks.BEDROCK));
@@ -162,34 +143,29 @@ public class GuiFlatPresets extends GuiScreen
     }
 
     @SideOnly(Side.CLIENT)
-    static class LayerItem
-        {
-            public Item icon;
-            public int iconMetadata;
-            public String name;
-            public String generatorInfo;
+    static class LayerItem {
+        public Item icon;
+        public int iconMetadata;
+        public String name;
+        public String generatorInfo;
 
-            public LayerItem(Item iconIn, int iconMetadataIn, String nameIn, String generatorInfoIn)
-            {
-                this.icon = iconIn;
-                this.iconMetadata = iconMetadataIn;
-                this.name = nameIn;
-                this.generatorInfo = generatorInfoIn;
-            }
+        public LayerItem(Item iconIn, int iconMetadataIn, String nameIn, String generatorInfoIn) {
+            this.icon = iconIn;
+            this.iconMetadata = iconMetadataIn;
+            this.name = nameIn;
+            this.generatorInfo = generatorInfoIn;
         }
+    }
 
     @SideOnly(Side.CLIENT)
-    class ListSlot extends GuiSlot
-    {
+    class ListSlot extends GuiSlot {
         public int selected = -1;
 
-        public ListSlot()
-        {
+        public ListSlot() {
             super(GuiFlatPresets.this.mc, GuiFlatPresets.this.width, GuiFlatPresets.this.height, 80, GuiFlatPresets.this.height - 37, 24);
         }
 
-        private void renderIcon(int p_178054_1_, int p_178054_2_, Item icon, int iconMetadata)
-        {
+        private void renderIcon(int p_178054_1_, int p_178054_2_, Item icon, int iconMetadata) {
             this.blitSlotBg(p_178054_1_ + 1, p_178054_2_ + 1);
             GlStateManager.enableRescaleNormal();
             RenderHelper.enableGUIStandardItemLighting();
@@ -198,13 +174,11 @@ public class GuiFlatPresets extends GuiScreen
             GlStateManager.disableRescaleNormal();
         }
 
-        private void blitSlotBg(int p_148173_1_, int p_148173_2_)
-        {
+        private void blitSlotBg(int p_148173_1_, int p_148173_2_) {
             this.blitSlotIcon(p_148173_1_, p_148173_2_, 0, 0);
         }
 
-        private void blitSlotIcon(int p_148171_1_, int p_148171_2_, int p_148171_3_, int p_148171_4_)
-        {
+        private void blitSlotIcon(int p_148171_1_, int p_148171_2_, int p_148171_3_, int p_148171_4_) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.mc.getTextureManager().bindTexture(Gui.STAT_ICONS);
             float f = 0.0078125F;
@@ -214,36 +188,31 @@ public class GuiFlatPresets extends GuiScreen
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-            bufferbuilder.pos((double)(p_148171_1_ + 0), (double)(p_148171_2_ + 18), (double)GuiFlatPresets.this.zLevel).tex((double)((float)(p_148171_3_ + 0) * 0.0078125F), (double)((float)(p_148171_4_ + 18) * 0.0078125F)).endVertex();
-            bufferbuilder.pos((double)(p_148171_1_ + 18), (double)(p_148171_2_ + 18), (double)GuiFlatPresets.this.zLevel).tex((double)((float)(p_148171_3_ + 18) * 0.0078125F), (double)((float)(p_148171_4_ + 18) * 0.0078125F)).endVertex();
-            bufferbuilder.pos((double)(p_148171_1_ + 18), (double)(p_148171_2_ + 0), (double)GuiFlatPresets.this.zLevel).tex((double)((float)(p_148171_3_ + 18) * 0.0078125F), (double)((float)(p_148171_4_ + 0) * 0.0078125F)).endVertex();
-            bufferbuilder.pos((double)(p_148171_1_ + 0), (double)(p_148171_2_ + 0), (double)GuiFlatPresets.this.zLevel).tex((double)((float)(p_148171_3_ + 0) * 0.0078125F), (double)((float)(p_148171_4_ + 0) * 0.0078125F)).endVertex();
+            bufferbuilder.pos((double) (p_148171_1_ + 0), (double) (p_148171_2_ + 18), (double) GuiFlatPresets.this.zLevel).tex((double) ((float) (p_148171_3_ + 0) * 0.0078125F), (double) ((float) (p_148171_4_ + 18) * 0.0078125F)).endVertex();
+            bufferbuilder.pos((double) (p_148171_1_ + 18), (double) (p_148171_2_ + 18), (double) GuiFlatPresets.this.zLevel).tex((double) ((float) (p_148171_3_ + 18) * 0.0078125F), (double) ((float) (p_148171_4_ + 18) * 0.0078125F)).endVertex();
+            bufferbuilder.pos((double) (p_148171_1_ + 18), (double) (p_148171_2_ + 0), (double) GuiFlatPresets.this.zLevel).tex((double) ((float) (p_148171_3_ + 18) * 0.0078125F), (double) ((float) (p_148171_4_ + 0) * 0.0078125F)).endVertex();
+            bufferbuilder.pos((double) (p_148171_1_ + 0), (double) (p_148171_2_ + 0), (double) GuiFlatPresets.this.zLevel).tex((double) ((float) (p_148171_3_ + 0) * 0.0078125F), (double) ((float) (p_148171_4_ + 0) * 0.0078125F)).endVertex();
             tessellator.draw();
         }
 
-        protected int getSize()
-        {
+        protected int getSize() {
             return GuiFlatPresets.FLAT_WORLD_PRESETS.size();
         }
 
-        protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY)
-        {
+        protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY) {
             this.selected = slotIndex;
             GuiFlatPresets.this.updateButtonValidity();
             GuiFlatPresets.this.export.setText((GuiFlatPresets.FLAT_WORLD_PRESETS.get(GuiFlatPresets.this.list.selected)).generatorInfo);
         }
 
-        protected boolean isSelected(int slotIndex)
-        {
+        protected boolean isSelected(int slotIndex) {
             return slotIndex == this.selected;
         }
 
-        protected void drawBackground()
-        {
+        protected void drawBackground() {
         }
 
-        protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks)
-        {
+        protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
             LayerItem guiflatpresets$layeritem = GuiFlatPresets.FLAT_WORLD_PRESETS.get(slotIndex);
             this.renderIcon(xPos, yPos, guiflatpresets$layeritem.icon, guiflatpresets$layeritem.iconMetadata);
             GuiFlatPresets.this.fontRenderer.drawString(guiflatpresets$layeritem.name, xPos + 18 + 5, yPos + 6, 16777215);
