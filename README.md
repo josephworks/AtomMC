@@ -33,5 +33,3 @@ Should you have any questions or need any assistance please do not hesitate to j
 ## Contributing
 You're always more than welcome to send pull requests and raise issues.
 
-## Support project
-If you want to express your gratitude you may support AtomicInteger on [Patreon](https://www.patreon.com/AtomicInteger).
