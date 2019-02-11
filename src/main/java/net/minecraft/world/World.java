@@ -190,11 +190,12 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
         this.lightUpdateBlockList = new int[32768];
         this.saveHandler = saveHandlerIn;
         this.profiler = profilerIn;
-        this.worldInfo = saveHandlerIn.loadWorldInfo();
+        this.worldInfo = info;
         this.provider = providerIn;
         this.mapStorage = DimensionManager.getWorld(0) != null ? DimensionManager.getWorld(0).mapStorage : new MapStorage(null);
         if (this.worldInfo == null) {
             this.worldInfo = new WorldInfo(new WorldSettings(info), worldName);
+            // this.worldInfo = saveHandlerIn.loadWorldInfo();
             this.worldInfo.world = (WorldServer) this;
             this.worldInfo.setDimension(this.provider.getDimension());
         } else {

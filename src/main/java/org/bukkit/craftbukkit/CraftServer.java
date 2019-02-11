@@ -67,6 +67,8 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -947,7 +949,8 @@ public final class CraftServer implements Server {
             worlddata = new WorldInfo(worldSettings, name);
         }
         worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-        WorldServer internal = (WorldServer) new WorldServer(console, sdm, worlddata, dimension, console.profiler, creator.environment(), generator, name).init();
+        WorldSettings worldSettings1 = new WorldSettings(creator.seed(), WorldSettings.getGameTypeById(getDefaultGameMode().getValue()), generateStructures, false, type);
+        WorldServer internal = DimensionManager.initDimension(creator, worldSettings1);
 
         if (!(worlds.containsKey(name.toLowerCase(java.util.Locale.ENGLISH)))) {
             return null;
@@ -1035,9 +1038,10 @@ public final class CraftServer implements Server {
                 getLogger().log(Level.SEVERE, null, ex);
             }
         }
-
+        MinecraftForge.EVENT_BUS.post(new WorldEvent.Unload(handle));
         worlds.remove(world.getName().toLowerCase(java.util.Locale.ENGLISH));
         console.worldServerList.remove(console.worldServerList.indexOf(handle));
+        DimensionManager.setWorld(handle.provider.getDimension(), null, handle.getMinecraftServer());
         return true;
     }
 

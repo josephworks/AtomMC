@@ -48,6 +48,7 @@ import com.google.common.collect.Multiset;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.MinecraftException;
 import net.minecraft.world.World;
@@ -55,12 +56,16 @@ import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerMulti;
+import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.storage.AnvilSaveHandler;
 import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import org.bukkit.Bukkit;
+import org.bukkit.WorldCreator;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.generator.ChunkGenerator;
 
@@ -285,12 +290,60 @@ public class DimensionManager
         WorldServer world = (dim == 0 ? overworld : (WorldServer)(new WorldServerMulti(mcServer, newSaveHandler, dim, overworld, mcServer.profiler, overworld.getWorldInfo(), worldEnvironment, chunkGenerator, name).init()));
         world.addEventListener(new ServerWorldEventHandler(mcServer, world));
         MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(world));
+        Bukkit.getServer().getPluginManager().callEvent(new WorldLoadEvent(world.getWorld()));
         if (!mcServer.isSinglePlayer())
         {
             world.getWorldInfo().setGameType(mcServer.getGameType());
         }
 
         mcServer.setDifficultyForAllWorlds(mcServer.getDifficulty());
+    }
+
+    public static WorldServer initDimension(WorldCreator creator, WorldSettings worldSettings) {
+        WorldServer overWorld = getWorld(0);
+        if (overWorld == null)
+            throw new RuntimeException("Cannot Hotload Dim: Overworld is not Loaded!");
+
+        MinecraftServer mcServer = overWorld.getMinecraftServer();
+        org.bukkit.World.Environment env = creator.environment();
+        String name = creator.name();
+        int dim = 0;
+
+        // Use saved dimension from level.dat if it exists. This guarantees that after a world is created, the same dimension will be used. Fixes issues with MultiVerse
+        AnvilSaveHandler saveHandler = new AnvilSaveHandler(mcServer.server.getWorldContainer(), name, true, mcServer.getDataFixer());
+        WorldInfo worldInfo = saveHandler.loadWorldInfo();
+        if (worldInfo != null) {
+            int savedDim = worldInfo.getDimension();
+            if (savedDim != 0 && savedDim != -1 && savedDim != 1)
+                dim = savedDim;
+        }
+
+        if (dim == 0)
+            dim = getNextFreeDimId();
+
+        if (!isDimensionRegistered(dim)) { // handle reloads properly
+            DimensionType dimensionType = DimensionType.OVERWORLD;
+            if (creator.environment() != null)
+                dimensionType = DimensionType.getById(creator.environment().getId());
+            registerDimension(dim, dimensionType);
+        }
+
+        if (mcServer instanceof DedicatedServer)
+            worldSettings.setGeneratorOptions(((DedicatedServer) mcServer).getStringProperty("generator-settings", ""));
+
+        if (worldInfo == null)
+            worldInfo = new WorldInfo(worldSettings, name);
+
+        WorldServer world = (WorldServer) new WorldServerMulti(mcServer, saveHandler, dim, overWorld, mcServer.profiler, worldInfo, env, creator.generator(), name).init();
+
+        world.provider.setDimension(dim); // Fix for TerrainControl injecting their own WorldProvider
+        mcServer.getPlayerList().setPlayerManager(mcServer.worldServerList.toArray(new WorldServer[mcServer.worldServerList.size()]));
+        world.addEventListener(new ServerWorldEventHandler(mcServer, world));
+        MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(world));
+        if (!mcServer.isSinglePlayer())
+            world.getWorldInfo().setGameType(mcServer.getGameType());
+        mcServer.setDifficultyForAllWorlds(mcServer.getDifficulty());
+        return world;
     }
 
     public static WorldServer getWorld(int id)
