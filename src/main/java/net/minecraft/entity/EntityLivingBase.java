@@ -1375,6 +1375,10 @@ public abstract class EntityLivingBase extends Entity {
             };
             float absorptionModifier = absorption.apply((double) f).floatValue();
 
+            // Call forge event and save new original damage
+            final float livingDamage = ForgeHooks.onLivingDamage(this, damagesource, f);
+            originalDamage = livingDamage - (f - originalDamage) + armorModifier + magicModifier;
+
             EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(this, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
             if (event.isCancelled()) {
                 return false;
