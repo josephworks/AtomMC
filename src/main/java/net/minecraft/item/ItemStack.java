@@ -303,7 +303,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         // CraftBukkit start - Filter out data for items that shouldn't have it
         // The crafting system uses this value for a special purpose so we have to allow it
         if (meta == 32767) {
-            this.itemDamage = meta;
+            getItem().setDamage(this, meta);
+            // this.itemDamage = meta;
             return;
         }
 
@@ -319,8 +320,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         if (CraftMagicNumbers.getBlock(CraftMagicNumbers.getId(this.getItem())) == Blocks.DOUBLE_PLANT && (meta > 5 || meta < 0)) {
             meta = 0;
         }
-        // getItem().setDamage(this, meta);
-        this.itemDamage = meta;
+        getItem().setDamage(this, meta);
+        // this.itemDamage = meta;
         // CraftBukkit end
     }
 
