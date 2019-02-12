@@ -1425,9 +1425,8 @@ public abstract class EntityLivingBase extends Entity {
                 }
                 // CraftBukkit end
                 float f2 = this.getHealth();
-
-                this.setHealth(f2 - f);
                 this.getCombatTracker().trackDamage(damagesource, f2, f);
+                this.setHealth(f2 - f);
                 // CraftBukkit start
                 if (!human) {
                     this.setAbsorptionAmount(this.getAbsorptionAmount() - f);
