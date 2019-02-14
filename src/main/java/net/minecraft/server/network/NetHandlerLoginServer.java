@@ -277,8 +277,24 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable 
     // Spigot end
 
     protected GameProfile getOfflineProfile(GameProfile original) {
-        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + original.getName()).getBytes(StandardCharsets.UTF_8));
-        return new GameProfile(uuid, original.getName());
+        GameProfile gameProfile;
+
+        UUID uuid;
+        if (networkManager.spoofedUUID != null) {
+            uuid = networkManager.spoofedUUID;
+        } else {
+            uuid = EntityPlayer.getOfflineUUID(original.getName());
+        }
+
+        gameProfile = new GameProfile(uuid, original.getName());
+
+        if (networkManager.spoofedProfile != null) {
+            for (com.mojang.authlib.properties.Property property : networkManager.spoofedProfile) {
+                gameProfile.getProperties().put(property.getName(), property);
+            }
+        }
+
+        return gameProfile;
     }
 
     static enum LoginState {

@@ -16,6 +16,7 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer {
     private final MinecraftServer server;
     private final NetworkManager networkManager;
 
+    private static final com.google.gson.Gson gson = new com.google.gson.Gson(); // Spigot
     private static final HashMap<InetAddress, Long> throttleTracker = new HashMap<InetAddress, Long>();
     private static int throttleCounter = 0;
 
@@ -25,6 +26,25 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer {
     }
 
     public void processHandshake(C00Handshake packetIn) {
+        // Spigot Start
+        if (org.spigotmc.SpigotConfig.bungee && packetIn.getRequestedState() == EnumConnectionState.LOGIN) {
+            String[] split = packetIn.ip.split("\00");
+            if (split.length == 3 || split.length == 4) {
+                packetIn.ip = split[0];
+                networkManager.socketAddress = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) networkManager.getRemoteAddress()).getPort());
+                networkManager.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString( split[2] );
+            } else {
+                ITextComponent chatmessage = new TextComponentTranslation("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
+                this.networkManager.sendPacket(new SPacketDisconnect(chatmessage));
+                this.networkManager.closeChannel(chatmessage);
+                return;
+            }
+            if (split.length == 4) {
+                networkManager.spoofedProfile = gson.fromJson(split[3], com.mojang.authlib.properties.Property[].class);
+            }
+        }
+        // Spigot End
+
         if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager))
             return;
 

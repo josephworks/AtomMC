@@ -117,4 +117,13 @@ public class SpigotConfig {
         config.addDefault(path, def);
         return config.getDouble(path, config.getDouble(path));
     }
+
+    public static boolean bungee;
+    private static void bungee() {
+        if ( version < 4 ) {
+            set( "settings.bungeecord", false );
+            System.out.println( "Oudated config, disabling BungeeCord support!" );
+        }
+        bungee = getBoolean( "settings.bungeecord", false );
+    }
 }
