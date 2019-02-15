@@ -133,7 +133,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     }
 
     private void updateEmptyState() {
-        if (this.isEmpty && this == ItemStack.EMPTY) throw new AssertionError("TRAP");
+        // if (this.isEmpty && this == ItemStack.EMPTY) throw new AssertionError("TRAP"); // CraftBukkit
         this.isEmpty = this.isEmpty();
     }
 
