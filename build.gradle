@@ -110,6 +110,15 @@ jar {
     classifier = 'dev'
 }
 
+test {
+    def workDir = new File(project.projectDir.toString() + "/build/run")
+    if (!workDir.exists()) {
+        workDir.mkdir()
+    }
+    
+    workingDir = workDir
+}
+
 task reobfuscate(type: ReobfuscateTask) {
     dependsOn(tasks.jar)
     classpath = sourceSets.main.compileClasspath
