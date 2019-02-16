@@ -111,12 +111,7 @@ jar {
 }
 
 test {
-    def workDir = new File(project.projectDir.toString() + "/build/run")
-    if (!workDir.exists()) {
-        workDir.mkdir()
-    }
-    
-    workingDir = workDir
+    workingDir = new File(project.projectDir.toString() + "/build/tmp")
 }
 
 task reobfuscate(type: ReobfuscateTask) {
