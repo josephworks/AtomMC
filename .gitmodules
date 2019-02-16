@@ -1,0 +1,3 @@
+[submodule "bukkit"]
+	path = bukkit
+	url = https://gitlab.com/divinecode/atom/Bukkit.git
