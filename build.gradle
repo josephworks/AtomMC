@@ -150,22 +150,6 @@ task jar_server(type: Jar) {
     }
 }
 
-//If debug = true jvm remote debug server will be started on port 5005
-//and Atom starts loading when client connected to jvm debug server
-task startServer(dependsOn: classes, type: JavaExec) {
-    maxHeapSize = "2G"
-    classpath = sourceSets.test.runtimeClasspath
-    main = "net.minecraftforge.fml.relauncher.ServerLaunchWrapper"
-    debug = true
-
-    def workDir = new File(project.projectDir.toString() + "/build/run")
-    if (!workDir.exists()) {
-        workDir.mkdir()
-    }
-
-    workingDir = workDir
-}
-
 artifacts {
     archives jar_server
 }
