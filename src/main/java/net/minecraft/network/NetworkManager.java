@@ -72,7 +72,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
     private final Queue<InboundHandlerTuplePacketListener> outboundPacketsQueue = Queues.<InboundHandlerTuplePacketListener>newConcurrentLinkedQueue();
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Channel channel;
-    private SocketAddress socketAddress;
+    public SocketAddress socketAddress;
+    // Spigot Start
+    public java.util.UUID spoofedUUID;
+    public com.mojang.authlib.properties.Property[] spoofedProfile;
+    // Spigot End
     private INetHandler packetListener;
     private ITextComponent terminationReason;
     private boolean isEncrypted;
@@ -375,4 +379,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
             this.futureListeners = inFutureListeners;
         }
     }
+
+    // Spigot Start
+    public SocketAddress getRawAddress()
+    {
+        return this.channel.remoteAddress();
+    }
+    // Spigot End
 }

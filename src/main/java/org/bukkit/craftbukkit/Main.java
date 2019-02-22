@@ -21,6 +21,8 @@ public class Main {
         // Todo: Installation script
         OptionParser parser = new OptionParser() {
             {
+                allowsUnrecognizedOptions(); //Is it okay?
+
                 acceptsAll(asList("?", "help"), "Show the help");
 
                 acceptsAll(asList("c", "config"), "Properties file to use")
