@@ -1,0 +1,13 @@
+#idea
+/.idea
+*.iml
+
+#gradle
+**/build
+**/.gradle
+
+# VSCode Java
+/bin
+/.classpath
+/.project
+/.settings
