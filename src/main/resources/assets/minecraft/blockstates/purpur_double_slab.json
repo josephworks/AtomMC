@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "variant=default": {
+      "model": "purpur_block"
+    }
+  }
+}
