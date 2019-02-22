@@ -1,6 +1,7 @@
 package org.spigotmc;
 
 import com.google.common.base.Throwables;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -10,14 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class SpigotConfig
-{
+public class SpigotConfig {
 
     private static File CONFIG_FILE;
     private static final String HEADER = "This is the main configuration file for Spigot.\n"
@@ -37,104 +38,92 @@ public class SpigotConfig
     static Map<String, Command> commands;
     /*========================================================================*/
 
-    public static void init(File configFile)
-    {
+    public static void init(File configFile) {
         CONFIG_FILE = configFile;
         config = new YamlConfiguration();
-        try
-        {
-            config.load( CONFIG_FILE );
-        } catch ( IOException ex )
-        {
-        } catch ( InvalidConfigurationException ex )
-        {
-            Bukkit.getLogger().log( Level.SEVERE, "Could not load spigot.yml, please correct your syntax errors", ex );
-            throw Throwables.propagate( ex );
+        try {
+            config.load(CONFIG_FILE);
+        } catch (IOException ex) {
+        } catch (InvalidConfigurationException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Could not load spigot.yml, please correct your syntax errors", ex);
+            throw Throwables.propagate(ex);
         }
 
-        config.options().header( HEADER );
-        config.options().copyDefaults( true );
+        config.options().header(HEADER);
+        config.options().copyDefaults(true);
 
         commands = new HashMap<String, Command>();
-        commands.put( "spigot", new SpigotCommand( "spigot" ) );
+        commands.put("spigot", new SpigotCommand("spigot"));
 
-        version = getInt( "config-version", 11 );
-        set( "config-version", 11 );
-        readConfig( SpigotConfig.class, null );
+        version = getInt("config-version", 11);
+        set("config-version", 11);
+        readConfig(SpigotConfig.class, null);
     }
 
-    public static void registerCommands()
-    {
-        for ( Map.Entry<String, Command> entry : commands.entrySet() )
-        {
-            MinecraftServer.getServerCB().server.getCommandMap().register( entry.getKey(), "Spigot", entry.getValue() );
+    public static void registerCommands() {
+        for (Map.Entry<String, Command> entry : commands.entrySet()) {
+            MinecraftServer.getServerCB().server.getCommandMap().register(entry.getKey(), "Spigot", entry.getValue());
         }
     }
 
-    static void readConfig(Class<?> clazz, Object instance)
-    {
-        for ( Method method : clazz.getDeclaredMethods() )
-        {
-            if ( Modifier.isPrivate( method.getModifiers() ) )
-            {
-                if ( method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE )
-                {
-                    try
-                    {
-                        method.setAccessible( true );
-                        method.invoke( instance );
-                    } catch ( InvocationTargetException ex )
-                    {
-                        throw Throwables.propagate( ex.getCause() );
-                    } catch ( Exception ex )
-                    {
-                        Bukkit.getLogger().log( Level.SEVERE, "Error invoking " + method, ex );
+    static void readConfig(Class<?> clazz, Object instance) {
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (Modifier.isPrivate(method.getModifiers())) {
+                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
+                    try {
+                        method.setAccessible(true);
+                        method.invoke(instance);
+                    } catch (InvocationTargetException ex) {
+                        throw Throwables.propagate(ex.getCause());
+                    } catch (Exception ex) {
+                        Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, ex);
                     }
                 }
             }
         }
 
-        try
-        {
-            config.save( CONFIG_FILE );
-        } catch ( IOException ex )
-        {
-            Bukkit.getLogger().log( Level.SEVERE, "Could not save " + CONFIG_FILE, ex );
+        try {
+            config.save(CONFIG_FILE);
+        } catch (IOException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, ex);
         }
     }
 
-    private static void set(String path, Object val)
-    {
-        config.set( path, val );
+    private static void set(String path, Object val) {
+        config.set(path, val);
     }
 
-    private static boolean getBoolean(String path, boolean def)
-    {
-        config.addDefault( path, def );
-        return config.getBoolean( path, config.getBoolean( path ) );
+    private static boolean getBoolean(String path, boolean def) {
+        config.addDefault(path, def);
+        return config.getBoolean(path, config.getBoolean(path));
     }
 
-    private static int getInt(String path, int def)
-    {
-        config.addDefault( path, def );
-        return config.getInt( path, config.getInt( path ) );
+    private static int getInt(String path, int def) {
+        config.addDefault(path, def);
+        return config.getInt(path, config.getInt(path));
     }
 
-    private static <T> List getList(String path, T def)
-    {
-        config.addDefault( path, def );
-        return (List<T>) config.getList( path, config.getList( path ) );
+    private static <T> List getList(String path, T def) {
+        config.addDefault(path, def);
+        return (List<T>) config.getList(path, config.getList(path));
     }
 
-    private static String getString(String path, String def)
-    {
-        config.addDefault( path, def );
-        return config.getString( path, config.getString( path ) );
+    private static String getString(String path, String def) {
+        config.addDefault(path, def);
+        return config.getString(path, config.getString(path));
     }
 
-    private static double getDouble(String path, double def)
-    {
-        config.addDefault( path, def );
-        return config.getDouble( path, config.getDouble( path ) );
+    private static double getDouble(String path, double def) {
+        config.addDefault(path, def);
+        return config.getDouble(path, config.getDouble(path));
+    }
+
+    public static boolean bungee;
+    private static void bungee() {
+        if ( version < 4 ) {
+            set( "settings.bungeecord", false );
+            System.out.println( "Oudated config, disabling BungeeCord support!" );
+        }
+        bungee = getBoolean( "settings.bungeecord", false );
     }
 }

@@ -3,10 +3,8 @@ package net.minecraft.world.biome;
 import net.minecraft.entity.passive.EntityMooshroom;
 import net.minecraft.init.Blocks;
 
-public class BiomeMushroomIsland extends Biome
-{
-    public BiomeMushroomIsland(BiomeProperties properties)
-    {
+public class BiomeMushroomIsland extends Biome {
+    public BiomeMushroomIsland(BiomeProperties properties) {
         super(properties);
         this.decorator.treesPerChunk = -100;
         this.decorator.flowersPerChunk = -100;

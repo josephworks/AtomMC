@@ -9,37 +9,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class EntityExpBottle extends EntityThrowable
-{
-    public EntityExpBottle(World worldIn)
-    {
+public class EntityExpBottle extends EntityThrowable {
+    public EntityExpBottle(World worldIn) {
         super(worldIn);
     }
 
-    public EntityExpBottle(World worldIn, EntityLivingBase throwerIn)
-    {
+    public EntityExpBottle(World worldIn, EntityLivingBase throwerIn) {
         super(worldIn, throwerIn);
     }
 
-    public EntityExpBottle(World worldIn, double x, double y, double z)
-    {
+    public EntityExpBottle(World worldIn, double x, double y, double z) {
         super(worldIn, x, y, z);
     }
 
-    public static void registerFixesExpBottle(DataFixer fixer)
-    {
+    public static void registerFixesExpBottle(DataFixer fixer) {
         EntityThrowable.registerFixesThrowable(fixer, "ThrowableExpBottle");
     }
 
-    protected float getGravityVelocity()
-    {
+    protected float getGravityVelocity() {
         return 0.07F;
     }
 
-    protected void onImpact(RayTraceResult result)
-    {
-        if (!this.world.isRemote)
-        {
+    protected void onImpact(RayTraceResult result) {
+        if (!this.world.isRemote) {
             // CraftBukkit - moved to after event
             // this.world.playEvent(2002, new BlockPos(this), PotionUtils.getPotionColor(PotionTypes.WATER));
             int i = 3 + this.world.rand.nextInt(5) + this.world.rand.nextInt(5);
@@ -50,8 +42,7 @@ public class EntityExpBottle extends EntityThrowable
                 this.world.playEvent(2002, new BlockPos(this), PotionUtils.getPotionColor(PotionTypes.WATER));
             }
 
-            while (i > 0)
-            {
+            while (i > 0) {
                 int j = EntityXPOrb.getXPSplit(i);
                 i -= j;
                 this.world.spawnEntity(new EntityXPOrb(this.world, this.posX, this.posY, this.posZ, j));

@@ -2,26 +2,21 @@ package net.minecraft.enchantment;
 
 import net.minecraft.inventory.EntityEquipmentSlot;
 
-public class EnchantmentFireAspect extends Enchantment
-{
-    protected EnchantmentFireAspect(Rarity rarityIn, EntityEquipmentSlot... slots)
-    {
+public class EnchantmentFireAspect extends Enchantment {
+    protected EnchantmentFireAspect(Rarity rarityIn, EntityEquipmentSlot... slots) {
         super(rarityIn, EnumEnchantmentType.WEAPON, slots);
         this.setName("fire");
     }
 
-    public int getMinEnchantability(int enchantmentLevel)
-    {
+    public int getMinEnchantability(int enchantmentLevel) {
         return 10 + 20 * (enchantmentLevel - 1);
     }
 
-    public int getMaxEnchantability(int enchantmentLevel)
-    {
+    public int getMaxEnchantability(int enchantmentLevel) {
         return super.getMinEnchantability(enchantmentLevel) + 50;
     }
 
-    public int getMaxLevel()
-    {
+    public int getMaxLevel() {
         return 2;
     }
 }

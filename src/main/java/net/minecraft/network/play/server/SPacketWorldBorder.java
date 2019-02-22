@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -9,8 +10,7 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
-{
+public class SPacketWorldBorder implements Packet<INetHandlerPlayClient> {
     private Action action;
     private int size;
     private double centerX;
@@ -21,12 +21,10 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
     private int warningTime;
     private int warningDistance;
 
-    public SPacketWorldBorder()
-    {
+    public SPacketWorldBorder() {
     }
 
-    public SPacketWorldBorder(WorldBorder border, Action actionIn)
-    {
+    public SPacketWorldBorder(WorldBorder border, Action actionIn) {
         this.action = actionIn;
         // CraftBukkit start - multiply out nether border
         // this.centerX = border.getCenterX();
@@ -42,12 +40,10 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
         this.warningTime = border.getWarningTime();
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.action = (Action)buf.readEnumValue(Action.class);
+    public void readPacketData(PacketBuffer buf) throws IOException {
+        this.action = (Action) buf.readEnumValue(Action.class);
 
-        switch (this.action)
-        {
+        switch (this.action) {
             case SET_SIZE:
                 this.targetSize = buf.readDouble();
                 break;
@@ -78,12 +74,10 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
         }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeEnumValue(this.action);
 
-        switch (this.action)
-        {
+        switch (this.action) {
             case SET_SIZE:
                 buf.writeDouble(this.targetSize);
                 break;
@@ -114,16 +108,13 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
         }
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleWorldBorder(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public void apply(WorldBorder border)
-    {
-        switch (this.action)
-        {
+    public void apply(WorldBorder border) {
+        switch (this.action) {
             case SET_SIZE:
                 border.setTransition(this.targetSize);
                 break;
@@ -142,12 +133,9 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
             case INITIALIZE:
                 border.setCenter(this.centerX, this.centerZ);
 
-                if (this.timeUntilTarget > 0L)
-                {
+                if (this.timeUntilTarget > 0L) {
                     border.setTransition(this.diameter, this.targetSize, this.timeUntilTarget);
-                }
-                else
-                {
+                } else {
                     border.setTransition(this.targetSize);
                 }
 
@@ -157,8 +145,7 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
         }
     }
 
-    public static enum Action
-    {
+    public static enum Action {
         SET_SIZE,
         LERP_SIZE,
         SET_CENTER,

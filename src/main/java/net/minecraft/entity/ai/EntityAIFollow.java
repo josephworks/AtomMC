@@ -1,16 +1,17 @@
 package net.minecraft.entity.ai;
 
 import com.google.common.base.Predicate;
+
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateFlying;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathNodeType;
 
-public class EntityAIFollow extends EntityAIBase
-{
+public class EntityAIFollow extends EntityAIBase {
     private final EntityLiving entity;
     private final Predicate<EntityLiving> followPredicate;
     private EntityLiving followingEntity;
@@ -21,13 +22,10 @@ public class EntityAIFollow extends EntityAIBase
     private float oldWaterCost;
     private final float areaSize;
 
-    public EntityAIFollow(final EntityLiving p_i47417_1_, double p_i47417_2_, float p_i47417_4_, float p_i47417_5_)
-    {
+    public EntityAIFollow(final EntityLiving p_i47417_1_, double p_i47417_2_, float p_i47417_4_, float p_i47417_5_) {
         this.entity = p_i47417_1_;
-        this.followPredicate = new Predicate<EntityLiving>()
-        {
-            public boolean apply(@Nullable EntityLiving p_apply_1_)
-            {
+        this.followPredicate = new Predicate<EntityLiving>() {
+            public boolean apply(@Nullable EntityLiving p_apply_1_) {
                 return p_apply_1_ != null && p_i47417_1_.getClass() != p_apply_1_.getClass();
             }
         };
@@ -37,22 +35,17 @@ public class EntityAIFollow extends EntityAIBase
         this.areaSize = p_i47417_5_;
         this.setMutexBits(3);
 
-        if (!(p_i47417_1_.getNavigator() instanceof PathNavigateGround) && !(p_i47417_1_.getNavigator() instanceof PathNavigateFlying))
-        {
+        if (!(p_i47417_1_.getNavigator() instanceof PathNavigateGround) && !(p_i47417_1_.getNavigator() instanceof PathNavigateFlying)) {
             throw new IllegalArgumentException("Unsupported mob type for FollowMobGoal");
         }
     }
 
-    public boolean shouldExecute()
-    {
-        List<EntityLiving> list = this.entity.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, this.entity.getEntityBoundingBox().grow((double)this.areaSize), this.followPredicate);
+    public boolean shouldExecute() {
+        List<EntityLiving> list = this.entity.world.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, this.entity.getEntityBoundingBox().grow((double) this.areaSize), this.followPredicate);
 
-        if (!list.isEmpty())
-        {
-            for (EntityLiving entityliving : list)
-            {
-                if (!entityliving.isInvisible())
-                {
+        if (!list.isEmpty()) {
+            for (EntityLiving entityliving : list) {
+                if (!entityliving.isInvisible()) {
                     this.followingEntity = entityliving;
                     return true;
                 }
@@ -62,50 +55,40 @@ public class EntityAIFollow extends EntityAIBase
         return false;
     }
 
-    public boolean shouldContinueExecuting()
-    {
-        return this.followingEntity != null && !this.navigation.noPath() && this.entity.getDistanceSq(this.followingEntity) > (double)(this.stopDistance * this.stopDistance);
+    public boolean shouldContinueExecuting() {
+        return this.followingEntity != null && !this.navigation.noPath() && this.entity.getDistanceSq(this.followingEntity) > (double) (this.stopDistance * this.stopDistance);
     }
 
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.timeToRecalcPath = 0;
         this.oldWaterCost = this.entity.getPathPriority(PathNodeType.WATER);
         this.entity.setPathPriority(PathNodeType.WATER, 0.0F);
     }
 
-    public void resetTask()
-    {
+    public void resetTask() {
         this.followingEntity = null;
         this.navigation.clearPath();
         this.entity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
     }
 
-    public void updateTask()
-    {
-        if (this.followingEntity != null && !this.entity.getLeashed())
-        {
-            this.entity.getLookHelper().setLookPositionWithEntity(this.followingEntity, 10.0F, (float)this.entity.getVerticalFaceSpeed());
+    public void updateTask() {
+        if (this.followingEntity != null && !this.entity.getLeashed()) {
+            this.entity.getLookHelper().setLookPositionWithEntity(this.followingEntity, 10.0F, (float) this.entity.getVerticalFaceSpeed());
 
-            if (--this.timeToRecalcPath <= 0)
-            {
+            if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = 10;
                 double d0 = this.entity.posX - this.followingEntity.posX;
                 double d1 = this.entity.posY - this.followingEntity.posY;
                 double d2 = this.entity.posZ - this.followingEntity.posZ;
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
-                if (d3 > (double)(this.stopDistance * this.stopDistance))
-                {
+                if (d3 > (double) (this.stopDistance * this.stopDistance)) {
                     this.navigation.tryMoveToEntityLiving(this.followingEntity, this.speedModifier);
-                }
-                else
-                {
+                } else {
                     this.navigation.clearPath();
                     EntityLookHelper entitylookhelper = this.followingEntity.getLookHelper();
 
-                    if (d3 <= (double)this.stopDistance || entitylookhelper.getLookPosX() == this.entity.posX && entitylookhelper.getLookPosY() == this.entity.posY && entitylookhelper.getLookPosZ() == this.entity.posZ)
-                    {
+                    if (d3 <= (double) this.stopDistance || entitylookhelper.getLookPosX() == this.entity.posX && entitylookhelper.getLookPosY() == this.entity.posY && entitylookhelper.getLookPosZ() == this.entity.posZ) {
                         double d4 = this.followingEntity.posX - this.entity.posX;
                         double d5 = this.followingEntity.posZ - this.entity.posZ;
                         this.navigation.tryMoveToXYZ(this.entity.posX - d4, this.entity.posY, this.entity.posZ - d5, this.speedModifier);

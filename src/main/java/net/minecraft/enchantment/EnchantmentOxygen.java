@@ -2,26 +2,21 @@ package net.minecraft.enchantment;
 
 import net.minecraft.inventory.EntityEquipmentSlot;
 
-public class EnchantmentOxygen extends Enchantment
-{
-    public EnchantmentOxygen(Rarity rarityIn, EntityEquipmentSlot... slots)
-    {
+public class EnchantmentOxygen extends Enchantment {
+    public EnchantmentOxygen(Rarity rarityIn, EntityEquipmentSlot... slots) {
         super(rarityIn, EnumEnchantmentType.ARMOR_HEAD, slots);
         this.setName("oxygen");
     }
 
-    public int getMinEnchantability(int enchantmentLevel)
-    {
+    public int getMinEnchantability(int enchantmentLevel) {
         return 10 * enchantmentLevel;
     }
 
-    public int getMaxEnchantability(int enchantmentLevel)
-    {
+    public int getMaxEnchantability(int enchantmentLevel) {
         return this.getMinEnchantability(enchantmentLevel) + 30;
     }
 
-    public int getMaxLevel()
-    {
+    public int getMaxLevel() {
         return 3;
     }
 }

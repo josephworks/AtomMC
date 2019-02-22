@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.inventory;
 
 import java.lang.reflect.Method;
+
 import org.bukkit.Material;
 import org.junit.Test;
 

@@ -44,14 +44,13 @@ import javax.annotation.Nullable;
  * </p>
  *
  * @author cpw
- *
  */
 
-public interface ModContainer
-{
+public interface ModContainer {
     public static enum Disableable {
         YES, RESTART, NEVER, DEPENDENCIES;
     }
+
     /**
      * The globally unique modid for this mod
      */
@@ -146,8 +145,9 @@ public interface ModContainer
     @Nullable
     Certificate getSigningCertificate();
 
-    public static final Map<String,String> EMPTY_PROPERTIES = ImmutableMap.of();
-    Map<String,String> getCustomModProperties();
+    public static final Map<String, String> EMPTY_PROPERTIES = ImmutableMap.of();
+
+    Map<String, String> getCustomModProperties();
 
     public Class<?> getCustomResourcePackClass();
 

@@ -20,14 +20,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public abstract class CommandHandler implements ICommandManager
-{
+public abstract class CommandHandler implements ICommandManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<String, ICommand> commandMap = Maps.<String, ICommand>newHashMap();
     private final Set<ICommand> commandSet = Sets.<ICommand>newHashSet();
 
-    public int executeCommand(ICommandSender sender, String rawCommand)
-    {
+    public int executeCommand(ICommandSender sender, String rawCommand) {
         rawCommand = rawCommand.trim();
 
 //        if (rawCommand.startsWith("/"))
@@ -41,71 +39,54 @@ public abstract class CommandHandler implements ICommandManager
         ICommand icommand = this.commandMap.get(s);
         int i = 0;
 
-        try
-        {
+        try {
             int j = this.getUsernameIndex(icommand, astring);
 
-            if (icommand == null)
-            {
+            if (icommand == null) {
                 TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.notFound", new Object[0]);
                 textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
                 sender.sendMessage(textcomponenttranslation1);
-            }
-            else if (icommand.checkPermission(this.getServer(), sender))
-            {
+            } else if (icommand.checkPermission(this.getServer(), sender)) {
                 net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(icommand, sender, astring);
-                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
-                {
-                    if (event.getException() != null)
-                    {
+                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
+                    if (event.getException() != null) {
                         com.google.common.base.Throwables.throwIfUnchecked(event.getException());
                     }
                     return 1;
                 }
                 if (event.getParameters() != null) astring = event.getParameters();
 
-                if (j > -1)
-                {
+                if (j > -1) {
                     List<Entity> list = EntitySelector.<Entity>matchEntities(sender, astring[j], Entity.class);
                     String s1 = astring[j];
                     sender.setCommandStat(CommandResultStats.Type.AFFECTED_ENTITIES, list.size());
 
-                    if (list.isEmpty())
-                    {
-                        throw new PlayerNotFoundException("commands.generic.selector.notFound", new Object[] {astring[j]});
+                    if (list.isEmpty()) {
+                        throw new PlayerNotFoundException("commands.generic.selector.notFound", new Object[]{astring[j]});
                     }
 
-                    for (Entity entity : list)
-                    {
+                    for (Entity entity : list) {
                         astring[j] = entity.getCachedUniqueIdString();
 
-                        if (this.tryExecute(sender, astring, icommand, rawCommand))
-                        {
+                        if (this.tryExecute(sender, astring, icommand, rawCommand)) {
                             ++i;
                         }
                     }
 
                     astring[j] = s1;
-                }
-                else
-                {
+                } else {
                     sender.setCommandStat(CommandResultStats.Type.AFFECTED_ENTITIES, 1);
 
-                    if (this.tryExecute(sender, astring, icommand, rawCommand))
-                    {
+                    if (this.tryExecute(sender, astring, icommand, rawCommand)) {
                         ++i;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.permission", new Object[0]);
                 textcomponenttranslation2.getStyle().setColor(TextFormatting.RED);
                 sender.sendMessage(textcomponenttranslation2);
             }
-        }
-        catch (CommandException commandexception)
-        {
+        } catch (CommandException commandexception) {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(commandexception.getMessage(), commandexception.getErrorObjects());
             textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
             sender.sendMessage(textcomponenttranslation);
@@ -115,27 +96,19 @@ public abstract class CommandHandler implements ICommandManager
         return i;
     }
 
-    protected boolean tryExecute(ICommandSender sender, String[] args, ICommand command, String input)
-    {
-        try
-        {
+    protected boolean tryExecute(ICommandSender sender, String[] args, ICommand command, String input) {
+        try {
             command.execute(this.getServer(), sender, args);
             return true;
-        }
-        catch (WrongUsageException wrongusageexception)
-        {
-            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new Object[] {new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.getErrorObjects())});
+        } catch (WrongUsageException wrongusageexception) {
+            TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new Object[]{new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.getErrorObjects())});
             textcomponenttranslation2.getStyle().setColor(TextFormatting.RED);
             sender.sendMessage(textcomponenttranslation2);
-        }
-        catch (CommandException commandexception)
-        {
+        } catch (CommandException commandexception) {
             TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation(commandexception.getMessage(), commandexception.getErrorObjects());
             textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
             sender.sendMessage(textcomponenttranslation1);
-        }
-        catch (Throwable throwable)
-        {
+        } catch (Throwable throwable) {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.exception", new Object[0]);
             textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
             sender.sendMessage(textcomponenttranslation);
@@ -183,7 +156,7 @@ public abstract class CommandHandler implements ICommandManager
         LogManager.getLogger().info("Registered command " + command.getName() + " with permission node " + permissionNode);
         if (list != null) {
             for (String s : list) {
-                ICommand icommand = (ICommand)this.commandMap.get(s);
+                ICommand icommand = (ICommand) this.commandMap.get(s);
                 if (icommand == null || !icommand.getName().equals(s)) {
                     this.commandMap.put(s, command);
                 }
@@ -192,40 +165,31 @@ public abstract class CommandHandler implements ICommandManager
         return command;
     }
 
-    private static String[] dropFirstString(String[] input)
-    {
+    private static String[] dropFirstString(String[] input) {
         String[] astring = new String[input.length - 1];
         System.arraycopy(input, 1, astring, 0, input.length - 1);
         return astring;
     }
 
-    public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos)
-    {
+    public List<String> getTabCompletions(ICommandSender sender, String input, @Nullable BlockPos pos) {
         String[] astring = input.split(" ", -1);
         String s = astring[0];
 
-        if (astring.length == 1)
-        {
+        if (astring.length == 1) {
             List<String> list = Lists.<String>newArrayList();
 
-            for (Entry<String, ICommand> entry : this.commandMap.entrySet())
-            {
-                if (CommandBase.doesStringStartWith(s, entry.getKey()) && ((ICommand)entry.getValue()).checkPermission(this.getServer(), sender))
-                {
+            for (Entry<String, ICommand> entry : this.commandMap.entrySet()) {
+                if (CommandBase.doesStringStartWith(s, entry.getKey()) && ((ICommand) entry.getValue()).checkPermission(this.getServer(), sender)) {
                     list.add(entry.getKey());
                 }
             }
 
             return list;
-        }
-        else
-        {
-            if (astring.length > 1)
-            {
+        } else {
+            if (astring.length > 1) {
                 ICommand icommand = this.commandMap.get(s);
 
-                if (icommand != null && icommand.checkPermission(this.getServer(), sender))
-                {
+                if (icommand != null && icommand.checkPermission(this.getServer(), sender)) {
                     return icommand.getTabCompletions(this.getServer(), sender, dropFirstString(astring), pos);
                 }
             }
@@ -234,14 +198,11 @@ public abstract class CommandHandler implements ICommandManager
         }
     }
 
-    public List<ICommand> getPossibleCommands(ICommandSender sender)
-    {
+    public List<ICommand> getPossibleCommands(ICommandSender sender) {
         List<ICommand> list = Lists.<ICommand>newArrayList();
 
-        for (ICommand icommand : this.commandSet)
-        {
-            if (icommand.checkPermission(this.getServer(), sender))
-            {
+        for (ICommand icommand : this.commandSet) {
+            if (icommand.checkPermission(this.getServer(), sender)) {
                 list.add(icommand);
             }
         }
@@ -249,23 +210,16 @@ public abstract class CommandHandler implements ICommandManager
         return list;
     }
 
-    public Map<String, ICommand> getCommands()
-    {
+    public Map<String, ICommand> getCommands() {
         return this.commandMap;
     }
 
-    private int getUsernameIndex(ICommand command, String[] args) throws CommandException
-    {
-        if (command == null)
-        {
+    private int getUsernameIndex(ICommand command, String[] args) throws CommandException {
+        if (command == null) {
             return -1;
-        }
-        else
-        {
-            for (int i = 0; i < args.length; ++i)
-            {
-                if (command.isUsernameIndex(args, i) && EntitySelector.matchesMultiplePlayers(args[i]))
-                {
+        } else {
+            for (int i = 0; i < args.length; ++i) {
+                if (command.isUsernameIndex(args, i) && EntitySelector.matchesMultiplePlayers(args[i])) {
                     return i;
                 }
             }

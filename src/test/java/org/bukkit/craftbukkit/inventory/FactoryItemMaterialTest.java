@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import org.bukkit.Material;
@@ -44,16 +45,17 @@ public class FactoryItemMaterialTest extends AbstractTestingBase {
         return buffer.delete(0, Integer.MAX_VALUE).append(from.getClass().getName()).append('(').append(from.name()).append(") to ").append(to.getClass().getName()).append('(').append(to.name()).append(')').toString();
     }
 
-    @Parameters(name="Material[{index}]:{0}")
+    @Parameters(name = "Material[{index}]:{0}")
     public static List<Object[]> data() {
         List<Object[]> list = new ArrayList<Object[]>();
         for (Material material : materials) {
-            list.add(new Object[] {material});
+            list.add(new Object[]{material});
         }
         return list;
     }
 
-    @Parameter(0) public Material material;
+    @Parameter(0)
+    public Material material;
 
     @Test
     public void itemStack() {

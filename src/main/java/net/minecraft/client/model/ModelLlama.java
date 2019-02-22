@@ -7,13 +7,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelLlama extends ModelQuadruped
-{
+public class ModelLlama extends ModelQuadruped {
     private final ModelRenderer chest1;
     private final ModelRenderer chest2;
 
-    public ModelLlama(float p_i47226_1_)
-    {
+    public ModelLlama(float p_i47226_1_) {
         super(15, p_i47226_1_);
         this.textureWidth = 128;
         this.textureHeight = 64;
@@ -29,11 +27,11 @@ public class ModelLlama extends ModelQuadruped
         this.chest1 = new ModelRenderer(this, 45, 28);
         this.chest1.addBox(-3.0F, 0.0F, 0.0F, 8, 8, 3, p_i47226_1_);
         this.chest1.setRotationPoint(-8.5F, 3.0F, 3.0F);
-        this.chest1.rotateAngleY = ((float)Math.PI / 2F);
+        this.chest1.rotateAngleY = ((float) Math.PI / 2F);
         this.chest2 = new ModelRenderer(this, 45, 41);
         this.chest2.addBox(-3.0F, 0.0F, 0.0F, 8, 8, 3, p_i47226_1_);
         this.chest2.setRotationPoint(5.5F, 3.0F, 3.0F);
-        this.chest2.rotateAngleY = ((float)Math.PI / 2F);
+        this.chest2.rotateAngleY = ((float) Math.PI / 2F);
         int i = 4;
         int j = 14;
         this.leg1 = new ModelRenderer(this, 29, 29);
@@ -59,14 +57,12 @@ public class ModelLlama extends ModelQuadruped
         this.childZOffset += 2.0F;
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
-        AbstractChestHorse abstractchesthorse = (AbstractChestHorse)entityIn;
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        AbstractChestHorse abstractchesthorse = (AbstractChestHorse) entityIn;
         boolean flag = !abstractchesthorse.isChild() && abstractchesthorse.hasChest();
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 
-        if (this.isChild)
-        {
+        if (this.isChild) {
             float f = 2.0F;
             GlStateManager.pushMatrix();
             GlStateManager.translate(0.0F, this.childYOffset * scale, this.childZOffset * scale);
@@ -91,9 +87,7 @@ public class ModelLlama extends ModelQuadruped
             this.leg3.render(scale);
             this.leg4.render(scale);
             GlStateManager.popMatrix();
-        }
-        else
-        {
+        } else {
             this.head.render(scale);
             this.body.render(scale);
             this.leg1.render(scale);
@@ -102,8 +96,7 @@ public class ModelLlama extends ModelQuadruped
             this.leg4.render(scale);
         }
 
-        if (flag)
-        {
+        if (flag) {
             this.chest1.render(scale);
             this.chest2.render(scale);
         }

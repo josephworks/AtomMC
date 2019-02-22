@@ -49,15 +49,13 @@ import net.minecraft.entity.EntityLivingBase;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
 @Cancelable
-public class LivingDropsEvent extends LivingEvent
-{
+public class LivingDropsEvent extends LivingEvent {
     private final DamageSource source;
     private final List<EntityItem> drops;
     private final int lootingLevel;
     private final boolean recentlyHit;
 
-    public LivingDropsEvent(EntityLivingBase entity, DamageSource source, List<EntityItem> drops, int lootingLevel, boolean recentlyHit)
-    {
+    public LivingDropsEvent(EntityLivingBase entity, DamageSource source, List<EntityItem> drops, int lootingLevel, boolean recentlyHit) {
         super(entity);
         this.source = source;
         this.drops = drops;
@@ -65,23 +63,19 @@ public class LivingDropsEvent extends LivingEvent
         this.recentlyHit = recentlyHit;
     }
 
-    public DamageSource getSource()
-    {
+    public DamageSource getSource() {
         return source;
     }
 
-    public List<EntityItem> getDrops()
-    {
+    public List<EntityItem> getDrops() {
         return drops;
     }
 
-    public int getLootingLevel()
-    {
+    public int getLootingLevel() {
         return lootingLevel;
     }
 
-    public boolean isRecentlyHit()
-    {
+    public boolean isRecentlyHit() {
         return recentlyHit;
     }
 }

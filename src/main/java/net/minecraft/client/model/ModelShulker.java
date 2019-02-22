@@ -7,14 +7,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelShulker extends ModelBase
-{
+public class ModelShulker extends ModelBase {
     public final ModelRenderer base;
     public final ModelRenderer lid;
     public ModelRenderer head;
 
-    public ModelShulker()
-    {
+    public ModelShulker() {
         this.textureHeight = 64;
         this.textureWidth = 64;
         this.lid = new ModelRenderer(this);
@@ -28,27 +26,22 @@ public class ModelShulker extends ModelBase
         this.head.setRotationPoint(0.0F, 12.0F, 0.0F);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
-        EntityShulker entityshulker = (EntityShulker)entityIn;
-        float f = ageInTicks - (float)entityshulker.ticksExisted;
-        float f1 = (0.5F + entityshulker.getClientPeekAmount(f)) * (float)Math.PI;
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+        EntityShulker entityshulker = (EntityShulker) entityIn;
+        float f = ageInTicks - (float) entityshulker.ticksExisted;
+        float f1 = (0.5F + entityshulker.getClientPeekAmount(f)) * (float) Math.PI;
         float f2 = -1.0F + MathHelper.sin(f1);
         float f3 = 0.0F;
 
-        if (f1 > (float)Math.PI)
-        {
+        if (f1 > (float) Math.PI) {
             f3 = MathHelper.sin(ageInTicks * 0.1F) * 0.7F;
         }
 
         this.lid.setRotationPoint(0.0F, 16.0F + MathHelper.sin(f1) * 8.0F + f3, 0.0F);
 
-        if (entityshulker.getClientPeekAmount(f) > 0.3F)
-        {
-            this.lid.rotateAngleY = f2 * f2 * f2 * f2 * (float)Math.PI * 0.125F;
-        }
-        else
-        {
+        if (entityshulker.getClientPeekAmount(f) > 0.3F) {
+            this.lid.rotateAngleY = f2 * f2 * f2 * f2 * (float) Math.PI * 0.125F;
+        } else {
             this.lid.rotateAngleY = 0.0F;
         }
 
@@ -56,8 +49,7 @@ public class ModelShulker extends ModelBase
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.base.render(scale);
         this.lid.render(scale);
     }

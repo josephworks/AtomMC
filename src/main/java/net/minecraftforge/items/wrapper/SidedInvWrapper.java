@@ -27,19 +27,16 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class SidedInvWrapper implements IItemHandlerModifiable
-{
+public class SidedInvWrapper implements IItemHandlerModifiable {
     protected final ISidedInventory inv;
     protected final EnumFacing side;
 
-    public SidedInvWrapper(ISidedInventory inv, EnumFacing side)
-    {
+    public SidedInvWrapper(ISidedInventory inv, EnumFacing side) {
         this.inv = inv;
         this.side = side;
     }
 
-    public static int getSlot(ISidedInventory inv, int slot, EnumFacing side)
-    {
+    public static int getSlot(ISidedInventory inv, int slot, EnumFacing side) {
         int[] slots = inv.getSlotsForFace(side);
         if (slot < slots.length)
             return slots[slot];
@@ -47,8 +44,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -60,31 +56,27 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = inv.hashCode();
         result = 31 * result + side.hashCode();
         return result;
     }
 
     @Override
-    public int getSlots()
-    {
+    public int getSlots() {
         return inv.getSlotsForFace(side).length;
     }
 
     @Override
     @Nonnull
-    public ItemStack getStackInSlot(int slot)
-    {
+    public ItemStack getStackInSlot(int slot) {
         int i = getSlot(inv, slot, side);
         return i == -1 ? ItemStack.EMPTY : inv.getStackInSlot(i);
     }
 
     @Override
     @Nonnull
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
-    {
+    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         if (stack.isEmpty())
             return ItemStack.EMPTY;
 
@@ -96,8 +88,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable
         ItemStack stackInSlot = inv.getStackInSlot(slot1);
 
         int m;
-        if (!stackInSlot.isEmpty())
-        {
+        if (!stackInSlot.isEmpty()) {
             if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
                 return stack;
 
@@ -109,58 +100,43 @@ public class SidedInvWrapper implements IItemHandlerModifiable
 
             m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
 
-            if (stack.getCount() <= m)
-            {
-                if (!simulate)
-                {
+            if (stack.getCount() <= m) {
+                if (!simulate) {
                     ItemStack copy = stack.copy();
                     copy.grow(stackInSlot.getCount());
                     setInventorySlotContents(slot1, copy);
                 }
 
                 return ItemStack.EMPTY;
-            }
-            else
-            {
+            } else {
                 // copy the stack to not modify the original one
                 stack = stack.copy();
-                if (!simulate)
-                {
+                if (!simulate) {
                     ItemStack copy = stack.splitStack(m);
                     copy.grow(stackInSlot.getCount());
                     setInventorySlotContents(slot1, copy);
                     return stack;
-                }
-                else
-                {
+                } else {
                     stack.shrink(m);
                     return stack;
                 }
             }
-        }
-        else
-        {
+        } else {
             if (!inv.canInsertItem(slot1, stack, side) || !inv.isItemValidForSlot(slot1, stack))
                 return stack;
 
             m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
-            if (m < stack.getCount())
-            {
+            if (m < stack.getCount()) {
                 // copy the stack to not modify the original one
                 stack = stack.copy();
-                if (!simulate)
-                {
+                if (!simulate) {
                     setInventorySlotContents(slot1, stack.splitStack(m));
                     return stack;
-                }
-                else
-                {
+                } else {
                     stack.shrink(m);
                     return stack;
                 }
-            }
-            else
-            {
+            } else {
                 if (!simulate)
                     setInventorySlotContents(slot1, stack);
                 return ItemStack.EMPTY;
@@ -170,8 +146,7 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     }
 
     @Override
-    public void setStackInSlot(int slot, @Nonnull ItemStack stack)
-    {
+    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
         int slot1 = getSlot(inv, slot, side);
 
         if (slot1 != -1)
@@ -179,14 +154,13 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     }
 
     private void setInventorySlotContents(int slot, ItemStack stack) {
-      inv.markDirty(); //Notify vanilla of updates, We change the handler to be responsible for this instead of the caller. So mimic vanilla behavior
-      inv.setInventorySlotContents(slot, stack);
+        inv.markDirty(); //Notify vanilla of updates, We change the handler to be responsible for this instead of the caller. So mimic vanilla behavior
+        inv.setInventorySlotContents(slot, stack);
     }
 
     @Override
     @Nonnull
-    public ItemStack extractItem(int slot, int amount, boolean simulate)
-    {
+    public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount == 0)
             return ItemStack.EMPTY;
 
@@ -203,21 +177,15 @@ public class SidedInvWrapper implements IItemHandlerModifiable
         if (!inv.canExtractItem(slot1, stackInSlot, side))
             return ItemStack.EMPTY;
 
-        if (simulate)
-        {
-            if (stackInSlot.getCount() < amount)
-            {
+        if (simulate) {
+            if (stackInSlot.getCount() < amount) {
                 return stackInSlot.copy();
-            }
-            else
-            {
+            } else {
                 ItemStack copy = stackInSlot.copy();
                 copy.setCount(amount);
                 return copy;
             }
-        }
-        else
-        {
+        } else {
             int m = Math.min(stackInSlot.getCount(), amount);
             ItemStack ret = inv.decrStackSize(slot1, m);
             inv.markDirty();
@@ -226,14 +194,12 @@ public class SidedInvWrapper implements IItemHandlerModifiable
     }
 
     @Override
-    public int getSlotLimit(int slot)
-    {
+    public int getSlotLimit(int slot) {
         return inv.getInventoryStackLimit();
     }
 
     @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack)
-    {
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return inv.isItemValidForSlot(slot, stack);
     }//https://github.com/MinecraftForge/MinecraftForge/commit/c7c2921b2fa05b6d0fa9e6c2934c08fc84dcb71f
 }

@@ -36,16 +36,14 @@ import javax.annotation.Nonnull;
  * <br>
  * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
  **/
-public class ArrowNockEvent extends PlayerEvent
-{
+public class ArrowNockEvent extends PlayerEvent {
     private final ItemStack bow;
     private final EnumHand hand;
     private final World world;
     private final boolean hasAmmo;
     private ActionResult<ItemStack> action;
 
-    public ArrowNockEvent(EntityPlayer player, @Nonnull ItemStack item, EnumHand hand, World world, boolean hasAmmo)
-    {
+    public ArrowNockEvent(EntityPlayer player, @Nonnull ItemStack item, EnumHand hand, World world, boolean hasAmmo) {
         super(player);
         this.bow = item;
         this.hand = hand;
@@ -54,17 +52,27 @@ public class ArrowNockEvent extends PlayerEvent
     }
 
     @Nonnull
-    public ItemStack getBow() { return this.bow; }
-    public World getWorld() { return this.world; }
-    public EnumHand getHand() { return this.hand; }
-    public boolean hasAmmo() { return this.hasAmmo; }
-    public ActionResult<ItemStack> getAction()
-    {
+    public ItemStack getBow() {
+        return this.bow;
+    }
+
+    public World getWorld() {
+        return this.world;
+    }
+
+    public EnumHand getHand() {
+        return this.hand;
+    }
+
+    public boolean hasAmmo() {
+        return this.hasAmmo;
+    }
+
+    public ActionResult<ItemStack> getAction() {
         return this.action;
     }
 
-    public void setAction(ActionResult<ItemStack> action)
-    {
+    public void setAction(ActionResult<ItemStack> action) {
         this.action = action;
     }
 }

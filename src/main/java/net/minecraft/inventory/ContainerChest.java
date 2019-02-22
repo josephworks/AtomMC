@@ -6,16 +6,14 @@ import net.minecraft.item.ItemStack;
 import org.bukkit.craftbukkit.inventory.CraftInventory;
 import org.bukkit.craftbukkit.inventory.CraftInventoryView;
 
-public class ContainerChest extends Container
-{
+public class ContainerChest extends Container {
     private final IInventory lowerChestInventory;
     private final int numRows;
 
     private CraftInventoryView bukkitEntity = null;
     private InventoryPlayer player;
 
-    public ContainerChest(IInventory playerInventory, IInventory chestInventory, EntityPlayer player)
-    {
+    public ContainerChest(IInventory playerInventory, IInventory chestInventory, EntityPlayer player) {
         this.lowerChestInventory = chestInventory;
         this.numRows = chestInventory.getSizeInventory() / 9;
         chestInventory.openInventory(player);
@@ -24,62 +22,47 @@ public class ContainerChest extends Container
         // TODO: Should we check to make sure it really is an InventoryPlayer?
         this.player = (InventoryPlayer) playerInventory;
 
-        for (int j = 0; j < this.numRows; ++j)
-        {
-            for (int k = 0; k < 9; ++k)
-            {
+        for (int j = 0; j < this.numRows; ++j) {
+            for (int k = 0; k < 9; ++k) {
                 this.addSlotToContainer(new Slot(chestInventory, k + j * 9, 8 + k * 18, 18 + j * 18));
             }
         }
 
-        for (int l = 0; l < 3; ++l)
-        {
-            for (int j1 = 0; j1 < 9; ++j1)
-            {
+        for (int l = 0; l < 3; ++l) {
+            for (int j1 = 0; j1 < 9; ++j1) {
                 this.addSlotToContainer(new Slot(playerInventory, j1 + l * 9 + 9, 8 + j1 * 18, 103 + l * 18 + i));
             }
         }
 
-        for (int i1 = 0; i1 < 9; ++i1)
-        {
+        for (int i1 = 0; i1 < 9; ++i1) {
             this.addSlotToContainer(new Slot(playerInventory, i1, 8 + i1 * 18, 161 + i));
         }
     }
 
-    public boolean canInteractWith(EntityPlayer playerIn)
-    {
+    public boolean canInteractWith(EntityPlayer playerIn) {
         if (!this.checkReachable) return true;
         return this.lowerChestInventory.isUsableByPlayer(playerIn);
     }
 
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
-    {
+    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
 
-        if (slot != null && slot.getHasStack())
-        {
+        if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
 
-            if (index < this.numRows * 9)
-            {
-                if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true))
-                {
+            if (index < this.numRows * 9) {
+                if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            }
-            else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false))
-            {
+            } else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (itemstack1.isEmpty())
-            {
+            if (itemstack1.isEmpty()) {
                 slot.putStack(ItemStack.EMPTY);
-            }
-            else
-            {
+            } else {
                 slot.onSlotChanged();
             }
         }
@@ -87,14 +70,12 @@ public class ContainerChest extends Container
         return itemstack;
     }
 
-    public void onContainerClosed(EntityPlayer playerIn)
-    {
+    public void onContainerClosed(EntityPlayer playerIn) {
         super.onContainerClosed(playerIn);
         this.lowerChestInventory.closeInventory(playerIn);
     }
 
-    public IInventory getLowerChestInventory()
-    {
+    public IInventory getLowerChestInventory() {
         return this.lowerChestInventory;
     }
 

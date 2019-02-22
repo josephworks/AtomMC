@@ -24,8 +24,7 @@ import java.util.regex.Pattern;
 
 import net.minecraftforge.fml.common.ModContainer;
 
-public interface ITypeDiscoverer
-{
+public interface ITypeDiscoverer {
     // main class part, followed by an optional $ and an "inner class" part. $ cannot be last, otherwise scala breaks
     public static Pattern classFile = Pattern.compile("[^\\s\\$]+(\\$[^\\s]+)?\\.class$");
 

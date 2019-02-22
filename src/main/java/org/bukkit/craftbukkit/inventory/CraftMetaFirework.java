@@ -251,7 +251,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
 
     @Override
     boolean applicableTo(Material type) {
-        switch(type) {
+        switch (type) {
             case FIREWORK:
                 return true;
             default:
@@ -265,7 +265,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
     }
 
     boolean isFireworkEmpty() {
-        return  !(hasEffects() || hasPower());
+        return !(hasEffects() || hasPower());
     }
 
     boolean hasPower() {
@@ -340,7 +340,7 @@ class CraftMetaFirework extends CraftMetaItem implements FireworkMeta {
         this.effects.add(effect);
     }
 
-    public void addEffects(FireworkEffect...effects) {
+    public void addEffects(FireworkEffect... effects) {
         Validate.notNull(effects, "Effects cannot be null");
         if (effects.length == 0) {
             return;

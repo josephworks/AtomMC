@@ -30,6 +30,7 @@ public class CraftTask implements BukkitTask, Runnable {
     private final int id;
 
     final CustomTimingsHandler timings; // Spigot
+
     CraftTask() {
         this(null, null, CraftTask.NO_REPEATING, CraftTask.NO_REPEATING);
     }
@@ -40,12 +41,15 @@ public class CraftTask implements BukkitTask, Runnable {
 
     // Spigot start
     public String timingName = null;
+
     CraftTask(String timingName) {
         this(timingName, null, null, -1, -1);
     }
+
     CraftTask(String timingName, final Runnable task) {
         this(timingName, null, task, -1, -1);
     }
+
     CraftTask(String timingName, final Plugin plugin, final Runnable task, final int id, final long period) {
         this.plugin = plugin;
         this.task = task;

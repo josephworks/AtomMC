@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "orange_concrete" }
+  "variants": {
+    "normal": {
+      "model": "orange_concrete"
     }
+  }
 }

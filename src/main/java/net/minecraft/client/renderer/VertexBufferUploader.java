@@ -5,18 +5,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class VertexBufferUploader extends WorldVertexBufferUploader
-{
+public class VertexBufferUploader extends WorldVertexBufferUploader {
     private VertexBuffer vertexBuffer;
 
-    public void draw(BufferBuilder bufferBuilderIn)
-    {
+    public void draw(BufferBuilder bufferBuilderIn) {
         bufferBuilderIn.reset();
         this.vertexBuffer.bufferData(bufferBuilderIn.getByteBuffer());
     }
 
-    public void setVertexBuffer(VertexBuffer vertexBufferIn)
-    {
+    public void setVertexBuffer(VertexBuffer vertexBufferIn) {
         this.vertexBuffer = vertexBufferIn;
     }
 }

@@ -26,23 +26,19 @@ import net.minecraftforge.common.model.TRSRTransformation;
 
 import java.util.Optional;
 
-public class ModelStateComposition implements IModelState
-{
+public class ModelStateComposition implements IModelState {
     private final IModelState first;
     private final IModelState second;
 
-    public ModelStateComposition(IModelState first, IModelState second)
-    {
+    public ModelStateComposition(IModelState first, IModelState second) {
         this.first = first;
         this.second = second;
     }
 
     @Override
-    public Optional<TRSRTransformation> apply(Optional<? extends IModelPart> part)
-    {
+    public Optional<TRSRTransformation> apply(Optional<? extends IModelPart> part) {
         Optional<TRSRTransformation> f = first.apply(part), s = second.apply(part);
-        if(f.isPresent() && s.isPresent())
-        {
+        if (f.isPresent() && s.isPresent()) {
             return Optional.of(f.get().compose(s.get()));
         }
         if (f.isPresent()) {
@@ -52,14 +48,11 @@ public class ModelStateComposition implements IModelState
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass())
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         ModelStateComposition that = (ModelStateComposition) o;
@@ -67,8 +60,7 @@ public class ModelStateComposition implements IModelState
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hashCode(first, second);
     }
 }

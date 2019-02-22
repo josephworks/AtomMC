@@ -1,6 +1,6 @@
 {
-    "parent": "block/wall_gate_open",
-    "textures": {
-        "texture": "blocks/planks_acacia"
-    }
+  "parent": "block/wall_gate_open",
+  "textures": {
+    "texture": "blocks/planks_acacia"
+  }
 }

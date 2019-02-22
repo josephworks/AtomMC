@@ -5,67 +5,51 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MovementInputFromOptions extends MovementInput
-{
+public class MovementInputFromOptions extends MovementInput {
     private final GameSettings gameSettings;
 
-    public MovementInputFromOptions(GameSettings gameSettingsIn)
-    {
+    public MovementInputFromOptions(GameSettings gameSettingsIn) {
         this.gameSettings = gameSettingsIn;
     }
 
-    public void updatePlayerMoveState()
-    {
+    public void updatePlayerMoveState() {
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;
 
-        if (this.gameSettings.keyBindForward.isKeyDown())
-        {
+        if (this.gameSettings.keyBindForward.isKeyDown()) {
             ++this.moveForward;
             this.forwardKeyDown = true;
-        }
-        else
-        {
+        } else {
             this.forwardKeyDown = false;
         }
 
-        if (this.gameSettings.keyBindBack.isKeyDown())
-        {
+        if (this.gameSettings.keyBindBack.isKeyDown()) {
             --this.moveForward;
             this.backKeyDown = true;
-        }
-        else
-        {
+        } else {
             this.backKeyDown = false;
         }
 
-        if (this.gameSettings.keyBindLeft.isKeyDown())
-        {
+        if (this.gameSettings.keyBindLeft.isKeyDown()) {
             ++this.moveStrafe;
             this.leftKeyDown = true;
-        }
-        else
-        {
+        } else {
             this.leftKeyDown = false;
         }
 
-        if (this.gameSettings.keyBindRight.isKeyDown())
-        {
+        if (this.gameSettings.keyBindRight.isKeyDown()) {
             --this.moveStrafe;
             this.rightKeyDown = true;
-        }
-        else
-        {
+        } else {
             this.rightKeyDown = false;
         }
 
         this.jump = this.gameSettings.keyBindJump.isKeyDown();
         this.sneak = this.gameSettings.keyBindSneak.isKeyDown();
 
-        if (this.sneak)
-        {
-            this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
-            this.moveForward = (float)((double)this.moveForward * 0.3D);
+        if (this.sneak) {
+            this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
+            this.moveForward = (float) ((double) this.moveForward * 0.3D);
         }
     }
 }

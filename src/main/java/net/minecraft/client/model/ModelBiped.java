@@ -10,8 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelBiped extends ModelBase
-{
+public class ModelBiped extends ModelBase {
     public ModelRenderer bipedHead;
     public ModelRenderer bipedHeadwear;
     public ModelRenderer bipedBody;
@@ -23,18 +22,15 @@ public class ModelBiped extends ModelBase
     public ArmPose rightArmPose;
     public boolean isSneak;
 
-    public ModelBiped()
-    {
+    public ModelBiped() {
         this(0.0F);
     }
 
-    public ModelBiped(float modelSize)
-    {
+    public ModelBiped(float modelSize) {
         this(modelSize, 0.0F, 64, 32);
     }
 
-    public ModelBiped(float modelSize, float p_i1149_2_, int textureWidthIn, int textureHeightIn)
-    {
+    public ModelBiped(float modelSize, float p_i1149_2_, int textureWidthIn, int textureHeightIn) {
         this.leftArmPose = ArmPose.EMPTY;
         this.rightArmPose = ArmPose.EMPTY;
         this.textureWidth = textureWidthIn;
@@ -64,13 +60,11 @@ public class ModelBiped extends ModelBase
         this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F + p_i1149_2_, 0.0F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         GlStateManager.pushMatrix();
 
-        if (this.isChild)
-        {
+        if (this.isChild) {
             float f = 2.0F;
             GlStateManager.scale(0.75F, 0.75F, 0.75F);
             GlStateManager.translate(0.0F, 16.0F * scale, 0.0F);
@@ -85,11 +79,8 @@ public class ModelBiped extends ModelBase
             this.bipedRightLeg.render(scale);
             this.bipedLeftLeg.render(scale);
             this.bipedHeadwear.render(scale);
-        }
-        else
-        {
-            if (entityIn.isSneaking())
-            {
+        } else {
+            if (entityIn.isSneaking()) {
                 GlStateManager.translate(0.0F, 0.2F, 0.0F);
             }
 
@@ -106,17 +97,13 @@ public class ModelBiped extends ModelBase
     }
 
     @SuppressWarnings("incomplete-switch")
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
-        boolean flag = entityIn instanceof EntityLivingBase && ((EntityLivingBase)entityIn).getTicksElytraFlying() > 4;
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
+        boolean flag = entityIn instanceof EntityLivingBase && ((EntityLivingBase) entityIn).getTicksElytraFlying() > 4;
         this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;
 
-        if (flag)
-        {
-            this.bipedHead.rotateAngleX = -((float)Math.PI / 4F);
-        }
-        else
-        {
+        if (flag) {
+            this.bipedHead.rotateAngleX = -((float) Math.PI / 4F);
+        } else {
             this.bipedHead.rotateAngleX = headPitch * 0.017453292F;
         }
 
@@ -127,46 +114,42 @@ public class ModelBiped extends ModelBase
         this.bipedLeftArm.rotationPointX = 5.0F;
         float f = 1.0F;
 
-        if (flag)
-        {
-            f = (float)(entityIn.motionX * entityIn.motionX + entityIn.motionY * entityIn.motionY + entityIn.motionZ * entityIn.motionZ);
+        if (flag) {
+            f = (float) (entityIn.motionX * entityIn.motionX + entityIn.motionY * entityIn.motionY + entityIn.motionZ * entityIn.motionZ);
             f = f / 0.2F;
             f = f * f * f;
         }
 
-        if (f < 1.0F)
-        {
+        if (f < 1.0F) {
             f = 1.0F;
         }
 
-        this.bipedRightArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 2.0F * limbSwingAmount * 0.5F / f;
+        this.bipedRightArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 2.0F * limbSwingAmount * 0.5F / f;
         this.bipedLeftArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F / f;
         this.bipedRightArm.rotateAngleZ = 0.0F;
         this.bipedLeftArm.rotateAngleZ = 0.0F;
         this.bipedRightLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount / f;
-        this.bipedLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount / f;
+        this.bipedLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount / f;
         this.bipedRightLeg.rotateAngleY = 0.0F;
         this.bipedLeftLeg.rotateAngleY = 0.0F;
         this.bipedRightLeg.rotateAngleZ = 0.0F;
         this.bipedLeftLeg.rotateAngleZ = 0.0F;
 
-        if (this.isRiding)
-        {
-            this.bipedRightArm.rotateAngleX += -((float)Math.PI / 5F);
-            this.bipedLeftArm.rotateAngleX += -((float)Math.PI / 5F);
+        if (this.isRiding) {
+            this.bipedRightArm.rotateAngleX += -((float) Math.PI / 5F);
+            this.bipedLeftArm.rotateAngleX += -((float) Math.PI / 5F);
             this.bipedRightLeg.rotateAngleX = -1.4137167F;
-            this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 10F);
+            this.bipedRightLeg.rotateAngleY = ((float) Math.PI / 10F);
             this.bipedRightLeg.rotateAngleZ = 0.07853982F;
             this.bipedLeftLeg.rotateAngleX = -1.4137167F;
-            this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
+            this.bipedLeftLeg.rotateAngleY = -((float) Math.PI / 10F);
             this.bipedLeftLeg.rotateAngleZ = -0.07853982F;
         }
 
         this.bipedRightArm.rotateAngleY = 0.0F;
         this.bipedRightArm.rotateAngleZ = 0.0F;
 
-        switch (this.leftArmPose)
-        {
+        switch (this.leftArmPose) {
             case EMPTY:
                 this.bipedLeftArm.rotateAngleY = 0.0F;
                 break;
@@ -175,12 +158,11 @@ public class ModelBiped extends ModelBase
                 this.bipedLeftArm.rotateAngleY = 0.5235988F;
                 break;
             case ITEM:
-                this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F - ((float)Math.PI / 10F);
+                this.bipedLeftArm.rotateAngleX = this.bipedLeftArm.rotateAngleX * 0.5F - ((float) Math.PI / 10F);
                 this.bipedLeftArm.rotateAngleY = 0.0F;
         }
 
-        switch (this.rightArmPose)
-        {
+        switch (this.rightArmPose) {
             case EMPTY:
                 this.bipedRightArm.rotateAngleY = 0.0F;
                 break;
@@ -189,19 +171,17 @@ public class ModelBiped extends ModelBase
                 this.bipedRightArm.rotateAngleY = -0.5235988F;
                 break;
             case ITEM:
-                this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - ((float)Math.PI / 10F);
+                this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - ((float) Math.PI / 10F);
                 this.bipedRightArm.rotateAngleY = 0.0F;
         }
 
-        if (this.swingProgress > 0.0F)
-        {
+        if (this.swingProgress > 0.0F) {
             EnumHandSide enumhandside = this.getMainHand(entityIn);
             ModelRenderer modelrenderer = this.getArmForSide(enumhandside);
             float f1 = this.swingProgress;
-            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) * ((float)Math.PI * 2F)) * 0.2F;
+            this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt(f1) * ((float) Math.PI * 2F)) * 0.2F;
 
-            if (enumhandside == EnumHandSide.LEFT)
-            {
+            if (enumhandside == EnumHandSide.LEFT) {
                 this.bipedBody.rotateAngleY *= -1.0F;
             }
 
@@ -216,15 +196,14 @@ public class ModelBiped extends ModelBase
             f1 = f1 * f1;
             f1 = f1 * f1;
             f1 = 1.0F - f1;
-            float f2 = MathHelper.sin(f1 * (float)Math.PI);
-            float f3 = MathHelper.sin(this.swingProgress * (float)Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * 0.75F;
-            modelrenderer.rotateAngleX = (float)((double)modelrenderer.rotateAngleX - ((double)f2 * 1.2D + (double)f3));
+            float f2 = MathHelper.sin(f1 * (float) Math.PI);
+            float f3 = MathHelper.sin(this.swingProgress * (float) Math.PI) * -(this.bipedHead.rotateAngleX - 0.7F) * 0.75F;
+            modelrenderer.rotateAngleX = (float) ((double) modelrenderer.rotateAngleX - ((double) f2 * 1.2D + (double) f3));
             modelrenderer.rotateAngleY += this.bipedBody.rotateAngleY * 2.0F;
-            modelrenderer.rotateAngleZ += MathHelper.sin(this.swingProgress * (float)Math.PI) * -0.4F;
+            modelrenderer.rotateAngleZ += MathHelper.sin(this.swingProgress * (float) Math.PI) * -0.4F;
         }
 
-        if (this.isSneak)
-        {
+        if (this.isSneak) {
             this.bipedBody.rotateAngleX = 0.5F;
             this.bipedRightArm.rotateAngleX += 0.4F;
             this.bipedLeftArm.rotateAngleX += 0.4F;
@@ -233,9 +212,7 @@ public class ModelBiped extends ModelBase
             this.bipedRightLeg.rotationPointY = 9.0F;
             this.bipedLeftLeg.rotationPointY = 9.0F;
             this.bipedHead.rotationPointY = 1.0F;
-        }
-        else
-        {
+        } else {
             this.bipedBody.rotateAngleX = 0.0F;
             this.bipedRightLeg.rotationPointZ = 0.1F;
             this.bipedLeftLeg.rotationPointZ = 0.1F;
@@ -249,39 +226,33 @@ public class ModelBiped extends ModelBase
         this.bipedRightArm.rotateAngleX += MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
         this.bipedLeftArm.rotateAngleX -= MathHelper.sin(ageInTicks * 0.067F) * 0.05F;
 
-        if (this.rightArmPose == ArmPose.BOW_AND_ARROW)
-        {
+        if (this.rightArmPose == ArmPose.BOW_AND_ARROW) {
             this.bipedRightArm.rotateAngleY = -0.1F + this.bipedHead.rotateAngleY;
             this.bipedLeftArm.rotateAngleY = 0.1F + this.bipedHead.rotateAngleY + 0.4F;
-            this.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
-            this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
-        }
-        else if (this.leftArmPose == ArmPose.BOW_AND_ARROW)
-        {
+            this.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) + this.bipedHead.rotateAngleX;
+            this.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) + this.bipedHead.rotateAngleX;
+        } else if (this.leftArmPose == ArmPose.BOW_AND_ARROW) {
             this.bipedRightArm.rotateAngleY = -0.1F + this.bipedHead.rotateAngleY - 0.4F;
             this.bipedLeftArm.rotateAngleY = 0.1F + this.bipedHead.rotateAngleY;
-            this.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
-            this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
+            this.bipedRightArm.rotateAngleX = -((float) Math.PI / 2F) + this.bipedHead.rotateAngleX;
+            this.bipedLeftArm.rotateAngleX = -((float) Math.PI / 2F) + this.bipedHead.rotateAngleX;
         }
 
         copyModelAngles(this.bipedHead, this.bipedHeadwear);
     }
 
-    public void setModelAttributes(ModelBase model)
-    {
+    public void setModelAttributes(ModelBase model) {
         super.setModelAttributes(model);
 
-        if (model instanceof ModelBiped)
-        {
-            ModelBiped modelbiped = (ModelBiped)model;
+        if (model instanceof ModelBiped) {
+            ModelBiped modelbiped = (ModelBiped) model;
             this.leftArmPose = modelbiped.leftArmPose;
             this.rightArmPose = modelbiped.rightArmPose;
             this.isSneak = modelbiped.isSneak;
         }
     }
 
-    public void setVisible(boolean visible)
-    {
+    public void setVisible(boolean visible) {
         this.bipedHead.showModel = visible;
         this.bipedHeadwear.showModel = visible;
         this.bipedBody.showModel = visible;
@@ -291,33 +262,26 @@ public class ModelBiped extends ModelBase
         this.bipedLeftLeg.showModel = visible;
     }
 
-    public void postRenderArm(float scale, EnumHandSide side)
-    {
+    public void postRenderArm(float scale, EnumHandSide side) {
         this.getArmForSide(side).postRender(scale);
     }
 
-    protected ModelRenderer getArmForSide(EnumHandSide side)
-    {
+    protected ModelRenderer getArmForSide(EnumHandSide side) {
         return side == EnumHandSide.LEFT ? this.bipedLeftArm : this.bipedRightArm;
     }
 
-    protected EnumHandSide getMainHand(Entity entityIn)
-    {
-        if (entityIn instanceof EntityLivingBase)
-        {
-            EntityLivingBase entitylivingbase = (EntityLivingBase)entityIn;
+    protected EnumHandSide getMainHand(Entity entityIn) {
+        if (entityIn instanceof EntityLivingBase) {
+            EntityLivingBase entitylivingbase = (EntityLivingBase) entityIn;
             EnumHandSide enumhandside = entitylivingbase.getPrimaryHand();
             return entitylivingbase.swingingHand == EnumHand.MAIN_HAND ? enumhandside : enumhandside.opposite();
-        }
-        else
-        {
+        } else {
             return EnumHandSide.RIGHT;
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public static enum ArmPose
-    {
+    public static enum ArmPose {
         EMPTY,
         ITEM,
         BLOCK,

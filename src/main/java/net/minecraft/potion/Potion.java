@@ -1,10 +1,12 @@
 package net.minecraft.potion;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -26,8 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 
-public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Potion>
-{
+public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Potion> {
     public static final RegistryNamespaced<ResourceLocation, Potion> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(Potion.class);
     private final Map<IAttribute, AttributeModifier> attributeModifierMap = Maps.<IAttribute, AttributeModifier>newHashMap();
     private final boolean isBadEffect;
@@ -38,72 +39,51 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
     private boolean beneficial;
 
     @Nullable
-    public static Potion getPotionById(int potionID)
-    {
+    public static Potion getPotionById(int potionID) {
         return REGISTRY.getObjectById(potionID);
     }
 
-    public static int getIdFromPotion(Potion potionIn)
-    {
+    public static int getIdFromPotion(Potion potionIn) {
         return REGISTRY.getIDForObject(potionIn);
     }
 
     @Nullable
-    public static Potion getPotionFromResourceLocation(String location)
-    {
+    public static Potion getPotionFromResourceLocation(String location) {
         return REGISTRY.getObject(new ResourceLocation(location));
     }
 
-    protected Potion(boolean isBadEffectIn, int liquidColorIn)
-    {
+    protected Potion(boolean isBadEffectIn, int liquidColorIn) {
         this.isBadEffect = isBadEffectIn;
 
-        if (isBadEffectIn)
-        {
+        if (isBadEffectIn) {
             this.effectiveness = 0.5D;
-        }
-        else
-        {
+        } else {
             this.effectiveness = 1.0D;
         }
 
         this.liquidColor = liquidColorIn;
     }
 
-    protected Potion setIconIndex(int p_76399_1_, int p_76399_2_)
-    {
+    protected Potion setIconIndex(int p_76399_1_, int p_76399_2_) {
         this.statusIconIndex = p_76399_1_ + p_76399_2_ * 8;
         return this;
     }
 
-    public void performEffect(EntityLivingBase entityLivingBaseIn, int amplifier)
-    {
-        if (this == MobEffects.REGENERATION)
-        {
-            if (entityLivingBaseIn.getHealth() < entityLivingBaseIn.getMaxHealth())
-            {
+    public void performEffect(EntityLivingBase entityLivingBaseIn, int amplifier) {
+        if (this == MobEffects.REGENERATION) {
+            if (entityLivingBaseIn.getHealth() < entityLivingBaseIn.getMaxHealth()) {
                 entityLivingBaseIn.heal(1.0F, RegainReason.MAGIC_REGEN);
             }
-        }
-        else if (this == MobEffects.POISON)
-        {
-            if (entityLivingBaseIn.getHealth() > 1.0F)
-            {
+        } else if (this == MobEffects.POISON) {
+            if (entityLivingBaseIn.getHealth() > 1.0F) {
                 entityLivingBaseIn.attackEntityFrom(CraftEventFactory.POISON, 1.0F); // CraftBukkit - DamageSource.MAGIC -> CraftEventFactory.POISON
             }
-        }
-        else if (this == MobEffects.WITHER)
-        {
+        } else if (this == MobEffects.WITHER) {
             entityLivingBaseIn.attackEntityFrom(DamageSource.WITHER, 1.0F);
-        }
-        else if (this == MobEffects.HUNGER && entityLivingBaseIn instanceof EntityPlayer)
-        {
-            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.005F * (float)(amplifier + 1));
-        }
-        else if (this == MobEffects.SATURATION && entityLivingBaseIn instanceof EntityPlayer)
-        {
-            if (!entityLivingBaseIn.world.isRemote)
-            {
+        } else if (this == MobEffects.HUNGER && entityLivingBaseIn instanceof EntityPlayer) {
+            ((EntityPlayer) entityLivingBaseIn).addExhaustion(0.005F * (float) (amplifier + 1));
+        } else if (this == MobEffects.SATURATION && entityLivingBaseIn instanceof EntityPlayer) {
+            if (!entityLivingBaseIn.world.isRemote) {
                 // ((EntityPlayer)entityLivingBaseIn).getFoodStats().addStats(amplifier + 1, 1.0F);
                 // CraftBukkit start
                 EntityPlayer entityhuman = (EntityPlayer) entityLivingBaseIn;
@@ -118,184 +98,134 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
                 ((EntityPlayerMP) entityhuman).connection.sendPacket(new SPacketUpdateHealth(((EntityPlayerMP) entityhuman).getBukkitEntity().getScaledHealth(), entityhuman.getFoodStats().foodLevel, entityhuman.getFoodStats().foodSaturationLevel));
                 // CraftBukkit end
             }
-        }
-        else if ((this != MobEffects.INSTANT_HEALTH || entityLivingBaseIn.isEntityUndead()) && (this != MobEffects.INSTANT_DAMAGE || !entityLivingBaseIn.isEntityUndead()))
-        {
-            if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead())
-            {
-                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)(6 << amplifier));
+        } else if ((this != MobEffects.INSTANT_HEALTH || entityLivingBaseIn.isEntityUndead()) && (this != MobEffects.INSTANT_DAMAGE || !entityLivingBaseIn.isEntityUndead())) {
+            if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead()) {
+                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float) (6 << amplifier));
             }
-        }
-        else
-        {
-            entityLivingBaseIn.heal((float)Math.max(4 << amplifier, 0), RegainReason.MAGIC);
+        } else {
+            entityLivingBaseIn.heal((float) Math.max(4 << amplifier, 0), RegainReason.MAGIC);
         }
     }
 
-    public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource, EntityLivingBase entityLivingBaseIn, int amplifier, double health)
-    {
-        if ((this != MobEffects.INSTANT_HEALTH || entityLivingBaseIn.isEntityUndead()) && (this != MobEffects.INSTANT_DAMAGE || !entityLivingBaseIn.isEntityUndead()))
-        {
-            if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead())
-            {
-                int j = (int)(health * (double)(6 << amplifier) + 0.5D);
+    public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource, EntityLivingBase entityLivingBaseIn, int amplifier, double health) {
+        if ((this != MobEffects.INSTANT_HEALTH || entityLivingBaseIn.isEntityUndead()) && (this != MobEffects.INSTANT_DAMAGE || !entityLivingBaseIn.isEntityUndead())) {
+            if (this == MobEffects.INSTANT_DAMAGE && !entityLivingBaseIn.isEntityUndead() || this == MobEffects.INSTANT_HEALTH && entityLivingBaseIn.isEntityUndead()) {
+                int j = (int) (health * (double) (6 << amplifier) + 0.5D);
 
-                if (source == null)
-                {
-                    entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)j);
-                }
-                else
-                {
-                    entityLivingBaseIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(source, indirectSource), (float)j);
+                if (source == null) {
+                    entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float) j);
+                } else {
+                    entityLivingBaseIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(source, indirectSource), (float) j);
                 }
             }
-        }
-        else
-        {
-            int i = (int)(health * (double)(4 << amplifier) + 0.5D);
-            entityLivingBaseIn.heal((float)i);
+        } else {
+            int i = (int) (health * (double) (4 << amplifier) + 0.5D);
+            entityLivingBaseIn.heal((float) i);
         }
     }
 
-    public boolean isReady(int duration, int amplifier)
-    {
-        if (this == MobEffects.REGENERATION)
-        {
+    public boolean isReady(int duration, int amplifier) {
+        if (this == MobEffects.REGENERATION) {
             int k = 50 >> amplifier;
 
-            if (k > 0)
-            {
+            if (k > 0) {
                 return duration % k == 0;
-            }
-            else
-            {
+            } else {
                 return true;
             }
-        }
-        else if (this == MobEffects.POISON)
-        {
+        } else if (this == MobEffects.POISON) {
             int j = 25 >> amplifier;
 
-            if (j > 0)
-            {
+            if (j > 0) {
                 return duration % j == 0;
-            }
-            else
-            {
+            } else {
                 return true;
             }
-        }
-        else if (this == MobEffects.WITHER)
-        {
+        } else if (this == MobEffects.WITHER) {
             int i = 40 >> amplifier;
 
-            if (i > 0)
-            {
+            if (i > 0) {
                 return duration % i == 0;
-            }
-            else
-            {
+            } else {
                 return true;
             }
-        }
-        else
-        {
+        } else {
             return this == MobEffects.HUNGER;
         }
     }
 
-    public boolean isInstant()
-    {
+    public boolean isInstant() {
         return false;
     }
 
-    public Potion setPotionName(String nameIn)
-    {
+    public Potion setPotionName(String nameIn) {
         this.name = nameIn;
         return this;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
-    protected Potion setEffectiveness(double effectivenessIn)
-    {
+    protected Potion setEffectiveness(double effectivenessIn) {
         this.effectiveness = effectivenessIn;
         return this;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean hasStatusIcon()
-    {
+    public boolean hasStatusIcon() {
         return this.statusIconIndex >= 0;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getStatusIconIndex()
-    {
+    public int getStatusIconIndex() {
         return this.statusIconIndex;
     }
 
-    public boolean isBadEffect()
-    {
+    public boolean isBadEffect() {
         return this.isBadEffect;
     }
 
     @SideOnly(Side.CLIENT)
-    public static String getPotionDurationString(PotionEffect effect, float durationFactor)
-    {
-        if (effect.getIsPotionDurationMax())
-        {
+    public static String getPotionDurationString(PotionEffect effect, float durationFactor) {
+        if (effect.getIsPotionDurationMax()) {
             return "**:**";
-        }
-        else
-        {
-            int i = MathHelper.floor((float)effect.getDuration() * durationFactor);
+        } else {
+            int i = MathHelper.floor((float) effect.getDuration() * durationFactor);
             return StringUtils.ticksToElapsedTime(i);
         }
     }
 
-    public int getLiquidColor()
-    {
+    public int getLiquidColor() {
         return this.liquidColor;
     }
 
-    public Potion registerPotionAttributeModifier(IAttribute attribute, String uniqueId, double ammount, int operation)
-    {
+    public Potion registerPotionAttributeModifier(IAttribute attribute, String uniqueId, double ammount, int operation) {
         AttributeModifier attributemodifier = new AttributeModifier(UUID.fromString(uniqueId), this.getName(), ammount, operation);
         this.attributeModifierMap.put(attribute, attributemodifier);
         return this;
     }
 
-    public void removeAttributesModifiersFromEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier)
-    {
-        for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
-        {
+    public void removeAttributesModifiersFromEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier) {
+        for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet()) {
             IAttributeInstance iattributeinstance = attributeMapIn.getAttributeInstance(entry.getKey());
 
-            if (iattributeinstance != null)
-            {
+            if (iattributeinstance != null) {
                 iattributeinstance.removeModifier(entry.getValue());
             }
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public Map<IAttribute, AttributeModifier> getAttributeModifierMap()
-    {
+    public Map<IAttribute, AttributeModifier> getAttributeModifierMap() {
         return this.attributeModifierMap;
     }
 
-    public void applyAttributesModifiersToEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier)
-    {
-        for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
-        {
+    public void applyAttributesModifiersToEntity(EntityLivingBase entityLivingBaseIn, AbstractAttributeMap attributeMapIn, int amplifier) {
+        for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet()) {
             IAttributeInstance iattributeinstance = attributeMapIn.getAttributeInstance(entry.getKey());
 
-            if (iattributeinstance != null)
-            {
+            if (iattributeinstance != null) {
                 AttributeModifier attributemodifier = entry.getValue();
                 iattributeinstance.removeModifier(attributemodifier);
                 iattributeinstance.applyModifier(new AttributeModifier(attributemodifier.getID(), this.getName() + " " + amplifier, this.getAttributeModifierAmount(amplifier, attributemodifier), attributemodifier.getOperation()));
@@ -303,103 +233,106 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
         }
     }
 
-    public double getAttributeModifierAmount(int amplifier, AttributeModifier modifier)
-    {
-        return modifier.getAmount() * (double)(amplifier + 1);
+    public double getAttributeModifierAmount(int amplifier, AttributeModifier modifier) {
+        return modifier.getAmount() * (double) (amplifier + 1);
     }
 
     /* ======================================== FORGE START =====================================*/
 
     /**
      * If the Potion effect should be displayed in the players inventory
+     *
      * @param effect the active PotionEffect
      * @return true to display it (default), false to hide it.
      */
-    public boolean shouldRender(PotionEffect effect) { return true; }
+    public boolean shouldRender(PotionEffect effect) {
+        return true;
+    }
 
     /**
      * If the standard PotionEffect text (name and duration) should be drawn when this potion is active.
+     *
      * @param effect the active PotionEffect
      * @return true to draw the standard text
      */
-    public boolean shouldRenderInvText(PotionEffect effect)
-    {
+    public boolean shouldRenderInvText(PotionEffect effect) {
         return true;
     }
 
     /**
      * If the Potion effect should be displayed in the player's ingame HUD
+     *
      * @param effect the active PotionEffect
      * @return true to display it (default), false to hide it.
      */
-    public boolean shouldRenderHUD(PotionEffect effect)
-    {
+    public boolean shouldRenderHUD(PotionEffect effect) {
         return true;
     }
 
     /**
      * Called to draw the this Potion onto the player's inventory when it's active.
      * This can be used to e.g. render Potion icons from your own texture.
-     * @param x the x coordinate
-     * @param y the y coordinate
+     *
+     * @param x      the x coordinate
+     * @param y      the y coordinate
      * @param effect the active PotionEffect
-     * @param mc the Minecraft instance, for convenience
+     * @param mc     the Minecraft instance, for convenience
      */
     @SideOnly(Side.CLIENT)
-    public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) { }
+    public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) {
+    }
 
     /**
      * Called to draw the this Potion onto the player's ingame HUD when it's active.
      * This can be used to e.g. render Potion icons from your own texture.
-     * @param x the x coordinate
-     * @param y the y coordinate
+     *
+     * @param x      the x coordinate
+     * @param y      the y coordinate
      * @param effect the active PotionEffect
-     * @param mc the Minecraft instance, for convenience
-     * @param alpha the alpha value, blinks when the potion is about to run out
+     * @param mc     the Minecraft instance, for convenience
+     * @param alpha  the alpha value, blinks when the potion is about to run out
      */
     @SideOnly(Side.CLIENT)
-    public void renderHUDEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc, float alpha) { }
+    public void renderHUDEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc, float alpha) {
+    }
 
     /**
      * Get a fresh list of items that can cure this Potion.
      * All new PotionEffects created from this Potion will call this to initialize the default curative items
-     * @see PotionEffect#getCurativeItems
+     *
      * @return A list of items that can cure this Potion
+     * @see PotionEffect#getCurativeItems
      */
-    public java.util.List<net.minecraft.item.ItemStack> getCurativeItems()
-    {
+    public java.util.List<net.minecraft.item.ItemStack> getCurativeItems() {
         java.util.ArrayList<net.minecraft.item.ItemStack> ret = new java.util.ArrayList<net.minecraft.item.ItemStack>();
         ret.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.MILK_BUCKET));
         return ret;
     }
-    
+
     /**
      * Used for determining {@code PotionEffect} sort order in GUIs.
      * Defaults to the {@code PotionEffect}'s liquid color.
+     *
      * @param potionEffect the {@code PotionEffect} instance containing the potion
-     * @return a value used to sort {@code PotionEffect}s in GUIs 
+     * @return a value used to sort {@code PotionEffect}s in GUIs
      */
-    public int getGuiSortColor(PotionEffect potionEffect)
-    {
+    public int getGuiSortColor(PotionEffect potionEffect) {
         return this.getLiquidColor();
     }
 
     /* ======================================== FORGE END =====================================*/
 
     @SideOnly(Side.CLIENT)
-    public boolean isBeneficial()
-    {
+    public boolean isBeneficial() {
         return this.beneficial;
     }
 
-    public Potion setBeneficial()
-    {
+    public Potion setBeneficial() {
         this.beneficial = true;
         return this;
     }
 
-    public static void registerPotions()
-    {
+    public static void registerPotions() {
         REGISTRY.register(1, new ResourceLocation("speed"), (new Potion(false, 8171462)).setPotionName("effect.moveSpeed").setIconIndex(0, 0).registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2).setBeneficial());
         REGISTRY.register(2, new ResourceLocation("slowness"), (new Potion(true, 5926017)).setPotionName("effect.moveSlowdown").setIconIndex(1, 0).registerPotionAttributeModifier(SharedMonsterAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2));
         REGISTRY.register(3, new ResourceLocation("haste"), (new Potion(false, 14270531)).setPotionName("effect.digSpeed").setIconIndex(2, 0).setEffectiveness(1.5D).setBeneficial().registerPotionAttributeModifier(SharedMonsterAttributes.ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.10000000149011612D, 2));

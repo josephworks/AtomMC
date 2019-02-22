@@ -2,8 +2,7 @@ package net.minecraft.entity.ai.attributes;
 
 import javax.annotation.Nullable;
 
-public interface IAttribute
-{
+public interface IAttribute {
     String getName();
 
     double clampValue(double value);

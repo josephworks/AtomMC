@@ -22,13 +22,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemHoe extends Item
-{
+public class ItemHoe extends Item {
     private final float speed;
     protected ToolMaterial toolMaterial;
 
-    public ItemHoe(ToolMaterial material)
-    {
+    public ItemHoe(ToolMaterial material) {
         this.toolMaterial = material;
         this.maxStackSize = 1;
         this.setMaxDamage(material.getMaxUses());
@@ -37,34 +35,26 @@ public class ItemHoe extends Item
     }
 
     @SuppressWarnings("incomplete-switch")
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (!player.canPlayerEdit(pos.offset(facing), facing, itemstack))
-        {
+        if (!player.canPlayerEdit(pos.offset(facing), facing, itemstack)) {
             return EnumActionResult.FAIL;
-        }
-        else
-        {
+        } else {
             int hook = net.minecraftforge.event.ForgeEventFactory.onHoeUse(itemstack, player, worldIn, pos);
             if (hook != 0) return hook > 0 ? EnumActionResult.SUCCESS : EnumActionResult.FAIL;
 
             IBlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
 
-            if (facing != EnumFacing.DOWN && worldIn.isAirBlock(pos.up()))
-            {
-                if (block == Blocks.GRASS || block == Blocks.GRASS_PATH)
-                {
+            if (facing != EnumFacing.DOWN && worldIn.isAirBlock(pos.up())) {
+                if (block == Blocks.GRASS || block == Blocks.GRASS_PATH) {
                     this.setBlock(itemstack, player, worldIn, pos, Blocks.FARMLAND.getDefaultState());
                     return EnumActionResult.SUCCESS;
                 }
 
-                if (block == Blocks.DIRT)
-                {
-                    switch ((BlockDirt.DirtType)iblockstate.getValue(BlockDirt.VARIANT))
-                    {
+                if (block == Blocks.DIRT) {
+                    switch ((BlockDirt.DirtType) iblockstate.getValue(BlockDirt.VARIANT)) {
                         case DIRT:
                             this.setBlock(itemstack, player, worldIn, pos, Blocks.FARMLAND.getDefaultState());
                             return EnumActionResult.SUCCESS;
@@ -79,42 +69,35 @@ public class ItemHoe extends Item
         }
     }
 
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
-    {
+    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
         stack.damageItem(1, attacker);
         return true;
     }
 
-    protected void setBlock(ItemStack stack, EntityPlayer player, World worldIn, BlockPos pos, IBlockState state)
-    {
+    protected void setBlock(ItemStack stack, EntityPlayer player, World worldIn, BlockPos pos, IBlockState state) {
         worldIn.playSound(player, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
-        if (!worldIn.isRemote)
-        {
+        if (!worldIn.isRemote) {
             worldIn.setBlockState(pos, state, 11);
             stack.damageItem(1, player);
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean isFull3D()
-    {
+    public boolean isFull3D() {
         return true;
     }
 
-    public String getMaterialName()
-    {
+    public String getMaterialName() {
         return this.toolMaterial.toString();
     }
 
-    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot)
-    {
+    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
 
-        if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
-        {
+        if (equipmentSlot == EntityEquipmentSlot.MAINHAND) {
             multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0.0D, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)(this.speed - 4.0F), 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double) (this.speed - 4.0F), 0));
         }
 
         return multimap;

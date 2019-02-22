@@ -91,7 +91,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     public MainHand getMainHand() {
-        return getHandle().getPrimaryHand()== EnumHandSide.LEFT ? MainHand.LEFT : MainHand.RIGHT;
+        return getHandle().getPrimaryHand() == EnumHandSide.LEFT ? MainHand.LEFT : MainHand.RIGHT;
     }
 
     public ItemStack getItemInHand() {
@@ -207,7 +207,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
     }
 
     public InventoryView openInventory(Inventory inventory) {
-        if(!(getHandle() instanceof EntityPlayerMP)) return null;
+        if (!(getHandle() instanceof EntityPlayerMP)) return null;
         EntityPlayerMP player = (EntityPlayerMP) getHandle();
         InventoryType type = inventory.getType();
         Container formerContainer = getHandle().inventoryContainer;
@@ -300,16 +300,16 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         Container container = new CraftContainer(inventory, this.getHandle(), player.getNextWindowIdCB());
 
         container = CraftEventFactory.callInventoryOpenEvent(player, container);
-        if(container == null) return;
+        if (container == null) return;
 
         String title = container.getBukkitView().getTitle();
         int size = container.getBukkitView().getTopInventory().getSize();
 
         // Special cases
-        if (windowType.equals("minecraft:crafting_table") 
+        if (windowType.equals("minecraft:crafting_table")
                 || windowType.equals("minecraft:anvil")
                 || windowType.equals("minecraft:enchanting_table")
-                ) {
+        ) {
             size = 0;
         }
 
@@ -367,7 +367,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         if (((EntityPlayerMP) getHandle()).connection == null) return;
         if (getHandle().inventoryContainer != getHandle().inventoryContainer) {
             // fire INVENTORY_CLOSE if one already open
-            ((EntityPlayerMP)getHandle()).connection.processCloseWindow(new CPacketCloseWindow(getHandle().inventoryContainer.windowId));
+            ((EntityPlayerMP) getHandle()).connection.processCloseWindow(new CPacketCloseWindow(getHandle().inventoryContainer.windowId));
         }
         EntityPlayerMP player = (EntityPlayerMP) getHandle();
         Container container;

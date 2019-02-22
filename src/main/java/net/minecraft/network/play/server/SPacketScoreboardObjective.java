@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -9,75 +10,63 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketScoreboardObjective implements Packet<INetHandlerPlayClient>
-{
+public class SPacketScoreboardObjective implements Packet<INetHandlerPlayClient> {
     private String objectiveName;
     private String objectiveValue;
     private IScoreCriteria.EnumRenderType type;
     private int action;
 
-    public SPacketScoreboardObjective()
-    {
+    public SPacketScoreboardObjective() {
     }
 
-    public SPacketScoreboardObjective(ScoreObjective objective, int actionIn)
-    {
+    public SPacketScoreboardObjective(ScoreObjective objective, int actionIn) {
         this.objectiveName = objective.getName();
         this.objectiveValue = objective.getDisplayName();
         this.type = objective.getCriteria().getRenderType();
         this.action = actionIn;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.objectiveName = buf.readString(16);
         this.action = buf.readByte();
 
-        if (this.action == 0 || this.action == 2)
-        {
+        if (this.action == 0 || this.action == 2) {
             this.objectiveValue = buf.readString(32);
             this.type = IScoreCriteria.EnumRenderType.getByName(buf.readString(16));
         }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeString(this.objectiveName);
         buf.writeByte(this.action);
 
-        if (this.action == 0 || this.action == 2)
-        {
+        if (this.action == 0 || this.action == 2) {
             buf.writeString(this.objectiveValue);
             buf.writeString(this.type.getRenderType());
         }
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleScoreboardObjective(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public String getObjectiveName()
-    {
+    public String getObjectiveName() {
         return this.objectiveName;
     }
 
     @SideOnly(Side.CLIENT)
-    public String getObjectiveValue()
-    {
+    public String getObjectiveValue() {
         return this.objectiveValue;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getAction()
-    {
+    public int getAction() {
         return this.action;
     }
 
     @SideOnly(Side.CLIENT)
-    public IScoreCriteria.EnumRenderType getRenderType()
-    {
+    public IScoreCriteria.EnumRenderType getRenderType() {
         return this.type;
     }
 }

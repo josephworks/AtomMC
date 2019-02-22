@@ -11,8 +11,7 @@ import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemShears;
 import net.minecraft.util.ResourceLocation;
 
-public class Items
-{
+public class Items {
     public static final Item AIR;
     public static final Item IRON_SHOVEL;
     public static final Item IRON_PICKAXE;
@@ -224,35 +223,27 @@ public class Items
     public static final Item IRON_NUGGET;
     public static final Item KNOWLEDGE_BOOK;
 
-    private static Item getRegisteredItem(String name)
-    {
+    private static Item getRegisteredItem(String name) {
         Item item = Item.REGISTRY.getObject(new ResourceLocation(name));
 
-        if (item == null)
-        {
+        if (item == null) {
             throw new IllegalStateException("Invalid Item requested: " + name);
-        }
-        else
-        {
+        } else {
             return item;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed Items before Bootstrap!");
-        }
-        else
-        {
+        } else {
             AIR = getRegisteredItem("air");
             IRON_SHOVEL = getRegisteredItem("iron_shovel");
             IRON_PICKAXE = getRegisteredItem("iron_pickaxe");
             IRON_AXE = getRegisteredItem("iron_axe");
             FLINT_AND_STEEL = getRegisteredItem("flint_and_steel");
             APPLE = getRegisteredItem("apple");
-            BOW = (ItemBow)getRegisteredItem("bow");
+            BOW = (ItemBow) getRegisteredItem("bow");
             ARROW = getRegisteredItem("arrow");
             SPECTRAL_ARROW = getRegisteredItem("spectral_arrow");
             TIPPED_ARROW = getRegisteredItem("tipped_arrow");
@@ -291,26 +282,26 @@ public class Items
             WHEAT_SEEDS = getRegisteredItem("wheat_seeds");
             WHEAT = getRegisteredItem("wheat");
             BREAD = getRegisteredItem("bread");
-            LEATHER_HELMET = (ItemArmor)getRegisteredItem("leather_helmet");
-            LEATHER_CHESTPLATE = (ItemArmor)getRegisteredItem("leather_chestplate");
-            LEATHER_LEGGINGS = (ItemArmor)getRegisteredItem("leather_leggings");
-            LEATHER_BOOTS = (ItemArmor)getRegisteredItem("leather_boots");
-            CHAINMAIL_HELMET = (ItemArmor)getRegisteredItem("chainmail_helmet");
-            CHAINMAIL_CHESTPLATE = (ItemArmor)getRegisteredItem("chainmail_chestplate");
-            CHAINMAIL_LEGGINGS = (ItemArmor)getRegisteredItem("chainmail_leggings");
-            CHAINMAIL_BOOTS = (ItemArmor)getRegisteredItem("chainmail_boots");
-            IRON_HELMET = (ItemArmor)getRegisteredItem("iron_helmet");
-            IRON_CHESTPLATE = (ItemArmor)getRegisteredItem("iron_chestplate");
-            IRON_LEGGINGS = (ItemArmor)getRegisteredItem("iron_leggings");
-            IRON_BOOTS = (ItemArmor)getRegisteredItem("iron_boots");
-            DIAMOND_HELMET = (ItemArmor)getRegisteredItem("diamond_helmet");
-            DIAMOND_CHESTPLATE = (ItemArmor)getRegisteredItem("diamond_chestplate");
-            DIAMOND_LEGGINGS = (ItemArmor)getRegisteredItem("diamond_leggings");
-            DIAMOND_BOOTS = (ItemArmor)getRegisteredItem("diamond_boots");
-            GOLDEN_HELMET = (ItemArmor)getRegisteredItem("golden_helmet");
-            GOLDEN_CHESTPLATE = (ItemArmor)getRegisteredItem("golden_chestplate");
-            GOLDEN_LEGGINGS = (ItemArmor)getRegisteredItem("golden_leggings");
-            GOLDEN_BOOTS = (ItemArmor)getRegisteredItem("golden_boots");
+            LEATHER_HELMET = (ItemArmor) getRegisteredItem("leather_helmet");
+            LEATHER_CHESTPLATE = (ItemArmor) getRegisteredItem("leather_chestplate");
+            LEATHER_LEGGINGS = (ItemArmor) getRegisteredItem("leather_leggings");
+            LEATHER_BOOTS = (ItemArmor) getRegisteredItem("leather_boots");
+            CHAINMAIL_HELMET = (ItemArmor) getRegisteredItem("chainmail_helmet");
+            CHAINMAIL_CHESTPLATE = (ItemArmor) getRegisteredItem("chainmail_chestplate");
+            CHAINMAIL_LEGGINGS = (ItemArmor) getRegisteredItem("chainmail_leggings");
+            CHAINMAIL_BOOTS = (ItemArmor) getRegisteredItem("chainmail_boots");
+            IRON_HELMET = (ItemArmor) getRegisteredItem("iron_helmet");
+            IRON_CHESTPLATE = (ItemArmor) getRegisteredItem("iron_chestplate");
+            IRON_LEGGINGS = (ItemArmor) getRegisteredItem("iron_leggings");
+            IRON_BOOTS = (ItemArmor) getRegisteredItem("iron_boots");
+            DIAMOND_HELMET = (ItemArmor) getRegisteredItem("diamond_helmet");
+            DIAMOND_CHESTPLATE = (ItemArmor) getRegisteredItem("diamond_chestplate");
+            DIAMOND_LEGGINGS = (ItemArmor) getRegisteredItem("diamond_leggings");
+            DIAMOND_BOOTS = (ItemArmor) getRegisteredItem("diamond_boots");
+            GOLDEN_HELMET = (ItemArmor) getRegisteredItem("golden_helmet");
+            GOLDEN_CHESTPLATE = (ItemArmor) getRegisteredItem("golden_chestplate");
+            GOLDEN_LEGGINGS = (ItemArmor) getRegisteredItem("golden_leggings");
+            GOLDEN_BOOTS = (ItemArmor) getRegisteredItem("golden_boots");
             FLINT = getRegisteredItem("flint");
             PORKCHOP = getRegisteredItem("porkchop");
             COOKED_PORKCHOP = getRegisteredItem("cooked_porkchop");
@@ -349,7 +340,7 @@ public class Items
             FURNACE_MINECART = getRegisteredItem("furnace_minecart");
             EGG = getRegisteredItem("egg");
             COMPASS = getRegisteredItem("compass");
-            FISHING_ROD = (ItemFishingRod)getRegisteredItem("fishing_rod");
+            FISHING_ROD = (ItemFishingRod) getRegisteredItem("fishing_rod");
             CLOCK = getRegisteredItem("clock");
             GLOWSTONE_DUST = getRegisteredItem("glowstone_dust");
             FISH = getRegisteredItem("fish");
@@ -361,8 +352,8 @@ public class Items
             BED = getRegisteredItem("bed");
             REPEATER = getRegisteredItem("repeater");
             COOKIE = getRegisteredItem("cookie");
-            FILLED_MAP = (ItemMap)getRegisteredItem("filled_map");
-            SHEARS = (ItemShears)getRegisteredItem("shears");
+            FILLED_MAP = (ItemMap) getRegisteredItem("filled_map");
+            SHEARS = (ItemShears) getRegisteredItem("shears");
             MELON = getRegisteredItem("melon");
             PUMPKIN_SEEDS = getRegisteredItem("pumpkin_seeds");
             MELON_SEEDS = getRegisteredItem("melon_seeds");
@@ -383,9 +374,9 @@ public class Items
             GHAST_TEAR = getRegisteredItem("ghast_tear");
             GOLD_NUGGET = getRegisteredItem("gold_nugget");
             NETHER_WART = getRegisteredItem("nether_wart");
-            POTIONITEM = (ItemPotion)getRegisteredItem("potion");
-            SPLASH_POTION = (ItemPotion)getRegisteredItem("splash_potion");
-            LINGERING_POTION = (ItemPotion)getRegisteredItem("lingering_potion");
+            POTIONITEM = (ItemPotion) getRegisteredItem("potion");
+            SPLASH_POTION = (ItemPotion) getRegisteredItem("splash_potion");
+            LINGERING_POTION = (ItemPotion) getRegisteredItem("lingering_potion");
             GLASS_BOTTLE = getRegisteredItem("glass_bottle");
             DRAGON_BREATH = getRegisteredItem("dragon_breath");
             SPIDER_EYE = getRegisteredItem("spider_eye");
@@ -408,7 +399,7 @@ public class Items
             POTATO = getRegisteredItem("potato");
             BAKED_POTATO = getRegisteredItem("baked_potato");
             POISONOUS_POTATO = getRegisteredItem("poisonous_potato");
-            MAP = (ItemEmptyMap)getRegisteredItem("map");
+            MAP = (ItemEmptyMap) getRegisteredItem("map");
             GOLDEN_CARROT = getRegisteredItem("golden_carrot");
             SKULL = getRegisteredItem("skull");
             CARROT_ON_A_STICK = getRegisteredItem("carrot_on_a_stick");
@@ -422,7 +413,7 @@ public class Items
             QUARTZ = getRegisteredItem("quartz");
             TNT_MINECART = getRegisteredItem("tnt_minecart");
             HOPPER_MINECART = getRegisteredItem("hopper_minecart");
-            ARMOR_STAND = (ItemArmorStand)getRegisteredItem("armor_stand");
+            ARMOR_STAND = (ItemArmorStand) getRegisteredItem("armor_stand");
             IRON_HORSE_ARMOR = getRegisteredItem("iron_horse_armor");
             GOLDEN_HORSE_ARMOR = getRegisteredItem("golden_horse_armor");
             DIAMOND_HORSE_ARMOR = getRegisteredItem("diamond_horse_armor");

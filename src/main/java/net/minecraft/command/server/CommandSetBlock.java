@@ -3,6 +3,7 @@ package net.minecraft.command.server;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
@@ -20,108 +21,79 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class CommandSetBlock extends CommandBase
-{
-    public String getName()
-    {
+public class CommandSetBlock extends CommandBase {
+    public String getName() {
         return "setblock";
     }
 
-    public int getRequiredPermissionLevel()
-    {
+    public int getRequiredPermissionLevel() {
         return 2;
     }
 
-    public String getUsage(ICommandSender sender)
-    {
+    public String getUsage(ICommandSender sender) {
         return "commands.setblock.usage";
     }
 
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-    {
-        if (args.length < 4)
-        {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (args.length < 4) {
             throw new WrongUsageException("commands.setblock.usage", new Object[0]);
-        }
-        else
-        {
+        } else {
             sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
             BlockPos blockpos = parseBlockPos(sender, args, 0, false);
             Block block = CommandBase.getBlockByText(sender, args[3]);
             IBlockState iblockstate;
 
-            if (args.length >= 5)
-            {
+            if (args.length >= 5) {
                 iblockstate = convertArgToBlockState(block, args[4]);
-            }
-            else
-            {
+            } else {
                 iblockstate = block.getDefaultState();
             }
 
             World world = sender.getEntityWorld();
 
-            if (!world.isBlockLoaded(blockpos))
-            {
+            if (!world.isBlockLoaded(blockpos)) {
                 throw new CommandException("commands.setblock.outOfWorld", new Object[0]);
-            }
-            else
-            {
+            } else {
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
                 boolean flag = false;
 
-                if (args.length >= 7 && block.hasTileEntity(iblockstate))
-                {
+                if (args.length >= 7 && block.hasTileEntity(iblockstate)) {
                     String s = buildString(args, 6);
 
-                    try
-                    {
+                    try {
                         nbttagcompound = JsonToNBT.getTagFromJson(s);
                         flag = true;
-                    }
-                    catch (NBTException nbtexception)
-                    {
-                        throw new CommandException("commands.setblock.tagError", new Object[] {nbtexception.getMessage()});
+                    } catch (NBTException nbtexception) {
+                        throw new CommandException("commands.setblock.tagError", new Object[]{nbtexception.getMessage()});
                     }
                 }
 
-                if (args.length >= 6)
-                {
-                    if ("destroy".equals(args[5]))
-                    {
+                if (args.length >= 6) {
+                    if ("destroy".equals(args[5])) {
                         world.destroyBlock(blockpos, true);
 
-                        if (block == Blocks.AIR)
-                        {
+                        if (block == Blocks.AIR) {
                             notifyCommandListener(sender, this, "commands.setblock.success", new Object[0]);
                             return;
                         }
-                    }
-                    else if ("keep".equals(args[5]) && !world.isAirBlock(blockpos))
-                    {
+                    } else if ("keep".equals(args[5]) && !world.isAirBlock(blockpos)) {
                         throw new CommandException("commands.setblock.noChange", new Object[0]);
                     }
                 }
 
                 TileEntity tileentity1 = world.getTileEntity(blockpos);
 
-                if (tileentity1 != null && tileentity1 instanceof IInventory)
-                {
-                    ((IInventory)tileentity1).clear();
+                if (tileentity1 != null && tileentity1 instanceof IInventory) {
+                    ((IInventory) tileentity1).clear();
                 }
 
-                if (!world.setBlockState(blockpos, iblockstate, 2))
-                {
+                if (!world.setBlockState(blockpos, iblockstate, 2)) {
                     throw new CommandException("commands.setblock.noChange", new Object[0]);
-                }
-                else
-                {
-                    if (flag)
-                    {
+                } else {
+                    if (flag) {
                         TileEntity tileentity = world.getTileEntity(blockpos);
 
-                        if (tileentity != null)
-                        {
+                        if (tileentity != null) {
                             nbttagcompound.setInteger("x", blockpos.getX());
                             nbttagcompound.setInteger("y", blockpos.getY());
                             nbttagcompound.setInteger("z", blockpos.getZ());
@@ -137,19 +109,13 @@ public class CommandSetBlock extends CommandBase
         }
     }
 
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-    {
-        if (args.length > 0 && args.length <= 3)
-        {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length > 0 && args.length <= 3) {
             return getTabCompletionCoordinate(args, 0, targetPos);
-        }
-        else if (args.length == 4)
-        {
+        } else if (args.length == 4) {
             return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
-        }
-        else
-        {
-            return args.length == 6 ? getListOfStringsMatchingLastWord(args, new String[] {"replace", "destroy", "keep"}) : Collections.emptyList();
+        } else {
+            return args.length == 6 ? getListOfStringsMatchingLastWord(args, new String[]{"replace", "destroy", "keep"}) : Collections.emptyList();
         }
     }
 }

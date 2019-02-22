@@ -1,8 +1,10 @@
 package net.minecraft.client.renderer;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
 import java.util.Map.Entry;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockColored;
@@ -56,193 +58,156 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class BlockModelShapes
-{
+public class BlockModelShapes {
     private final Map<IBlockState, IBakedModel> bakedModelStore = Maps.<IBlockState, IBakedModel>newIdentityHashMap();
     private final BlockStateMapper blockStateMapper = new BlockStateMapper();
     private final ModelManager modelManager;
 
-    public BlockModelShapes(ModelManager manager)
-    {
+    public BlockModelShapes(ModelManager manager) {
         this.modelManager = manager;
         this.registerAllBlocks();
     }
 
-    public BlockStateMapper getBlockStateMapper()
-    {
+    public BlockStateMapper getBlockStateMapper() {
         return this.blockStateMapper;
     }
 
-    public TextureAtlasSprite getTexture(IBlockState state)
-    {
+    public TextureAtlasSprite getTexture(IBlockState state) {
         Block block = state.getBlock();
         IBakedModel ibakedmodel = this.getModelForState(state);
 
-        if (ibakedmodel == null || ibakedmodel == this.modelManager.getMissingModel())
-        {
-            if (block == Blocks.WALL_SIGN || block == Blocks.STANDING_SIGN || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.STANDING_BANNER || block == Blocks.WALL_BANNER || block == Blocks.BED)
-            {
+        if (ibakedmodel == null || ibakedmodel == this.modelManager.getMissingModel()) {
+            if (block == Blocks.WALL_SIGN || block == Blocks.STANDING_SIGN || block == Blocks.CHEST || block == Blocks.TRAPPED_CHEST || block == Blocks.STANDING_BANNER || block == Blocks.WALL_BANNER || block == Blocks.BED) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/planks_oak");
             }
 
-            if (block == Blocks.ENDER_CHEST)
-            {
+            if (block == Blocks.ENDER_CHEST) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/obsidian");
             }
 
-            if (block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
-            {
+            if (block == Blocks.FLOWING_LAVA || block == Blocks.LAVA) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/lava_still");
             }
 
-            if (block == Blocks.FLOWING_WATER || block == Blocks.WATER)
-            {
+            if (block == Blocks.FLOWING_WATER || block == Blocks.WATER) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/water_still");
             }
 
-            if (block == Blocks.SKULL)
-            {
+            if (block == Blocks.SKULL) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/soul_sand");
             }
 
-            if (block == Blocks.BARRIER)
-            {
+            if (block == Blocks.BARRIER) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:items/barrier");
             }
 
-            if (block == Blocks.STRUCTURE_VOID)
-            {
+            if (block == Blocks.STRUCTURE_VOID) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:items/structure_void");
             }
 
-            if (block == Blocks.WHITE_SHULKER_BOX)
-            {
+            if (block == Blocks.WHITE_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_white");
             }
 
-            if (block == Blocks.ORANGE_SHULKER_BOX)
-            {
+            if (block == Blocks.ORANGE_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_orange");
             }
 
-            if (block == Blocks.MAGENTA_SHULKER_BOX)
-            {
+            if (block == Blocks.MAGENTA_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_magenta");
             }
 
-            if (block == Blocks.LIGHT_BLUE_SHULKER_BOX)
-            {
+            if (block == Blocks.LIGHT_BLUE_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_light_blue");
             }
 
-            if (block == Blocks.YELLOW_SHULKER_BOX)
-            {
+            if (block == Blocks.YELLOW_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_yellow");
             }
 
-            if (block == Blocks.LIME_SHULKER_BOX)
-            {
+            if (block == Blocks.LIME_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_lime");
             }
 
-            if (block == Blocks.PINK_SHULKER_BOX)
-            {
+            if (block == Blocks.PINK_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_pink");
             }
 
-            if (block == Blocks.GRAY_SHULKER_BOX)
-            {
+            if (block == Blocks.GRAY_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_gray");
             }
 
-            if (block == Blocks.SILVER_SHULKER_BOX)
-            {
+            if (block == Blocks.SILVER_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_silver");
             }
 
-            if (block == Blocks.CYAN_SHULKER_BOX)
-            {
+            if (block == Blocks.CYAN_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_cyan");
             }
 
-            if (block == Blocks.PURPLE_SHULKER_BOX)
-            {
+            if (block == Blocks.PURPLE_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_purple");
             }
 
-            if (block == Blocks.BLUE_SHULKER_BOX)
-            {
+            if (block == Blocks.BLUE_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_blue");
             }
 
-            if (block == Blocks.BROWN_SHULKER_BOX)
-            {
+            if (block == Blocks.BROWN_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_brown");
             }
 
-            if (block == Blocks.GREEN_SHULKER_BOX)
-            {
+            if (block == Blocks.GREEN_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_green");
             }
 
-            if (block == Blocks.RED_SHULKER_BOX)
-            {
+            if (block == Blocks.RED_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_red");
             }
 
-            if (block == Blocks.BLACK_SHULKER_BOX)
-            {
+            if (block == Blocks.BLACK_SHULKER_BOX) {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_black");
             }
         }
 
-        if (ibakedmodel == null)
-        {
+        if (ibakedmodel == null) {
             ibakedmodel = this.modelManager.getMissingModel();
         }
 
         return ibakedmodel.getParticleTexture();
     }
 
-    public IBakedModel getModelForState(IBlockState state)
-    {
+    public IBakedModel getModelForState(IBlockState state) {
         IBakedModel ibakedmodel = this.bakedModelStore.get(state);
 
-        if (ibakedmodel == null)
-        {
+        if (ibakedmodel == null) {
             ibakedmodel = this.modelManager.getMissingModel();
         }
 
         return ibakedmodel;
     }
 
-    public ModelManager getModelManager()
-    {
+    public ModelManager getModelManager() {
         return this.modelManager;
     }
 
-    public void reloadModels()
-    {
+    public void reloadModels() {
         this.bakedModelStore.clear();
 
-        for (Entry<IBlockState, ModelResourceLocation> entry : this.blockStateMapper.putAllStateModelLocations().entrySet())
-        {
+        for (Entry<IBlockState, ModelResourceLocation> entry : this.blockStateMapper.putAllStateModelLocations().entrySet()) {
             this.bakedModelStore.put(entry.getKey(), this.modelManager.getModel(entry.getValue()));
         }
     }
 
-    public void registerBlockWithStateMapper(Block assoc, IStateMapper stateMapper)
-    {
+    public void registerBlockWithStateMapper(Block assoc, IStateMapper stateMapper) {
         this.blockStateMapper.registerBlockStateMapper(assoc, stateMapper);
     }
 
-    public void registerBuiltInBlocks(Block... builtIns)
-    {
+    public void registerBuiltInBlocks(Block... builtIns) {
         this.blockStateMapper.registerBuiltInBlocks(builtIns);
     }
 
-    private void registerAllBlocks()
-    {
+    private void registerAllBlocks() {
         this.registerBuiltInBlocks(Blocks.AIR, Blocks.FLOWING_WATER, Blocks.WATER, Blocks.FLOWING_LAVA, Blocks.LAVA, Blocks.PISTON_EXTENSION, Blocks.CHEST, Blocks.ENDER_CHEST, Blocks.TRAPPED_CHEST, Blocks.STANDING_SIGN, Blocks.SKULL, Blocks.END_PORTAL, Blocks.BARRIER, Blocks.WALL_SIGN, Blocks.WALL_BANNER, Blocks.STANDING_BANNER, Blocks.END_GATEWAY, Blocks.STRUCTURE_VOID, Blocks.WHITE_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.SILVER_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.BED);
         this.registerBlockWithStateMapper(Blocks.STONE, (new StateMap.Builder()).withName(BlockStone.VARIANT).build());
         this.registerBlockWithStateMapper(Blocks.PRISMARINE, (new StateMap.Builder()).withName(BlockPrismarine.VARIANT).build());
@@ -297,14 +262,11 @@ public class BlockModelShapes
         this.registerBlockWithStateMapper(Blocks.FLOWER_POT, (new StateMap.Builder()).ignore(BlockFlowerPot.LEGACY_DATA).build());
         this.registerBlockWithStateMapper(Blocks.CONCRETE, (new StateMap.Builder()).withName(BlockColored.COLOR).withSuffix("_concrete").build());
         this.registerBlockWithStateMapper(Blocks.CONCRETE_POWDER, (new StateMap.Builder()).withName(BlockColored.COLOR).withSuffix("_concrete_powder").build());
-        this.registerBlockWithStateMapper(Blocks.QUARTZ_BLOCK, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType)state.getValue(BlockQuartz.VARIANT);
+        this.registerBlockWithStateMapper(Blocks.QUARTZ_BLOCK, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                BlockQuartz.EnumType blockquartz$enumtype = (BlockQuartz.EnumType) state.getValue(BlockQuartz.VARIANT);
 
-                switch (blockquartz$enumtype)
-                {
+                switch (blockquartz$enumtype) {
                     case DEFAULT:
                     default:
                         return new ModelResourceLocation("quartz_block", "normal");
@@ -319,75 +281,60 @@ public class BlockModelShapes
                 }
             }
         });
-        this.registerBlockWithStateMapper(Blocks.DEADBUSH, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
+        this.registerBlockWithStateMapper(Blocks.DEADBUSH, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
                 return new ModelResourceLocation("dead_bush", "normal");
             }
         });
-        this.registerBlockWithStateMapper(Blocks.PUMPKIN_STEM, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
+        this.registerBlockWithStateMapper(Blocks.PUMPKIN_STEM, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                Map<IProperty<?>, Comparable<?>> map = Maps.<IProperty<?>, Comparable<?>>newLinkedHashMap(state.getProperties());
 
-                if (state.getValue(BlockStem.FACING) != EnumFacing.UP)
-                {
+                if (state.getValue(BlockStem.FACING) != EnumFacing.UP) {
                     map.remove(BlockStem.AGE);
                 }
 
                 return new ModelResourceLocation(Block.REGISTRY.getNameForObject(state.getBlock()), this.getPropertyString(map));
             }
         });
-        this.registerBlockWithStateMapper(Blocks.MELON_STEM, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
+        this.registerBlockWithStateMapper(Blocks.MELON_STEM, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                Map<IProperty<?>, Comparable<?>> map = Maps.<IProperty<?>, Comparable<?>>newLinkedHashMap(state.getProperties());
 
-                if (state.getValue(BlockStem.FACING) != EnumFacing.UP)
-                {
+                if (state.getValue(BlockStem.FACING) != EnumFacing.UP) {
                     map.remove(BlockStem.AGE);
                 }
 
                 return new ModelResourceLocation(Block.REGISTRY.getNameForObject(state.getBlock()), this.getPropertyString(map));
             }
         });
-        this.registerBlockWithStateMapper(Blocks.DIRT, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
-                String s = BlockDirt.VARIANT.getName((BlockDirt.DirtType)map.remove(BlockDirt.VARIANT));
+        this.registerBlockWithStateMapper(Blocks.DIRT, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                Map<IProperty<?>, Comparable<?>> map = Maps.<IProperty<?>, Comparable<?>>newLinkedHashMap(state.getProperties());
+                String s = BlockDirt.VARIANT.getName((BlockDirt.DirtType) map.remove(BlockDirt.VARIANT));
 
-                if (BlockDirt.DirtType.PODZOL != state.getValue(BlockDirt.VARIANT))
-                {
+                if (BlockDirt.DirtType.PODZOL != state.getValue(BlockDirt.VARIANT)) {
                     map.remove(BlockDirt.SNOWY);
                 }
 
                 return new ModelResourceLocation(s, this.getPropertyString(map));
             }
         });
-        this.registerBlockWithStateMapper(Blocks.DOUBLE_STONE_SLAB, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
-                String s = BlockStoneSlab.VARIANT.getName((BlockStoneSlab.EnumType)map.remove(BlockStoneSlab.VARIANT));
+        this.registerBlockWithStateMapper(Blocks.DOUBLE_STONE_SLAB, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                Map<IProperty<?>, Comparable<?>> map = Maps.<IProperty<?>, Comparable<?>>newLinkedHashMap(state.getProperties());
+                String s = BlockStoneSlab.VARIANT.getName((BlockStoneSlab.EnumType) map.remove(BlockStoneSlab.VARIANT));
                 map.remove(BlockStoneSlab.SEAMLESS);
-                String s1 = ((Boolean)state.getValue(BlockStoneSlab.SEAMLESS)).booleanValue() ? "all" : "normal";
+                String s1 = ((Boolean) state.getValue(BlockStoneSlab.SEAMLESS)).booleanValue() ? "all" : "normal";
                 return new ModelResourceLocation(s + "_double_slab", s1);
             }
         });
-        this.registerBlockWithStateMapper(Blocks.DOUBLE_STONE_SLAB2, new StateMapperBase()
-        {
-            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
-            {
-                Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newLinkedHashMap(state.getProperties());
-                String s = BlockStoneSlabNew.VARIANT.getName((BlockStoneSlabNew.EnumType)map.remove(BlockStoneSlabNew.VARIANT));
+        this.registerBlockWithStateMapper(Blocks.DOUBLE_STONE_SLAB2, new StateMapperBase() {
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+                Map<IProperty<?>, Comparable<?>> map = Maps.<IProperty<?>, Comparable<?>>newLinkedHashMap(state.getProperties());
+                String s = BlockStoneSlabNew.VARIANT.getName((BlockStoneSlabNew.EnumType) map.remove(BlockStoneSlabNew.VARIANT));
                 map.remove(BlockStoneSlab.SEAMLESS);
-                String s1 = ((Boolean)state.getValue(BlockStoneSlabNew.SEAMLESS)).booleanValue() ? "all" : "normal";
+                String s1 = ((Boolean) state.getValue(BlockStoneSlabNew.SEAMLESS)).booleanValue() ? "all" : "normal";
                 return new ModelResourceLocation(s + "_double_slab", s1);
             }
         });

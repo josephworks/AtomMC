@@ -43,8 +43,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 
-public class MinecraftForge
-{
+public class MinecraftForge {
     /**
      * The core Forge EventBusses, all events for Forge will be fired on these,
      * you should use this to register all your listeners.
@@ -63,69 +62,60 @@ public class MinecraftForge
     /**
      * Register a new seed to be dropped when breaking tall grass.
      *
-     * @param seed The item to drop as a seed.
+     * @param seed   The item to drop as a seed.
      * @param weight The relative probability of the seeds,
      *               where wheat seeds are 10.
-     *
-     * Note: These functions may be going away soon, we're looking into loot tables....
+     *               <p>
+     *               Note: These functions may be going away soon, we're looking into loot tables....
      */
-    public static void addGrassSeed(@Nonnull ItemStack seed, int weight)
-    {
+    public static void addGrassSeed(@Nonnull ItemStack seed, int weight) {
         addGrassSeed(new SeedEntry(seed, weight));
     }
-    public static void addGrassSeed(SeedEntry seed)
-    {
+
+    public static void addGrassSeed(SeedEntry seed) {
         ForgeHooks.seedList.add(seed);
     }
 
-   /**
-    * Method invoked by FML before any other mods are loaded.
-    */
-   public static void initialize()
-   {
-       FMLLog.log.info("MinecraftForge v{} Initialized", ForgeVersion.getVersion());
+    /**
+     * Method invoked by FML before any other mods are loaded.
+     */
+    public static void initialize() {
+        FMLLog.log.info("MinecraftForge v{} Initialized", ForgeVersion.getVersion());
 
-       OreDictionary.getOreName(0);
+        OreDictionary.getOreName(0);
 
-       UsernameCache.load();
-       // Load before all the mods, so MC owns the MC fluids
-       FluidRegistry.validateFluidRegistry();
-       ForgeHooks.initTools();
+        UsernameCache.load();
+        // Load before all the mods, so MC owns the MC fluids
+        FluidRegistry.validateFluidRegistry();
+        ForgeHooks.initTools();
 
-       //For all the normal CrashReport classes to be defined. We're in MC's classloader so this should all be fine
-       new CrashReport("ThisIsFake", new Exception("Not real"));
-   }
-
+        //For all the normal CrashReport classes to be defined. We're in MC's classloader so this should all be fine
+        new CrashReport("ThisIsFake", new Exception("Not real"));
+    }
 
 
+    public static void preloadCrashClasses(ASMDataTable table, String modID, Set<String> classes) {
+        //Find all ICrashReportDetail's handlers and preload them.
+        List<String> all = Lists.newArrayList();
+        for (ASMData asm : table.getAll(ICrashReportDetail.class.getName().replace('.', '/')))
+            all.add(asm.getClassName());
+        for (ASMData asm : table.getAll(ICrashCallable.class.getName().replace('.', '/')))
+            all.add(asm.getClassName());
 
-   public static void preloadCrashClasses(ASMDataTable table, String modID, Set<String> classes)
-   {
-       //Find all ICrashReportDetail's handlers and preload them.
-       List<String> all = Lists.newArrayList();
-       for (ASMData asm : table.getAll(ICrashReportDetail.class.getName().replace('.', '/')))
-           all.add(asm.getClassName());
-       for (ASMData asm : table.getAll(ICrashCallable.class.getName().replace('.', '/')))
-           all.add(asm.getClassName());
+        all.retainAll(classes);
 
-       all.retainAll(classes);
+        if (all.size() == 0)
+            return;
 
-       if (all.size() == 0)
-        return;
-
-       ForgeModContainer.log.debug("Preloading CrashReport Classes");
-       Collections.sort(all); //Sort it because I like pretty output ;)
-       for (String name : all)
-       {
-           ForgeModContainer.log.debug("\t{}", name);
-           try
-           {
-               Class.forName(name.replace('/', '.'), false, MinecraftForge.class.getClassLoader());
-           }
-           catch (Exception e)
-           {
-               FMLLog.log.error("Could not find class for name '{}'.", name, e);
-           }
-       }
-   }
+        ForgeModContainer.log.debug("Preloading CrashReport Classes");
+        Collections.sort(all); //Sort it because I like pretty output ;)
+        for (String name : all) {
+            ForgeModContainer.log.debug("\t{}", name);
+            try {
+                Class.forName(name.replace('/', '.'), false, MinecraftForge.class.getClassLoader());
+            } catch (Exception e) {
+                FMLLog.log.error("Could not find class for name '{}'.", name, e);
+            }
+        }
+    }
 }

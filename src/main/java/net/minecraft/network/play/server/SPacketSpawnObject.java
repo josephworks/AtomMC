@@ -2,6 +2,7 @@ package net.minecraft.network.play.server;
 
 import java.io.IOException;
 import java.util.UUID;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -11,8 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketSpawnObject implements Packet<INetHandlerPlayClient>
-{
+public class SPacketSpawnObject implements Packet<INetHandlerPlayClient> {
     private int entityId;
     private UUID uniqueId;
     private double x;
@@ -26,17 +26,14 @@ public class SPacketSpawnObject implements Packet<INetHandlerPlayClient>
     private int type;
     private int data;
 
-    public SPacketSpawnObject()
-    {
+    public SPacketSpawnObject() {
     }
 
-    public SPacketSpawnObject(Entity entityIn, int typeIn)
-    {
+    public SPacketSpawnObject(Entity entityIn, int typeIn) {
         this(entityIn, typeIn, 0);
     }
 
-    public SPacketSpawnObject(Entity entityIn, int typeIn, int dataIn)
-    {
+    public SPacketSpawnObject(Entity entityIn, int typeIn, int dataIn) {
         this.entityId = entityIn.getEntityId();
         this.uniqueId = entityIn.getUniqueID();
         this.x = entityIn.posX;
@@ -47,21 +44,19 @@ public class SPacketSpawnObject implements Packet<INetHandlerPlayClient>
         this.type = typeIn;
         this.data = dataIn;
         double d0 = 3.9D;
-        this.speedX = (int)(MathHelper.clamp(entityIn.motionX, -3.9D, 3.9D) * 8000.0D);
-        this.speedY = (int)(MathHelper.clamp(entityIn.motionY, -3.9D, 3.9D) * 8000.0D);
-        this.speedZ = (int)(MathHelper.clamp(entityIn.motionZ, -3.9D, 3.9D) * 8000.0D);
+        this.speedX = (int) (MathHelper.clamp(entityIn.motionX, -3.9D, 3.9D) * 8000.0D);
+        this.speedY = (int) (MathHelper.clamp(entityIn.motionY, -3.9D, 3.9D) * 8000.0D);
+        this.speedZ = (int) (MathHelper.clamp(entityIn.motionZ, -3.9D, 3.9D) * 8000.0D);
     }
 
-    public SPacketSpawnObject(Entity entityIn, int typeIn, int dataIn, BlockPos pos)
-    {
+    public SPacketSpawnObject(Entity entityIn, int typeIn, int dataIn, BlockPos pos) {
         this(entityIn, typeIn, dataIn);
-        this.x = (double)pos.getX();
-        this.y = (double)pos.getY();
-        this.z = (double)pos.getZ();
+        this.x = (double) pos.getX();
+        this.y = (double) pos.getY();
+        this.z = (double) pos.getZ();
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.entityId = buf.readVarInt();
         this.uniqueId = buf.readUniqueId();
         this.type = buf.readByte();
@@ -76,8 +71,7 @@ public class SPacketSpawnObject implements Packet<INetHandlerPlayClient>
         this.speedZ = buf.readShort();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeVarInt(this.entityId);
         buf.writeUniqueId(this.uniqueId);
         buf.writeByte(this.type);
@@ -92,101 +86,84 @@ public class SPacketSpawnObject implements Packet<INetHandlerPlayClient>
         buf.writeShort(this.speedZ);
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleSpawnObject(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public int getEntityID()
-    {
+    public int getEntityID() {
         return this.entityId;
     }
 
-    public void setSpeedX(int newSpeedX)
-    {
+    public void setSpeedX(int newSpeedX) {
         this.speedX = newSpeedX;
     }
 
     @SideOnly(Side.CLIENT)
-    public UUID getUniqueId()
-    {
+    public UUID getUniqueId() {
         return this.uniqueId;
     }
 
-    public void setSpeedY(int newSpeedY)
-    {
+    public void setSpeedY(int newSpeedY) {
         this.speedY = newSpeedY;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
-    public void setSpeedZ(int newSpeedZ)
-    {
+    public void setSpeedZ(int newSpeedZ) {
         this.speedZ = newSpeedZ;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getSpeedX()
-    {
+    public int getSpeedX() {
         return this.speedX;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getSpeedY()
-    {
+    public int getSpeedY() {
         return this.speedY;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getSpeedZ()
-    {
+    public int getSpeedZ() {
         return this.speedZ;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getPitch()
-    {
+    public int getPitch() {
         return this.pitch;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getYaw()
-    {
+    public int getYaw() {
         return this.yaw;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getType()
-    {
+    public int getType() {
         return this.type;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getData()
-    {
+    public int getData() {
         return this.data;
     }
 
     @SideOnly(Side.CLIENT)
-    public void setData(int dataIn)
-    {
+    public void setData(int dataIn) {
         this.data = dataIn;
     }
 }

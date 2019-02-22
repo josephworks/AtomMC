@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class ChunkDataTest {
@@ -26,7 +27,7 @@ public class ChunkDataTest {
                     if (inRegion != type.equals(data.getTypeAndData(x, y, z))) {
                         throw new IllegalStateException(
                                 "setRegion(" + minx + ", " + miny + ", " + minz + ", " + maxx + ", " + maxy + ", " + maxz + ", " + type + ")"
-                                + "-> block at " + x + ", " + y + ", " + z + " is " + data.getTypeAndData(x, y, z));
+                                        + "-> block at " + x + ", " + y + ", " + z + " is " + data.getTypeAndData(x, y, z));
                     }
                 }
             }

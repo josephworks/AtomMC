@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "nether_brick" }
+  "variants": {
+    "normal": {
+      "model": "nether_brick"
     }
+  }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.tileentity;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.state.IBlockState;
@@ -23,65 +24,54 @@ import org.apache.logging.log4j.Logger;
 import org.spigotmc.CustomTimingsHandler; // Spigot
 import org.bukkit.inventory.InventoryHolder;
 
-public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
-{
+public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound> {
     public CustomTimingsHandler tickTimer = org.bukkit.craftbukkit.SpigotTimings.getTileEntityTimings(this); // Spigot
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> REGISTRY = new RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> ();
+    private static final RegistryNamespaced<ResourceLocation, Class<? extends TileEntity>> REGISTRY = new RegistryNamespaced<ResourceLocation, Class<? extends TileEntity>>();
     public World world;
     protected BlockPos pos = BlockPos.ORIGIN;
     protected boolean tileEntityInvalid;
     private int blockMetadata = -1;
     protected Block blockType;
 
-    public static void register(String id, Class <? extends TileEntity > clazz)
-    {
+    public static void register(String id, Class<? extends TileEntity> clazz) {
         REGISTRY.putObject(new ResourceLocation(id), clazz);
     }
 
     @Nullable
-    public static ResourceLocation getKey(Class <? extends TileEntity > clazz)
-    {
+    public static ResourceLocation getKey(Class<? extends TileEntity> clazz) {
         return REGISTRY.getNameForObject(clazz);
     }
 
-    public World getWorld()
-    {
+    public World getWorld() {
         return this.world;
     }
 
-    public void setWorld(World worldIn)
-    {
+    public void setWorld(World worldIn) {
         this.world = worldIn;
     }
 
-    public boolean hasWorld()
-    {
+    public boolean hasWorld() {
         return this.world != null;
     }
 
-    public void readFromNBT(NBTTagCompound compound)
-    {
+    public void readFromNBT(NBTTagCompound compound) {
         this.pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
         if (compound.hasKey("ForgeData")) this.customTileData = compound.getCompoundTag("ForgeData");
-        if (this.capabilities != null && compound.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
+        if (this.capabilities != null && compound.hasKey("ForgeCaps"))
+            this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         return this.writeInternal(compound);
     }
 
-    private NBTTagCompound writeInternal(NBTTagCompound compound)
-    {
+    private NBTTagCompound writeInternal(NBTTagCompound compound) {
         ResourceLocation resourcelocation = REGISTRY.getNameForObject(this.getClass());
 
-        if (resourcelocation == null)
-        {
+        if (resourcelocation == null) {
             throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
-        }
-        else
-        {
+        } else {
             compound.setString("id", resourcelocation.toString());
             compound.setInteger("x", this.pos.getX());
             compound.setInteger("y", this.pos.getY());
@@ -93,59 +83,45 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     }
 
     @Nullable
-    public static TileEntity create(World worldIn, NBTTagCompound compound)
-    {
+    public static TileEntity create(World worldIn, NBTTagCompound compound) {
         TileEntity tileentity = null;
         String s = compound.getString("id");
-        Class <? extends TileEntity > oclass = null;
+        Class<? extends TileEntity> oclass = null;
 
-        try
-        {
-            oclass = (Class)REGISTRY.getObject(new ResourceLocation(s));
+        try {
+            oclass = (Class) REGISTRY.getObject(new ResourceLocation(s));
 
-            if (oclass != null)
-            {
+            if (oclass != null) {
                 tileentity = oclass.newInstance();
             }
-        }
-        catch (Throwable throwable1)
-        {
+        } catch (Throwable throwable1) {
             LOGGER.error("Failed to create block entity {}", s, throwable1);
             net.minecraftforge.fml.common.FMLLog.log.error("A TileEntity {}({}) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                     s, oclass == null ? null : oclass.getName(), throwable1);
         }
 
-        if (tileentity != null)
-        {
-            try
-            {
+        if (tileentity != null) {
+            try {
                 tileentity.setWorldCreate(worldIn);
                 tileentity.readFromNBT(compound);
-            }
-            catch (Throwable throwable)
-            {
+            } catch (Throwable throwable) {
                 LOGGER.error("Failed to load data for block entity {}", s, throwable);
                 net.minecraftforge.fml.common.FMLLog.log.error("A TileEntity {}({}) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                         s, oclass.getName(), throwable);
                 tileentity = null;
             }
-        }
-        else
-        {
-            LOGGER.warn("Skipping BlockEntity with id {}", (Object)s);
+        } else {
+            LOGGER.warn("Skipping BlockEntity with id {}", (Object) s);
         }
 
         return tileentity;
     }
 
-    protected void setWorldCreate(World worldIn)
-    {
+    protected void setWorldCreate(World worldIn) {
     }
 
-    public int getBlockMetadata()
-    {
-        if (this.blockMetadata == -1)
-        {
+    public int getBlockMetadata() {
+        if (this.blockMetadata == -1) {
             IBlockState iblockstate = this.world.getBlockState(this.pos);
             this.blockMetadata = iblockstate.getBlock().getMetaFromState(iblockstate);
         }
@@ -153,44 +129,36 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         return this.blockMetadata;
     }
 
-    public void markDirty()
-    {
-        if (this.world != null)
-        {
+    public void markDirty() {
+        if (this.world != null) {
             IBlockState iblockstate = this.world.getBlockState(this.pos);
             this.blockMetadata = iblockstate.getBlock().getMetaFromState(iblockstate);
             this.world.markChunkDirty(this.pos, this);
 
-            if (this.getBlockType() != Blocks.AIR)
-            {
+            if (this.getBlockType() != Blocks.AIR) {
                 this.world.updateComparatorOutputLevel(this.pos, this.getBlockType());
             }
         }
     }
 
-    public double getDistanceSq(double x, double y, double z)
-    {
-        double d0 = (double)this.pos.getX() + 0.5D - x;
-        double d1 = (double)this.pos.getY() + 0.5D - y;
-        double d2 = (double)this.pos.getZ() + 0.5D - z;
+    public double getDistanceSq(double x, double y, double z) {
+        double d0 = (double) this.pos.getX() + 0.5D - x;
+        double d1 = (double) this.pos.getY() + 0.5D - y;
+        double d2 = (double) this.pos.getZ() + 0.5D - z;
         return d0 * d0 + d1 * d1 + d2 * d2;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getMaxRenderDistanceSquared()
-    {
+    public double getMaxRenderDistanceSquared() {
         return 4096.0D;
     }
 
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return this.pos;
     }
 
-    public Block getBlockType()
-    {
-        if (this.blockType == null && this.world != null)
-        {
+    public Block getBlockType() {
+        if (this.blockType == null && this.world != null) {
             this.blockType = this.world.getBlockState(this.pos).getBlock();
         }
 
@@ -198,84 +166,63 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     }
 
     @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         return null;
     }
 
-    public NBTTagCompound getUpdateTag()
-    {
+    public NBTTagCompound getUpdateTag() {
         return this.writeInternal(new NBTTagCompound());
     }
 
-    public boolean isInvalid()
-    {
+    public boolean isInvalid() {
         return this.tileEntityInvalid;
     }
 
-    public void invalidate()
-    {
+    public void invalidate() {
         this.tileEntityInvalid = true;
     }
 
-    public void validate()
-    {
+    public void validate() {
         this.tileEntityInvalid = false;
     }
 
-    public boolean receiveClientEvent(int id, int type)
-    {
+    public boolean receiveClientEvent(int id, int type) {
         return false;
     }
 
-    public void updateContainingBlockInfo()
-    {
+    public void updateContainingBlockInfo() {
         this.blockType = null;
         this.blockMetadata = -1;
     }
 
-    public void addInfoToCrashReport(CrashReportCategory reportCategory)
-    {
-        reportCategory.addDetail("Name", new ICrashReportDetail<String>()
-        {
-            public String call() throws Exception
-            {
+    public void addInfoToCrashReport(CrashReportCategory reportCategory) {
+        reportCategory.addDetail("Name", new ICrashReportDetail<String>() {
+            public String call() throws Exception {
                 return TileEntity.REGISTRY.getNameForObject(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
             }
         });
 
-        if (this.world != null)
-        {
+        if (this.world != null) {
             CrashReportCategory.addBlockInfo(reportCategory, this.pos, this.getBlockType(), this.getBlockMetadata());
-            reportCategory.addDetail("Actual block type", new ICrashReportDetail<String>()
-            {
-                public String call() throws Exception
-                {
+            reportCategory.addDetail("Actual block type", new ICrashReportDetail<String>() {
+                public String call() throws Exception {
                     int i = Block.getIdFromBlock(TileEntity.this.world.getBlockState(TileEntity.this.pos).getBlock());
 
-                    try
-                    {
+                    try {
                         return String.format("ID #%d (%s // %s // %s)", i, Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getName(), Block.getBlockById(i).getRegistryName());
-                    }
-                    catch (Throwable var3)
-                    {
+                    } catch (Throwable var3) {
                         return "ID #" + i;
                     }
                 }
             });
-            reportCategory.addDetail("Actual block data value", new ICrashReportDetail<String>()
-            {
-                public String call() throws Exception
-                {
+            reportCategory.addDetail("Actual block data value", new ICrashReportDetail<String>() {
+                public String call() throws Exception {
                     IBlockState iblockstate = TileEntity.this.world.getBlockState(TileEntity.this.pos);
                     int i = iblockstate.getBlock().getMetaFromState(iblockstate);
 
-                    if (i < 0)
-                    {
+                    if (i < 0) {
                         return "Unknown? (Got " + i + ")";
-                    }
-                    else
-                    {
+                    } else {
                         String s = String.format("%4s", Integer.toBinaryString(i)).replace(" ", "0");
                         return String.format("%1$d / 0x%1$X / 0b%2$s", i, s);
                     }
@@ -284,31 +231,27 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
     }
 
-    public void setPos(BlockPos posIn)
-    {
+    public void setPos(BlockPos posIn) {
         this.pos = posIn.toImmutable();
     }
 
-    public boolean onlyOpsCanSetNbt()
-    {
+    public boolean onlyOpsCanSetNbt() {
         return false;
     }
 
     @Nullable
-    public ITextComponent getDisplayName()
-    {
+    public ITextComponent getDisplayName() {
         return null;
     }
 
-    public void rotate(Rotation rotationIn)
-    {
+    public void rotate(Rotation rotationIn) {
     }
 
-    public void mirror(Mirror mirrorIn)
-    {
+    public void mirror(Mirror mirrorIn) {
     }
 
     // -- BEGIN FORGE PATCHES --
+
     /**
      * Called when you receive a TileEntityData packet for the location this
      * TileEntity is currently in. On the client, the NetworkManager will always
@@ -318,8 +261,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      * @param net The NetworkManager the packet originated from
      * @param pkt The data packet
      */
-    public void onDataPacket(net.minecraft.network.NetworkManager net, SPacketUpdateTileEntity pkt)
-    {
+    public void onDataPacket(net.minecraft.network.NetworkManager net, SPacketUpdateTileEntity pkt) {
     }
 
     /**
@@ -329,36 +271,33 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      *
      * @param tag The {@link NBTTagCompound} sent from {@link #getUpdateTag()}
      */
-    public void handleUpdateTag(NBTTagCompound tag)
-    {
+    public void handleUpdateTag(NBTTagCompound tag) {
         this.readFromNBT(tag);
     }
 
     /**
      * Called when the chunk this TileEntity is on is Unloaded.
      */
-    public void onChunkUnload()
-    {
+    public void onChunkUnload() {
     }
 
     private boolean isVanilla = getClass().getName().startsWith("net.minecraft.");
+
     /**
      * Called from Chunk.setBlockIDWithMetadata and Chunk.fillChunk, determines if this tile entity should be re-created when the ID, or Metadata changes.
      * Use with caution as this will leave straggler TileEntities, or create conflicts with other TileEntities if not used properly.
      *
-     * @param world Current world
-     * @param pos Tile's world position
+     * @param world    Current world
+     * @param pos      Tile's world position
      * @param oldState The old ID of the block
      * @param newState The new ID of the block (May be the same)
      * @return true forcing the invalidation of the existing TE, false not to invalidate the existing TE
      */
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-    {
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
         return isVanilla ? (oldState.getBlock() != newSate.getBlock()) : oldState != newSate;
     }
 
-    public boolean shouldRenderInPass(int pass)
-    {
+    public boolean shouldRenderInPass(int pass) {
         return pass == 0;
     }
 
@@ -366,6 +305,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      * Sometimes default render bounding box: infinite in scope. Used to control rendering on {@link TileEntitySpecialRenderer}.
      */
     public static final net.minecraft.util.math.AxisAlignedBB INFINITE_EXTENT_AABB = new net.minecraft.util.math.AxisAlignedBB(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+
     /**
      * Return an {@link AxisAlignedBB} that controls the visible scope of a {@link TileEntitySpecialRenderer} associated with this {@link TileEntity}
      * Defaults to the collision bounding box {@link Block#getCollisionBoundingBoxFromPool(World, int, int, int)} associated with the block
@@ -374,32 +314,21 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      * @return an appropriately size {@link AxisAlignedBB} for the {@link TileEntity}
      */
     @SideOnly(Side.CLIENT)
-    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox()
-    {
+    public net.minecraft.util.math.AxisAlignedBB getRenderBoundingBox() {
         net.minecraft.util.math.AxisAlignedBB bb = INFINITE_EXTENT_AABB;
         Block type = getBlockType();
         BlockPos pos = getPos();
-        if (type == Blocks.ENCHANTING_TABLE)
-        {
+        if (type == Blocks.ENCHANTING_TABLE) {
             bb = new net.minecraft.util.math.AxisAlignedBB(pos, pos.add(1, 1, 1));
-        }
-        else if (type == Blocks.CHEST || type == Blocks.TRAPPED_CHEST)
-        {
+        } else if (type == Blocks.CHEST || type == Blocks.TRAPPED_CHEST) {
             bb = new net.minecraft.util.math.AxisAlignedBB(pos.add(-1, 0, -1), pos.add(2, 2, 2));
-        }
-        else if (type == Blocks.STRUCTURE_BLOCK)
-        {
+        } else if (type == Blocks.STRUCTURE_BLOCK) {
             bb = INFINITE_EXTENT_AABB;
-        }
-        else if (type != null && type != Blocks.BEACON)
-        {
+        } else if (type != null && type != Blocks.BEACON) {
             net.minecraft.util.math.AxisAlignedBB cbb = null;
-            try
-            {
+            try {
                 cbb = world.getBlockState(getPos()).getCollisionBoundingBox(world, pos).offset(pos);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 // We have to capture any exceptions that may occur here because BUKKIT servers like to send
                 // the tile entity data BEFORE the chunk data, you know, the OPPOSITE of what vanilla does!
                 // So we can not GARENTEE that the world state is the real state for the block...
@@ -416,10 +345,10 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     /**
      * Checks if this tile entity knows how to render its 'breaking' overlay effect.
      * If this returns true, The TileEntitySpecialRenderer will be called again with break progress set.
+     *
      * @return True to re-render tile with breaking effect.
      */
-    public boolean canRenderBreaking()
-    {
+    public boolean canRenderBreaking() {
         Block block = this.getBlockType();
         return (block instanceof net.minecraft.block.BlockChest ||
                 block instanceof net.minecraft.block.BlockEnderChest ||
@@ -435,10 +364,8 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      *
      * @return A compound tag for custom data
      */
-    public NBTTagCompound getTileData()
-    {
-        if (this.customTileData == null)
-        {
+    public NBTTagCompound getTileData() {
+        if (this.customTileData == null) {
             this.customTileData = new NBTTagCompound();
         }
         return this.customTileData;
@@ -447,13 +374,13 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     /**
      * Determines if the player can overwrite the NBT data of this tile entity while they place it using a ItemStack.
      * Added as a fix for MC-75630 - Exploit with signs and command blocks
+     *
      * @return True to prevent NBT copy, false to allow.
      */
-    public boolean restrictNBTCopy()
-    {
+    public boolean restrictNBTCopy() {
         return this instanceof TileEntityCommandBlock ||
-               this instanceof TileEntityMobSpawner ||
-               this instanceof TileEntitySign;
+                this instanceof TileEntityMobSpawner ||
+                this instanceof TileEntitySign;
     }
 
 
@@ -461,8 +388,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      * Called when this is first added to the world (by {@link World#addTileEntity(TileEntity)}).
      * Override instead of adding {@code if (firstTick)} stuff in update.
      */
-    public void onLoad()
-    {
+    public void onLoad() {
         // NOOP
     }
 
@@ -470,44 +396,38 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      * If the TileEntitySpecialRenderer associated with this TileEntity can be batched in with another renderers, and won't access the GL state.
      * If TileEntity returns true, then TESR should have the same functionality as (and probably extend) the FastTESR class.
      */
-    public boolean hasFastRenderer()
-    {
+    public boolean hasFastRenderer() {
         return false;
     }
 
     private net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
-    public TileEntity()
-    {
+
+    public TileEntity() {
         capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
     }
 
     @Override
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
-    {
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing) {
         return capabilities == null ? false : capabilities.hasCapability(capability, facing);
     }
 
     @Override
     @Nullable
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
-    {
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
         return capabilities == null ? null : capabilities.getCapability(capability, facing);
     }
 
-    public void deserializeNBT(NBTTagCompound nbt)
-    {
+    public void deserializeNBT(NBTTagCompound nbt) {
         this.readFromNBT(nbt);
     }
 
-    public NBTTagCompound serializeNBT()
-    {
+    public NBTTagCompound serializeNBT() {
         NBTTagCompound ret = new NBTTagCompound();
         this.writeToNBT(ret);
         return ret;
     }
 
-    static
-    {
+    static {
         register("furnace", TileEntityFurnace.class);
         register("chest", TileEntityChest.class);
         register("ender_chest", TileEntityEnderChest.class);

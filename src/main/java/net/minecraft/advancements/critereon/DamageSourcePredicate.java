@@ -2,13 +2,14 @@ package net.minecraft.advancements.critereon;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.JsonUtils;
 
-public class DamageSourcePredicate
-{
+public class DamageSourcePredicate {
     public static DamageSourcePredicate ANY = new DamageSourcePredicate();
     private final Boolean isProjectile;
     private final Boolean isExplosion;
@@ -20,8 +21,7 @@ public class DamageSourcePredicate
     private final EntityPredicate directEntity;
     private final EntityPredicate sourceEntity;
 
-    public DamageSourcePredicate()
-    {
+    public DamageSourcePredicate() {
         this.isProjectile = null;
         this.isExplosion = null;
         this.bypassesArmor = null;
@@ -33,8 +33,7 @@ public class DamageSourcePredicate
         this.sourceEntity = EntityPredicate.ANY;
     }
 
-    public DamageSourcePredicate(@Nullable Boolean isProjectile, @Nullable Boolean isExplosion, @Nullable Boolean bypassesArmor, @Nullable Boolean bypassesInvulnerability, @Nullable Boolean bypassesMagic, @Nullable Boolean isFire, @Nullable Boolean isMagic, EntityPredicate directEntity, EntityPredicate sourceEntity)
-    {
+    public DamageSourcePredicate(@Nullable Boolean isProjectile, @Nullable Boolean isExplosion, @Nullable Boolean bypassesArmor, @Nullable Boolean bypassesInvulnerability, @Nullable Boolean bypassesMagic, @Nullable Boolean isFire, @Nullable Boolean isMagic, EntityPredicate directEntity, EntityPredicate sourceEntity) {
         this.isProjectile = isProjectile;
         this.isExplosion = isExplosion;
         this.bypassesArmor = bypassesArmor;
@@ -46,54 +45,32 @@ public class DamageSourcePredicate
         this.sourceEntity = sourceEntity;
     }
 
-    public boolean test(EntityPlayerMP player, DamageSource source)
-    {
-        if (this == ANY)
-        {
+    public boolean test(EntityPlayerMP player, DamageSource source) {
+        if (this == ANY) {
             return true;
-        }
-        else if (this.isProjectile != null && this.isProjectile.booleanValue() != source.isProjectile())
-        {
+        } else if (this.isProjectile != null && this.isProjectile.booleanValue() != source.isProjectile()) {
             return false;
-        }
-        else if (this.isExplosion != null && this.isExplosion.booleanValue() != source.isExplosion())
-        {
+        } else if (this.isExplosion != null && this.isExplosion.booleanValue() != source.isExplosion()) {
             return false;
-        }
-        else if (this.bypassesArmor != null && this.bypassesArmor.booleanValue() != source.isUnblockable())
-        {
+        } else if (this.bypassesArmor != null && this.bypassesArmor.booleanValue() != source.isUnblockable()) {
             return false;
-        }
-        else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability.booleanValue() != source.canHarmInCreative())
-        {
+        } else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability.booleanValue() != source.canHarmInCreative()) {
             return false;
-        }
-        else if (this.bypassesMagic != null && this.bypassesMagic.booleanValue() != source.isDamageAbsolute())
-        {
+        } else if (this.bypassesMagic != null && this.bypassesMagic.booleanValue() != source.isDamageAbsolute()) {
             return false;
-        }
-        else if (this.isFire != null && this.isFire.booleanValue() != source.isFireDamage())
-        {
+        } else if (this.isFire != null && this.isFire.booleanValue() != source.isFireDamage()) {
             return false;
-        }
-        else if (this.isMagic != null && this.isMagic.booleanValue() != source.isMagicDamage())
-        {
+        } else if (this.isMagic != null && this.isMagic.booleanValue() != source.isMagicDamage()) {
             return false;
-        }
-        else if (!this.directEntity.test(player, source.getImmediateSource()))
-        {
+        } else if (!this.directEntity.test(player, source.getImmediateSource())) {
             return false;
-        }
-        else
-        {
+        } else {
             return this.sourceEntity.test(player, source.getTrueSource());
         }
     }
 
-    public static DamageSourcePredicate deserialize(@Nullable JsonElement element)
-    {
-        if (element != null && !element.isJsonNull())
-        {
+    public static DamageSourcePredicate deserialize(@Nullable JsonElement element) {
+        if (element != null && !element.isJsonNull()) {
             JsonObject jsonobject = JsonUtils.getJsonObject(element, "damage type");
             Boolean obool = optionalBoolean(jsonobject, "is_projectile");
             Boolean obool1 = optionalBoolean(jsonobject, "is_explosion");
@@ -105,16 +82,13 @@ public class DamageSourcePredicate
             EntityPredicate entitypredicate = EntityPredicate.deserialize(jsonobject.get("direct_entity"));
             EntityPredicate entitypredicate1 = EntityPredicate.deserialize(jsonobject.get("source_entity"));
             return new DamageSourcePredicate(obool, obool1, obool2, obool3, obool4, obool5, obool6, entitypredicate, entitypredicate1);
-        }
-        else
-        {
+        } else {
             return ANY;
         }
     }
 
     @Nullable
-    private static Boolean optionalBoolean(JsonObject object, String memberName)
-    {
+    private static Boolean optionalBoolean(JsonObject object, String memberName) {
         return object.has(memberName) ? JsonUtils.getBoolean(object, memberName) : null;
     }
 }

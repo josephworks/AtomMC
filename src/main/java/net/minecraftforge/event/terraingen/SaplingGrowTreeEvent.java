@@ -46,25 +46,21 @@ import net.minecraftforge.event.world.WorldEvent;
  * This event is fired on the {@link MinecraftForge#TERRAIN_GEN_BUS}.<br>
  **/
 @HasResult
-public class SaplingGrowTreeEvent extends WorldEvent
-{
+public class SaplingGrowTreeEvent extends WorldEvent {
     private final BlockPos pos;
     private final Random rand;
 
-    public SaplingGrowTreeEvent(World world, Random rand, BlockPos pos)
-    {
+    public SaplingGrowTreeEvent(World world, Random rand, BlockPos pos) {
         super(world);
         this.rand = rand;
         this.pos = pos;
     }
 
-    public BlockPos getPos()
-    {
+    public BlockPos getPos() {
         return pos;
     }
 
-    public Random getRand()
-    {
+    public Random getRand() {
         return rand;
     }
 }

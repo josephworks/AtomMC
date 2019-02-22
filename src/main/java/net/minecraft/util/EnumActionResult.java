@@ -1,7 +1,6 @@
 package net.minecraft.util;
 
-public enum EnumActionResult
-{
+public enum EnumActionResult {
     SUCCESS,
     PASS,
     FAIL;

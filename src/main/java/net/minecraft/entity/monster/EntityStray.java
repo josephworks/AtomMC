@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
@@ -15,56 +16,45 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntityStray extends AbstractSkeleton
-{
-    public EntityStray(World worldIn)
-    {
+public class EntityStray extends AbstractSkeleton {
+    public EntityStray(World worldIn) {
         super(worldIn);
     }
 
-    public static void registerFixesStray(DataFixer fixer)
-    {
+    public static void registerFixesStray(DataFixer fixer) {
         EntityLiving.registerFixesMob(fixer, EntityStray.class);
     }
 
-    public boolean getCanSpawnHere()
-    {
+    public boolean getCanSpawnHere() {
         return super.getCanSpawnHere() && this.world.canSeeSky(new BlockPos(this));
     }
 
     @Nullable
-    protected ResourceLocation getLootTable()
-    {
+    protected ResourceLocation getLootTable() {
         return LootTableList.ENTITIES_STRAY;
     }
 
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_STRAY_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return SoundEvents.ENTITY_STRAY_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_STRAY_DEATH;
     }
 
-    protected SoundEvent getStepSound()
-    {
+    protected SoundEvent getStepSound() {
         return SoundEvents.ENTITY_STRAY_STEP;
     }
 
-    protected EntityArrow getArrow(float p_190726_1_)
-    {
+    protected EntityArrow getArrow(float p_190726_1_) {
         EntityArrow entityarrow = super.getArrow(p_190726_1_);
 
-        if (entityarrow instanceof EntityTippedArrow)
-        {
-            ((EntityTippedArrow)entityarrow).addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
+        if (entityarrow instanceof EntityTippedArrow) {
+            ((EntityTippedArrow) entityarrow).addEffect(new PotionEffect(MobEffects.SLOWNESS, 600));
         }
 
         return entityarrow;

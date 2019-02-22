@@ -4,8 +4,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class DefaultVertexFormats
-{
+public class DefaultVertexFormats {
     public static final VertexFormat BLOCK = new VertexFormat();
     public static final VertexFormat ITEM = new VertexFormat();
     public static final VertexFormat OLDMODEL_POSITION_TEX_NORMAL = new VertexFormat();
@@ -25,8 +24,7 @@ public class DefaultVertexFormats
     public static final VertexFormatElement NORMAL_3B = new VertexFormatElement(0, VertexFormatElement.EnumType.BYTE, VertexFormatElement.EnumUsage.NORMAL, 3);
     public static final VertexFormatElement PADDING_1B = new VertexFormatElement(0, VertexFormatElement.EnumType.BYTE, VertexFormatElement.EnumUsage.PADDING, 1);
 
-    static
-    {
+    static {
         BLOCK.addElement(POSITION_3F);
         BLOCK.addElement(COLOR_4UB);
         BLOCK.addElement(TEX_2F);

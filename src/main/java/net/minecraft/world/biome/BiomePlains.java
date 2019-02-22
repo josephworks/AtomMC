@@ -1,6 +1,7 @@
 package net.minecraft.world.biome;
 
 import java.util.Random;
+
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.entity.passive.EntityDonkey;
@@ -9,12 +10,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 
-public class BiomePlains extends Biome
-{
+public class BiomePlains extends Biome {
     protected boolean sunflowers;
 
-    public BiomePlains(boolean p_i46699_1_, BiomeProperties properties)
-    {
+    public BiomePlains(boolean p_i46699_1_, BiomeProperties properties) {
         super(properties);
         this.sunflowers = p_i46699_1_;
         this.spawnableCreatureList.add(new SpawnListEntry(EntityHorse.class, 5, 2, 6));
@@ -25,16 +24,13 @@ public class BiomePlains extends Biome
         this.decorator.grassPerChunk = 10;
     }
 
-    public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
-    {
-        double d0 = GRASS_COLOR_NOISE.getValue((double)pos.getX() / 200.0D, (double)pos.getZ() / 200.0D);
+    public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos) {
+        double d0 = GRASS_COLOR_NOISE.getValue((double) pos.getX() / 200.0D, (double) pos.getZ() / 200.0D);
 
-        if (d0 < -0.8D)
-        {
+        if (d0 < -0.8D) {
             int j = rand.nextInt(4);
 
-            switch (j)
-            {
+            switch (j) {
                 case 0:
                     return BlockFlower.EnumFlowerType.ORANGE_TULIP;
                 case 1:
@@ -45,57 +41,43 @@ public class BiomePlains extends Biome
                 default:
                     return BlockFlower.EnumFlowerType.WHITE_TULIP;
             }
-        }
-        else if (rand.nextInt(3) > 0)
-        {
+        } else if (rand.nextInt(3) > 0) {
             int i = rand.nextInt(3);
 
-            if (i == 0)
-            {
+            if (i == 0) {
                 return BlockFlower.EnumFlowerType.POPPY;
-            }
-            else
-            {
+            } else {
                 return i == 1 ? BlockFlower.EnumFlowerType.HOUSTONIA : BlockFlower.EnumFlowerType.OXEYE_DAISY;
             }
-        }
-        else
-        {
+        } else {
             return BlockFlower.EnumFlowerType.DANDELION;
         }
     }
 
-    public void decorate(World worldIn, Random rand, BlockPos pos)
-    {
-        double d0 = GRASS_COLOR_NOISE.getValue((double)(pos.getX() + 8) / 200.0D, (double)(pos.getZ() + 8) / 200.0D);
+    public void decorate(World worldIn, Random rand, BlockPos pos) {
+        double d0 = GRASS_COLOR_NOISE.getValue((double) (pos.getX() + 8) / 200.0D, (double) (pos.getZ() + 8) / 200.0D);
 
-        if (d0 < -0.8D)
-        {
+        if (d0 < -0.8D) {
             this.decorator.flowersPerChunk = 15;
             this.decorator.grassPerChunk = 5;
-        }
-        else
-        {
+        } else {
             this.decorator.flowersPerChunk = 4;
             this.decorator.grassPerChunk = 10;
             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.GRASS);
 
-            if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
-            for (int i = 0; i < 7; ++i)
-            {
-                int j = rand.nextInt(16) + 8;
-                int k = rand.nextInt(16) + 8;
-                int l = rand.nextInt(worldIn.getHeight(pos.add(j, 0, k)).getY() + 32);
-                DOUBLE_PLANT_GENERATOR.generate(worldIn, rand, pos.add(j, l, k));
-            }
+            if (net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
+                for (int i = 0; i < 7; ++i) {
+                    int j = rand.nextInt(16) + 8;
+                    int k = rand.nextInt(16) + 8;
+                    int l = rand.nextInt(worldIn.getHeight(pos.add(j, 0, k)).getY() + 32);
+                    DOUBLE_PLANT_GENERATOR.generate(worldIn, rand, pos.add(j, l, k));
+                }
         }
 
-        if (this.sunflowers && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
-        {
+        if (this.sunflowers && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS)) {
             DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.SUNFLOWER);
 
-            for (int i1 = 0; i1 < 10; ++i1)
-            {
+            for (int i1 = 0; i1 < 10; ++i1) {
                 int j1 = rand.nextInt(16) + 8;
                 int k1 = rand.nextInt(16) + 8;
                 int l1 = rand.nextInt(worldIn.getHeight(pos.add(j1, 0, k1)).getY() + 32);
@@ -107,8 +89,7 @@ public class BiomePlains extends Biome
     }
 
     @Override
-    public void addDefaultFlowers()
-    {
+    public void addDefaultFlowers() {
         BlockFlower red = net.minecraft.init.Blocks.RED_FLOWER;
         BlockFlower yel = net.minecraft.init.Blocks.YELLOW_FLOWER;
         addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.ORANGE_TULIP), 3);
@@ -121,8 +102,7 @@ public class BiomePlains extends Biome
         addFlower(yel.getDefaultState().withProperty(yel.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 30);
     }
 
-    public WorldGenAbstractTree getRandomTreeFeature(Random rand)
-    {
-        return (WorldGenAbstractTree)(rand.nextInt(3) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
+    public WorldGenAbstractTree getRandomTreeFeature(Random rand) {
+        return (WorldGenAbstractTree) (rand.nextInt(3) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
     }
 }

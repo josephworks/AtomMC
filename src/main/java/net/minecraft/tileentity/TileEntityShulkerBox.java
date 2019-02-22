@@ -2,6 +2,7 @@ package net.minecraft.tileentity;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockShulkerBox;
 import net.minecraft.block.material.EnumPushReaction;
@@ -30,8 +31,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITickable, ISidedInventory
-{
+public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITickable, ISidedInventory {
     private static final int[] SLOTS = new int[27];
     private NonNullList<ItemStack> items;
     private boolean hasBeenCleared;
@@ -44,13 +44,11 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
 
     private int maxStack = MAX_STACK;
 
-    public TileEntityShulkerBox()
-    {
-        this((EnumDyeColor)null);
+    public TileEntityShulkerBox() {
+        this((EnumDyeColor) null);
     }
 
-    public TileEntityShulkerBox(@Nullable EnumDyeColor colorIn)
-    {
+    public TileEntityShulkerBox(@Nullable EnumDyeColor colorIn) {
         this.items = NonNullList.<ItemStack>withSize(27, ItemStack.EMPTY);
         this.animationStatus = AnimationStatus.CLOSED;
         this.color = colorIn;
@@ -64,30 +62,25 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
         maxStack = size;
     }
 
-    public void update()
-    {
+    public void update() {
         this.updateAnimation();
 
-        if (this.animationStatus == AnimationStatus.OPENING || this.animationStatus == AnimationStatus.CLOSING)
-        {
+        if (this.animationStatus == AnimationStatus.OPENING || this.animationStatus == AnimationStatus.CLOSING) {
             this.moveCollidedEntities();
         }
     }
 
-    protected void updateAnimation()
-    {
+    protected void updateAnimation() {
         this.progressOld = this.progress;
 
-        switch (this.animationStatus)
-        {
+        switch (this.animationStatus) {
             case CLOSED:
                 this.progress = 0.0F;
                 break;
             case OPENING:
                 this.progress += 0.1F;
 
-                if (this.progress >= 1.0F)
-                {
+                if (this.progress >= 1.0F) {
                     this.moveCollidedEntities();
                     this.animationStatus = AnimationStatus.OPENED;
                     this.progress = 1.0F;
@@ -97,8 +90,7 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
             case CLOSING:
                 this.progress -= 0.1F;
 
-                if (this.progress <= 0.0F)
-                {
+                if (this.progress <= 0.0F) {
                     this.animationStatus = AnimationStatus.CLOSED;
                     this.progress = 0.0F;
                 }
@@ -109,60 +101,47 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
         }
     }
 
-    public AnimationStatus getAnimationStatus()
-    {
+    public AnimationStatus getAnimationStatus() {
         return this.animationStatus;
     }
 
-    public AxisAlignedBB getBoundingBox(IBlockState p_190584_1_)
-    {
-        return this.getBoundingBox((EnumFacing)p_190584_1_.getValue(BlockShulkerBox.FACING));
+    public AxisAlignedBB getBoundingBox(IBlockState p_190584_1_) {
+        return this.getBoundingBox((EnumFacing) p_190584_1_.getValue(BlockShulkerBox.FACING));
     }
 
-    public AxisAlignedBB getBoundingBox(EnumFacing p_190587_1_)
-    {
-        return Block.FULL_BLOCK_AABB.expand((double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getFrontOffsetX()), (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getFrontOffsetY()), (double)(0.5F * this.getProgress(1.0F) * (float)p_190587_1_.getFrontOffsetZ()));
+    public AxisAlignedBB getBoundingBox(EnumFacing p_190587_1_) {
+        return Block.FULL_BLOCK_AABB.expand((double) (0.5F * this.getProgress(1.0F) * (float) p_190587_1_.getFrontOffsetX()), (double) (0.5F * this.getProgress(1.0F) * (float) p_190587_1_.getFrontOffsetY()), (double) (0.5F * this.getProgress(1.0F) * (float) p_190587_1_.getFrontOffsetZ()));
     }
 
-    private AxisAlignedBB getTopBoundingBox(EnumFacing p_190588_1_)
-    {
+    private AxisAlignedBB getTopBoundingBox(EnumFacing p_190588_1_) {
         EnumFacing enumfacing = p_190588_1_.getOpposite();
-        return this.getBoundingBox(p_190588_1_).contract((double)enumfacing.getFrontOffsetX(), (double)enumfacing.getFrontOffsetY(), (double)enumfacing.getFrontOffsetZ());
+        return this.getBoundingBox(p_190588_1_).contract((double) enumfacing.getFrontOffsetX(), (double) enumfacing.getFrontOffsetY(), (double) enumfacing.getFrontOffsetZ());
     }
 
-    private void moveCollidedEntities()
-    {
+    private void moveCollidedEntities() {
         IBlockState iblockstate = this.world.getBlockState(this.getPos());
 
-        if (iblockstate.getBlock() instanceof BlockShulkerBox)
-        {
-            EnumFacing enumfacing = (EnumFacing)iblockstate.getValue(BlockShulkerBox.FACING);
+        if (iblockstate.getBlock() instanceof BlockShulkerBox) {
+            EnumFacing enumfacing = (EnumFacing) iblockstate.getValue(BlockShulkerBox.FACING);
             AxisAlignedBB axisalignedbb = this.getTopBoundingBox(enumfacing).offset(this.pos);
-            List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb);
+            List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity((Entity) null, axisalignedbb);
 
-            if (!list.isEmpty())
-            {
-                for (int i = 0; i < list.size(); ++i)
-                {
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); ++i) {
                     Entity entity = list.get(i);
 
-                    if (entity.getPushReaction() != EnumPushReaction.IGNORE)
-                    {
+                    if (entity.getPushReaction() != EnumPushReaction.IGNORE) {
                         double d0 = 0.0D;
                         double d1 = 0.0D;
                         double d2 = 0.0D;
                         AxisAlignedBB axisalignedbb1 = entity.getEntityBoundingBox();
 
-                        switch (enumfacing.getAxis())
-                        {
+                        switch (enumfacing.getAxis()) {
                             case X:
 
-                                if (enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE)
-                                {
+                                if (enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
                                     d0 = axisalignedbb.maxX - axisalignedbb1.minX;
-                                }
-                                else
-                                {
+                                } else {
                                     d0 = axisalignedbb1.maxX - axisalignedbb.minX;
                                 }
 
@@ -170,12 +149,9 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
                                 break;
                             case Y:
 
-                                if (enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE)
-                                {
+                                if (enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
                                     d1 = axisalignedbb.maxY - axisalignedbb1.minY;
-                                }
-                                else
-                                {
+                                } else {
                                     d1 = axisalignedbb1.maxY - axisalignedbb.minY;
                                 }
 
@@ -183,170 +159,135 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
                                 break;
                             case Z:
 
-                                if (enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE)
-                                {
+                                if (enumfacing.getAxisDirection() == EnumFacing.AxisDirection.POSITIVE) {
                                     d2 = axisalignedbb.maxZ - axisalignedbb1.minZ;
-                                }
-                                else
-                                {
+                                } else {
                                     d2 = axisalignedbb1.maxZ - axisalignedbb.minZ;
                                 }
 
                                 d2 = d2 + 0.01D;
                         }
 
-                        entity.move(MoverType.SHULKER_BOX, d0 * (double)enumfacing.getFrontOffsetX(), d1 * (double)enumfacing.getFrontOffsetY(), d2 * (double)enumfacing.getFrontOffsetZ());
+                        entity.move(MoverType.SHULKER_BOX, d0 * (double) enumfacing.getFrontOffsetX(), d1 * (double) enumfacing.getFrontOffsetY(), d2 * (double) enumfacing.getFrontOffsetZ());
                     }
                 }
             }
         }
     }
 
-    public int getSizeInventory()
-    {
+    public int getSizeInventory() {
         return this.items.size();
     }
 
-    public int getInventoryStackLimit()
-    {
+    public int getInventoryStackLimit() {
         return maxStack;
     }
 
-    public boolean receiveClientEvent(int id, int type)
-    {
-        if (id == 1)
-        {
+    public boolean receiveClientEvent(int id, int type) {
+        if (id == 1) {
             this.openCount = type;
 
-            if (type == 0)
-            {
+            if (type == 0) {
                 this.animationStatus = AnimationStatus.CLOSING;
             }
 
-            if (type == 1)
-            {
+            if (type == 1) {
                 this.animationStatus = AnimationStatus.OPENING;
             }
 
             return true;
-        }
-        else
-        {
+        } else {
             return super.receiveClientEvent(id, type);
         }
     }
 
-    public void openInventory(EntityPlayer player)
-    {
-        if (!player.isSpectator())
-        {
-            if (this.openCount < 0)
-            {
+    public void openInventory(EntityPlayer player) {
+        if (!player.isSpectator()) {
+            if (this.openCount < 0) {
                 this.openCount = 0;
             }
 
             ++this.openCount;
             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.openCount);
 
-            if (this.openCount == 1)
-            {
-                this.world.playSound((EntityPlayer)null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
+            if (this.openCount == 1) {
+                this.world.playSound((EntityPlayer) null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
             }
         }
     }
 
-    public void closeInventory(EntityPlayer player)
-    {
-        if (!player.isSpectator())
-        {
+    public void closeInventory(EntityPlayer player) {
+        if (!player.isSpectator()) {
             --this.openCount;
             this.world.addBlockEvent(this.pos, this.getBlockType(), 1, this.openCount);
 
-            if (this.openCount <= 0)
-            {
-                this.world.playSound((EntityPlayer)null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
+            if (this.openCount <= 0) {
+                this.world.playSound((EntityPlayer) null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.rand.nextFloat() * 0.1F + 0.9F);
             }
         }
     }
 
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-    {
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
         return new ContainerShulkerBox(playerInventory, this, playerIn);
     }
 
-    public String getGuiID()
-    {
+    public String getGuiID() {
         return "minecraft:shulker_box";
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.hasCustomName() ? this.customName : "container.shulkerBox";
     }
 
-    public static void registerFixesShulkerBox(DataFixer fixer)
-    {
-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityShulkerBox.class, new String[] {"Items"}));
+    public static void registerFixesShulkerBox(DataFixer fixer) {
+        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityShulkerBox.class, new String[]{"Items"}));
     }
 
-    public void readFromNBT(NBTTagCompound compound)
-    {
+    public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         this.loadFromNbt(compound);
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         return this.saveToNbt(compound);
     }
 
-    public void loadFromNbt(NBTTagCompound compound)
-    {
+    public void loadFromNbt(NBTTagCompound compound) {
         this.items = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
 
-        if (!this.checkLootAndRead(compound) && compound.hasKey("Items", 9))
-        {
+        if (!this.checkLootAndRead(compound) && compound.hasKey("Items", 9)) {
             ItemStackHelper.loadAllItems(compound, this.items);
         }
 
-        if (compound.hasKey("CustomName", 8))
-        {
+        if (compound.hasKey("CustomName", 8)) {
             this.customName = compound.getString("CustomName");
         }
     }
 
-    public NBTTagCompound saveToNbt(NBTTagCompound compound)
-    {
-        if (!this.checkLootAndWrite(compound))
-        {
+    public NBTTagCompound saveToNbt(NBTTagCompound compound) {
+        if (!this.checkLootAndWrite(compound)) {
             ItemStackHelper.saveAllItems(compound, this.items, false);
         }
 
-        if (this.hasCustomName())
-        {
+        if (this.hasCustomName()) {
             compound.setString("CustomName", this.customName);
         }
 
-        if (!compound.hasKey("Lock") && this.isLocked())
-        {
+        if (!compound.hasKey("Lock") && this.isLocked()) {
             this.getLockCode().toNBT(compound);
         }
 
         return compound;
     }
 
-    protected NonNullList<ItemStack> getItems()
-    {
+    protected NonNullList<ItemStack> getItems() {
         return this.items;
     }
 
-    public boolean isEmpty()
-    {
-        for (ItemStack itemstack : this.items)
-        {
-            if (!itemstack.isEmpty())
-            {
+    public boolean isEmpty() {
+        for (ItemStack itemstack : this.items) {
+            if (!itemstack.isEmpty()) {
                 return false;
             }
         }
@@ -354,42 +295,34 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
         return true;
     }
 
-    public int[] getSlotsForFace(EnumFacing side)
-    {
+    public int[] getSlotsForFace(EnumFacing side) {
         return SLOTS;
     }
 
-    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction)
-    {
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
         return !(Block.getBlockFromItem(itemStackIn.getItem()) instanceof BlockShulkerBox);
     }
 
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
-    {
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
         return true;
     }
 
-    public void clear()
-    {
+    public void clear() {
         this.hasBeenCleared = true;
         super.clear();
     }
 
-    public boolean isCleared()
-    {
+    public boolean isCleared() {
         return this.hasBeenCleared;
     }
 
-    public float getProgress(float p_190585_1_)
-    {
+    public float getProgress(float p_190585_1_) {
         return this.progressOld + (this.progress - this.progressOld) * p_190585_1_;
     }
 
     @SideOnly(Side.CLIENT)
-    public EnumDyeColor getColor()
-    {
-        if (this.color == null)
-        {
+    public EnumDyeColor getColor() {
+        if (this.color == null) {
             this.color = BlockShulkerBox.getColorFromBlock(this.getBlockType());
         }
 
@@ -397,44 +330,36 @@ public class TileEntityShulkerBox extends TileEntityLockableLoot implements ITic
     }
 
     @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(this.pos, 10, this.getUpdateTag());
     }
 
-    public boolean isDestroyedByCreativePlayer()
-    {
+    public boolean isDestroyedByCreativePlayer() {
         return this.destroyedByCreativePlayer;
     }
 
-    public void setDestroyedByCreativePlayer(boolean p_190579_1_)
-    {
+    public void setDestroyedByCreativePlayer(boolean p_190579_1_) {
         this.destroyedByCreativePlayer = p_190579_1_;
     }
 
-    public boolean shouldDrop()
-    {
+    public boolean shouldDrop() {
         return !this.isDestroyedByCreativePlayer() || !this.isEmpty() || this.hasCustomName() || this.lootTable != null;
     }
 
-    static
-    {
-        for (int i = 0; i < SLOTS.length; SLOTS[i] = i++)
-        {
+    static {
+        for (int i = 0; i < SLOTS.length; SLOTS[i] = i++) {
             ;
         }
     }
 
-    public static enum AnimationStatus
-    {
+    public static enum AnimationStatus {
         CLOSED,
         OPENING,
         OPENED,
         CLOSING;
     }
 
-    protected net.minecraftforge.items.IItemHandler createUnSidedHandler()
-    {
+    protected net.minecraftforge.items.IItemHandler createUnSidedHandler() {
         return new net.minecraftforge.items.wrapper.SidedInvWrapper(this, EnumFacing.UP);
     }
 }

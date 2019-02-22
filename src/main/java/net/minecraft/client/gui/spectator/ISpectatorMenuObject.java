@@ -5,8 +5,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface ISpectatorMenuObject
-{
+public interface ISpectatorMenuObject {
     void selectItem(SpectatorMenu menu);
 
     ITextComponent getSpectatorName();

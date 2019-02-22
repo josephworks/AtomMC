@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -9,35 +10,29 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketChat implements Packet<INetHandlerPlayClient>
-{
+public class SPacketChat implements Packet<INetHandlerPlayClient> {
     private ITextComponent chatComponent;
     public net.md_5.bungee.api.chat.BaseComponent[] components; // Spigot
     private ChatType type;
 
-    public SPacketChat()
-    {
+    public SPacketChat() {
     }
 
-    public SPacketChat(ITextComponent componentIn)
-    {
+    public SPacketChat(ITextComponent componentIn) {
         this(componentIn, ChatType.SYSTEM);
     }
 
-    public SPacketChat(ITextComponent message, ChatType type)
-    {
+    public SPacketChat(ITextComponent message, ChatType type) {
         this.chatComponent = message;
         this.type = type;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.chatComponent = buf.readTextComponent();
         this.type = ChatType.byId(buf.readByte());
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         // Spigot start
         if (components != null) {
             buf.writeString(net.md_5.bungee.chat.ComponentSerializer.toString(components));
@@ -48,24 +43,20 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
         buf.writeByte(this.type.getId());
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleChat(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public ITextComponent getChatComponent()
-    {
+    public ITextComponent getChatComponent() {
         return this.chatComponent;
     }
 
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         return this.type == ChatType.SYSTEM || this.type == ChatType.GAME_INFO;
     }
 
-    public ChatType getType()
-    {
+    public ChatType getType() {
         return this.type;
     }
 }

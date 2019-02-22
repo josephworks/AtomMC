@@ -8,8 +8,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-public class RecipeTippedArrow extends ShapedRecipes implements IRecipe
-{
+public class RecipeTippedArrow extends ShapedRecipes implements IRecipe {
     public RecipeTippedArrow() {
         super("", 3, 3, NonNullList.from(Ingredient.EMPTY,
                 Ingredient.fromItem(Items.ARROW), Ingredient.fromItem(Items.ARROW), Ingredient.fromItem(Items.ARROW),
@@ -18,55 +17,40 @@ public class RecipeTippedArrow extends ShapedRecipes implements IRecipe
                 new ItemStack(Items.TIPPED_ARROW, 8));
     }
 
-    public boolean matches(InventoryCrafting inv, World worldIn)
-    {
-        if (inv.getWidth() == 3 && inv.getHeight() == 3)
-        {
-            for (int i = 0; i < inv.getWidth(); ++i)
-            {
-                for (int j = 0; j < inv.getHeight(); ++j)
-                {
+    public boolean matches(InventoryCrafting inv, World worldIn) {
+        if (inv.getWidth() == 3 && inv.getHeight() == 3) {
+            for (int i = 0; i < inv.getWidth(); ++i) {
+                for (int j = 0; j < inv.getHeight(); ++j) {
                     ItemStack itemstack = inv.getStackInRowAndColumn(i, j);
 
-                    if (itemstack.isEmpty())
-                    {
+                    if (itemstack.isEmpty()) {
                         return false;
                     }
 
                     Item item = itemstack.getItem();
 
-                    if (i == 1 && j == 1)
-                    {
-                        if (item != Items.LINGERING_POTION)
-                        {
+                    if (i == 1 && j == 1) {
+                        if (item != Items.LINGERING_POTION) {
                             return false;
                         }
-                    }
-                    else if (item != Items.ARROW)
-                    {
+                    } else if (item != Items.ARROW) {
                         return false;
                     }
                 }
             }
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting inv)
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inv) {
         ItemStack itemstack = inv.getStackInRowAndColumn(1, 1);
 
-        if (itemstack.getItem() != Items.LINGERING_POTION)
-        {
+        if (itemstack.getItem() != Items.LINGERING_POTION) {
             return ItemStack.EMPTY;
-        }
-        else
-        {
+        } else {
             ItemStack itemstack1 = new ItemStack(Items.TIPPED_ARROW, 8);
             PotionUtils.addPotionToItemStack(itemstack1, PotionUtils.getPotionFromItem(itemstack));
             PotionUtils.appendEffects(itemstack1, PotionUtils.getFullEffectsFromItem(itemstack));
@@ -74,23 +58,19 @@ public class RecipeTippedArrow extends ShapedRecipes implements IRecipe
         }
     }
 
-    public ItemStack getRecipeOutput()
-    {
+    public ItemStack getRecipeOutput() {
         return ItemStack.EMPTY;
     }
 
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-    {
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
         return NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
     }
 
-    public boolean isDynamic()
-    {
+    public boolean isDynamic() {
         return true;
     }
 
-    public boolean canFit(int width, int height)
-    {
+    public boolean canFit(int width, int height) {
         return width >= 2 && height >= 2;
     }
 }

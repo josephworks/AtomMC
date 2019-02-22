@@ -14,25 +14,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 
-public class ItemLead extends Item
-{
-    public ItemLead()
-    {
+public class ItemLead extends Item {
+    public ItemLead() {
         this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         Block block = worldIn.getBlockState(pos).getBlock();
 
-        if (!(block instanceof BlockFence))
-        {
+        if (!(block instanceof BlockFence)) {
             return EnumActionResult.PASS;
-        }
-        else
-        {
-            if (!worldIn.isRemote)
-            {
+        } else {
+            if (!worldIn.isRemote) {
                 attachToFence(player, worldIn, pos);
             }
 
@@ -40,8 +33,7 @@ public class ItemLead extends Item
         }
     }
 
-    public static boolean attachToFence(EntityPlayer player, World worldIn, BlockPos fence)
-    {
+    public static boolean attachToFence(EntityPlayer player, World worldIn, BlockPos fence) {
         EntityLeashKnot entityleashknot = EntityLeashKnot.getKnotForPosition(worldIn, fence);
         boolean flag = false;
         double d0 = 7.0D;
@@ -49,12 +41,9 @@ public class ItemLead extends Item
         int j = fence.getY();
         int k = fence.getZ();
 
-        for (EntityLiving entityliving : worldIn.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB((double)i - 7.0D, (double)j - 7.0D, (double)k - 7.0D, (double)i + 7.0D, (double)j + 7.0D, (double)k + 7.0D)))
-        {
-            if (entityliving.getLeashed() && entityliving.getLeashHolder() == player)
-            {
-                if (entityleashknot == null)
-                {
+        for (EntityLiving entityliving : worldIn.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB((double) i - 7.0D, (double) j - 7.0D, (double) k - 7.0D, (double) i + 7.0D, (double) j + 7.0D, (double) k + 7.0D))) {
+            if (entityliving.getLeashed() && entityliving.getLeashHolder() == player) {
+                if (entityleashknot == null) {
                     entityleashknot = EntityLeashKnot.createKnot(worldIn, fence);
                     HangingPlaceEvent event = new HangingPlaceEvent((org.bukkit.entity.Hanging) entityleashknot.getBukkitEntity(), player != null ? (org.bukkit.entity.Player) player.getBukkitEntity() : null, worldIn.getWorld().getBlockAt(i, j, k), org.bukkit.block.BlockFace.SELF);
                     worldIn.getServer().getPluginManager().callEvent(event);

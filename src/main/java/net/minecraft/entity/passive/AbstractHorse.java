@@ -2,8 +2,10 @@ package net.minecraft.entity.passive;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+
 import java.util.UUID;
 import javax.annotation.Nullable;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -58,16 +60,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-public abstract class AbstractHorse extends EntityAnimal implements IInventoryChangedListener, IJumpingMount
-{
-    private static final Predicate<Entity> IS_HORSE_BREEDING = new Predicate<Entity>()
-    {
-        public boolean apply(@Nullable Entity p_apply_1_)
-        {
-            return p_apply_1_ instanceof AbstractHorse && ((AbstractHorse)p_apply_1_).isBreeding();
+public abstract class AbstractHorse extends EntityAnimal implements IInventoryChangedListener, IJumpingMount {
+    private static final Predicate<Entity> IS_HORSE_BREEDING = new Predicate<Entity>() {
+        public boolean apply(@Nullable Entity p_apply_1_) {
+            return p_apply_1_ instanceof AbstractHorse && ((AbstractHorse) p_apply_1_).isBreeding();
         }
     };
-    public static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute)null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
+    public static final IAttribute JUMP_STRENGTH = (new RangedAttribute((IAttribute) null, "horse.jumpStrength", 0.7D, 0.0D, 2.0D)).setDescription("Jump Strength").setShouldWatch(true);
     private static final DataParameter<Byte> STATUS = EntityDataManager.<Byte>createKey(AbstractHorse.class, DataSerializers.BYTE);
     private static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.<Optional<UUID>>createKey(AbstractHorse.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     private int eatingCounter;
@@ -91,16 +90,14 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
 
     public int maxDomestication = 100; // CraftBukkit - store max domestication value
 
-    public AbstractHorse(World worldIn)
-    {
+    public AbstractHorse(World worldIn) {
         super(worldIn);
         this.setSize(1.3964844F, 1.6F);
         this.stepHeight = 1.0F;
         this.initHorseChest();
     }
 
-    protected void initEntityAI()
-    {
+    protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.2D));
         this.tasks.addTask(1, new EntityAIRunAroundLikeCrazy(this, 1.2D));
@@ -111,203 +108,163 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         this.tasks.addTask(8, new EntityAILookIdle(this));
     }
 
-    protected void entityInit()
-    {
+    protected void entityInit() {
         super.entityInit();
-        this.dataManager.register(STATUS, Byte.valueOf((byte)0));
+        this.dataManager.register(STATUS, Byte.valueOf((byte) 0));
         this.dataManager.register(OWNER_UNIQUE_ID, Optional.absent());
     }
 
-    protected boolean getHorseWatchableBoolean(int p_110233_1_)
-    {
-        return (((Byte)this.dataManager.get(STATUS)).byteValue() & p_110233_1_) != 0;
+    protected boolean getHorseWatchableBoolean(int p_110233_1_) {
+        return (((Byte) this.dataManager.get(STATUS)).byteValue() & p_110233_1_) != 0;
     }
 
-    protected void setHorseWatchableBoolean(int p_110208_1_, boolean p_110208_2_)
-    {
-        byte b0 = ((Byte)this.dataManager.get(STATUS)).byteValue();
+    protected void setHorseWatchableBoolean(int p_110208_1_, boolean p_110208_2_) {
+        byte b0 = ((Byte) this.dataManager.get(STATUS)).byteValue();
 
-        if (p_110208_2_)
-        {
-            this.dataManager.set(STATUS, Byte.valueOf((byte)(b0 | p_110208_1_)));
-        }
-        else
-        {
-            this.dataManager.set(STATUS, Byte.valueOf((byte)(b0 & ~p_110208_1_)));
+        if (p_110208_2_) {
+            this.dataManager.set(STATUS, Byte.valueOf((byte) (b0 | p_110208_1_)));
+        } else {
+            this.dataManager.set(STATUS, Byte.valueOf((byte) (b0 & ~p_110208_1_)));
         }
     }
 
-    public boolean isTame()
-    {
+    public boolean isTame() {
         return this.getHorseWatchableBoolean(2);
     }
 
     @Nullable
-    public UUID getOwnerUniqueId()
-    {
-        return (UUID)((Optional)this.dataManager.get(OWNER_UNIQUE_ID)).orNull();
+    public UUID getOwnerUniqueId() {
+        return (UUID) ((Optional) this.dataManager.get(OWNER_UNIQUE_ID)).orNull();
     }
 
-    public void setOwnerUniqueId(@Nullable UUID uniqueId)
-    {
+    public void setOwnerUniqueId(@Nullable UUID uniqueId) {
         this.dataManager.set(OWNER_UNIQUE_ID, Optional.fromNullable(uniqueId));
     }
 
-    public float getHorseSize()
-    {
+    public float getHorseSize() {
         return 0.5F;
     }
 
-    public void setScaleForAge(boolean child)
-    {
+    public void setScaleForAge(boolean child) {
         this.setScale(child ? this.getHorseSize() : 1.0F);
     }
 
-    public boolean isHorseJumping()
-    {
+    public boolean isHorseJumping() {
         return this.horseJumping;
     }
 
-    public void setHorseTamed(boolean tamed)
-    {
+    public void setHorseTamed(boolean tamed) {
         this.setHorseWatchableBoolean(2, tamed);
     }
 
-    public void setHorseJumping(boolean jumping)
-    {
+    public void setHorseJumping(boolean jumping) {
         this.horseJumping = jumping;
     }
 
-    public boolean canBeLeashedTo(EntityPlayer player)
-    {
+    public boolean canBeLeashedTo(EntityPlayer player) {
         return super.canBeLeashedTo(player) && this.getCreatureAttribute() != EnumCreatureAttribute.UNDEAD;
     }
 
-    protected void onLeashDistance(float p_142017_1_)
-    {
-        if (p_142017_1_ > 6.0F && this.isEatingHaystack())
-        {
+    protected void onLeashDistance(float p_142017_1_) {
+        if (p_142017_1_ > 6.0F && this.isEatingHaystack()) {
             this.setEatingHaystack(false);
         }
     }
 
-    public boolean isEatingHaystack()
-    {
+    public boolean isEatingHaystack() {
         return this.getHorseWatchableBoolean(16);
     }
 
-    public boolean isRearing()
-    {
+    public boolean isRearing() {
         return this.getHorseWatchableBoolean(32);
     }
 
-    public boolean isBreeding()
-    {
+    public boolean isBreeding() {
         return this.getHorseWatchableBoolean(8);
     }
 
-    public void setBreeding(boolean breeding)
-    {
+    public void setBreeding(boolean breeding) {
         this.setHorseWatchableBoolean(8, breeding);
     }
 
-    public void setHorseSaddled(boolean saddled)
-    {
+    public void setHorseSaddled(boolean saddled) {
         this.setHorseWatchableBoolean(4, saddled);
     }
 
-    public int getTemper()
-    {
+    public int getTemper() {
         return this.temper;
     }
 
-    public void setTemper(int temperIn)
-    {
+    public void setTemper(int temperIn) {
         this.temper = temperIn;
     }
 
-    public int increaseTemper(int p_110198_1_)
-    {
+    public int increaseTemper(int p_110198_1_) {
         int i = MathHelper.clamp(this.getTemper() + p_110198_1_, 0, this.getMaxTemper());
         this.setTemper(i);
         return i;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount)
-    {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
         Entity entity = source.getTrueSource();
         return this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity) ? false : super.attackEntityFrom(source, amount);
     }
 
-    public boolean canBePushed()
-    {
+    public boolean canBePushed() {
         return !this.isBeingRidden();
     }
 
-    private void eatingHorse()
-    {
+    private void eatingHorse() {
         this.openHorseMouth();
 
-        if (!this.isSilent())
-        {
-            this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_HORSE_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
+        if (!this.isSilent()) {
+            this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_HORSE_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
         }
     }
 
-    public void fall(float distance, float damageMultiplier)
-    {
-        if (distance > 1.0F)
-        {
+    public void fall(float distance, float damageMultiplier) {
+        if (distance > 1.0F) {
             this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
         }
 
         int i = MathHelper.ceil((distance * 0.5F - 3.0F) * damageMultiplier);
 
-        if (i > 0)
-        {
-            this.attackEntityFrom(DamageSource.FALL, (float)i);
+        if (i > 0) {
+            this.attackEntityFrom(DamageSource.FALL, (float) i);
 
-            if (this.isBeingRidden())
-            {
-                for (Entity entity : this.getRecursivePassengers())
-                {
-                    entity.attackEntityFrom(DamageSource.FALL, (float)i);
+            if (this.isBeingRidden()) {
+                for (Entity entity : this.getRecursivePassengers()) {
+                    entity.attackEntityFrom(DamageSource.FALL, (float) i);
                 }
             }
 
-            IBlockState iblockstate = this.world.getBlockState(new BlockPos(this.posX, this.posY - 0.2D - (double)this.prevRotationYaw, this.posZ));
+            IBlockState iblockstate = this.world.getBlockState(new BlockPos(this.posX, this.posY - 0.2D - (double) this.prevRotationYaw, this.posZ));
             Block block = iblockstate.getBlock();
 
-            if (iblockstate.getMaterial() != Material.AIR && !this.isSilent())
-            {
+            if (iblockstate.getMaterial() != Material.AIR && !this.isSilent()) {
                 SoundType soundtype = block.getSoundType();
-                this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, soundtype.getStepSound(), this.getSoundCategory(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
+                this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, soundtype.getStepSound(), this.getSoundCategory(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
             }
         }
     }
 
-    protected int getInventorySize()
-    {
+    protected int getInventorySize() {
         return 2;
     }
 
-    public void initHorseChest()
-    {
+    public void initHorseChest() {
         ContainerHorseChest containerhorsechest = this.horseChest;
         this.horseChest = new ContainerHorseChest("HorseChest", this.getInventorySize(), this);
         this.horseChest.setCustomName(this.getName());
 
-        if (containerhorsechest != null)
-        {
+        if (containerhorsechest != null) {
             containerhorsechest.removeInventoryChangeListener(this);
             int i = Math.min(containerhorsechest.getSizeInventory(), this.horseChest.getSizeInventory());
 
-            for (int j = 0; j < i; ++j)
-            {
+            for (int j = 0; j < i; ++j) {
                 ItemStack itemstack = containerhorsechest.getStackInSlot(j);
 
-                if (!itemstack.isEmpty())
-                {
+                if (!itemstack.isEmpty()) {
                     this.horseChest.setInventorySlotContents(j, itemstack.copy());
                 }
             }
@@ -318,64 +275,53 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         this.itemHandler = new net.minecraftforge.items.wrapper.InvWrapper(this.horseChest);
     }
 
-    protected void updateHorseSlots()
-    {
-        if (!this.world.isRemote)
-        {
+    protected void updateHorseSlots() {
+        if (!this.world.isRemote) {
             this.setHorseSaddled(!this.horseChest.getStackInSlot(0).isEmpty() && this.canBeSaddled());
         }
     }
 
-    public void onInventoryChanged(IInventory invBasic)
-    {
+    public void onInventoryChanged(IInventory invBasic) {
         boolean flag = this.isHorseSaddled();
         this.updateHorseSlots();
 
-        if (this.ticksExisted > 20 && !flag && this.isHorseSaddled())
-        {
+        if (this.ticksExisted > 20 && !flag && this.isHorseSaddled()) {
             this.playSound(SoundEvents.ENTITY_HORSE_SADDLE, 0.5F, 1.0F);
         }
     }
 
     @Nullable
-    protected AbstractHorse getClosestHorse(Entity entityIn, double distance)
-    {
+    protected AbstractHorse getClosestHorse(Entity entityIn, double distance) {
         double d0 = Double.MAX_VALUE;
         Entity entity = null;
 
-        for (Entity entity1 : this.world.getEntitiesInAABBexcluding(entityIn, entityIn.getEntityBoundingBox().expand(distance, distance, distance), IS_HORSE_BREEDING))
-        {
+        for (Entity entity1 : this.world.getEntitiesInAABBexcluding(entityIn, entityIn.getEntityBoundingBox().expand(distance, distance, distance), IS_HORSE_BREEDING)) {
             double d1 = entity1.getDistanceSq(entityIn.posX, entityIn.posY, entityIn.posZ);
 
-            if (d1 < d0)
-            {
+            if (d1 < d0) {
                 entity = entity1;
                 d0 = d1;
             }
         }
 
-        return (AbstractHorse)entity;
+        return (AbstractHorse) entity;
     }
 
-    public double getHorseJumpStrength()
-    {
+    public double getHorseJumpStrength() {
         return this.getEntityAttribute(JUMP_STRENGTH).getAttributeValue();
     }
 
     @Nullable
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         this.openHorseMouth();
         return null;
     }
 
     @Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         this.openHorseMouth();
 
-        if (this.rand.nextInt(3) == 0)
-        {
+        if (this.rand.nextInt(3) == 0) {
             this.makeHorseRear();
         }
 
@@ -383,245 +329,192 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
     }
 
     @Nullable
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         this.openHorseMouth();
 
-        if (this.rand.nextInt(10) == 0 && !this.isMovementBlocked())
-        {
+        if (this.rand.nextInt(10) == 0 && !this.isMovementBlocked()) {
             this.makeHorseRear();
         }
 
         return null;
     }
 
-    public boolean canBeSaddled()
-    {
+    public boolean canBeSaddled() {
         return true;
     }
 
-    public boolean isHorseSaddled()
-    {
+    public boolean isHorseSaddled() {
         return this.getHorseWatchableBoolean(4);
     }
 
     @Nullable
-    protected SoundEvent getAngrySound()
-    {
+    protected SoundEvent getAngrySound() {
         this.openHorseMouth();
         this.makeHorseRear();
         return null;
     }
 
-    protected void playStepSound(BlockPos pos, Block blockIn)
-    {
-        if (!blockIn.getDefaultState().getMaterial().isLiquid())
-        {
+    protected void playStepSound(BlockPos pos, Block blockIn) {
+        if (!blockIn.getDefaultState().getMaterial().isLiquid()) {
             SoundType soundtype = blockIn.getSoundType();
 
-            if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER)
-            {
+            if (this.world.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER) {
                 soundtype = Blocks.SNOW_LAYER.getSoundType();
             }
 
-            if (this.isBeingRidden() && this.canGallop)
-            {
+            if (this.isBeingRidden() && this.canGallop) {
                 ++this.gallopTime;
 
-                if (this.gallopTime > 5 && this.gallopTime % 3 == 0)
-                {
+                if (this.gallopTime > 5 && this.gallopTime % 3 == 0) {
                     this.playGallopSound(soundtype);
-                }
-                else if (this.gallopTime <= 5)
-                {
+                } else if (this.gallopTime <= 5) {
                     this.playSound(SoundEvents.ENTITY_HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
                 }
-            }
-            else if (soundtype == SoundType.WOOD)
-            {
+            } else if (soundtype == SoundType.WOOD) {
                 this.playSound(SoundEvents.ENTITY_HORSE_STEP_WOOD, soundtype.getVolume() * 0.15F, soundtype.getPitch());
-            }
-            else
-            {
+            } else {
                 this.playSound(SoundEvents.ENTITY_HORSE_STEP, soundtype.getVolume() * 0.15F, soundtype.getPitch());
             }
         }
     }
 
-    protected void playGallopSound(SoundType p_190680_1_)
-    {
+    protected void playGallopSound(SoundType p_190680_1_) {
         this.playSound(SoundEvents.ENTITY_HORSE_GALLOP, p_190680_1_.getVolume() * 0.15F, p_190680_1_.getPitch());
     }
 
-    protected void applyEntityAttributes()
-    {
+    protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(JUMP_STRENGTH);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(53.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.22499999403953552D);
     }
 
-    public int getMaxSpawnedInChunk()
-    {
+    public int getMaxSpawnedInChunk() {
         return 6;
     }
 
-    public int getMaxTemper()
-    {
+    public int getMaxTemper() {
         return this.maxDomestication; // CraftBukkit - return stored max domestication instead of 100
     }
 
-    protected float getSoundVolume()
-    {
+    protected float getSoundVolume() {
         return 0.8F;
     }
 
-    public int getTalkInterval()
-    {
+    public int getTalkInterval() {
         return 400;
     }
 
-    public void openGUI(EntityPlayer playerEntity)
-    {
-        if (!this.world.isRemote && (!this.isBeingRidden() || this.isPassenger(playerEntity)) && this.isTame())
-        {
+    public void openGUI(EntityPlayer playerEntity) {
+        if (!this.world.isRemote && (!this.isBeingRidden() || this.isPassenger(playerEntity)) && this.isTame()) {
             this.horseChest.setCustomName(this.getName());
             playerEntity.openGuiHorseInventory(this, this.horseChest);
         }
     }
 
-    protected boolean handleEating(EntityPlayer player, ItemStack stack)
-    {
+    protected boolean handleEating(EntityPlayer player, ItemStack stack) {
         boolean flag = false;
         float f = 0.0F;
         int i = 0;
         int j = 0;
         Item item = stack.getItem();
 
-        if (item == Items.WHEAT)
-        {
+        if (item == Items.WHEAT) {
             f = 2.0F;
             i = 20;
             j = 3;
-        }
-        else if (item == Items.SUGAR)
-        {
+        } else if (item == Items.SUGAR) {
             f = 1.0F;
             i = 30;
             j = 3;
-        }
-        else if (item == Item.getItemFromBlock(Blocks.HAY_BLOCK))
-        {
+        } else if (item == Item.getItemFromBlock(Blocks.HAY_BLOCK)) {
             f = 20.0F;
             i = 180;
-        }
-        else if (item == Items.APPLE)
-        {
+        } else if (item == Items.APPLE) {
             f = 3.0F;
             i = 60;
             j = 3;
-        }
-        else if (item == Items.GOLDEN_CARROT)
-        {
+        } else if (item == Items.GOLDEN_CARROT) {
             f = 4.0F;
             i = 60;
             j = 5;
 
-            if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove())
-            {
+            if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove()) {
                 flag = true;
                 this.setInLove(player);
             }
-        }
-        else if (item == Items.GOLDEN_APPLE)
-        {
+        } else if (item == Items.GOLDEN_APPLE) {
             f = 10.0F;
             i = 240;
             j = 10;
 
-            if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove())
-            {
+            if (this.isTame() && this.getGrowingAge() == 0 && !this.isInLove()) {
                 flag = true;
                 this.setInLove(player);
             }
         }
 
-        if (this.getHealth() < this.getMaxHealth() && f > 0.0F)
-        {
+        if (this.getHealth() < this.getMaxHealth() && f > 0.0F) {
             this.heal(f, EntityRegainHealthEvent.RegainReason.EATING);
             flag = true;
         }
 
-        if (this.isChild() && i > 0)
-        {
-            this.world.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D);
+        if (this.isChild() && i > 0) {
+            this.world.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, this.posX + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, this.posY + 0.5D + (double) (this.rand.nextFloat() * this.height), this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, 0.0D, 0.0D, 0.0D);
 
-            if (!this.world.isRemote)
-            {
+            if (!this.world.isRemote) {
                 this.addGrowth(i);
             }
 
             flag = true;
         }
 
-        if (j > 0 && (flag || !this.isTame()) && this.getTemper() < this.getMaxTemper())
-        {
+        if (j > 0 && (flag || !this.isTame()) && this.getTemper() < this.getMaxTemper()) {
             flag = true;
 
-            if (!this.world.isRemote)
-            {
+            if (!this.world.isRemote) {
                 this.increaseTemper(j);
             }
         }
 
-        if (flag)
-        {
+        if (flag) {
             this.eatingHorse();
         }
 
         return flag;
     }
 
-    protected void mountTo(EntityPlayer player)
-    {
+    protected void mountTo(EntityPlayer player) {
         player.rotationYaw = this.rotationYaw;
         player.rotationPitch = this.rotationPitch;
         this.setEatingHaystack(false);
         this.setRearing(false);
 
-        if (!this.world.isRemote)
-        {
+        if (!this.world.isRemote) {
             player.startRiding(this);
         }
     }
 
-    protected boolean isMovementBlocked()
-    {
+    protected boolean isMovementBlocked() {
         return super.isMovementBlocked() && this.isBeingRidden() && this.isHorseSaddled() || this.isEatingHaystack() || this.isRearing();
     }
 
-    public boolean isBreedingItem(ItemStack stack)
-    {
+    public boolean isBreedingItem(ItemStack stack) {
         return false;
     }
 
-    private void moveTail()
-    {
+    private void moveTail() {
         this.tailCounter = 1;
     }
 
-    public void onDeath(DamageSource cause)
-    {
+    public void onDeath(DamageSource cause) {
         // super.onDeath(cause); // Moved down
 
-        if (!this.world.isRemote && this.horseChest != null)
-        {
-            for (int i = 0; i < this.horseChest.getSizeInventory(); ++i)
-            {
+        if (!this.world.isRemote && this.horseChest != null) {
+            for (int i = 0; i < this.horseChest.getSizeInventory(); ++i) {
                 ItemStack itemstack = this.horseChest.getStackInSlot(i);
 
-                if (!itemstack.isEmpty())
-                {
+                if (!itemstack.isEmpty()) {
                     this.entityDropItem(itemstack, 0.0F);
                 }
             }
@@ -629,31 +522,24 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         super.onDeath(cause);
     }
 
-    public void onLivingUpdate()
-    {
-        if (this.rand.nextInt(200) == 0)
-        {
+    public void onLivingUpdate() {
+        if (this.rand.nextInt(200) == 0) {
             this.moveTail();
         }
 
         super.onLivingUpdate();
 
-        if (!this.world.isRemote)
-        {
-            if (this.rand.nextInt(900) == 0 && this.deathTime == 0)
-            {
+        if (!this.world.isRemote) {
+            if (this.rand.nextInt(900) == 0 && this.deathTime == 0) {
                 this.heal(1.0F, EntityRegainHealthEvent.RegainReason.REGEN);
             }
 
-            if (this.canEatGrass())
-            {
-                if (!this.isEatingHaystack() && !this.isBeingRidden() && this.rand.nextInt(300) == 0 && this.world.getBlockState(new BlockPos(MathHelper.floor(this.posX), MathHelper.floor(this.posY) - 1, MathHelper.floor(this.posZ))).getBlock() == Blocks.GRASS)
-                {
+            if (this.canEatGrass()) {
+                if (!this.isEatingHaystack() && !this.isBeingRidden() && this.rand.nextInt(300) == 0 && this.world.getBlockState(new BlockPos(MathHelper.floor(this.posX), MathHelper.floor(this.posY) - 1, MathHelper.floor(this.posZ))).getBlock() == Blocks.GRASS) {
                     this.setEatingHaystack(true);
                 }
 
-                if (this.isEatingHaystack() && ++this.eatingCounter > 50)
-                {
+                if (this.isEatingHaystack() && ++this.eatingCounter > 50) {
                     this.eatingCounter = 0;
                     this.setEatingHaystack(false);
                 }
@@ -663,185 +549,147 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         }
     }
 
-    protected void followMother()
-    {
-        if (this.isBreeding() && this.isChild() && !this.isEatingHaystack())
-        {
+    protected void followMother() {
+        if (this.isBreeding() && this.isChild() && !this.isEatingHaystack()) {
             AbstractHorse abstracthorse = this.getClosestHorse(this, 16.0D);
 
-            if (abstracthorse != null && this.getDistanceSq(abstracthorse) > 4.0D)
-            {
+            if (abstracthorse != null && this.getDistanceSq(abstracthorse) > 4.0D) {
                 this.navigator.getPathToEntityLiving(abstracthorse);
             }
         }
     }
 
-    public boolean canEatGrass()
-    {
+    public boolean canEatGrass() {
         return true;
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
 
-        if (this.openMouthCounter > 0 && ++this.openMouthCounter > 30)
-        {
+        if (this.openMouthCounter > 0 && ++this.openMouthCounter > 30) {
             this.openMouthCounter = 0;
             this.setHorseWatchableBoolean(64, false);
         }
 
-        if (this.canPassengerSteer() && this.jumpRearingCounter > 0 && ++this.jumpRearingCounter > 20)
-        {
+        if (this.canPassengerSteer() && this.jumpRearingCounter > 0 && ++this.jumpRearingCounter > 20) {
             this.jumpRearingCounter = 0;
             this.setRearing(false);
         }
 
-        if (this.tailCounter > 0 && ++this.tailCounter > 8)
-        {
+        if (this.tailCounter > 0 && ++this.tailCounter > 8) {
             this.tailCounter = 0;
         }
 
-        if (this.sprintCounter > 0)
-        {
+        if (this.sprintCounter > 0) {
             ++this.sprintCounter;
 
-            if (this.sprintCounter > 300)
-            {
+            if (this.sprintCounter > 300) {
                 this.sprintCounter = 0;
             }
         }
 
         this.prevHeadLean = this.headLean;
 
-        if (this.isEatingHaystack())
-        {
+        if (this.isEatingHaystack()) {
             this.headLean += (1.0F - this.headLean) * 0.4F + 0.05F;
 
-            if (this.headLean > 1.0F)
-            {
+            if (this.headLean > 1.0F) {
                 this.headLean = 1.0F;
             }
-        }
-        else
-        {
+        } else {
             this.headLean += (0.0F - this.headLean) * 0.4F - 0.05F;
 
-            if (this.headLean < 0.0F)
-            {
+            if (this.headLean < 0.0F) {
                 this.headLean = 0.0F;
             }
         }
 
         this.prevRearingAmount = this.rearingAmount;
 
-        if (this.isRearing())
-        {
+        if (this.isRearing()) {
             this.headLean = 0.0F;
             this.prevHeadLean = this.headLean;
             this.rearingAmount += (1.0F - this.rearingAmount) * 0.4F + 0.05F;
 
-            if (this.rearingAmount > 1.0F)
-            {
+            if (this.rearingAmount > 1.0F) {
                 this.rearingAmount = 1.0F;
             }
-        }
-        else
-        {
+        } else {
             this.allowStandSliding = false;
             this.rearingAmount += (0.8F * this.rearingAmount * this.rearingAmount * this.rearingAmount - this.rearingAmount) * 0.6F - 0.05F;
 
-            if (this.rearingAmount < 0.0F)
-            {
+            if (this.rearingAmount < 0.0F) {
                 this.rearingAmount = 0.0F;
             }
         }
 
         this.prevMouthOpenness = this.mouthOpenness;
 
-        if (this.getHorseWatchableBoolean(64))
-        {
+        if (this.getHorseWatchableBoolean(64)) {
             this.mouthOpenness += (1.0F - this.mouthOpenness) * 0.7F + 0.05F;
 
-            if (this.mouthOpenness > 1.0F)
-            {
+            if (this.mouthOpenness > 1.0F) {
                 this.mouthOpenness = 1.0F;
             }
-        }
-        else
-        {
+        } else {
             this.mouthOpenness += (0.0F - this.mouthOpenness) * 0.7F - 0.05F;
 
-            if (this.mouthOpenness < 0.0F)
-            {
+            if (this.mouthOpenness < 0.0F) {
                 this.mouthOpenness = 0.0F;
             }
         }
     }
 
-    private void openHorseMouth()
-    {
-        if (!this.world.isRemote)
-        {
+    private void openHorseMouth() {
+        if (!this.world.isRemote) {
             this.openMouthCounter = 1;
             this.setHorseWatchableBoolean(64, true);
         }
     }
 
-    public void setEatingHaystack(boolean p_110227_1_)
-    {
+    public void setEatingHaystack(boolean p_110227_1_) {
         this.setHorseWatchableBoolean(16, p_110227_1_);
     }
 
-    public void setRearing(boolean rearing)
-    {
-        if (rearing)
-        {
+    public void setRearing(boolean rearing) {
+        if (rearing) {
             this.setEatingHaystack(false);
         }
 
         this.setHorseWatchableBoolean(32, rearing);
     }
 
-    private void makeHorseRear()
-    {
-        if (this.canPassengerSteer())
-        {
+    private void makeHorseRear() {
+        if (this.canPassengerSteer()) {
             this.jumpRearingCounter = 1;
             this.setRearing(true);
         }
     }
 
-    public void makeMad()
-    {
+    public void makeMad() {
         this.makeHorseRear();
         SoundEvent soundevent = this.getAngrySound();
 
-        if (soundevent != null)
-        {
+        if (soundevent != null) {
             this.playSound(soundevent, this.getSoundVolume(), this.getSoundPitch());
         }
     }
 
-    public boolean setTamedBy(EntityPlayer player)
-    {
+    public boolean setTamedBy(EntityPlayer player) {
         this.setOwnerUniqueId(player.getUniqueID());
         this.setHorseTamed(true);
 
-        if (player instanceof EntityPlayerMP)
-        {
-            CriteriaTriggers.TAME_ANIMAL.trigger((EntityPlayerMP)player, this);
+        if (player instanceof EntityPlayerMP) {
+            CriteriaTriggers.TAME_ANIMAL.trigger((EntityPlayerMP) player, this);
         }
 
-        this.world.setEntityState(this, (byte)7);
+        this.world.setEntityState(this, (byte) 7);
         return true;
     }
 
-    public void travel(float strafe, float vertical, float forward)
-    {
-        if (this.isBeingRidden() && this.canBeSteered() && this.isHorseSaddled())
-        {
-            EntityLivingBase entitylivingbase = (EntityLivingBase)this.getControllingPassenger();
+    public void travel(float strafe, float vertical, float forward) {
+        if (this.isBeingRidden() && this.canBeSteered() && this.isHorseSaddled()) {
+            EntityLivingBase entitylivingbase = (EntityLivingBase) this.getControllingPassenger();
             this.rotationYaw = entitylivingbase.rotationYaw;
             this.prevRotationYaw = this.rotationYaw;
             this.rotationPitch = entitylivingbase.rotationPitch * 0.5F;
@@ -851,36 +699,31 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
             strafe = entitylivingbase.moveStrafing * 0.5F;
             forward = entitylivingbase.moveForward;
 
-            if (forward <= 0.0F)
-            {
+            if (forward <= 0.0F) {
                 forward *= 0.25F;
                 this.gallopTime = 0;
             }
 
-            if (this.onGround && this.jumpPower == 0.0F && this.isRearing() && !this.allowStandSliding)
-            {
+            if (this.onGround && this.jumpPower == 0.0F && this.isRearing() && !this.allowStandSliding) {
                 strafe = 0.0F;
                 forward = 0.0F;
             }
 
-            if (this.jumpPower > 0.0F && !this.isHorseJumping() && this.onGround)
-            {
-                this.motionY = this.getHorseJumpStrength() * (double)this.jumpPower;
+            if (this.jumpPower > 0.0F && !this.isHorseJumping() && this.onGround) {
+                this.motionY = this.getHorseJumpStrength() * (double) this.jumpPower;
 
-                if (this.isPotionActive(MobEffects.JUMP_BOOST))
-                {
-                    this.motionY += (double)((float)(this.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
+                if (this.isPotionActive(MobEffects.JUMP_BOOST)) {
+                    this.motionY += (double) ((float) (this.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
                 }
 
                 this.setHorseJumping(true);
                 this.isAirBorne = true;
 
-                if (forward > 0.0F)
-                {
+                if (forward > 0.0F) {
                     float f = MathHelper.sin(this.rotationYaw * 0.017453292F);
                     float f1 = MathHelper.cos(this.rotationYaw * 0.017453292F);
-                    this.motionX += (double)(-0.4F * f * this.jumpPower);
-                    this.motionZ += (double)(0.4F * f1 * this.jumpPower);
+                    this.motionX += (double) (-0.4F * f * this.jumpPower);
+                    this.motionZ += (double) (0.4F * f1 * this.jumpPower);
                     this.playSound(SoundEvents.ENTITY_HORSE_JUMP, 0.4F, 1.0F);
                 }
 
@@ -889,20 +732,16 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
 
             this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
 
-            if (this.canPassengerSteer())
-            {
-                this.setAIMoveSpeed((float)this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+            if (this.canPassengerSteer()) {
+                this.setAIMoveSpeed((float) this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
                 super.travel(strafe, vertical, forward);
-            }
-            else if (entitylivingbase instanceof EntityPlayer)
-            {
+            } else if (entitylivingbase instanceof EntityPlayer) {
                 this.motionX = 0.0D;
                 this.motionY = 0.0D;
                 this.motionZ = 0.0D;
             }
 
-            if (this.onGround)
-            {
+            if (this.onGround) {
                 this.jumpPower = 0.0F;
                 this.setHorseJumping(false);
             }
@@ -912,48 +751,40 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
             double d0 = this.posZ - this.prevPosZ;
             float f2 = MathHelper.sqrt(d1 * d1 + d0 * d0) * 4.0F;
 
-            if (f2 > 1.0F)
-            {
+            if (f2 > 1.0F) {
                 f2 = 1.0F;
             }
 
             this.limbSwingAmount += (f2 - this.limbSwingAmount) * 0.4F;
             this.limbSwing += this.limbSwingAmount;
-        }
-        else
-        {
+        } else {
             this.jumpMovementFactor = 0.02F;
             super.travel(strafe, vertical, forward);
         }
     }
 
-    public static void registerFixesAbstractHorse(DataFixer fixer, Class<?> entityClass)
-    {
+    public static void registerFixesAbstractHorse(DataFixer fixer, Class<?> entityClass) {
         EntityLiving.registerFixesMob(fixer, entityClass);
-        fixer.registerWalker(FixTypes.ENTITY, new ItemStackData(entityClass, new String[] {"SaddleItem"}));
+        fixer.registerWalker(FixTypes.ENTITY, new ItemStackData(entityClass, new String[]{"SaddleItem"}));
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
+    public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         compound.setBoolean("EatingHaystack", this.isEatingHaystack());
         compound.setBoolean("Bred", this.isBreeding());
         compound.setInteger("Temper", this.getTemper());
         compound.setBoolean("Tame", this.isTame());
 
-        if (this.getOwnerUniqueId() != null)
-        {
+        if (this.getOwnerUniqueId() != null) {
             compound.setString("OwnerUUID", this.getOwnerUniqueId().toString());
         }
         compound.setInteger("Bukkit.MaxDomestication", this.maxDomestication);
-        if (!this.horseChest.getStackInSlot(0).isEmpty())
-        {
+        if (!this.horseChest.getStackInSlot(0).isEmpty()) {
             compound.setTag("SaddleItem", this.horseChest.getStackInSlot(0).writeToNBT(new NBTTagCompound()));
         }
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         this.setEatingHaystack(compound.getBoolean("EatingHaystack"));
         this.setBreeding(compound.getBoolean("Bred"));
@@ -961,18 +792,14 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         this.setHorseTamed(compound.getBoolean("Tame"));
         String s;
 
-        if (compound.hasKey("OwnerUUID", 8))
-        {
+        if (compound.hasKey("OwnerUUID", 8)) {
             s = compound.getString("OwnerUUID");
-        }
-        else
-        {
+        } else {
             String s1 = compound.getString("Owner");
             s = PreYggdrasilConverter.convertMobOwnerIfNeeded(this.getServer(), s1);
         }
 
-        if (!s.isEmpty())
-        {
+        if (!s.isEmpty()) {
             this.setOwnerUniqueId(UUID.fromString(s));
         }
         if (compound.hasKey("Bukkit.MaxDomestication")) {
@@ -981,17 +808,14 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
 
         IAttributeInstance iattributeinstance = this.getAttributeMap().getAttributeInstanceByName("Speed");
 
-        if (iattributeinstance != null)
-        {
+        if (iattributeinstance != null) {
             this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(iattributeinstance.getBaseValue() * 0.25D);
         }
 
-        if (compound.hasKey("SaddleItem", 10))
-        {
+        if (compound.hasKey("SaddleItem", 10)) {
             ItemStack itemstack = new ItemStack(compound.getCompoundTag("SaddleItem"));
 
-            if (itemstack.getItem() == Items.SADDLE)
-            {
+            if (itemstack.getItem() == Items.SADDLE) {
                 this.horseChest.setInventorySlotContents(0, itemstack);
             }
         }
@@ -999,25 +823,21 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         this.updateHorseSlots();
     }
 
-    public boolean canMateWith(EntityAnimal otherAnimal)
-    {
+    public boolean canMateWith(EntityAnimal otherAnimal) {
         return false;
     }
 
-    protected boolean canMate()
-    {
+    protected boolean canMate() {
         return !this.isBeingRidden() && !this.isRiding() && this.isTame() && !this.isChild() && this.getHealth() >= this.getMaxHealth() && this.isInLove();
     }
 
     @Nullable
-    public EntityAgeable createChild(EntityAgeable ageable)
-    {
+    public EntityAgeable createChild(EntityAgeable ageable) {
         return null;
     }
 
-    protected void setOffspringAttributes(EntityAgeable p_190681_1_, AbstractHorse p_190681_2_)
-    {
-        double d0 = this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue() + p_190681_1_.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue() + (double)this.getModifiedMaxHealth();
+    protected void setOffspringAttributes(EntityAgeable p_190681_1_, AbstractHorse p_190681_2_) {
+        double d0 = this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue() + p_190681_1_.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getBaseValue() + (double) this.getModifiedMaxHealth();
         p_190681_2_.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(d0 / 3.0D);
         double d1 = this.getEntityAttribute(JUMP_STRENGTH).getBaseValue() + p_190681_1_.getEntityAttribute(JUMP_STRENGTH).getBaseValue() + this.getModifiedJumpStrength();
         p_190681_2_.getEntityAttribute(JUMP_STRENGTH).setBaseValue(d1 / 3.0D);
@@ -1025,62 +845,48 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         p_190681_2_.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(d2 / 3.0D);
     }
 
-    public boolean canBeSteered()
-    {
+    public boolean canBeSteered() {
         return this.getControllingPassenger() instanceof EntityLivingBase;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getGrassEatingAmount(float p_110258_1_)
-    {
+    public float getGrassEatingAmount(float p_110258_1_) {
         return this.prevHeadLean + (this.headLean - this.prevHeadLean) * p_110258_1_;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getRearingAmount(float p_110223_1_)
-    {
+    public float getRearingAmount(float p_110223_1_) {
         return this.prevRearingAmount + (this.rearingAmount - this.prevRearingAmount) * p_110223_1_;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getMouthOpennessAngle(float p_110201_1_)
-    {
+    public float getMouthOpennessAngle(float p_110201_1_) {
         return this.prevMouthOpenness + (this.mouthOpenness - this.prevMouthOpenness) * p_110201_1_;
     }
 
     @SideOnly(Side.CLIENT)
-    public void setJumpPower(int jumpPowerIn)
-    {
-        if (this.isHorseSaddled())
-        {
-            if (jumpPowerIn < 0)
-            {
+    public void setJumpPower(int jumpPowerIn) {
+        if (this.isHorseSaddled()) {
+            if (jumpPowerIn < 0) {
                 jumpPowerIn = 0;
-            }
-            else
-            {
+            } else {
                 this.allowStandSliding = true;
                 this.makeHorseRear();
             }
 
-            if (jumpPowerIn >= 90)
-            {
+            if (jumpPowerIn >= 90) {
                 this.jumpPower = 1.0F;
-            }
-            else
-            {
-                this.jumpPower = 0.4F + 0.4F * (float)jumpPowerIn / 90.0F;
+            } else {
+                this.jumpPower = 0.4F + 0.4F * (float) jumpPowerIn / 90.0F;
             }
         }
     }
 
-    public boolean canJump()
-    {
+    public boolean canJump() {
         return this.isHorseSaddled();
     }
 
-    public void handleStartJump(int p_184775_1_)
-    {
+    public void handleStartJump(int p_184775_1_) {
         float power;
         if (p_184775_1_ >= 90) {
             power = 1.0F;
@@ -1095,151 +901,116 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         this.makeHorseRear();
     }
 
-    public void handleStopJump()
-    {
+    public void handleStopJump() {
     }
 
     @SideOnly(Side.CLIENT)
-    protected void spawnHorseParticles(boolean p_110216_1_)
-    {
+    protected void spawnHorseParticles(boolean p_110216_1_) {
         EnumParticleTypes enumparticletypes = p_110216_1_ ? EnumParticleTypes.HEART : EnumParticleTypes.SMOKE_NORMAL;
 
-        for (int i = 0; i < 7; ++i)
-        {
+        for (int i = 0; i < 7; ++i) {
             double d0 = this.rand.nextGaussian() * 0.02D;
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
-            this.world.spawnParticle(enumparticletypes, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2);
+            this.world.spawnParticle(enumparticletypes, this.posX + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, this.posY + 0.5D + (double) (this.rand.nextFloat() * this.height), this.posZ + (double) (this.rand.nextFloat() * this.width * 2.0F) - (double) this.width, d0, d1, d2);
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public void handleStatusUpdate(byte id)
-    {
-        if (id == 7)
-        {
+    public void handleStatusUpdate(byte id) {
+        if (id == 7) {
             this.spawnHorseParticles(true);
-        }
-        else if (id == 6)
-        {
+        } else if (id == 6) {
             this.spawnHorseParticles(false);
-        }
-        else
-        {
+        } else {
             super.handleStatusUpdate(id);
         }
     }
 
-    public void updatePassenger(Entity passenger)
-    {
+    public void updatePassenger(Entity passenger) {
         super.updatePassenger(passenger);
 
-        if (passenger instanceof EntityLiving)
-        {
-            EntityLiving entityliving = (EntityLiving)passenger;
+        if (passenger instanceof EntityLiving) {
+            EntityLiving entityliving = (EntityLiving) passenger;
             this.renderYawOffset = entityliving.renderYawOffset;
         }
 
-        if (this.prevRearingAmount > 0.0F)
-        {
+        if (this.prevRearingAmount > 0.0F) {
             float f3 = MathHelper.sin(this.renderYawOffset * 0.017453292F);
             float f = MathHelper.cos(this.renderYawOffset * 0.017453292F);
             float f1 = 0.7F * this.prevRearingAmount;
             float f2 = 0.15F * this.prevRearingAmount;
-            passenger.setPosition(this.posX + (double)(f1 * f3), this.posY + this.getMountedYOffset() + passenger.getYOffset() + (double)f2, this.posZ - (double)(f1 * f));
+            passenger.setPosition(this.posX + (double) (f1 * f3), this.posY + this.getMountedYOffset() + passenger.getYOffset() + (double) f2, this.posZ - (double) (f1 * f));
 
-            if (passenger instanceof EntityLivingBase)
-            {
-                ((EntityLivingBase)passenger).renderYawOffset = this.renderYawOffset;
+            if (passenger instanceof EntityLivingBase) {
+                ((EntityLivingBase) passenger).renderYawOffset = this.renderYawOffset;
             }
         }
     }
 
-    protected float getModifiedMaxHealth()
-    {
-        return 15.0F + (float)this.rand.nextInt(8) + (float)this.rand.nextInt(9);
+    protected float getModifiedMaxHealth() {
+        return 15.0F + (float) this.rand.nextInt(8) + (float) this.rand.nextInt(9);
     }
 
-    protected double getModifiedJumpStrength()
-    {
+    protected double getModifiedJumpStrength() {
         return 0.4000000059604645D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D;
     }
 
-    protected double getModifiedMovementSpeed()
-    {
+    protected double getModifiedMovementSpeed() {
         return (0.44999998807907104D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D) * 0.25D;
     }
 
-    public boolean isOnLadder()
-    {
+    public boolean isOnLadder() {
         return false;
     }
 
-    public float getEyeHeight()
-    {
+    public float getEyeHeight() {
         return this.height;
     }
 
-    public boolean wearsArmor()
-    {
+    public boolean wearsArmor() {
         return false;
     }
 
-    public boolean isArmor(ItemStack stack)
-    {
+    public boolean isArmor(ItemStack stack) {
         return false;
     }
 
-    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn)
-    {
+    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn) {
         int i = inventorySlot - 400;
 
-        if (i >= 0 && i < 2 && i < this.horseChest.getSizeInventory())
-        {
-            if (i == 0 && itemStackIn.getItem() != Items.SADDLE)
-            {
+        if (i >= 0 && i < 2 && i < this.horseChest.getSizeInventory()) {
+            if (i == 0 && itemStackIn.getItem() != Items.SADDLE) {
                 return false;
-            }
-            else if (i != 1 || this.wearsArmor() && this.isArmor(itemStackIn))
-            {
+            } else if (i != 1 || this.wearsArmor() && this.isArmor(itemStackIn)) {
                 this.horseChest.setInventorySlotContents(i, itemStackIn);
                 this.updateHorseSlots();
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
-        }
-        else
-        {
+        } else {
             int j = inventorySlot - 500 + 2;
 
-            if (j >= 2 && j < this.horseChest.getSizeInventory())
-            {
+            if (j >= 2 && j < this.horseChest.getSizeInventory()) {
                 this.horseChest.setInventorySlotContents(j, itemStackIn);
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
     }
 
     @Nullable
-    public Entity getControllingPassenger()
-    {
-        return this.getPassengers().isEmpty() ? null : (Entity)this.getPassengers().get(0);
+    public Entity getControllingPassenger() {
+        return this.getPassengers().isEmpty() ? null : (Entity) this.getPassengers().get(0);
     }
 
     @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-    {
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
 
-        if (this.rand.nextInt(5) == 0)
-        {
+        if (this.rand.nextInt(5) == 0) {
             this.setGrowingAge(-24000);
         }
 
@@ -1252,15 +1023,14 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
-    {
-        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return (T) itemHandler;
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing) {
+        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+            return (T) itemHandler;
         return super.getCapability(capability, facing);
     }
 
     @Override
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
-    {
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing) {
         return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 }

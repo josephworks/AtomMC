@@ -13,7 +13,7 @@ final class CraftCriteria {
     static {
         ImmutableMap.Builder<String, CraftCriteria> defaults = ImmutableMap.builder();
 
-        for (Map.Entry<?, ?> entry : ((Map<?,?> ) IScoreCriteria.INSTANCES).entrySet()) {
+        for (Map.Entry<?, ?> entry : ((Map<?, ?>) IScoreCriteria.INSTANCES).entrySet()) {
             String name = entry.getKey().toString();
             IScoreCriteria criteria = (IScoreCriteria) entry.getValue();
 

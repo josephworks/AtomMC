@@ -15,8 +15,7 @@ import org.bukkit.craftbukkit.entity.CraftVillager;
 
 import java.util.List;
 
-public class InventoryMerchant implements IInventory
-{
+public class InventoryMerchant implements IInventory {
     private final IMerchant merchant;
     private final NonNullList<ItemStack> slots = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
     private final EntityPlayer player;
@@ -42,23 +41,18 @@ public class InventoryMerchant implements IInventory
         return (merchant instanceof EntityVillager) ? ((EntityVillager) this.merchant).getBukkitEntity().getLocation() : null;
     }
 
-    public InventoryMerchant(EntityPlayer thePlayerIn, IMerchant theMerchantIn)
-    {
+    public InventoryMerchant(EntityPlayer thePlayerIn, IMerchant theMerchantIn) {
         this.player = thePlayerIn;
         this.merchant = theMerchantIn;
     }
 
-    public int getSizeInventory()
-    {
+    public int getSizeInventory() {
         return this.slots.size();
     }
 
-    public boolean isEmpty()
-    {
-        for (ItemStack itemstack : this.slots)
-        {
-            if (!itemstack.isEmpty())
-            {
+    public boolean isEmpty() {
+        for (ItemStack itemstack : this.slots) {
+            if (!itemstack.isEmpty()) {
                 return false;
             }
         }
@@ -66,25 +60,19 @@ public class InventoryMerchant implements IInventory
         return true;
     }
 
-    public ItemStack getStackInSlot(int index)
-    {
+    public ItemStack getStackInSlot(int index) {
         return this.slots.get(index);
     }
 
-    public ItemStack decrStackSize(int index, int count)
-    {
+    public ItemStack decrStackSize(int index, int count) {
         ItemStack itemstack = this.slots.get(index);
 
-        if (index == 2 && !itemstack.isEmpty())
-        {
+        if (index == 2 && !itemstack.isEmpty()) {
             return ItemStackHelper.getAndSplit(this.slots, index, itemstack.getCount());
-        }
-        else
-        {
+        } else {
             ItemStack itemstack1 = ItemStackHelper.getAndSplit(this.slots, index, count);
 
-            if (!itemstack1.isEmpty() && this.inventoryResetNeededOnSlotChange(index))
-            {
+            if (!itemstack1.isEmpty() && this.inventoryResetNeededOnSlotChange(index)) {
                 this.resetRecipeAndSlots();
             }
 
@@ -92,119 +80,91 @@ public class InventoryMerchant implements IInventory
         }
     }
 
-    private boolean inventoryResetNeededOnSlotChange(int slotIn)
-    {
+    private boolean inventoryResetNeededOnSlotChange(int slotIn) {
         return slotIn == 0 || slotIn == 1;
     }
 
-    public ItemStack removeStackFromSlot(int index)
-    {
+    public ItemStack removeStackFromSlot(int index) {
         return ItemStackHelper.getAndRemove(this.slots, index);
     }
 
-    public void setInventorySlotContents(int index, ItemStack stack)
-    {
+    public void setInventorySlotContents(int index, ItemStack stack) {
         this.slots.set(index, stack);
 
-        if (!stack.isEmpty() && stack.getCount() > this.getInventoryStackLimit())
-        {
+        if (!stack.isEmpty() && stack.getCount() > this.getInventoryStackLimit()) {
             stack.setCount(this.getInventoryStackLimit());
         }
 
-        if (this.inventoryResetNeededOnSlotChange(index))
-        {
+        if (this.inventoryResetNeededOnSlotChange(index)) {
             this.resetRecipeAndSlots();
         }
     }
 
-    public String getName()
-    {
+    public String getName() {
         return "mob.villager";
     }
 
-    public boolean hasCustomName()
-    {
+    public boolean hasCustomName() {
         return false;
     }
 
-    public ITextComponent getDisplayName()
-    {
-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+    public ITextComponent getDisplayName() {
+        return (ITextComponent) (this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
     }
 
-    public int getInventoryStackLimit()
-    {
+    public int getInventoryStackLimit() {
         return maxStack;
     }
 
-    public boolean isUsableByPlayer(EntityPlayer player)
-    {
+    public boolean isUsableByPlayer(EntityPlayer player) {
         return this.merchant.getCustomer() == player;
     }
 
-    public void openInventory(EntityPlayer player)
-    {
+    public void openInventory(EntityPlayer player) {
     }
 
-    public void closeInventory(EntityPlayer player)
-    {
+    public void closeInventory(EntityPlayer player) {
     }
 
-    public boolean isItemValidForSlot(int index, ItemStack stack)
-    {
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
         return true;
     }
 
-    public void markDirty()
-    {
+    public void markDirty() {
         this.resetRecipeAndSlots();
     }
 
-    public void resetRecipeAndSlots()
-    {
+    public void resetRecipeAndSlots() {
         this.currentRecipe = null;
         ItemStack itemstack = this.slots.get(0);
         ItemStack itemstack1 = this.slots.get(1);
 
-        if (itemstack.isEmpty())
-        {
+        if (itemstack.isEmpty()) {
             itemstack = itemstack1;
             itemstack1 = ItemStack.EMPTY;
         }
 
-        if (itemstack.isEmpty())
-        {
+        if (itemstack.isEmpty()) {
             this.setInventorySlotContents(2, ItemStack.EMPTY);
-        }
-        else
-        {
+        } else {
             MerchantRecipeList merchantrecipelist = this.merchant.getRecipes(this.player);
 
-            if (merchantrecipelist != null)
-            {
+            if (merchantrecipelist != null) {
                 MerchantRecipe merchantrecipe = merchantrecipelist.canRecipeBeUsed(itemstack, itemstack1, this.currentRecipeIndex);
 
-                if (merchantrecipe != null && !merchantrecipe.isRecipeDisabled())
-                {
+                if (merchantrecipe != null && !merchantrecipe.isRecipeDisabled()) {
                     this.currentRecipe = merchantrecipe;
                     this.setInventorySlotContents(2, merchantrecipe.getItemToSell().copy());
-                }
-                else if (!itemstack1.isEmpty())
-                {
+                } else if (!itemstack1.isEmpty()) {
                     merchantrecipe = merchantrecipelist.canRecipeBeUsed(itemstack1, itemstack, this.currentRecipeIndex);
 
-                    if (merchantrecipe != null && !merchantrecipe.isRecipeDisabled())
-                    {
+                    if (merchantrecipe != null && !merchantrecipe.isRecipeDisabled()) {
                         this.currentRecipe = merchantrecipe;
                         this.setInventorySlotContents(2, merchantrecipe.getItemToSell().copy());
-                    }
-                    else
-                    {
+                    } else {
                         this.setInventorySlotContents(2, ItemStack.EMPTY);
                     }
-                }
-                else
-                {
+                } else {
                     this.setInventorySlotContents(2, ItemStack.EMPTY);
                 }
             }
@@ -213,33 +173,27 @@ public class InventoryMerchant implements IInventory
         }
     }
 
-    public MerchantRecipe getCurrentRecipe()
-    {
+    public MerchantRecipe getCurrentRecipe() {
         return this.currentRecipe;
     }
 
-    public void setCurrentRecipeIndex(int currentRecipeIndexIn)
-    {
+    public void setCurrentRecipeIndex(int currentRecipeIndexIn) {
         this.currentRecipeIndex = currentRecipeIndexIn;
         this.resetRecipeAndSlots();
     }
 
-    public int getField(int id)
-    {
+    public int getField(int id) {
         return 0;
     }
 
-    public void setField(int id, int value)
-    {
+    public void setField(int id, int value) {
     }
 
-    public int getFieldCount()
-    {
+    public int getFieldCount() {
         return 0;
     }
 
-    public void clear()
-    {
+    public void clear() {
         this.slots.clear();
     }
 

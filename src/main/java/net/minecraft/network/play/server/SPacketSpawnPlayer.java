@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -12,8 +13,7 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
-{
+public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient> {
     private int entityId;
     private UUID uniqueId;
     private double x;
@@ -22,26 +22,23 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
     private byte yaw;
     private byte pitch;
     private EntityDataManager watcher;
-    private List < EntityDataManager.DataEntry<? >> dataManagerEntries;
+    private List<EntityDataManager.DataEntry<?>> dataManagerEntries;
 
-    public SPacketSpawnPlayer()
-    {
+    public SPacketSpawnPlayer() {
     }
 
-    public SPacketSpawnPlayer(EntityPlayer player)
-    {
+    public SPacketSpawnPlayer(EntityPlayer player) {
         this.entityId = player.getEntityId();
         this.uniqueId = player.getGameProfile().getId();
         this.x = player.posX;
         this.y = player.posY;
         this.z = player.posZ;
-        this.yaw = (byte)((int)(player.rotationYaw * 256.0F / 360.0F));
-        this.pitch = (byte)((int)(player.rotationPitch * 256.0F / 360.0F));
+        this.yaw = (byte) ((int) (player.rotationYaw * 256.0F / 360.0F));
+        this.pitch = (byte) ((int) (player.rotationPitch * 256.0F / 360.0F));
         this.watcher = player.getDataManager();
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.entityId = buf.readVarInt();
         this.uniqueId = buf.readUniqueId();
         this.x = buf.readDouble();
@@ -52,8 +49,7 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
         this.dataManagerEntries = EntityDataManager.readEntries(buf);
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeVarInt(this.entityId);
         buf.writeUniqueId(this.uniqueId);
         buf.writeDouble(this.x);
@@ -64,57 +60,48 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
         this.watcher.writeEntries(buf);
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleSpawnPlayer(this);
     }
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public List < EntityDataManager.DataEntry<? >> getDataManagerEntries()
-    {
+    public List<EntityDataManager.DataEntry<?>> getDataManagerEntries() {
         return this.dataManagerEntries;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getEntityID()
-    {
+    public int getEntityID() {
         return this.entityId;
     }
 
     @SideOnly(Side.CLIENT)
-    public UUID getUniqueId()
-    {
+    public UUID getUniqueId() {
         return this.uniqueId;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getYaw()
-    {
+    public byte getYaw() {
         return this.yaw;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getPitch()
-    {
+    public byte getPitch() {
         return this.pitch;
     }
 }

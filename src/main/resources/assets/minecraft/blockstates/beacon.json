@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "beacon" }
+  "variants": {
+    "normal": {
+      "model": "beacon"
     }
+  }
 }

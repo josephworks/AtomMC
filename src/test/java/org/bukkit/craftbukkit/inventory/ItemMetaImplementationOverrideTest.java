@@ -21,7 +21,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class ItemMetaImplementationOverrideTest {
     static final Class<CraftMetaItem> parent = CraftMetaItem.class;
 
-    @Parameters(name="[{index}]:{1}")
+    @Parameters(name = "[{index}]:{1}")
     public static List<Object[]> data() {
         final List<Object[]> testData = new ArrayList<Object[]>();
         List<Class<? extends CraftMetaItem>> classes = new ArrayList<Class<? extends CraftMetaItem>>();
@@ -35,7 +35,7 @@ public class ItemMetaImplementationOverrideTest {
 
         List<Method> list = new ArrayList<Method>();
 
-        for (Method method: parent.getDeclaredMethods()) {
+        for (Method method : parent.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Overridden.class)) {
                 list.add(method);
             }
@@ -44,34 +44,36 @@ public class ItemMetaImplementationOverrideTest {
         for (final Class<?> clazz : classes) {
             for (final Method method : list) {
                 testData.add(
-                    new Object[] {
-                        new Callable<Method>() {
-                            public Method call() throws Exception {
-                                return clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
-                            }
-                        },
-                        clazz.getSimpleName() + " contains " + method.getName()
-                    }
+                        new Object[]{
+                                new Callable<Method>() {
+                                    public Method call() throws Exception {
+                                        return clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
+                                    }
+                                },
+                                clazz.getSimpleName() + " contains " + method.getName()
+                        }
                 );
             }
 
             testData.add(
-                new Object[] {
-                    new Callable<DelegateDeserialization>() {
-                        public DelegateDeserialization call() throws Exception {
-                            return clazz.getAnnotation(DelegateDeserialization.class);
-                        }
-                    },
-                    clazz.getSimpleName() + " contains annotation " + DelegateDeserialization.class
-                }
+                    new Object[]{
+                            new Callable<DelegateDeserialization>() {
+                                public DelegateDeserialization call() throws Exception {
+                                    return clazz.getAnnotation(DelegateDeserialization.class);
+                                }
+                            },
+                            clazz.getSimpleName() + " contains annotation " + DelegateDeserialization.class
+                    }
             );
         }
 
         return testData;
     }
 
-    @Parameter(0) public Callable<?> test;
-    @Parameter(1) public String name;
+    @Parameter(0)
+    public Callable<?> test;
+    @Parameter(1)
+    public String name;
 
     @Test
     public void testClass() throws Throwable {

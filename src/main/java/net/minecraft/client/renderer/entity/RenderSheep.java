@@ -8,18 +8,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSheep extends RenderLiving<EntitySheep>
-{
+public class RenderSheep extends RenderLiving<EntitySheep> {
     private static final ResourceLocation SHEARED_SHEEP_TEXTURES = new ResourceLocation("textures/entity/sheep/sheep.png");
 
-    public RenderSheep(RenderManager p_i47195_1_)
-    {
+    public RenderSheep(RenderManager p_i47195_1_) {
         super(p_i47195_1_, new ModelSheep2(), 0.7F);
         this.addLayer(new LayerSheepWool(this));
     }
 
-    protected ResourceLocation getEntityTexture(EntitySheep entity)
-    {
+    protected ResourceLocation getEntityTexture(EntitySheep entity) {
         return SHEARED_SHEEP_TEXTURES;
     }
 }

@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.inventory;
 
 import com.google.common.collect.Lists;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;

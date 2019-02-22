@@ -7,10 +7,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelPolarBear extends ModelQuadruped
-{
-    public ModelPolarBear()
-    {
+public class ModelPolarBear extends ModelQuadruped {
+    public ModelPolarBear() {
         super(12, 0.0F);
         this.textureWidth = 128;
         this.textureHeight = 64;
@@ -50,12 +48,10 @@ public class ModelPolarBear extends ModelQuadruped
         this.childZOffset += 2.0F;
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 
-        if (this.isChild)
-        {
+        if (this.isChild) {
             float f = 2.0F;
             this.childYOffset = 16.0F;
             this.childZOffset = 4.0F;
@@ -73,9 +69,7 @@ public class ModelPolarBear extends ModelQuadruped
             this.leg3.render(scale);
             this.leg4.render(scale);
             GlStateManager.popMatrix();
-        }
-        else
-        {
+        } else {
             this.head.render(scale);
             this.body.render(scale);
             this.leg1.render(scale);
@@ -85,23 +79,22 @@ public class ModelPolarBear extends ModelQuadruped
         }
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-        float f = ageInTicks - (float)entityIn.ticksExisted;
-        float f1 = ((EntityPolarBear)entityIn).getStandingAnimationScale(f);
+        float f = ageInTicks - (float) entityIn.ticksExisted;
+        float f1 = ((EntityPolarBear) entityIn).getStandingAnimationScale(f);
         f1 = f1 * f1;
         float f2 = 1.0F - f1;
-        this.body.rotateAngleX = ((float)Math.PI / 2F) - f1 * (float)Math.PI * 0.35F;
+        this.body.rotateAngleX = ((float) Math.PI / 2F) - f1 * (float) Math.PI * 0.35F;
         this.body.rotationPointY = 9.0F * f2 + 11.0F * f1;
         this.leg3.rotationPointY = 14.0F * f2 + -6.0F * f1;
         this.leg3.rotationPointZ = -8.0F * f2 + -4.0F * f1;
-        this.leg3.rotateAngleX -= f1 * (float)Math.PI * 0.45F;
+        this.leg3.rotateAngleX -= f1 * (float) Math.PI * 0.45F;
         this.leg4.rotationPointY = this.leg3.rotationPointY;
         this.leg4.rotationPointZ = this.leg3.rotationPointZ;
-        this.leg4.rotateAngleX -= f1 * (float)Math.PI * 0.45F;
+        this.leg4.rotateAngleX -= f1 * (float) Math.PI * 0.45F;
         this.head.rotationPointY = 10.0F * f2 + -12.0F * f1;
         this.head.rotationPointZ = -16.0F * f2 + -3.0F * f1;
-        this.head.rotateAngleX += f1 * (float)Math.PI * 0.15F;
+        this.head.rotateAngleX += f1 * (float) Math.PI * 0.15F;
     }
 }

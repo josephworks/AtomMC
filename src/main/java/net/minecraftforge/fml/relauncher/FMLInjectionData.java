@@ -26,8 +26,7 @@ import java.util.List;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.common.ForgeVersion;
 
-public class FMLInjectionData
-{
+public class FMLInjectionData {
     static File minecraftHome;
     static String major;
     static String minor;
@@ -38,8 +37,7 @@ public class FMLInjectionData
 
     public static final List<String> containers = new ArrayList<String>();
 
-    static void build(File mcHome, LaunchClassLoader classLoader)
-    {
+    static void build(File mcHome, LaunchClassLoader classLoader) {
         minecraftHome = mcHome;
         major = String.valueOf(ForgeVersion.majorVersion);
         minor = String.valueOf(ForgeVersion.minorVersion);
@@ -49,12 +47,11 @@ public class FMLInjectionData
         mcpversion = ForgeVersion.mcpVersion;
     }
 
-    static String debfuscationDataName()
-    {
-        return "/deobfuscation_data-"+mccversion+".lzma";
+    static String debfuscationDataName() {
+        return "/deobfuscation_data-" + mccversion + ".lzma";
     }
-    public static Object[] data()
-    {
-        return new Object[] { major, minor, rev, build, mccversion, mcpversion, minecraftHome, containers };
+
+    public static Object[] data() {
+        return new Object[]{major, minor, rev, build, mccversion, mcpversion, minecraftHome, containers};
     }
 }

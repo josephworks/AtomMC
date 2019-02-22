@@ -41,20 +41,17 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
-public final class AnimationItemOverrideList extends ItemOverrideList
-{
+public final class AnimationItemOverrideList extends ItemOverrideList {
     private final IModel model;
     private final IModelState state;
     private final VertexFormat format;
     private final Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter;
 
-    public AnimationItemOverrideList(IModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter, ItemOverrideList overrides)
-    {
+    public AnimationItemOverrideList(IModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter, ItemOverrideList overrides) {
         this(model, state, format, bakedTextureGetter, overrides.getOverrides().reverse());
     }
 
-    public AnimationItemOverrideList(IModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter, List<ItemOverride> overrides)
-    {
+    public AnimationItemOverrideList(IModel model, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter, List<ItemOverride> overrides) {
         super(overrides);
         this.model = model;
         this.state = state;
@@ -63,18 +60,14 @@ public final class AnimationItemOverrideList extends ItemOverrideList
     }
 
     @Override
-    public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity)
-    {
+    public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
         IAnimationStateMachine asm = stack.getCapability(CapabilityAnimation.ANIMATION_CAPABILITY, null);
-        if (asm != null)
-        {
+        if (asm != null) {
             // TODO: caching?
-            if(world == null && entity != null)
-            {
+            if (world == null && entity != null) {
                 world = entity.world;
             }
-            if(world == null)
-            {
+            if (world == null) {
                 world = Minecraft.getMinecraft().world;
             }
             IModelState state = asm.apply(Animation.getWorldTime(world, Animation.getPartialTickTime())).getLeft();

@@ -2,12 +2,14 @@ package net.minecraft.client.renderer.texture;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.StitcherException;
 import net.minecraft.client.resources.IResource;
@@ -25,8 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
-public class TextureMap extends AbstractTexture implements ITickableTextureObject
-{
+public class TextureMap extends AbstractTexture implements ITickableTextureObject {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ResourceLocation LOCATION_MISSING_TEXTURE = new ResourceLocation("missingno");
     public static final ResourceLocation LOCATION_BLOCKS_TEXTURE = new ResourceLocation("textures/atlas/blocks.png");
@@ -38,23 +39,19 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     private int mipmapLevels;
     private final TextureAtlasSprite missingImage;
 
-    public TextureMap(String basePathIn)
-    {
-        this(basePathIn, (ITextureMapPopulator)null);
+    public TextureMap(String basePathIn) {
+        this(basePathIn, (ITextureMapPopulator) null);
     }
 
-    public TextureMap(String basePathIn, @Nullable ITextureMapPopulator iconCreatorIn)
-    {
+    public TextureMap(String basePathIn, @Nullable ITextureMapPopulator iconCreatorIn) {
         this(basePathIn, iconCreatorIn, false);
     }
 
-    public TextureMap(String basePathIn, boolean skipFirst)
-    {
+    public TextureMap(String basePathIn, boolean skipFirst) {
         this(basePathIn, null, skipFirst);
     }
 
-    public TextureMap(String basePathIn, @Nullable ITextureMapPopulator iconCreatorIn, boolean skipFirst)
-    {
+    public TextureMap(String basePathIn, @Nullable ITextureMapPopulator iconCreatorIn, boolean skipFirst) {
         this.listAnimatedSprites = Lists.<TextureAtlasSprite>newArrayList();
         this.mapRegisteredSprites = Maps.<String, TextureAtlasSprite>newHashMap();
         this.mapUploadedSprites = Maps.<String, TextureAtlasSprite>newHashMap();
@@ -63,8 +60,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         this.iconCreator = iconCreatorIn;
     }
 
-    private void initMissingImage()
-    {
+    private void initMissingImage() {
         int[] aint = TextureUtil.MISSING_TEXTURE_DATA;
         this.missingImage.setIconWidth(16);
         this.missingImage.setIconHeight(16);
@@ -73,16 +69,13 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         this.missingImage.setFramesTextureData(Lists.<int[][]>newArrayList(aint1));
     }
 
-    public void loadTexture(IResourceManager resourceManager) throws IOException
-    {
-        if (this.iconCreator != null)
-        {
+    public void loadTexture(IResourceManager resourceManager) throws IOException {
+        if (this.iconCreator != null) {
             this.loadSprites(resourceManager, this.iconCreator);
         }
     }
 
-    public void loadSprites(IResourceManager resourceManager, ITextureMapPopulator iconCreatorIn)
-    {
+    public void loadSprites(IResourceManager resourceManager, ITextureMapPopulator iconCreatorIn) {
         this.mapRegisteredSprites.clear();
         net.minecraftforge.client.ForgeHooksClient.onTextureStitchedPre(this);
         iconCreatorIn.registerSprites(this);
@@ -91,8 +84,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         this.loadTextureAtlas(resourceManager);
     }
 
-    public void loadTextureAtlas(IResourceManager resourceManager)
-    {
+    public void loadTextureAtlas(IResourceManager resourceManager) {
         int i = Minecraft.getGLMaximumTextureSize();
         Stitcher stitcher = new Stitcher(i, i, 0, this.mipmapLevels);
         this.mapUploadedSprites.clear();
@@ -103,8 +95,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         net.minecraftforge.fml.common.ProgressManager.ProgressBar bar = net.minecraftforge.fml.common.ProgressManager.push("Texture stitching", this.mapRegisteredSprites.size());
         loadedSprites.clear();
 
-        for (Entry<String, TextureAtlasSprite> entry : Maps.newHashMap(this.mapRegisteredSprites).entrySet())
-        {
+        for (Entry<String, TextureAtlasSprite> entry : Maps.newHashMap(this.mapRegisteredSprites).entrySet()) {
             final ResourceLocation location = new ResourceLocation(entry.getKey());
             bar.step(location.toString());
             j = loadTexture(stitcher, resourceManager, location, entry.getValue(), bar, j, k);
@@ -112,110 +103,86 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         finishLoading(stitcher, bar, j, k);
     }
 
-    private int loadTexture(Stitcher stitcher, IResourceManager resourceManager, ResourceLocation location, TextureAtlasSprite textureatlassprite, net.minecraftforge.fml.common.ProgressManager.ProgressBar bar, int j, int k)
-    {
+    private int loadTexture(Stitcher stitcher, IResourceManager resourceManager, ResourceLocation location, TextureAtlasSprite textureatlassprite, net.minecraftforge.fml.common.ProgressManager.ProgressBar bar, int j, int k) {
         if (loadedSprites.contains(location)) {
             return j;
         }
         ResourceLocation resourcelocation = this.getResourceLocation(textureatlassprite);
         IResource iresource = null;
 
-        for(ResourceLocation loading : loadingSprites)
-        {
-            if(location.equals(loading))
-            {
+        for (ResourceLocation loading : loadingSprites) {
+            if (location.equals(loading)) {
                 final String error = "circular texture dependencies, stack: [" + com.google.common.base.Joiner.on(", ").join(loadingSprites) + "]";
                 net.minecraftforge.fml.client.FMLClientHandler.instance().trackBrokenTexture(resourcelocation, error);
                 return j;
             }
         }
         loadingSprites.addLast(location);
-        try
-        {
-            for (ResourceLocation dependency : textureatlassprite.getDependencies())
-            {
-                if (!mapRegisteredSprites.containsKey(dependency.toString()))
-                {
+        try {
+            for (ResourceLocation dependency : textureatlassprite.getDependencies()) {
+                if (!mapRegisteredSprites.containsKey(dependency.toString())) {
                     registerSprite(dependency);
                 }
                 TextureAtlasSprite depSprite = mapRegisteredSprites.get(dependency.toString());
                 j = loadTexture(stitcher, resourceManager, dependency, depSprite, bar, j, k);
             }
             try {
-                if (textureatlassprite.hasCustomLoader(resourceManager, resourcelocation))
-                {
-                    if (textureatlassprite.load(resourceManager, resourcelocation, l -> mapRegisteredSprites.get(l.toString())))
-                    {
+                if (textureatlassprite.hasCustomLoader(resourceManager, resourcelocation)) {
+                    if (textureatlassprite.load(resourceManager, resourcelocation, l -> mapRegisteredSprites.get(l.toString()))) {
                         return j;
                     }
-                }
-                else
-                {
+                } else {
                     PngSizeInfo pngsizeinfo = PngSizeInfo.makeFromResource(resourceManager.getResource(resourcelocation));
                     iresource = resourceManager.getResource(resourcelocation);
                     boolean flag = iresource.getMetadata("animation") != null;
                     textureatlassprite.loadSprite(pngsizeinfo, flag);
                 }
-            }
-            catch (RuntimeException runtimeexception)
-            {
+            } catch (RuntimeException runtimeexception) {
                 net.minecraftforge.fml.client.FMLClientHandler.instance().trackBrokenTexture(resourcelocation, runtimeexception.getMessage());
                 return j;
-            }
-            catch (IOException ioexception)
-            {
+            } catch (IOException ioexception) {
                 net.minecraftforge.fml.client.FMLClientHandler.instance().trackMissingTexture(resourcelocation);
                 return j;
-            }
-            finally
-            {
-                IOUtils.closeQuietly((Closeable)iresource);
+            } finally {
+                IOUtils.closeQuietly((Closeable) iresource);
             }
 
             j = Math.min(j, Math.min(textureatlassprite.getIconWidth(), textureatlassprite.getIconHeight()));
             int j1 = Math.min(Integer.lowestOneBit(textureatlassprite.getIconWidth()), Integer.lowestOneBit(textureatlassprite.getIconHeight()));
 
-            if (j1 < k)
-            {
+            if (j1 < k) {
                 // FORGE: do not lower the mipmap level, just log the problematic textures
                 LOGGER.warn("Texture {} with size {}x{} will have visual artifacts at mip level {}, it can only support level {}. Please report to the mod author that the texture should be some multiple of 16x16.", resourcelocation, Integer.valueOf(textureatlassprite.getIconWidth()), Integer.valueOf(textureatlassprite.getIconHeight()), Integer.valueOf(MathHelper.log2(k)), Integer.valueOf(MathHelper.log2(j1)));
             }
 
             if (generateMipmaps(resourceManager, textureatlassprite))
-            stitcher.addSprite(textureatlassprite);
+                stitcher.addSprite(textureatlassprite);
             return j;
-        }
-        finally
-        {
+        } finally {
             loadingSprites.removeLast();
             loadedSprites.add(location);
         }
     }
 
-    private void finishLoading(Stitcher stitcher, net.minecraftforge.fml.common.ProgressManager.ProgressBar bar, int j, int k)
-    {
+    private void finishLoading(Stitcher stitcher, net.minecraftforge.fml.common.ProgressManager.ProgressBar bar, int j, int k) {
         net.minecraftforge.fml.common.ProgressManager.pop(bar);
         int l = Math.min(j, k);
         int i1 = MathHelper.log2(l);
 
         if (false) // FORGE: do not lower the mipmap level
-        if (i1 < this.mipmapLevels)
-        {
-            LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.basePath, Integer.valueOf(this.mipmapLevels), Integer.valueOf(i1), Integer.valueOf(l));
-            this.mipmapLevels = i1;
-        }
+            if (i1 < this.mipmapLevels) {
+                LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.basePath, Integer.valueOf(this.mipmapLevels), Integer.valueOf(i1), Integer.valueOf(l));
+                this.mipmapLevels = i1;
+            }
 
         this.missingImage.generateMipmaps(this.mipmapLevels);
         stitcher.addSprite(this.missingImage);
         bar = net.minecraftforge.fml.common.ProgressManager.push("Texture creation", 2);
 
-        try
-        {
+        try {
             bar.step("Stitching");
             stitcher.doStitch();
-        }
-        catch (StitcherException stitcherexception)
-        {
+        } catch (StitcherException stitcherexception) {
             throw stitcherexception;
         }
 
@@ -227,20 +194,16 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         net.minecraftforge.fml.common.ProgressManager.pop(bar);
         bar = net.minecraftforge.fml.common.ProgressManager.push("Texture mipmap and upload", stitcher.getStichSlots().size());
 
-        for (TextureAtlasSprite textureatlassprite1 : stitcher.getStichSlots())
-        {
+        for (TextureAtlasSprite textureatlassprite1 : stitcher.getStichSlots()) {
             bar.step(textureatlassprite1.getIconName());
             {
                 String s = textureatlassprite1.getIconName();
                 map.remove(s);
                 this.mapUploadedSprites.put(s, textureatlassprite1);
 
-                try
-                {
+                try {
                     TextureUtil.uploadTextureMipmap(textureatlassprite1.getFrameTextureData(0), textureatlassprite1.getIconWidth(), textureatlassprite1.getIconHeight(), textureatlassprite1.getOriginX(), textureatlassprite1.getOriginY(), false, false);
-                }
-                catch (Throwable throwable)
-                {
+                } catch (Throwable throwable) {
                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Stitching texture atlas");
                     CrashReportCategory crashreportcategory = crashreport.makeCategory("Texture being stitched together");
                     crashreportcategory.addCrashSection("Atlas path", this.basePath);
@@ -248,81 +211,62 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
                     throw new ReportedException(crashreport);
                 }
 
-                if (textureatlassprite1.hasAnimationMetadata())
-                {
+                if (textureatlassprite1.hasAnimationMetadata()) {
                     this.listAnimatedSprites.add(textureatlassprite1);
                 }
             }
         }
 
-        for (TextureAtlasSprite textureatlassprite2 : map.values())
-        {
+        for (TextureAtlasSprite textureatlassprite2 : map.values()) {
             textureatlassprite2.copyFrom(this.missingImage);
         }
         net.minecraftforge.client.ForgeHooksClient.onTextureStitchedPost(this);
         net.minecraftforge.fml.common.ProgressManager.pop(bar);
     }
 
-    private boolean generateMipmaps(IResourceManager resourceManager, final TextureAtlasSprite texture)
-    {
+    private boolean generateMipmaps(IResourceManager resourceManager, final TextureAtlasSprite texture) {
         ResourceLocation resourcelocation = this.getResourceLocation(texture);
         IResource iresource = null;
         label62:
         {
             boolean flag;
             if (texture.hasCustomLoader(resourceManager, resourcelocation)) break label62;
-            try
-            {
+            try {
                 iresource = resourceManager.getResource(resourcelocation);
                 texture.loadSpriteFrames(iresource, this.mipmapLevels + 1);
                 break label62;
-            }
-            catch (RuntimeException runtimeexception)
-            {
+            } catch (RuntimeException runtimeexception) {
                 LOGGER.error("Unable to parse metadata from {}", resourcelocation, runtimeexception);
                 flag = false;
-            }
-            catch (IOException ioexception)
-            {
+            } catch (IOException ioexception) {
                 LOGGER.error("Using missing texture, unable to load {}", resourcelocation, ioexception);
                 flag = false;
                 return flag;
-            }
-            finally
-            {
-                IOUtils.closeQuietly((Closeable)iresource);
+            } finally {
+                IOUtils.closeQuietly((Closeable) iresource);
             }
 
             return flag;
         }
 
-        try
-        {
+        try {
             texture.generateMipmaps(this.mipmapLevels);
             return true;
-        }
-        catch (Throwable throwable)
-        {
+        } catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Applying mipmap");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Sprite being mipmapped");
-            crashreportcategory.addDetail("Sprite name", new ICrashReportDetail<String>()
-            {
-                public String call() throws Exception
-                {
+            crashreportcategory.addDetail("Sprite name", new ICrashReportDetail<String>() {
+                public String call() throws Exception {
                     return texture.getIconName();
                 }
             });
-            crashreportcategory.addDetail("Sprite size", new ICrashReportDetail<String>()
-            {
-                public String call() throws Exception
-                {
+            crashreportcategory.addDetail("Sprite size", new ICrashReportDetail<String>() {
+                public String call() throws Exception {
                     return texture.getIconWidth() + " x " + texture.getIconHeight();
                 }
             });
-            crashreportcategory.addDetail("Sprite frames", new ICrashReportDetail<String>()
-            {
-                public String call() throws Exception
-                {
+            crashreportcategory.addDetail("Sprite frames", new ICrashReportDetail<String>() {
+                public String call() throws Exception {
                     return texture.getFrameCount() + " frames";
                 }
             });
@@ -331,46 +275,36 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         }
     }
 
-    private ResourceLocation getResourceLocation(TextureAtlasSprite p_184396_1_)
-    {
+    private ResourceLocation getResourceLocation(TextureAtlasSprite p_184396_1_) {
         ResourceLocation resourcelocation = new ResourceLocation(p_184396_1_.getIconName());
         return new ResourceLocation(resourcelocation.getResourceDomain(), String.format("%s/%s%s", this.basePath, resourcelocation.getResourcePath(), ".png"));
     }
 
-    public TextureAtlasSprite getAtlasSprite(String iconName)
-    {
+    public TextureAtlasSprite getAtlasSprite(String iconName) {
         TextureAtlasSprite textureatlassprite = this.mapUploadedSprites.get(iconName);
 
-        if (textureatlassprite == null)
-        {
+        if (textureatlassprite == null) {
             textureatlassprite = this.missingImage;
         }
 
         return textureatlassprite;
     }
 
-    public void updateAnimations()
-    {
+    public void updateAnimations() {
         TextureUtil.bindTexture(this.getGlTextureId());
 
-        for (TextureAtlasSprite textureatlassprite : this.listAnimatedSprites)
-        {
+        for (TextureAtlasSprite textureatlassprite : this.listAnimatedSprites) {
             textureatlassprite.updateAnimation();
         }
     }
 
-    public TextureAtlasSprite registerSprite(ResourceLocation location)
-    {
-        if (location == null)
-        {
+    public TextureAtlasSprite registerSprite(ResourceLocation location) {
+        if (location == null) {
             throw new IllegalArgumentException("Location cannot be null!");
-        }
-        else
-        {
+        } else {
             TextureAtlasSprite textureatlassprite = this.mapRegisteredSprites.get(location.toString());
 
-            if (textureatlassprite == null)
-            {
+            if (textureatlassprite == null) {
                 textureatlassprite = TextureAtlasSprite.makeAtlasSprite(location);
                 this.mapRegisteredSprites.put(location.toString(), textureatlassprite);
             }
@@ -379,18 +313,15 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         }
     }
 
-    public void tick()
-    {
+    public void tick() {
         this.updateAnimations();
     }
 
-    public void setMipmapLevels(int mipmapLevelsIn)
-    {
+    public void setMipmapLevels(int mipmapLevelsIn) {
         this.mipmapLevels = mipmapLevelsIn;
     }
 
-    public TextureAtlasSprite getMissingSprite()
-    {
+    public TextureAtlasSprite getMissingSprite() {
         return this.missingImage;
     }
 
@@ -409,8 +340,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
      * @return The registered entry, null if nothing was registered.
      */
     @Nullable
-    public TextureAtlasSprite getTextureExtry(String name)
-    {
+    public TextureAtlasSprite getTextureExtry(String name) {
         return mapRegisteredSprites.get(name);
     }
 
@@ -421,24 +351,20 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
      * @param entry Entry instance
      * @return True if the entry was added to the map, false otherwise.
      */
-    public boolean setTextureEntry(TextureAtlasSprite entry)
-    {
+    public boolean setTextureEntry(TextureAtlasSprite entry) {
         String name = entry.getIconName();
-        if (!mapRegisteredSprites.containsKey(name))
-        {
+        if (!mapRegisteredSprites.containsKey(name)) {
             mapRegisteredSprites.put(name, entry);
             return true;
         }
         return false;
     }
 
-    public String getBasePath()
-    {
+    public String getBasePath() {
         return basePath;
     }
 
-    public int getMipmapLevels()
-    {
+    public int getMipmapLevels() {
         return mipmapLevels;
     }
 }

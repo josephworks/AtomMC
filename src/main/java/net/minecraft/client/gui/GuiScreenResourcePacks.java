@@ -1,10 +1,12 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.ResourcePackListEntry;
@@ -16,8 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiScreenResourcePacks extends GuiScreen
-{
+public class GuiScreenResourcePacks extends GuiScreen {
     private final GuiScreen parentScreen;
     private List<ResourcePackListEntry> availableResourcePacks;
     private List<ResourcePackListEntry> selectedResourcePacks;
@@ -25,18 +26,15 @@ public class GuiScreenResourcePacks extends GuiScreen
     private GuiResourcePackSelected selectedResourcePacksList;
     private boolean changed;
 
-    public GuiScreenResourcePacks(GuiScreen parentScreenIn)
-    {
+    public GuiScreenResourcePacks(GuiScreen parentScreenIn) {
         this.parentScreen = parentScreenIn;
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         this.buttonList.add(new GuiOptionButton(2, this.width / 2 - 154, this.height - 48, I18n.format("resourcePack.openFolder")));
         this.buttonList.add(new GuiOptionButton(1, this.width / 2 + 4, this.height - 48, I18n.format("gui.done")));
 
-        if (!this.changed)
-        {
+        if (!this.changed) {
             this.availableResourcePacks = Lists.<ResourcePackListEntry>newArrayList();
             this.selectedResourcePacks = Lists.<ResourcePackListEntry>newArrayList();
             ResourcePackRepository resourcepackrepository = this.mc.getResourcePackRepository();
@@ -44,20 +42,17 @@ public class GuiScreenResourcePacks extends GuiScreen
             List<ResourcePackRepository.Entry> list = Lists.newArrayList(resourcepackrepository.getRepositoryEntriesAll());
             list.removeAll(resourcepackrepository.getRepositoryEntries());
 
-            for (ResourcePackRepository.Entry resourcepackrepository$entry : list)
-            {
+            for (ResourcePackRepository.Entry resourcepackrepository$entry : list) {
                 this.availableResourcePacks.add(new ResourcePackListEntryFound(this, resourcepackrepository$entry));
             }
 
             ResourcePackRepository.Entry resourcepackrepository$entry2 = resourcepackrepository.getResourcePackEntry();
 
-            if (resourcepackrepository$entry2 != null)
-            {
+            if (resourcepackrepository$entry2 != null) {
                 this.selectedResourcePacks.add(new ResourcePackListEntryServer(this, resourcepackrepository.getServerResourcePack()));
             }
 
-            for (ResourcePackRepository.Entry resourcepackrepository$entry1 : Lists.reverse(resourcepackrepository.getRepositoryEntries()))
-            {
+            for (ResourcePackRepository.Entry resourcepackrepository$entry1 : Lists.reverse(resourcepackrepository.getRepositoryEntries())) {
                 this.selectedResourcePacks.add(new ResourcePackListEntryFound(this, resourcepackrepository$entry1));
             }
 
@@ -72,53 +67,40 @@ public class GuiScreenResourcePacks extends GuiScreen
         this.selectedResourcePacksList.registerScrollButtons(7, 8);
     }
 
-    public void handleMouseInput() throws IOException
-    {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         this.selectedResourcePacksList.handleMouseInput();
         this.availableResourcePacksList.handleMouseInput();
     }
 
-    public boolean hasResourcePackEntry(ResourcePackListEntry resourcePackEntry)
-    {
+    public boolean hasResourcePackEntry(ResourcePackListEntry resourcePackEntry) {
         return this.selectedResourcePacks.contains(resourcePackEntry);
     }
 
-    public List<ResourcePackListEntry> getListContaining(ResourcePackListEntry resourcePackEntry)
-    {
+    public List<ResourcePackListEntry> getListContaining(ResourcePackListEntry resourcePackEntry) {
         return this.hasResourcePackEntry(resourcePackEntry) ? this.selectedResourcePacks : this.availableResourcePacks;
     }
 
-    public List<ResourcePackListEntry> getAvailableResourcePacks()
-    {
+    public List<ResourcePackListEntry> getAvailableResourcePacks() {
         return this.availableResourcePacks;
     }
 
-    public List<ResourcePackListEntry> getSelectedResourcePacks()
-    {
+    public List<ResourcePackListEntry> getSelectedResourcePacks() {
         return this.selectedResourcePacks;
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.enabled)
-        {
-            if (button.id == 2)
-            {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.enabled) {
+            if (button.id == 2) {
                 File file1 = this.mc.getResourcePackRepository().getDirResourcepacks();
                 OpenGlHelper.openFile(file1);
-            }
-            else if (button.id == 1)
-            {
-                if (this.changed)
-                {
+            } else if (button.id == 1) {
+                if (this.changed) {
                     List<ResourcePackRepository.Entry> list = Lists.<ResourcePackRepository.Entry>newArrayList();
 
-                    for (ResourcePackListEntry resourcepacklistentry : this.selectedResourcePacks)
-                    {
-                        if (resourcepacklistentry instanceof ResourcePackListEntryFound)
-                        {
-                            list.add(((ResourcePackListEntryFound)resourcepacklistentry).getResourcePackEntry());
+                    for (ResourcePackListEntry resourcepacklistentry : this.selectedResourcePacks) {
+                        if (resourcepacklistentry instanceof ResourcePackListEntryFound) {
+                            list.add(((ResourcePackListEntryFound) resourcepacklistentry).getResourcePackEntry());
                         }
                     }
 
@@ -127,12 +109,10 @@ public class GuiScreenResourcePacks extends GuiScreen
                     this.mc.gameSettings.resourcePacks.clear();
                     this.mc.gameSettings.incompatibleResourcePacks.clear();
 
-                    for (ResourcePackRepository.Entry resourcepackrepository$entry : list)
-                    {
+                    for (ResourcePackRepository.Entry resourcepackrepository$entry : list) {
                         this.mc.gameSettings.resourcePacks.add(resourcepackrepository$entry.getResourcePackName());
 
-                        if (resourcepackrepository$entry.getPackFormat() != 3)
-                        {
+                        if (resourcepackrepository$entry.getPackFormat() != 3) {
                             this.mc.gameSettings.incompatibleResourcePacks.add(resourcepackrepository$entry.getResourcePackName());
                         }
                     }
@@ -146,20 +126,17 @@ public class GuiScreenResourcePacks extends GuiScreen
         }
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.availableResourcePacksList.mouseClicked(mouseX, mouseY, mouseButton);
         this.selectedResourcePacksList.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    protected void mouseReleased(int mouseX, int mouseY, int state)
-    {
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
         super.mouseReleased(mouseX, mouseY, state);
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawBackground(0);
         this.availableResourcePacksList.drawScreen(mouseX, mouseY, partialTicks);
         this.selectedResourcePacksList.drawScreen(mouseX, mouseY, partialTicks);
@@ -168,8 +145,7 @@ public class GuiScreenResourcePacks extends GuiScreen
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public void markChanged()
-    {
+    public void markChanged() {
         this.changed = true;
     }
 }

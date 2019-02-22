@@ -6,38 +6,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-public class RecipesMapCloning extends ShapelessRecipes implements IRecipe
-{
+public class RecipesMapCloning extends ShapelessRecipes implements IRecipe {
     // CraftBukkit start - Delegate to new parent class
     public RecipesMapCloning() {
         super("", new ItemStack(Items.MAP, 0, -1), NonNullList.from(Ingredient.EMPTY, Ingredient.fromItem(Items.MAP)));
     }
     // CraftBukkit end
 
-    public boolean matches(InventoryCrafting inv, World worldIn)
-    {
+    public boolean matches(InventoryCrafting inv, World worldIn) {
         int i = 0;
         ItemStack itemstack = ItemStack.EMPTY;
 
-        for (int j = 0; j < inv.getSizeInventory(); ++j)
-        {
+        for (int j = 0; j < inv.getSizeInventory(); ++j) {
             ItemStack itemstack1 = inv.getStackInSlot(j);
 
-            if (!itemstack1.isEmpty())
-            {
-                if (itemstack1.getItem() == Items.FILLED_MAP)
-                {
-                    if (!itemstack.isEmpty())
-                    {
+            if (!itemstack1.isEmpty()) {
+                if (itemstack1.getItem() == Items.FILLED_MAP) {
+                    if (!itemstack.isEmpty()) {
                         return false;
                     }
 
                     itemstack = itemstack1;
-                }
-                else
-                {
-                    if (itemstack1.getItem() != Items.MAP)
-                    {
+                } else {
+                    if (itemstack1.getItem() != Items.MAP) {
                         return false;
                     }
 
@@ -49,30 +40,22 @@ public class RecipesMapCloning extends ShapelessRecipes implements IRecipe
         return !itemstack.isEmpty() && i > 0;
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting inv)
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inv) {
         int i = 0;
         ItemStack itemstack = ItemStack.EMPTY;
 
-        for (int j = 0; j < inv.getSizeInventory(); ++j)
-        {
+        for (int j = 0; j < inv.getSizeInventory(); ++j) {
             ItemStack itemstack1 = inv.getStackInSlot(j);
 
-            if (!itemstack1.isEmpty())
-            {
-                if (itemstack1.getItem() == Items.FILLED_MAP)
-                {
-                    if (!itemstack.isEmpty())
-                    {
+            if (!itemstack1.isEmpty()) {
+                if (itemstack1.getItem() == Items.FILLED_MAP) {
+                    if (!itemstack.isEmpty()) {
                         return ItemStack.EMPTY;
                     }
 
                     itemstack = itemstack1;
-                }
-                else
-                {
-                    if (itemstack1.getItem() != Items.MAP)
-                    {
+                } else {
+                    if (itemstack1.getItem() != Items.MAP) {
                         return ItemStack.EMPTY;
                     }
 
@@ -81,39 +64,31 @@ public class RecipesMapCloning extends ShapelessRecipes implements IRecipe
             }
         }
 
-        if (!itemstack.isEmpty() && i >= 1)
-        {
+        if (!itemstack.isEmpty() && i >= 1) {
             ItemStack itemstack2 = new ItemStack(Items.FILLED_MAP, i + 1, itemstack.getMetadata());
 
-            if (itemstack.hasDisplayName())
-            {
+            if (itemstack.hasDisplayName()) {
                 itemstack2.setStackDisplayName(itemstack.getDisplayName());
             }
 
-            if (itemstack.hasTagCompound())
-            {
+            if (itemstack.hasTagCompound()) {
                 itemstack2.setTagCompound(itemstack.getTagCompound());
             }
 
             return itemstack2;
-        }
-        else
-        {
+        } else {
             return ItemStack.EMPTY;
         }
     }
 
-    public ItemStack getRecipeOutput()
-    {
+    public ItemStack getRecipeOutput() {
         return ItemStack.EMPTY;
     }
 
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-    {
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
         NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
 
-        for (int i = 0; i < nonnulllist.size(); ++i)
-        {
+        for (int i = 0; i < nonnulllist.size(); ++i) {
             ItemStack itemstack = inv.getStackInSlot(i);
             nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
         }
@@ -121,13 +96,11 @@ public class RecipesMapCloning extends ShapelessRecipes implements IRecipe
         return nonnulllist;
     }
 
-    public boolean isDynamic()
-    {
+    public boolean isDynamic() {
         return true;
     }
 
-    public boolean canFit(int width, int height)
-    {
+    public boolean canFit(int width, int height) {
         return width >= 3 && height >= 3;
     }
 }

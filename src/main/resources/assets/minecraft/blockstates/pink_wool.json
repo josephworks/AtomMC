@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "pink_wool" }
+  "variants": {
+    "normal": {
+      "model": "pink_wool"
     }
+  }
 }

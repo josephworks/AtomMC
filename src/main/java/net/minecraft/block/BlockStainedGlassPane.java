@@ -19,55 +19,44 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockStainedGlassPane extends BlockPane
-{
+public class BlockStainedGlassPane extends BlockPane {
     public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.<EnumDyeColor>create("color", EnumDyeColor.class);
 
-    public BlockStainedGlassPane()
-    {
+    public BlockStainedGlassPane() {
         super(Material.GLASS, false);
         this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)).withProperty(COLOR, EnumDyeColor.WHITE));
         this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public int damageDropped(IBlockState state)
-    {
-        return ((EnumDyeColor)state.getValue(COLOR)).getMetadata();
+    public int damageDropped(IBlockState state) {
+        return ((EnumDyeColor) state.getValue(COLOR)).getMetadata();
     }
 
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
-    {
-        for (int i = 0; i < EnumDyeColor.values().length; ++i)
-        {
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        for (int i = 0; i < EnumDyeColor.values().length; ++i) {
             items.add(new ItemStack(this, 1, i));
         }
     }
 
-    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
-        return MapColor.getBlockColor((EnumDyeColor)state.getValue(COLOR));
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        return MapColor.getBlockColor((EnumDyeColor) state.getValue(COLOR));
     }
 
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
-    {
+    public BlockRenderLayer getBlockLayer() {
         return BlockRenderLayer.TRANSLUCENT;
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(COLOR, EnumDyeColor.byMetadata(meta));
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumDyeColor)state.getValue(COLOR)).getMetadata();
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumDyeColor) state.getValue(COLOR)).getMetadata();
     }
 
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        switch (rot)
-        {
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        switch (rot) {
             case CLOCKWISE_180:
                 return state.withProperty(NORTH, state.getValue(SOUTH)).withProperty(EAST, state.getValue(WEST)).withProperty(SOUTH, state.getValue(NORTH)).withProperty(WEST, state.getValue(EAST));
             case COUNTERCLOCKWISE_90:
@@ -79,10 +68,8 @@ public class BlockStainedGlassPane extends BlockPane
         }
     }
 
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        switch (mirrorIn)
-        {
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        switch (mirrorIn) {
             case LEFT_RIGHT:
                 return state.withProperty(NORTH, state.getValue(SOUTH)).withProperty(SOUTH, state.getValue(NORTH));
             case FRONT_BACK:
@@ -92,23 +79,18 @@ public class BlockStainedGlassPane extends BlockPane
         }
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {NORTH, EAST, WEST, SOUTH, COLOR});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{NORTH, EAST, WEST, SOUTH, COLOR});
     }
 
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
-    {
-        if (!worldIn.isRemote)
-        {
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+        if (!worldIn.isRemote) {
             BlockBeacon.updateColorAsync(worldIn, pos);
         }
     }
 
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
-        if (!worldIn.isRemote)
-        {
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        if (!worldIn.isRemote) {
             BlockBeacon.updateColorAsync(worldIn, pos);
         }
     }

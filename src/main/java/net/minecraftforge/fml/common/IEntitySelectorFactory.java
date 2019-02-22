@@ -35,8 +35,7 @@ import java.util.Map;
  * Registered in {@link net.minecraftforge.fml.common.registry.GameRegistry#registerEntitySelector(IEntitySelectorFactory, String...)}
  * For an example implementation, see CustomEntitySelectorTest
  */
-public interface IEntitySelectorFactory
-{
+public interface IEntitySelectorFactory {
     /**
      * Called every time a command that contains entity selectors is executed
      *
@@ -46,5 +45,6 @@ public interface IEntitySelectorFactory
      * @param position     A position either specified in the selector arguments or by the players position. See {@link EntitySelector#getPosFromArguments(Map, Vec3d)}
      * @return A list of new predicates, can be empty ({@link Collections#emptyList()} but not null.
      */
-    @Nonnull List<Predicate<Entity>> createPredicates(Map<String, String> arguments, String mainSelector, ICommandSender sender, Vec3d position);
+    @Nonnull
+    List<Predicate<Entity>> createPredicates(Map<String, String> arguments, String mainSelector, ICommandSender sender, Vec3d position);
 }

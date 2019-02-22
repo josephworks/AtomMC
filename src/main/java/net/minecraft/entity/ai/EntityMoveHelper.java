@@ -7,8 +7,7 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.math.MathHelper;
 
-public class EntityMoveHelper
-{
+public class EntityMoveHelper {
     protected final EntityLiving entity;
     protected double posX;
     protected double posY;
@@ -18,23 +17,19 @@ public class EntityMoveHelper
     protected float moveStrafe;
     public Action action = Action.WAIT;
 
-    public EntityMoveHelper(EntityLiving entitylivingIn)
-    {
+    public EntityMoveHelper(EntityLiving entitylivingIn) {
         this.entity = entitylivingIn;
     }
 
-    public boolean isUpdating()
-    {
+    public boolean isUpdating() {
         return this.action == Action.MOVE_TO;
     }
 
-    public double getSpeed()
-    {
+    public double getSpeed() {
         return this.speed;
     }
 
-    public void setMoveTo(double x, double y, double z, double speedIn)
-    {
+    public void setMoveTo(double x, double y, double z, double speedIn) {
         this.posX = x;
         this.posY = y;
         this.posZ = z;
@@ -42,16 +37,14 @@ public class EntityMoveHelper
         this.action = Action.MOVE_TO;
     }
 
-    public void strafe(float forward, float strafe)
-    {
+    public void strafe(float forward, float strafe) {
         this.action = Action.STRAFE;
         this.moveForward = forward;
         this.moveStrafe = strafe;
         this.speed = 0.25D;
     }
 
-    public void read(EntityMoveHelper that)
-    {
+    public void read(EntityMoveHelper that) {
         this.action = that.action;
         this.posX = that.posX;
         this.posY = that.posY;
@@ -61,18 +54,15 @@ public class EntityMoveHelper
         this.moveStrafe = that.moveStrafe;
     }
 
-    public void onUpdateMoveHelper()
-    {
-        if (this.action == Action.STRAFE)
-        {
-            float f = (float)this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
-            float f1 = (float)this.speed * f;
+    public void onUpdateMoveHelper() {
+        if (this.action == Action.STRAFE) {
+            float f = (float) this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+            float f1 = (float) this.speed * f;
             float f2 = this.moveForward;
             float f3 = this.moveStrafe;
             float f4 = MathHelper.sqrt(f2 * f2 + f3 * f3);
 
-            if (f4 < 1.0F)
-            {
+            if (f4 < 1.0F) {
                 f4 = 1.0F;
             }
 
@@ -85,12 +75,10 @@ public class EntityMoveHelper
             float f8 = f3 * f6 + f2 * f5;
             PathNavigate pathnavigate = this.entity.getNavigator();
 
-            if (pathnavigate != null)
-            {
+            if (pathnavigate != null) {
                 NodeProcessor nodeprocessor = pathnavigate.getNodeProcessor();
 
-                if (nodeprocessor != null && nodeprocessor.getPathNodeType(this.entity.world, MathHelper.floor(this.entity.posX + (double)f7), MathHelper.floor(this.entity.posY), MathHelper.floor(this.entity.posZ + (double)f8)) != PathNodeType.WALKABLE)
-                {
+                if (nodeprocessor != null && nodeprocessor.getPathNodeType(this.entity.world, MathHelper.floor(this.entity.posX + (double) f7), MathHelper.floor(this.entity.posY), MathHelper.floor(this.entity.posZ + (double) f8)) != PathNodeType.WALKABLE) {
                     this.moveForward = 1.0F;
                     this.moveStrafe = 0.0F;
                     f1 = f;
@@ -101,91 +89,72 @@ public class EntityMoveHelper
             this.entity.setMoveForward(this.moveForward);
             this.entity.setMoveStrafing(this.moveStrafe);
             this.action = Action.WAIT;
-        }
-        else if (this.action == Action.MOVE_TO)
-        {
+        } else if (this.action == Action.MOVE_TO) {
             this.action = Action.WAIT;
             double d0 = this.posX - this.entity.posX;
             double d1 = this.posZ - this.entity.posZ;
             double d2 = this.posY - this.entity.posY;
             double d3 = d0 * d0 + d2 * d2 + d1 * d1;
 
-            if (d3 < 2.500000277905201E-7D)
-            {
+            if (d3 < 2.500000277905201E-7D) {
                 this.entity.setMoveForward(0.0F);
                 return;
             }
 
-            float f9 = (float)(MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
+            float f9 = (float) (MathHelper.atan2(d1, d0) * (180D / Math.PI)) - 90.0F;
             this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
-            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
+            this.entity.setAIMoveSpeed((float) (this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
 
-            if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width))
-            {
+            if (d2 > (double) this.entity.stepHeight && d0 * d0 + d1 * d1 < (double) Math.max(1.0F, this.entity.width)) {
                 this.entity.getJumpHelper().setJumping();
                 this.action = Action.JUMPING;
             }
-        }
-        else if (this.action == Action.JUMPING)
-        {
-            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
+        } else if (this.action == Action.JUMPING) {
+            this.entity.setAIMoveSpeed((float) (this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
 
-            if (this.entity.onGround)
-            {
+            if (this.entity.onGround) {
                 this.action = Action.WAIT;
             }
-        }
-        else
-        {
+        } else {
             this.entity.setMoveForward(0.0F);
         }
     }
 
-    protected float limitAngle(float sourceAngle, float targetAngle, float maximumChange)
-    {
+    protected float limitAngle(float sourceAngle, float targetAngle, float maximumChange) {
         float f = MathHelper.wrapDegrees(targetAngle - sourceAngle);
 
-        if (f > maximumChange)
-        {
+        if (f > maximumChange) {
             f = maximumChange;
         }
 
-        if (f < -maximumChange)
-        {
+        if (f < -maximumChange) {
             f = -maximumChange;
         }
 
         float f1 = sourceAngle + f;
 
-        if (f1 < 0.0F)
-        {
+        if (f1 < 0.0F) {
             f1 += 360.0F;
-        }
-        else if (f1 > 360.0F)
-        {
+        } else if (f1 > 360.0F) {
             f1 -= 360.0F;
         }
 
         return f1;
     }
 
-    public double getX()
-    {
+    public double getX() {
         return this.posX;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return this.posY;
     }
 
-    public double getZ()
-    {
+    public double getZ() {
         return this.posZ;
     }
 
-    public static enum Action
-    {
+    public static enum Action {
         WAIT,
         MOVE_TO,
         STRAFE,

@@ -7,8 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelIronGolem extends ModelBase
-{
+public class ModelIronGolem extends ModelBase {
     public ModelRenderer ironGolemHead;
     public ModelRenderer ironGolemBody;
     public ModelRenderer ironGolemRightArm;
@@ -16,18 +15,15 @@ public class ModelIronGolem extends ModelBase
     public ModelRenderer ironGolemLeftLeg;
     public ModelRenderer ironGolemRightLeg;
 
-    public ModelIronGolem()
-    {
+    public ModelIronGolem() {
         this(0.0F);
     }
 
-    public ModelIronGolem(float p_i1161_1_)
-    {
+    public ModelIronGolem(float p_i1161_1_) {
         this(p_i1161_1_, -7.0F);
     }
 
-    public ModelIronGolem(float p_i46362_1_, float p_i46362_2_)
-    {
+    public ModelIronGolem(float p_i46362_1_, float p_i46362_2_) {
         int i = 128;
         int j = 128;
         this.ironGolemHead = (new ModelRenderer(this)).setTextureSize(128, 128);
@@ -53,8 +49,7 @@ public class ModelIronGolem extends ModelBase
         this.ironGolemRightLeg.addBox(-3.5F, -3.0F, -3.0F, 6, 16, 5, p_i46362_1_);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.ironGolemHead.render(scale);
         this.ironGolemBody.render(scale);
@@ -64,8 +59,7 @@ public class ModelIronGolem extends ModelBase
         this.ironGolemLeftArm.render(scale);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.ironGolemHead.rotateAngleY = netHeadYaw * 0.017453292F;
         this.ironGolemHead.rotateAngleX = headPitch * 0.017453292F;
         this.ironGolemLeftLeg.rotateAngleX = -1.5F * this.triangleWave(limbSwing, 13.0F) * limbSwingAmount;
@@ -74,35 +68,27 @@ public class ModelIronGolem extends ModelBase
         this.ironGolemRightLeg.rotateAngleY = 0.0F;
     }
 
-    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
-    {
-        EntityIronGolem entityirongolem = (EntityIronGolem)entitylivingbaseIn;
+    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
+        EntityIronGolem entityirongolem = (EntityIronGolem) entitylivingbaseIn;
         int i = entityirongolem.getAttackTimer();
 
-        if (i > 0)
-        {
-            this.ironGolemRightArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float)i - partialTickTime, 10.0F);
-            this.ironGolemLeftArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float)i - partialTickTime, 10.0F);
-        }
-        else
-        {
+        if (i > 0) {
+            this.ironGolemRightArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float) i - partialTickTime, 10.0F);
+            this.ironGolemLeftArm.rotateAngleX = -2.0F + 1.5F * this.triangleWave((float) i - partialTickTime, 10.0F);
+        } else {
             int j = entityirongolem.getHoldRoseTick();
 
-            if (j > 0)
-            {
-                this.ironGolemRightArm.rotateAngleX = -0.8F + 0.025F * this.triangleWave((float)j, 70.0F);
+            if (j > 0) {
+                this.ironGolemRightArm.rotateAngleX = -0.8F + 0.025F * this.triangleWave((float) j, 70.0F);
                 this.ironGolemLeftArm.rotateAngleX = 0.0F;
-            }
-            else
-            {
+            } else {
                 this.ironGolemRightArm.rotateAngleX = (-0.2F + 1.5F * this.triangleWave(limbSwing, 13.0F)) * limbSwingAmount;
                 this.ironGolemLeftArm.rotateAngleX = (-0.2F - 1.5F * this.triangleWave(limbSwing, 13.0F)) * limbSwingAmount;
             }
         }
     }
 
-    private float triangleWave(float p_78172_1_, float p_78172_2_)
-    {
+    private float triangleWave(float p_78172_1_, float p_78172_2_) {
         return (Math.abs(p_78172_1_ % p_78172_2_ - p_78172_2_ * 0.5F) - p_78172_2_ * 0.25F) / (p_78172_2_ * 0.25F);
     }
 }

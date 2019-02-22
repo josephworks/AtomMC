@@ -1,6 +1,6 @@
 {
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "items/fish_clownfish_raw"
-    }
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "items/fish_clownfish_raw"
+  }
 }

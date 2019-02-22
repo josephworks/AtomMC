@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,8 +9,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 
-public interface IWorldEventListener
-{
+public interface IWorldEventListener {
     void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags);
 
     void notifyLightSet(BlockPos pos);

@@ -3,8 +3,7 @@ package net.minecraft.init;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 
-public abstract class Biomes
-{
+public abstract class Biomes {
     public static final Biome OCEAN;
     public static final Biome DEFAULT;
     public static final Biome PLAINS;
@@ -69,28 +68,20 @@ public abstract class Biomes
     public static final Biome MUTATED_MESA_ROCK;
     public static final Biome MUTATED_MESA_CLEAR_ROCK;
 
-    private static Biome getRegisteredBiome(String id)
-    {
+    private static Biome getRegisteredBiome(String id) {
         Biome biome = Biome.REGISTRY.getObject(new ResourceLocation(id));
 
-        if (biome == null)
-        {
+        if (biome == null) {
             throw new IllegalStateException("Invalid Biome requested: " + id);
-        }
-        else
-        {
+        } else {
             return biome;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed Biomes before Bootstrap!");
-        }
-        else
-        {
+        } else {
             OCEAN = getRegisteredBiome("ocean");
             DEFAULT = OCEAN;
             PLAINS = getRegisteredBiome("plains");

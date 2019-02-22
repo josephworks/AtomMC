@@ -5,38 +5,31 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ResourcePackListEntryFound extends ResourcePackListEntry
-{
+public class ResourcePackListEntryFound extends ResourcePackListEntry {
     private final ResourcePackRepository.Entry resourcePackEntry;
 
-    public ResourcePackListEntryFound(GuiScreenResourcePacks resourcePacksGUIIn, ResourcePackRepository.Entry entry)
-    {
+    public ResourcePackListEntryFound(GuiScreenResourcePacks resourcePacksGUIIn, ResourcePackRepository.Entry entry) {
         super(resourcePacksGUIIn);
         this.resourcePackEntry = entry;
     }
 
-    protected void bindResourcePackIcon()
-    {
+    protected void bindResourcePackIcon() {
         this.resourcePackEntry.bindTexturePackIcon(this.mc.getTextureManager());
     }
 
-    protected int getResourcePackFormat()
-    {
+    protected int getResourcePackFormat() {
         return this.resourcePackEntry.getPackFormat();
     }
 
-    protected String getResourcePackDescription()
-    {
+    protected String getResourcePackDescription() {
         return this.resourcePackEntry.getTexturePackDescription();
     }
 
-    protected String getResourcePackName()
-    {
+    protected String getResourcePackName() {
         return this.resourcePackEntry.getResourcePackName();
     }
 
-    public ResourcePackRepository.Entry getResourcePackEntry()
-    {
+    public ResourcePackRepository.Entry getResourcePackEntry() {
         return this.resourcePackEntry;
     }
 }

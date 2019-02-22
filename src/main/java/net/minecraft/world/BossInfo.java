@@ -1,10 +1,10 @@
 package net.minecraft.world;
 
 import java.util.UUID;
+
 import net.minecraft.util.text.ITextComponent;
 
-public abstract class BossInfo
-{
+public abstract class BossInfo {
     private final UUID uniqueId;
     public ITextComponent name;
     public float percent;
@@ -14,8 +14,7 @@ public abstract class BossInfo
     protected boolean playEndBossMusic;
     protected boolean createFog;
 
-    public BossInfo(UUID uniqueIdIn, ITextComponent nameIn, Color colorIn, Overlay overlayIn)
-    {
+    public BossInfo(UUID uniqueIdIn, ITextComponent nameIn, Color colorIn, Overlay overlayIn) {
         this.uniqueId = uniqueIdIn;
         this.name = nameIn;
         this.color = colorIn;
@@ -23,86 +22,70 @@ public abstract class BossInfo
         this.percent = 1.0F;
     }
 
-    public UUID getUniqueId()
-    {
+    public UUID getUniqueId() {
         return this.uniqueId;
     }
 
-    public ITextComponent getName()
-    {
+    public ITextComponent getName() {
         return this.name;
     }
 
-    public void setName(ITextComponent nameIn)
-    {
+    public void setName(ITextComponent nameIn) {
         this.name = nameIn;
     }
 
-    public float getPercent()
-    {
+    public float getPercent() {
         return this.percent;
     }
 
-    public void setPercent(float percentIn)
-    {
+    public void setPercent(float percentIn) {
         this.percent = percentIn;
     }
 
-    public Color getColor()
-    {
+    public Color getColor() {
         return this.color;
     }
 
-    public void setColor(Color colorIn)
-    {
+    public void setColor(Color colorIn) {
         this.color = colorIn;
     }
 
-    public Overlay getOverlay()
-    {
+    public Overlay getOverlay() {
         return this.overlay;
     }
 
-    public void setOverlay(Overlay overlayIn)
-    {
+    public void setOverlay(Overlay overlayIn) {
         this.overlay = overlayIn;
     }
 
-    public boolean shouldDarkenSky()
-    {
+    public boolean shouldDarkenSky() {
         return this.darkenSky;
     }
 
-    public BossInfo setDarkenSky(boolean darkenSkyIn)
-    {
+    public BossInfo setDarkenSky(boolean darkenSkyIn) {
         this.darkenSky = darkenSkyIn;
         return this;
     }
 
-    public boolean shouldPlayEndBossMusic()
-    {
+    public boolean shouldPlayEndBossMusic() {
         return this.playEndBossMusic;
     }
 
-    public BossInfo setPlayEndBossMusic(boolean playEndBossMusicIn)
-    {
+    public BossInfo setPlayEndBossMusic(boolean playEndBossMusicIn) {
         this.playEndBossMusic = playEndBossMusicIn;
         return this;
     }
 
-    public BossInfo setCreateFog(boolean createFogIn)
-    {
+    public BossInfo setCreateFog(boolean createFogIn) {
         this.createFog = createFogIn;
         return this;
     }
 
-    public boolean shouldCreateFog()
-    {
+    public boolean shouldCreateFog() {
         return this.createFog;
     }
 
-    public static enum Color
-    {
+    public static enum Color {
         PINK,
         BLUE,
         RED,
@@ -112,8 +95,7 @@ public abstract class BossInfo
         WHITE;
     }
 
-    public static enum Overlay
-    {
+    public static enum Overlay {
         PROGRESS,
         NOTCHED_6,
         NOTCHED_10,

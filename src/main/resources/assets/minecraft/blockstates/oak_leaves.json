@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "oak_leaves" }
+  "variants": {
+    "normal": {
+      "model": "oak_leaves"
     }
+  }
 }

@@ -6,8 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelCreeper extends ModelBase
-{
+public class ModelCreeper extends ModelBase {
     public ModelRenderer head;
     public ModelRenderer creeperArmor;
     public ModelRenderer body;
@@ -16,13 +15,11 @@ public class ModelCreeper extends ModelBase
     public ModelRenderer leg3;
     public ModelRenderer leg4;
 
-    public ModelCreeper()
-    {
+    public ModelCreeper() {
         this(0.0F);
     }
 
-    public ModelCreeper(float p_i46366_1_)
-    {
+    public ModelCreeper(float p_i46366_1_) {
         int i = 6;
         this.head = new ModelRenderer(this, 0, 0);
         this.head.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, p_i46366_1_);
@@ -47,8 +44,7 @@ public class ModelCreeper extends ModelBase
         this.leg4.setRotationPoint(2.0F, 18.0F, -4.0F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.head.render(scale);
         this.body.render(scale);
@@ -58,13 +54,12 @@ public class ModelCreeper extends ModelBase
         this.leg4.render(scale);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.head.rotateAngleX = headPitch * 0.017453292F;
         this.leg1.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        this.leg2.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
-        this.leg3.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.leg2.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
+        this.leg3.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.4F * limbSwingAmount;
         this.leg4.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
     }
 }

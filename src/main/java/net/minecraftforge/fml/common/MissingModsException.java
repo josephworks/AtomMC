@@ -36,19 +36,19 @@ import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class MissingModsException extends EnhancedRuntimeException implements IDisplayableError
-{
+public class MissingModsException extends EnhancedRuntimeException implements IDisplayableError {
     private static final long serialVersionUID = 1L;
     private final String id;
     private final String name;
-    /** @deprecated use {@link #getMissingModInfos()} */
+    /**
+     * @deprecated use {@link #getMissingModInfos()}
+     */
     @Deprecated // TODO remove in 1.13
     public final Set<ArtifactVersion> missingMods;
     private final List<MissingModInfo> missingModsInfos;
     private final String modName;
 
-    public MissingModsException(String id, String name)
-    {
+    public MissingModsException(String id, String name) {
         this(new HashSet<>(), id, name);
     }
 
@@ -56,49 +56,41 @@ public class MissingModsException extends EnhancedRuntimeException implements ID
      * @deprecated use {@link #MissingModsException(String, String)}
      */
     @Deprecated // TODO remove in 1.13
-    public MissingModsException(Set<ArtifactVersion> missingMods, String id, String name)
-    {
+    public MissingModsException(Set<ArtifactVersion> missingMods, String id, String name) {
         this.id = id;
         this.name = name;
         this.missingMods = missingMods;
         this.missingModsInfos = new ArrayList<>();
-        for (ArtifactVersion artifactVersion : missingMods)
-        {
+        for (ArtifactVersion artifactVersion : missingMods) {
             missingModsInfos.add(new MissingModInfo(artifactVersion, null, true));
         }
         this.modName = name;
     }
 
     @Override
-    public String getMessage()
-    {
+    public String getMessage() {
         Set<ArtifactVersion> missingMods = missingModsInfos.stream().map(MissingModInfo::getAcceptedVersion).collect(Collectors.toSet());
         return String.format("Mod %s (%s) requires %s", id, name, missingMods);
     }
 
-    public void addMissingMod(ArtifactVersion acceptedVersion, @Nullable ArtifactVersion currentVersion, boolean required)
-    {
+    public void addMissingMod(ArtifactVersion acceptedVersion, @Nullable ArtifactVersion currentVersion, boolean required) {
         MissingModInfo missingModInfo = new MissingModInfo(acceptedVersion, currentVersion, required);
         this.missingModsInfos.add(missingModInfo);
         this.missingMods.add(acceptedVersion);
     }
 
-    public String getModName()
-    {
+    public String getModName() {
         return modName;
     }
 
-    public List<MissingModInfo> getMissingModInfos()
-    {
+    public List<MissingModInfo> getMissingModInfos() {
         return Collections.unmodifiableList(this.missingModsInfos);
     }
 
     @Override
-    protected void printStackTrace(WrappedPrintStream stream)
-    {
+    protected void printStackTrace(WrappedPrintStream stream) {
         stream.println("Missing Mods:");
-        for (MissingModInfo info : this.missingModsInfos)
-        {
+        for (MissingModInfo info : this.missingModsInfos) {
             ArtifactVersion acceptedVersion = info.getAcceptedVersion();
             ArtifactVersion currentVersion = info.getCurrentVersion();
             String currentString = currentVersion != null ? currentVersion.getVersionString() : "missing";
@@ -109,20 +101,17 @@ public class MissingModsException extends EnhancedRuntimeException implements ID
 
     @Override
     @SideOnly(Side.CLIENT)
-    public GuiScreen createGui()
-    {
+    public GuiScreen createGui() {
         return new GuiModsMissing(this);
     }
 
-    public static class MissingModInfo
-    {
+    public static class MissingModInfo {
         private final ArtifactVersion acceptedVersion;
         @Nullable
         private final ArtifactVersion currentVersion;
         private final boolean required;
 
-        private MissingModInfo(ArtifactVersion acceptedVersion, @Nullable ArtifactVersion currentVersion, boolean required)
-        {
+        private MissingModInfo(ArtifactVersion acceptedVersion, @Nullable ArtifactVersion currentVersion, boolean required) {
             Preconditions.checkNotNull(acceptedVersion, "acceptedVersion");
             this.acceptedVersion = acceptedVersion;
             this.currentVersion = currentVersion;
@@ -130,18 +119,15 @@ public class MissingModsException extends EnhancedRuntimeException implements ID
         }
 
         @Nullable
-        public ArtifactVersion getCurrentVersion()
-        {
+        public ArtifactVersion getCurrentVersion() {
             return currentVersion;
         }
 
-        public ArtifactVersion getAcceptedVersion()
-        {
+        public ArtifactVersion getAcceptedVersion() {
             return acceptedVersion;
         }
 
-        public boolean isRequired()
-        {
+        public boolean isRequired() {
             return required;
         }
     }

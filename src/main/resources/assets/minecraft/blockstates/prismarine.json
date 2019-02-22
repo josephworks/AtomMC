@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "prismarine_rough" }
+  "variants": {
+    "normal": {
+      "model": "prismarine_rough"
     }
+  }
 }

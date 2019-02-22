@@ -59,7 +59,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
     @SuppressWarnings("rawtypes")
     static final AtomicIntegerFieldUpdater STATE_FIELD = AtomicIntegerFieldUpdater.newUpdater(AsynchronousExecutor.Task.class, "state");
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static boolean set(AsynchronousExecutor.Task $this, int expected, int value) {
         return STATE_FIELD.compareAndSet($this, expected, value);
     }
@@ -221,6 +221,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
 
     /**
      * Uses a thread pool to pass executions to the provider.
+     *
      * @see AsynchronousExecutor
      */
     public AsynchronousExecutor(final CallBackProvider<P, T, C, E> provider, final int coreSize) {
@@ -256,6 +257,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
      * Subsequent calls to {@link #get(Object)} might work.
      * <p>
      * This should always be synchronous
+     *
      * @return true if no further execution for the parameter is possible, such that, no exceptions will be thrown in {@link #finishActive()} for the parameter, and {@link #get(Object)} will throw an {@link IllegalStateException}, false otherwise
      * @throws IllegalStateException if parameter is not in the queue anymore
      * @throws IllegalStateException if the callback was not specified for given parameter
@@ -278,6 +280,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
      * This method attempts to skip the waiting period for said parameter.
      * <p>
      * This should always be synchronous.
+     *
      * @throws IllegalStateException if the parameter is not in the queue anymore, or sometimes if called from asynchronous thread
      */
     public T get(P parameter) throws E, IllegalStateException {
@@ -307,7 +310,7 @@ public final class AsynchronousExecutor<P, T, C, E extends Throwable> {
     /**
      * Processes a parameter as if it was in the queue, without ever passing to another thread.
      */
-    public T getSkipQueue(P parameter, C...callbacks) throws E {
+    public T getSkipQueue(P parameter, C... callbacks) throws E {
         final CallBackProvider<P, T, C, E> provider = this.provider;
         final T object = skipQueue(parameter);
         for (C callback : callbacks) {

@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "lapis_block" }
+  "variants": {
+    "normal": {
+      "model": "lapis_block"
     }
+  }
 }

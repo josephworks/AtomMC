@@ -6,42 +6,32 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 
-public class CommandSaveOn extends CommandBase
-{
-    public String getName()
-    {
+public class CommandSaveOn extends CommandBase {
+    public String getName() {
         return "save-on";
     }
 
-    public String getUsage(ICommandSender sender)
-    {
+    public String getUsage(ICommandSender sender) {
         return "commands.save-on.usage";
     }
 
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-    {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         boolean flag = false;
 
-        for (int i = 0; i < server.worlds.length; ++i)
-        {
-            if (server.worlds[i] != null)
-            {
+        for (int i = 0; i < server.worlds.length; ++i) {
+            if (server.worlds[i] != null) {
                 WorldServer worldserver = server.worlds[i];
 
-                if (worldserver.disableLevelSaving)
-                {
+                if (worldserver.disableLevelSaving) {
                     worldserver.disableLevelSaving = false;
                     flag = true;
                 }
             }
         }
 
-        if (flag)
-        {
+        if (flag) {
             notifyCommandListener(sender, this, "commands.save.enabled", new Object[0]);
-        }
-        else
-        {
+        } else {
             throw new CommandException("commands.save-on.alreadyOn", new Object[0]);
         }
     }

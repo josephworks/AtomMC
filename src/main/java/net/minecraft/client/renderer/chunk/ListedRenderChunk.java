@@ -8,22 +8,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ListedRenderChunk extends RenderChunk
-{
+public class ListedRenderChunk extends RenderChunk {
     private final int baseDisplayList = GLAllocation.generateDisplayLists(BlockRenderLayer.values().length);
 
-    public ListedRenderChunk(World worldIn, RenderGlobal renderGlobalIn, int index)
-    {
+    public ListedRenderChunk(World worldIn, RenderGlobal renderGlobalIn, int index) {
         super(worldIn, renderGlobalIn, index);
     }
 
-    public int getDisplayList(BlockRenderLayer layer, CompiledChunk p_178600_2_)
-    {
+    public int getDisplayList(BlockRenderLayer layer, CompiledChunk p_178600_2_) {
         return !p_178600_2_.isLayerEmpty(layer) ? this.baseDisplayList + layer.ordinal() : -1;
     }
 
-    public void deleteGlResources()
-    {
+    public void deleteGlResources() {
         super.deleteGlResources();
         GLAllocation.deleteDisplayLists(this.baseDisplayList, BlockRenderLayer.values().length);
     }

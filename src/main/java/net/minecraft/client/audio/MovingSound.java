@@ -6,17 +6,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public abstract class MovingSound extends PositionedSound implements ITickableSound
-{
+public abstract class MovingSound extends PositionedSound implements ITickableSound {
     protected boolean donePlaying;
 
-    protected MovingSound(SoundEvent soundIn, SoundCategory categoryIn)
-    {
+    protected MovingSound(SoundEvent soundIn, SoundCategory categoryIn) {
         super(soundIn, categoryIn);
     }
 
-    public boolean isDonePlaying()
-    {
+    public boolean isDonePlaying() {
         return this.donePlaying;
     }
 }

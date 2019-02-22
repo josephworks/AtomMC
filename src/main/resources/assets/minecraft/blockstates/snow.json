@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "snow" }
+  "variants": {
+    "normal": {
+      "model": "snow"
     }
+  }
 }

@@ -14,59 +14,46 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderShulker extends RenderLiving<EntityShulker>
-{
-    public static final ResourceLocation[] SHULKER_ENDERGOLEM_TEXTURE = new ResourceLocation[] {new ResourceLocation("textures/entity/shulker/shulker_white.png"), new ResourceLocation("textures/entity/shulker/shulker_orange.png"), new ResourceLocation("textures/entity/shulker/shulker_magenta.png"), new ResourceLocation("textures/entity/shulker/shulker_light_blue.png"), new ResourceLocation("textures/entity/shulker/shulker_yellow.png"), new ResourceLocation("textures/entity/shulker/shulker_lime.png"), new ResourceLocation("textures/entity/shulker/shulker_pink.png"), new ResourceLocation("textures/entity/shulker/shulker_gray.png"), new ResourceLocation("textures/entity/shulker/shulker_silver.png"), new ResourceLocation("textures/entity/shulker/shulker_cyan.png"), new ResourceLocation("textures/entity/shulker/shulker_purple.png"), new ResourceLocation("textures/entity/shulker/shulker_blue.png"), new ResourceLocation("textures/entity/shulker/shulker_brown.png"), new ResourceLocation("textures/entity/shulker/shulker_green.png"), new ResourceLocation("textures/entity/shulker/shulker_red.png"), new ResourceLocation("textures/entity/shulker/shulker_black.png")};
+public class RenderShulker extends RenderLiving<EntityShulker> {
+    public static final ResourceLocation[] SHULKER_ENDERGOLEM_TEXTURE = new ResourceLocation[]{new ResourceLocation("textures/entity/shulker/shulker_white.png"), new ResourceLocation("textures/entity/shulker/shulker_orange.png"), new ResourceLocation("textures/entity/shulker/shulker_magenta.png"), new ResourceLocation("textures/entity/shulker/shulker_light_blue.png"), new ResourceLocation("textures/entity/shulker/shulker_yellow.png"), new ResourceLocation("textures/entity/shulker/shulker_lime.png"), new ResourceLocation("textures/entity/shulker/shulker_pink.png"), new ResourceLocation("textures/entity/shulker/shulker_gray.png"), new ResourceLocation("textures/entity/shulker/shulker_silver.png"), new ResourceLocation("textures/entity/shulker/shulker_cyan.png"), new ResourceLocation("textures/entity/shulker/shulker_purple.png"), new ResourceLocation("textures/entity/shulker/shulker_blue.png"), new ResourceLocation("textures/entity/shulker/shulker_brown.png"), new ResourceLocation("textures/entity/shulker/shulker_green.png"), new ResourceLocation("textures/entity/shulker/shulker_red.png"), new ResourceLocation("textures/entity/shulker/shulker_black.png")};
 
-    public RenderShulker(RenderManager p_i47194_1_)
-    {
+    public RenderShulker(RenderManager p_i47194_1_) {
         super(p_i47194_1_, new ModelShulker(), 0.0F);
         this.addLayer(new HeadLayer());
     }
 
-    public ModelShulker getMainModel()
-    {
-        return (ModelShulker)super.getMainModel();
+    public ModelShulker getMainModel() {
+        return (ModelShulker) super.getMainModel();
     }
 
-    public void doRender(EntityShulker entity, double x, double y, double z, float entityYaw, float partialTicks)
-    {
+    public void doRender(EntityShulker entity, double x, double y, double z, float entityYaw, float partialTicks) {
         int i = entity.getClientTeleportInterp();
 
-        if (i > 0 && entity.isAttachedToBlock())
-        {
+        if (i > 0 && entity.isAttachedToBlock()) {
             BlockPos blockpos = entity.getAttachmentPos();
             BlockPos blockpos1 = entity.getOldAttachPos();
-            double d0 = (double)((float)i - partialTicks) / 6.0D;
+            double d0 = (double) ((float) i - partialTicks) / 6.0D;
             d0 = d0 * d0;
-            double d1 = (double)(blockpos.getX() - blockpos1.getX()) * d0;
-            double d2 = (double)(blockpos.getY() - blockpos1.getY()) * d0;
-            double d3 = (double)(blockpos.getZ() - blockpos1.getZ()) * d0;
+            double d1 = (double) (blockpos.getX() - blockpos1.getX()) * d0;
+            double d2 = (double) (blockpos.getY() - blockpos1.getY()) * d0;
+            double d3 = (double) (blockpos.getZ() - blockpos1.getZ()) * d0;
             super.doRender(entity, x - d1, y - d2, z - d3, entityYaw, partialTicks);
-        }
-        else
-        {
+        } else {
             super.doRender(entity, x, y, z, entityYaw, partialTicks);
         }
     }
 
-    public boolean shouldRender(EntityShulker livingEntity, ICamera camera, double camX, double camY, double camZ)
-    {
-        if (super.shouldRender(livingEntity, camera, camX, camY, camZ))
-        {
+    public boolean shouldRender(EntityShulker livingEntity, ICamera camera, double camX, double camY, double camZ) {
+        if (super.shouldRender(livingEntity, camera, camX, camY, camZ)) {
             return true;
-        }
-        else
-        {
-            if (livingEntity.getClientTeleportInterp() > 0 && livingEntity.isAttachedToBlock())
-            {
+        } else {
+            if (livingEntity.getClientTeleportInterp() > 0 && livingEntity.isAttachedToBlock()) {
                 BlockPos blockpos = livingEntity.getOldAttachPos();
                 BlockPos blockpos1 = livingEntity.getAttachmentPos();
-                Vec3d vec3d = new Vec3d((double)blockpos1.getX(), (double)blockpos1.getY(), (double)blockpos1.getZ());
-                Vec3d vec3d1 = new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
+                Vec3d vec3d = new Vec3d((double) blockpos1.getX(), (double) blockpos1.getY(), (double) blockpos1.getZ());
+                Vec3d vec3d1 = new Vec3d((double) blockpos.getX(), (double) blockpos.getY(), (double) blockpos.getZ());
 
-                if (camera.isBoundingBoxInFrustum(new AxisAlignedBB(vec3d1.x, vec3d1.y, vec3d1.z, vec3d.x, vec3d.y, vec3d.z)))
-                {
+                if (camera.isBoundingBoxInFrustum(new AxisAlignedBB(vec3d1.x, vec3d1.y, vec3d1.z, vec3d.x, vec3d.y, vec3d.z))) {
                     return true;
                 }
             }
@@ -75,17 +62,14 @@ public class RenderShulker extends RenderLiving<EntityShulker>
         }
     }
 
-    protected ResourceLocation getEntityTexture(EntityShulker entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityShulker entity) {
         return SHULKER_ENDERGOLEM_TEXTURE[entity.getColor().getMetadata()];
     }
 
-    protected void applyRotations(EntityShulker entityLiving, float p_77043_2_, float rotationYaw, float partialTicks)
-    {
+    protected void applyRotations(EntityShulker entityLiving, float p_77043_2_, float rotationYaw, float partialTicks) {
         super.applyRotations(entityLiving, p_77043_2_, rotationYaw, partialTicks);
 
-        switch (entityLiving.getAttachmentFacing())
-        {
+        switch (entityLiving.getAttachmentFacing()) {
             case DOWN:
             default:
                 break;
@@ -114,25 +98,20 @@ public class RenderShulker extends RenderLiving<EntityShulker>
         }
     }
 
-    protected void preRenderCallback(EntityShulker entitylivingbaseIn, float partialTickTime)
-    {
+    protected void preRenderCallback(EntityShulker entitylivingbaseIn, float partialTickTime) {
         float f = 0.999F;
         GlStateManager.scale(0.999F, 0.999F, 0.999F);
     }
 
     @SideOnly(Side.CLIENT)
-    class HeadLayer implements LayerRenderer<EntityShulker>
-    {
-        private HeadLayer()
-        {
+    class HeadLayer implements LayerRenderer<EntityShulker> {
+        private HeadLayer() {
         }
 
-        public void doRenderLayer(EntityShulker entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-        {
+        public void doRenderLayer(EntityShulker entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
             GlStateManager.pushMatrix();
 
-            switch (entitylivingbaseIn.getAttachmentFacing())
-            {
+            switch (entitylivingbaseIn.getAttachmentFacing()) {
                 case DOWN:
                 default:
                     break;
@@ -170,8 +149,7 @@ public class RenderShulker extends RenderLiving<EntityShulker>
             GlStateManager.popMatrix();
         }
 
-        public boolean shouldCombineTextures()
-        {
+        public boolean shouldCombineTextures() {
             return false;
         }
     }

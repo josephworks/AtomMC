@@ -73,7 +73,7 @@ public class ItemStackTest extends AbstractTestingBase {
          * @param materials
          * @return
          */
-        static List<Object[]> compound(final List<Object[]> parameterList, final String nameFormat, final int nameIndex, final Material...materials) {
+        static List<Object[]> compound(final List<Object[]> parameterList, final String nameFormat, final int nameIndex, final Material... materials) {
             final List<Object[]> out = new ArrayList<Object[]>();
             for (Object[] params : parameterList) {
                 final int len = params.length;
@@ -121,9 +121,10 @@ public class ItemStackTest extends AbstractTestingBase {
                 this.lists = lists;
             }
         }
+
         final Operator[] operators;
 
-        CompoundOperator(Operator...operators) {
+        CompoundOperator(Operator... operators) {
             this.operators = operators;
         }
 
@@ -142,16 +143,17 @@ public class ItemStackTest extends AbstractTestingBase {
 
         /**
          * This combines different tests into one large collection, combining no two tests from the same list.
-         * @param joiner used to join names
-         * @param nameParameter index of the name parameter
+         *
+         * @param joiner           used to join names
+         * @param nameParameter    index of the name parameter
          * @param singletonBitmask a list of bits representing the 'singletons' located in your originalLists. Lowest order bits represent the first items in originalLists.
-         *      Singletons are exponentially linked with each other, such that,
-         *      the output will contain every unique subset of only items from the singletons,
-         *      as well as every unique subset that contains at least one item from each non-singleton.
+         *                         Singletons are exponentially linked with each other, such that,
+         *                         the output will contain every unique subset of only items from the singletons,
+         *                         as well as every unique subset that contains at least one item from each non-singleton.
          * @param originalLists
          * @return
          */
-        static List<Object[]> compound(final Joiner joiner, final int nameParameter, final long singletonBitmask, final List<Object[]>...originalLists) {
+        static List<Object[]> compound(final Joiner joiner, final int nameParameter, final long singletonBitmask, final List<Object[]>... originalLists) {
 
             final List<Object[]> out = new ArrayList<Object[]>();
             final List<List<Object[]>> singletons = new ArrayList<List<Object[]>>();
@@ -192,8 +194,7 @@ public class ItemStackTest extends AbstractTestingBase {
                 out.addAll(primarySingleton);
             }
 
-            @SuppressWarnings("unchecked")
-            final List<Object[]>[] lists = new List[notSingletons.size() + 1];
+            @SuppressWarnings("unchecked") final List<Object[]>[] lists = new List[notSingletons.size() + 1];
             notSingletons.toArray(lists);
             lists[lists.length - 1] = out;
 
@@ -304,7 +305,7 @@ public class ItemStackTest extends AbstractTestingBase {
         }
     }
 
-    @Parameters(name="[{index}]:{" + NAME_PARAMETER + "}")
+    @Parameters(name = "[{index}]:{" + NAME_PARAMETER + "}")
     public static List<Object[]> data() {
         return ImmutableList.of(); // TODO, test basic durability issues
     }
@@ -315,6 +316,7 @@ public class ItemStackTest extends AbstractTestingBase {
      */
     static final Material[] COMPOUND_MATERIALS;
     static final int NAME_PARAMETER = 2;
+
     static {
         final ItemFactory factory = CraftItemFactory.instance();
         final Map<Class<? extends ItemMeta>, Material> possibleMaterials = new HashMap<Class<? extends ItemMeta>, Material>();
@@ -329,9 +331,12 @@ public class ItemStackTest extends AbstractTestingBase {
         COMPOUND_MATERIALS = possibleMaterials.values().toArray(new Material[possibleMaterials.size()]);
     }
 
-    @Parameter(0) public StackProvider provider;
-    @Parameter(1) public StackProvider unequalProvider;
-    @Parameter(NAME_PARAMETER) public String name;
+    @Parameter(0)
+    public StackProvider provider;
+    @Parameter(1)
+    public StackProvider unequalProvider;
+    @Parameter(NAME_PARAMETER)
+    public String name;
 
     // TODO: Fix this tests
     // @Test

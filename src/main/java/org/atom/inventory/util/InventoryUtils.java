@@ -21,7 +21,7 @@ public class InventoryUtils {
     public static InventoryHolder getInventoryOwner(IInventory inventory) {
         if (inventory instanceof TileEntity) {
             TileEntity te = (TileEntity) inventory;
-            BlockState state =  te.getWorld().getWorld().getBlockAt(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()).getState();
+            BlockState state = te.getWorld().getWorld().getBlockAt(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()).getState();
             if (state instanceof InventoryHolder)
                 return (InventoryHolder) state;
         } else if (inventory instanceof InventoryBasic) {

@@ -30,32 +30,26 @@ import net.minecraftforge.fml.common.eventhandler.Event.HasResult;
 import javax.annotation.Nonnull;
 
 
-public class PotionBrewEvent extends Event
-{
+public class PotionBrewEvent extends Event {
     private NonNullList<ItemStack> stacks;
 
-    protected PotionBrewEvent(NonNullList<ItemStack> stacks)
-    {
+    protected PotionBrewEvent(NonNullList<ItemStack> stacks) {
         this.stacks = stacks;
     }
 
     @Nonnull
-    public ItemStack getItem(int index)
-    {
+    public ItemStack getItem(int index) {
         if (index < 0 || index >= stacks.size()) return ItemStack.EMPTY;
         return stacks.get(index);
     }
 
-    public void setItem(int index, @Nonnull ItemStack stack)
-    {
-        if (index < stacks.size())
-        {
+    public void setItem(int index, @Nonnull ItemStack stack) {
+        if (index < stacks.size()) {
             stacks.set(index, stack);
         }
     }
 
-    public int getLength()
-    {
+    public int getLength() {
         return stacks.size();
     }
 
@@ -77,10 +71,8 @@ public class PotionBrewEvent extends Event
      * If this event is canceled, and items have been modified, PotionBrewEvent.Post will automatically be fired.
      **/
     @Cancelable
-    public static class Pre extends PotionBrewEvent
-    {
-        public Pre(NonNullList<ItemStack> stacks)
-        {
+    public static class Pre extends PotionBrewEvent {
+        public Pre(NonNullList<ItemStack> stacks) {
             super(stacks);
         }
     }
@@ -98,10 +90,8 @@ public class PotionBrewEvent extends Event
      * <br>
      * This event is fired on the {@link MinecraftForge#EVENT_BUS}.<br>
      **/
-    public static class Post extends PotionBrewEvent
-    {
-        public Post(NonNullList<ItemStack> stacks)
-        {
+    public static class Post extends PotionBrewEvent {
+        public Post(NonNullList<ItemStack> stacks) {
             super(stacks);
         }
     }

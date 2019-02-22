@@ -1,13 +1,13 @@
 package net.minecraft.world.chunk;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public interface IBlockStatePalette
-{
+public interface IBlockStatePalette {
     int idFor(IBlockState state);
 
     @Nullable

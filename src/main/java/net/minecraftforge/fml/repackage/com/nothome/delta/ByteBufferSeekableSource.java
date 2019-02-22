@@ -33,17 +33,17 @@ import java.nio.ByteBuffer;
  * Wraps a byte buffer as a source
  */
 public class ByteBufferSeekableSource implements SeekableSource {
-    
+
     private ByteBuffer bb;
     private ByteBuffer cur;
-    
+
     /**
      * Constructs a new ByteArraySeekableSource.
      */
     public ByteBufferSeekableSource(byte[] source) {
         this(ByteBuffer.wrap(source));
     }
-    
+
     /**
      * Constructs a new ByteArraySeekableSource.
      */
@@ -58,7 +58,7 @@ public class ByteBufferSeekableSource implements SeekableSource {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public void seek(long pos) throws IOException {
         cur = bb.slice();
@@ -66,7 +66,7 @@ public class ByteBufferSeekableSource implements SeekableSource {
             throw new IOException("pos " + pos + " cannot seek " + cur.limit());
         cur.position((int) pos);
     }
-    
+
     @Override
     public int read(ByteBuffer dest) throws IOException {
         if (!cur.hasRemaining())
@@ -78,7 +78,7 @@ public class ByteBufferSeekableSource implements SeekableSource {
         }
         return c;
     }
-    
+
     @Override
     public void close() throws IOException {
         bb = null;
@@ -89,12 +89,11 @@ public class ByteBufferSeekableSource implements SeekableSource {
      * Returns a debug <code>String</code>.
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "BBSeekable" +
-            " bb=" + this.bb.position() + "-" + bb.limit() +
-            " cur=" + this.cur.position() + "-" + cur.limit() +
-            "";
+                " bb=" + this.bb.position() + "-" + bb.limit() +
+                " cur=" + this.cur.position() + "-" + cur.limit() +
+                "";
     }
-    
+
 }

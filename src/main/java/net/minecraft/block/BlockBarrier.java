@@ -8,10 +8,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockBarrier extends Block
-{
-    protected BlockBarrier()
-    {
+public class BlockBarrier extends Block {
+    protected BlockBarrier() {
         super(Material.BARRIER);
         this.setBlockUnbreakable();
         this.setResistance(6000001.0F);
@@ -19,23 +17,19 @@ public class BlockBarrier extends Block
         this.translucent = true;
     }
 
-    public EnumBlockRenderType getRenderType(IBlockState state)
-    {
+    public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.INVISIBLE;
     }
 
-    public boolean isOpaqueCube(IBlockState state)
-    {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getAmbientOcclusionLightValue(IBlockState state)
-    {
+    public float getAmbientOcclusionLightValue(IBlockState state) {
         return 1.0F;
     }
 
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
-    {
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune) {
     }
 }

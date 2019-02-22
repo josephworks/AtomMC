@@ -1,7 +1,6 @@
 package net.minecraft.util.datafix;
 
-public enum FixTypes implements IFixType
-{
+public enum FixTypes implements IFixType {
     LEVEL,
     PLAYER,
     CHUNK,

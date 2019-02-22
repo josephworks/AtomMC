@@ -6,13 +6,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelDragonHead extends ModelBase
-{
+public class ModelDragonHead extends ModelBase {
     private final ModelRenderer head;
     private final ModelRenderer jaw;
 
-    public ModelDragonHead(float p_i46588_1_)
-    {
+    public ModelDragonHead(float p_i46588_1_) {
         this.textureWidth = 256;
         this.textureHeight = 256;
         this.setTextureOffset("body.body", 0, 0);
@@ -50,9 +48,8 @@ public class ModelDragonHead extends ModelBase
         this.head.addChild(this.jaw);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
-        this.jaw.rotateAngleX = (float)(Math.sin((double)(limbSwing * (float)Math.PI * 0.2F)) + 1.0D) * 0.2F;
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        this.jaw.rotateAngleX = (float) (Math.sin((double) (limbSwing * (float) Math.PI * 0.2F)) + 1.0D) * 0.2F;
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.head.rotateAngleX = headPitch * 0.017453292F;
         GlStateManager.translate(0.0F, -0.374375F, 0.0F);

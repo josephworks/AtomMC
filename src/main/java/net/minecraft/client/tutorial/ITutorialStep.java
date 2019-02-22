@@ -11,37 +11,28 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public interface ITutorialStep
-{
-default void onStop()
-    {
+public interface ITutorialStep {
+    default void onStop() {
     }
 
-default void update()
-    {
+    default void update() {
     }
 
-default void handleMovement(MovementInput input)
-    {
+    default void handleMovement(MovementInput input) {
     }
 
-default void handleMouse(MouseHelper mouseHelperIn)
-    {
+    default void handleMouse(MouseHelper mouseHelperIn) {
     }
 
-default void onMouseHover(WorldClient worldIn, RayTraceResult result)
-    {
+    default void onMouseHover(WorldClient worldIn, RayTraceResult result) {
     }
 
-default void onHitBlock(WorldClient worldIn, BlockPos pos, IBlockState state, float diggingStage)
-    {
+    default void onHitBlock(WorldClient worldIn, BlockPos pos, IBlockState state, float diggingStage) {
     }
 
-default void openInventory()
-    {
+    default void openInventory() {
     }
 
-default void handleSetSlot(ItemStack stack)
-    {
+    default void handleSetSlot(ItemStack stack) {
     }
 }

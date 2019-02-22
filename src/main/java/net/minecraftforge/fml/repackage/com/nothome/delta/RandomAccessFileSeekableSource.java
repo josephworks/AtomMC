@@ -35,11 +35,12 @@ import java.nio.ByteBuffer;
  * Wraps a random access file.
  */
 public class RandomAccessFileSeekableSource implements SeekableSource {
-    
+
     private RandomAccessFile raf;
 
     /**
      * Constructs a new RandomAccessFileSeekableSource.
+     *
      * @param raf
      */
     public RandomAccessFileSeekableSource(RandomAccessFile raf) {
@@ -74,5 +75,5 @@ public class RandomAccessFileSeekableSource implements SeekableSource {
         bb.position(bb.position() + c);
         return c;
     }
-    
+
 }

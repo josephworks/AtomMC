@@ -6,8 +6,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelSpider extends ModelBase
-{
+public class ModelSpider extends ModelBase {
     public ModelRenderer spiderHead;
     public ModelRenderer spiderNeck;
     public ModelRenderer spiderBody;
@@ -20,8 +19,7 @@ public class ModelSpider extends ModelBase
     public ModelRenderer spiderLeg7;
     public ModelRenderer spiderLeg8;
 
-    public ModelSpider()
-    {
+    public ModelSpider() {
         float f = 0.0F;
         int i = 15;
         this.spiderHead = new ModelRenderer(this, 32, 4);
@@ -59,8 +57,7 @@ public class ModelSpider extends ModelBase
         this.spiderLeg8.setRotationPoint(4.0F, 15.0F, -1.0F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.spiderHead.render(scale);
         this.spiderNeck.render(scale);
@@ -75,37 +72,36 @@ public class ModelSpider extends ModelBase
         this.spiderLeg8.render(scale);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         this.spiderHead.rotateAngleY = netHeadYaw * 0.017453292F;
         this.spiderHead.rotateAngleX = headPitch * 0.017453292F;
-        float f = ((float)Math.PI / 4F);
-        this.spiderLeg1.rotateAngleZ = -((float)Math.PI / 4F);
-        this.spiderLeg2.rotateAngleZ = ((float)Math.PI / 4F);
+        float f = ((float) Math.PI / 4F);
+        this.spiderLeg1.rotateAngleZ = -((float) Math.PI / 4F);
+        this.spiderLeg2.rotateAngleZ = ((float) Math.PI / 4F);
         this.spiderLeg3.rotateAngleZ = -0.58119464F;
         this.spiderLeg4.rotateAngleZ = 0.58119464F;
         this.spiderLeg5.rotateAngleZ = -0.58119464F;
         this.spiderLeg6.rotateAngleZ = 0.58119464F;
-        this.spiderLeg7.rotateAngleZ = -((float)Math.PI / 4F);
-        this.spiderLeg8.rotateAngleZ = ((float)Math.PI / 4F);
+        this.spiderLeg7.rotateAngleZ = -((float) Math.PI / 4F);
+        this.spiderLeg8.rotateAngleZ = ((float) Math.PI / 4F);
         float f1 = -0.0F;
         float f2 = 0.3926991F;
-        this.spiderLeg1.rotateAngleY = ((float)Math.PI / 4F);
-        this.spiderLeg2.rotateAngleY = -((float)Math.PI / 4F);
+        this.spiderLeg1.rotateAngleY = ((float) Math.PI / 4F);
+        this.spiderLeg2.rotateAngleY = -((float) Math.PI / 4F);
         this.spiderLeg3.rotateAngleY = 0.3926991F;
         this.spiderLeg4.rotateAngleY = -0.3926991F;
         this.spiderLeg5.rotateAngleY = -0.3926991F;
         this.spiderLeg6.rotateAngleY = 0.3926991F;
-        this.spiderLeg7.rotateAngleY = -((float)Math.PI / 4F);
-        this.spiderLeg8.rotateAngleY = ((float)Math.PI / 4F);
+        this.spiderLeg7.rotateAngleY = -((float) Math.PI / 4F);
+        this.spiderLeg8.rotateAngleY = ((float) Math.PI / 4F);
         float f3 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + 0.0F) * 0.4F) * limbSwingAmount;
-        float f4 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + (float)Math.PI) * 0.4F) * limbSwingAmount;
-        float f5 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float)Math.PI / 2F)) * 0.4F) * limbSwingAmount;
-        float f6 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float)Math.PI * 3F / 2F)) * 0.4F) * limbSwingAmount;
+        float f4 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * limbSwingAmount;
+        float f5 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float) Math.PI / 2F)) * 0.4F) * limbSwingAmount;
+        float f6 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float) Math.PI * 3F / 2F)) * 0.4F) * limbSwingAmount;
         float f7 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + 0.0F) * 0.4F) * limbSwingAmount;
-        float f8 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + (float)Math.PI) * 0.4F) * limbSwingAmount;
-        float f9 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float)Math.PI / 2F)) * 0.4F) * limbSwingAmount;
-        float f10 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float)Math.PI * 3F / 2F)) * 0.4F) * limbSwingAmount;
+        float f8 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + (float) Math.PI) * 0.4F) * limbSwingAmount;
+        float f9 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float) Math.PI / 2F)) * 0.4F) * limbSwingAmount;
+        float f10 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float) Math.PI * 3F / 2F)) * 0.4F) * limbSwingAmount;
         this.spiderLeg1.rotateAngleY += f3;
         this.spiderLeg2.rotateAngleY += -f3;
         this.spiderLeg3.rotateAngleY += f4;

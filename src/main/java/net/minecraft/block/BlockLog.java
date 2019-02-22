@@ -11,51 +11,41 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class BlockLog extends BlockRotatedPillar
-{
+public abstract class BlockLog extends BlockRotatedPillar {
     public static final PropertyEnum<EnumAxis> LOG_AXIS = PropertyEnum.<EnumAxis>create("axis", EnumAxis.class);
 
-    public BlockLog()
-    {
+    public BlockLog() {
         super(Material.WOOD);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         this.setHardness(2.0F);
         this.setSoundType(SoundType.WOOD);
     }
 
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         int i = 4;
         int j = 5;
 
-        if (worldIn.isAreaLoaded(pos.add(-5, -5, -5), pos.add(5, 5, 5)))
-        {
-            for (BlockPos blockpos : BlockPos.getAllInBox(pos.add(-4, -4, -4), pos.add(4, 4, 4)))
-            {
+        if (worldIn.isAreaLoaded(pos.add(-5, -5, -5), pos.add(5, 5, 5))) {
+            for (BlockPos blockpos : BlockPos.getAllInBox(pos.add(-4, -4, -4), pos.add(4, 4, 4))) {
                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-                if (iblockstate.getBlock().isLeaves(iblockstate, worldIn, blockpos))
-                {
+                if (iblockstate.getBlock().isLeaves(iblockstate, worldIn, blockpos)) {
                     iblockstate.getBlock().beginLeavesDecay(iblockstate, worldIn, blockpos);
                 }
             }
         }
     }
 
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return this.getStateFromMeta(meta).withProperty(LOG_AXIS, EnumAxis.fromFacingAxis(facing.getAxis()));
     }
 
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        switch (rot)
-        {
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        switch (rot) {
             case COUNTERCLOCKWISE_90:
             case CLOCKWISE_90:
 
-                switch ((EnumAxis)state.getValue(LOG_AXIS))
-                {
+                switch ((EnumAxis) state.getValue(LOG_AXIS)) {
                     case X:
                         return state.withProperty(LOG_AXIS, EnumAxis.Z);
                     case Z:
@@ -69,11 +59,17 @@ public abstract class BlockLog extends BlockRotatedPillar
         }
     }
 
-    @Override public boolean canSustainLeaves(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos){ return true; }
-    @Override public boolean isWood(net.minecraft.world.IBlockAccess world, BlockPos pos){ return true; }
+    @Override
+    public boolean canSustainLeaves(IBlockState state, net.minecraft.world.IBlockAccess world, BlockPos pos) {
+        return true;
+    }
 
-    public static enum EnumAxis implements IStringSerializable
-    {
+    @Override
+    public boolean isWood(net.minecraft.world.IBlockAccess world, BlockPos pos) {
+        return true;
+    }
+
+    public static enum EnumAxis implements IStringSerializable {
         X("x"),
         Y("y"),
         Z("z"),
@@ -81,20 +77,16 @@ public abstract class BlockLog extends BlockRotatedPillar
 
         private final String name;
 
-        private EnumAxis(String name)
-        {
+        private EnumAxis(String name) {
             this.name = name;
         }
 
-        public String toString()
-        {
+        public String toString() {
             return this.name;
         }
 
-        public static EnumAxis fromFacingAxis(EnumFacing.Axis axis)
-        {
-            switch (axis)
-            {
+        public static EnumAxis fromFacingAxis(EnumFacing.Axis axis) {
+            switch (axis) {
                 case X:
                     return X;
                 case Y:
@@ -106,8 +98,7 @@ public abstract class BlockLog extends BlockRotatedPillar
             }
         }
 
-        public String getName()
-        {
+        public String getName() {
             return this.name;
         }
     }

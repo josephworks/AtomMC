@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "lapis_ore" }
+  "variants": {
+    "normal": {
+      "model": "lapis_ore"
     }
+  }
 }

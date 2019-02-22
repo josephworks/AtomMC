@@ -12,21 +12,17 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerHeldBlock implements LayerRenderer<EntityEnderman>
-{
+public class LayerHeldBlock implements LayerRenderer<EntityEnderman> {
     private final RenderEnderman endermanRenderer;
 
-    public LayerHeldBlock(RenderEnderman endermanRendererIn)
-    {
+    public LayerHeldBlock(RenderEnderman endermanRendererIn) {
         this.endermanRenderer = endermanRendererIn;
     }
 
-    public void doRenderLayer(EntityEnderman entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void doRenderLayer(EntityEnderman entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         IBlockState iblockstate = entitylivingbaseIn.getHeldBlockState();
 
-        if (iblockstate != null)
-        {
+        if (iblockstate != null) {
             BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
             GlStateManager.enableRescaleNormal();
             GlStateManager.pushMatrix();
@@ -39,7 +35,7 @@ public class LayerHeldBlock implements LayerRenderer<EntityEnderman>
             int i = entitylivingbaseIn.getBrightnessForRender();
             int j = i % 65536;
             int k = i / 65536;
-            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j, (float)k);
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j, (float) k);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.endermanRenderer.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             blockrendererdispatcher.renderBlockBrightness(iblockstate, 1.0F);
@@ -48,8 +44,7 @@ public class LayerHeldBlock implements LayerRenderer<EntityEnderman>
         }
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return false;
     }
 }

@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "tnt" }
+  "variants": {
+    "normal": {
+      "model": "tnt"
     }
+  }
 }

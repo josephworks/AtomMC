@@ -49,41 +49,32 @@ public enum OBJLoader implements ICustomModelLoader {
     private final Map<ResourceLocation, OBJModel> cache = new HashMap<>();
     private final Map<ResourceLocation, Exception> errors = new HashMap<>();
 
-    public void addDomain(String domain)
-    {
+    public void addDomain(String domain) {
         enabledDomains.add(domain.toLowerCase());
         FMLLog.log.info("OBJLoader: Domain {} has been added.", domain.toLowerCase());
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager)
-    {
+    public void onResourceManagerReload(IResourceManager resourceManager) {
         this.manager = resourceManager;
         cache.clear();
         errors.clear();
     }
 
     @Override
-    public boolean accepts(ResourceLocation modelLocation)
-    {
+    public boolean accepts(ResourceLocation modelLocation) {
         return enabledDomains.contains(modelLocation.getResourceDomain()) && modelLocation.getResourcePath().endsWith(".obj");
     }
 
     @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception
-    {
+    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
         ResourceLocation file = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
-        if (!cache.containsKey(file))
-        {
+        if (!cache.containsKey(file)) {
             IResource resource = null;
-            try
-            {
-                try
-                {
+            try {
+                try {
                     resource = manager.getResource(file);
-                }
-                catch (FileNotFoundException e)
-                {
+                } catch (FileNotFoundException e) {
                     if (modelLocation.getResourcePath().startsWith("models/block/"))
                         resource = manager.getResource(new ResourceLocation(file.getResourceDomain(), "models/item/" + file.getResourcePath().substring("models/block/".length())));
                     else if (modelLocation.getResourcePath().startsWith("models/item/"))
@@ -92,26 +83,20 @@ public enum OBJLoader implements ICustomModelLoader {
                 }
                 OBJModel.Parser parser = new OBJModel.Parser(resource, manager);
                 OBJModel model = null;
-                try
-                {
+                try {
                     model = parser.parse();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     errors.put(modelLocation, e);
-                }
-                finally
-                {
+                } finally {
                     cache.put(modelLocation, model);
                 }
-            }
-            finally
-            {
+            } finally {
                 IOUtils.closeQuietly(resource);
             }
         }
         OBJModel model = cache.get(file);
-        if (model == null) throw new ModelLoaderRegistry.LoaderException("Error loading model previously: " + file, errors.get(modelLocation));
+        if (model == null)
+            throw new ModelLoaderRegistry.LoaderException("Error loading model previously: " + file, errors.get(modelLocation));
         return model;
     }
 }

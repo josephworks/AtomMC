@@ -1,7 +1,9 @@
 package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelHorse;
 import net.minecraft.client.renderer.texture.LayeredTexture;
@@ -11,22 +13,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderHorse extends RenderLiving<EntityHorse>
-{
+public class RenderHorse extends RenderLiving<EntityHorse> {
     private static final Map<String, ResourceLocation> LAYERED_LOCATION_CACHE = Maps.<String, ResourceLocation>newHashMap();
 
-    public RenderHorse(RenderManager p_i47205_1_)
-    {
+    public RenderHorse(RenderManager p_i47205_1_) {
         super(p_i47205_1_, new ModelHorse(), 0.75F);
     }
 
-    protected ResourceLocation getEntityTexture(EntityHorse entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityHorse entity) {
         String s = entity.getHorseTexture();
         ResourceLocation resourcelocation = LAYERED_LOCATION_CACHE.get(s);
 
-        if (resourcelocation == null)
-        {
+        if (resourcelocation == null) {
             resourcelocation = new ResourceLocation(s);
             Minecraft.getMinecraft().getTextureManager().loadTexture(resourcelocation, new LayeredTexture(entity.getVariantTexturePaths()));
             LAYERED_LOCATION_CACHE.put(s, resourcelocation);

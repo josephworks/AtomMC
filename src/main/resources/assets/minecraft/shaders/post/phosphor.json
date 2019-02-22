@@ -1,35 +1,39 @@
 {
-    "targets": [
-        "swap",
-        "previous"
-    ],
-    "passes": [
+  "targets": [
+    "swap",
+    "previous"
+  ],
+  "passes": [
+    {
+      "name": "phosphor",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "auxtargets": [
         {
-            "name": "phosphor",
-            "intarget": "minecraft:main",
-            "outtarget": "swap",
-            "auxtargets": [
-                {
-                    "name": "PrevSampler",
-                    "id": "previous"
-                }
-            ],
-            "uniforms": [
-                {
-                    "name": "Phosphor",
-                    "values": [ 0.95, 0.95, 0.95 ]
-                }
-            ]
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "previous"
-        },
-        {
-            "name": "blit",
-            "intarget": "swap",
-            "outtarget": "minecraft:main"
+          "name": "PrevSampler",
+          "id": "previous"
         }
-    ]
+      ],
+      "uniforms": [
+        {
+          "name": "Phosphor",
+          "values": [
+            0.95,
+            0.95,
+            0.95
+          ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "previous"
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
 }

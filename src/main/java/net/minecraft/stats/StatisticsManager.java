@@ -1,16 +1,16 @@
 package net.minecraft.stats;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.TupleIntJsonSerializable;
 
-public class StatisticsManager
-{
+public class StatisticsManager {
     protected final Map<StatBase, TupleIntJsonSerializable> statsData = Maps.<StatBase, TupleIntJsonSerializable>newConcurrentMap();
 
-    public void increaseStat(EntityPlayer player, StatBase stat, int amount)
-    {
+    public void increaseStat(EntityPlayer player, StatBase stat, int amount) {
         org.bukkit.event.Cancellable cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.handleStatisticsIncrease(player, stat, this.readStat(stat), amount);
         if (cancellable != null && cancellable.isCancelled()) {
             return;
@@ -18,12 +18,10 @@ public class StatisticsManager
         this.unlockAchievement(player, stat, this.readStat(stat) + amount);
     }
 
-    public void unlockAchievement(EntityPlayer playerIn, StatBase statIn, int p_150873_3_)
-    {
+    public void unlockAchievement(EntityPlayer playerIn, StatBase statIn, int p_150873_3_) {
         TupleIntJsonSerializable tupleintjsonserializable = this.statsData.get(statIn);
 
-        if (tupleintjsonserializable == null)
-        {
+        if (tupleintjsonserializable == null) {
             tupleintjsonserializable = new TupleIntJsonSerializable();
             this.statsData.put(statIn, tupleintjsonserializable);
         }
@@ -31,8 +29,7 @@ public class StatisticsManager
         tupleintjsonserializable.setIntegerValue(p_150873_3_);
     }
 
-    public int readStat(StatBase stat)
-    {
+    public int readStat(StatBase stat) {
         TupleIntJsonSerializable tupleintjsonserializable = this.statsData.get(stat);
         return tupleintjsonserializable == null ? 0 : tupleintjsonserializable.getIntegerValue();
     }

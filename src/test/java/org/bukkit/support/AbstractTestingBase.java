@@ -1,6 +1,7 @@
 package org.bukkit.support;
 
 import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 import net.minecraft.init.Bootstrap;
@@ -8,12 +9,12 @@ import org.bukkit.Material;
 import org.junit.BeforeClass;
 
 /**
- *  If you are getting: java.lang.ExceptionInInitializerError
- *    at net.minecraft.server.StatisticList.<clinit>(SourceFile:58)
- *    at net.minecraft.server.Item.<clinit>(SourceFile:252)
- *    at net.minecraft.server.Block.<clinit>(Block.java:577)
- *
- *  extend this class to solve it.
+ * If you are getting: java.lang.ExceptionInInitializerError
+ * at net.minecraft.server.StatisticList.<clinit>(SourceFile:58)
+ * at net.minecraft.server.Item.<clinit>(SourceFile:252)
+ * at net.minecraft.server.Block.<clinit>(Block.java:577)
+ * <p>
+ * extend this class to solve it.
  */
 public abstract class AbstractTestingBase {
     public static final List<Material> INVALIDATED_MATERIALS = ImmutableList.<Material>builder()

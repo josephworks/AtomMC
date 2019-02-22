@@ -7,22 +7,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderSilverfish extends RenderLiving<EntitySilverfish>
-{
+public class RenderSilverfish extends RenderLiving<EntitySilverfish> {
     private static final ResourceLocation SILVERFISH_TEXTURES = new ResourceLocation("textures/entity/silverfish.png");
 
-    public RenderSilverfish(RenderManager renderManagerIn)
-    {
+    public RenderSilverfish(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelSilverfish(), 0.3F);
     }
 
-    protected float getDeathMaxRotation(EntitySilverfish entityLivingBaseIn)
-    {
+    protected float getDeathMaxRotation(EntitySilverfish entityLivingBaseIn) {
         return 180.0F;
     }
 
-    protected ResourceLocation getEntityTexture(EntitySilverfish entity)
-    {
+    protected ResourceLocation getEntityTexture(EntitySilverfish entity) {
         return SILVERFISH_TEXTURES;
     }
 }

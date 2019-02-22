@@ -40,8 +40,7 @@ import static net.minecraftforge.fml.client.config.GuiUtils.UNDO_CHAR;
  *
  * @author bspkrs
  */
-public class GuiSelectString extends GuiScreen
-{
+public class GuiSelectString extends GuiScreen {
     protected GuiScreen parentScreen;
     protected IConfigElement configElement;
     protected GuiSelectStringEntries entryList;
@@ -57,8 +56,7 @@ public class GuiSelectString extends GuiScreen
     protected List<String> toolTip;
     protected boolean enabled;
 
-    public GuiSelectString(GuiScreen parentScreen, IConfigElement configElement, int slotIndex, Map<Object, String> selectableValues, Object currentValue, boolean enabled)
-    {
+    public GuiSelectString(GuiScreen parentScreen, IConfigElement configElement, int slotIndex, Map<Object, String> selectableValues, Object currentValue, boolean enabled) {
         this.mc = Minecraft.getMinecraft();
         this.parentScreen = parentScreen;
         this.configElement = configElement;
@@ -81,28 +79,23 @@ public class GuiSelectString extends GuiScreen
         else
             Collections.addAll(toolTip, (TextFormatting.GREEN + propName + "\n" + TextFormatting.RED + "No tooltip defined.").split("\n"));
 
-        if (parentScreen instanceof GuiConfig)
-        {
+        if (parentScreen instanceof GuiConfig) {
             this.title = ((GuiConfig) parentScreen).title;
             this.titleLine2 = ((GuiConfig) parentScreen).titleLine2;
             this.titleLine3 = I18n.format(configElement.getLanguageKey());
             this.tooltipHoverChecker = new HoverChecker(28, 37, 0, parentScreen.width, 800);
-            if(titleLine3 != null && titleLine2 == null)
-            {
+            if (titleLine3 != null && titleLine2 == null) {
                 ((GuiConfig) parentScreen).titleLine2 = "";
                 this.titleLine2 = "";
             }
-        }
-        else
-        {
+        } else {
             this.title = I18n.format(configElement.getLanguageKey());
             this.tooltipHoverChecker = new HoverChecker(8, 17, 0, parentScreen.width, 800);
         }
     }
 
     @Override
-    public void initGui()
-    {
+    public void initGui() {
         this.entryList = new GuiSelectStringEntries(this, this.mc, this.configElement, this.selectableValues);
 
         int undoGlyphWidth = mc.fontRenderer.getStringWidth(UNDO_CHAR) * 2;
@@ -119,51 +112,38 @@ public class GuiSelectString extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton button)
-    {
-        if (button.id == 2000)
-        {
-            try
-            {
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 2000) {
+            try {
                 this.entryList.saveChanges();
-            }
-            catch (Throwable e)
-            {
+            } catch (Throwable e) {
                 FMLLog.log.error("Error performing GuiSelectString action:", e);
             }
             this.mc.displayGuiScreen(this.parentScreen);
-        }
-        else if (button.id == 2001)
-        {
+        } else if (button.id == 2001) {
             this.currentValue = configElement.getDefault();
             this.entryList = new GuiSelectStringEntries(this, this.mc, this.configElement, this.selectableValues);
-        }
-        else if (button.id == 2002)
-        {
+        } else if (button.id == 2002) {
             this.currentValue = beforeValue;
             this.entryList = new GuiSelectStringEntries(this, this.mc, this.configElement, this.selectableValues);
         }
     }
 
     @Override
-    public void handleMouseInput() throws IOException
-    {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         this.entryList.handleMouseInput();
     }
 
     @Override
-    protected void mouseReleased(int x, int y, int mouseEvent)
-    {
-        if (mouseEvent != 0 || !this.entryList.mouseReleased(x, y, mouseEvent))
-        {
+    protected void mouseReleased(int x, int y, int mouseEvent) {
+        if (mouseEvent != 0 || !this.entryList.mouseReleased(x, y, mouseEvent)) {
             super.mouseReleased(x, y, mouseEvent);
         }
     }
 
     @Override
-    public void drawScreen(int par1, int par2, float par3)
-    {
+    public void drawScreen(int par1, int par2, float par3) {
         this.drawDefaultBackground();
         this.entryList.drawScreen(par1, par2, par3);
         this.drawCenteredString(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
@@ -183,8 +163,7 @@ public class GuiSelectString extends GuiScreen
             drawToolTip(this.toolTip, par1, par2);
     }
 
-    public void drawToolTip(List<String> stringList, int x, int y)
-    {
+    public void drawToolTip(List<String> stringList, int x, int y) {
         GuiUtils.drawHoveringText(stringList, x, y, width, height, 300, fontRenderer);
     }
 }

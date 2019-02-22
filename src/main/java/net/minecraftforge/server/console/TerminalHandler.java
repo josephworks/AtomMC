@@ -19,7 +19,7 @@
 
 package net.minecraftforge.server.console;
 
-import net.minecraftforge.server.terminalconsole.TerminalConsoleAppender;;
+import net.minecraftforge.server.terminalconsole.TerminalConsoleAppender;
 
 import net.minecraft.server.dedicated.DedicatedServer;
 import org.jline.reader.EndOfFileException;
@@ -28,15 +28,12 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 
-public final class TerminalHandler
-{
+public final class TerminalHandler {
 
-    private TerminalHandler()
-    {
+    private TerminalHandler() {
     }
 
-    public static boolean handleCommands(DedicatedServer server)
-    {
+    public static boolean handleCommands(DedicatedServer server) {
         final Terminal terminal = TerminalConsoleAppender.getTerminal();
         if (terminal == null)
             return false;
@@ -47,21 +44,17 @@ public final class TerminalHandler
                 .completer(new ConsoleCommandCompleter(server))
                 .build();
         reader.setOpt(LineReader.Option.DISABLE_EVENT_EXPANSION);
-        reader.unsetOpt(LineReader.Option.INSERT_TAB);;
+        reader.unsetOpt(LineReader.Option.INSERT_TAB);
+        ;
 
         TerminalConsoleAppender.setReader(reader);
 
-        try
-        {
+        try {
             String line;
-            while (!server.isServerStopped() && server.isServerRunning())
-            {
-                try
-                {
+            while (!server.isServerStopped() && server.isServerRunning()) {
+                try {
                     line = reader.readLine("> ");
-                }
-                catch (EndOfFileException ignored)
-                {
+                } catch (EndOfFileException ignored) {
                     // Continue reading after EOT
                     continue;
                 }
@@ -70,18 +63,13 @@ public final class TerminalHandler
                     break;
 
                 line = line.trim();
-                if (!line.isEmpty())
-                {
+                if (!line.isEmpty()) {
                     server.addPendingCommand(line, server);
                 }
             }
-        }
-        catch (UserInterruptException e)
-        {
+        } catch (UserInterruptException e) {
             server.initiateShutdown();
-        }
-        finally
-        {
+        } finally {
             TerminalConsoleAppender.setReader(null);
         }
 

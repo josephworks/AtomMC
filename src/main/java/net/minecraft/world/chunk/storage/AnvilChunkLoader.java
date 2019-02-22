@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk.storage;
 
 import com.google.common.collect.Maps;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -34,8 +36,7 @@ import net.minecraft.world.storage.ThreadedFileIOBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
-{
+public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<ChunkPos, NBTTagCompound> chunksToSave = Maps.<ChunkPos, NBTTagCompound>newConcurrentMap();
     private final Set<ChunkPos> chunksBeingSaved = Collections.<ChunkPos>newSetFromMap(Maps.newConcurrentMap());
@@ -43,27 +44,23 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     private final DataFixer fixer;
     private boolean flushing;
 
-    public AnvilChunkLoader(File chunkSaveLocationIn, DataFixer dataFixerIn)
-    {
+    public AnvilChunkLoader(File chunkSaveLocationIn, DataFixer dataFixerIn) {
         this.chunkSaveLocation = chunkSaveLocationIn;
         this.fixer = dataFixerIn;
     }
 
     @Deprecated // TODO: remove (1.13)
-    public boolean chunkExists(World world, int x, int z)
-    {
+    public boolean chunkExists(World world, int x, int z) {
         return isChunkGeneratedAt(x, z);
     }
 
     @Nullable
-    public Chunk loadChunk(World worldIn, int x, int z) throws IOException
-    {
+    public Chunk loadChunk(World worldIn, int x, int z) throws IOException {
         worldIn.timings.syncChunkLoadDataTimer.startTiming(); // Spigot
         Object[] data = this.loadChunk__Async(worldIn, x, z);
         worldIn.timings.syncChunkLoadDataTimer.stopTiming(); // Spigot
 
-        if (data != null)
-        {
+        if (data != null) {
             Chunk chunk = (Chunk) data[0];
             NBTTagCompound nbttagcompound = (NBTTagCompound) data[1];
             this.loadEntities(worldIn, nbttagcompound.getCompoundTag("Level"), chunk);
@@ -74,17 +71,14 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     }
 
     @Nullable
-    public Object[] loadChunk__Async(World worldIn, int x, int z) throws IOException
-    {
+    public Object[] loadChunk__Async(World worldIn, int x, int z) throws IOException {
         ChunkPos chunkpos = new ChunkPos(x, z);
         NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
 
-        if (nbttagcompound == null)
-        {
+        if (nbttagcompound == null) {
             NBTTagCompound nbtTagCompound = RegionFileCache.getChunkInputStreamCB(this.chunkSaveLocation, x, z);
 
-            if (nbtTagCompound == null)
-            {
+            if (nbtTagCompound == null) {
                 return null;
             }
 
@@ -94,43 +88,33 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         return this.checkedReadChunkFromNBT__Async(worldIn, x, z, nbttagcompound);
     }
 
-    public boolean isChunkGeneratedAt(int x, int z)
-    {
+    public boolean isChunkGeneratedAt(int x, int z) {
         ChunkPos chunkpos = new ChunkPos(x, z);
         NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
         return nbttagcompound != null ? true : RegionFileCache.chunkExists(this.chunkSaveLocation, x, z);
     }
 
     @Nullable
-    protected Chunk checkedReadChunkFromNBT(World worldIn, int x, int z, NBTTagCompound compound)
-    {
+    protected Chunk checkedReadChunkFromNBT(World worldIn, int x, int z, NBTTagCompound compound) {
         Object[] data = this.checkedReadChunkFromNBT__Async(worldIn, x, z, compound);
-        return data != null ? (Chunk)data[0] : null;
+        return data != null ? (Chunk) data[0] : null;
     }
 
     @Nullable
-    protected Object[] checkedReadChunkFromNBT__Async(World worldIn, int x, int z, NBTTagCompound compound)
-    {
-        if (!compound.hasKey("Level", 10))
-        {
+    protected Object[] checkedReadChunkFromNBT__Async(World worldIn, int x, int z, NBTTagCompound compound) {
+        if (!compound.hasKey("Level", 10)) {
             LOGGER.error("Chunk file at {},{} is missing level data, skipping", Integer.valueOf(x), Integer.valueOf(z));
             return null;
-        }
-        else
-        {
+        } else {
             NBTTagCompound nbttagcompound = compound.getCompoundTag("Level");
 
-            if (!nbttagcompound.hasKey("Sections", 9))
-            {
+            if (!nbttagcompound.hasKey("Sections", 9)) {
                 LOGGER.error("Chunk file at {},{} is missing block data, skipping", Integer.valueOf(x), Integer.valueOf(z));
                 return null;
-            }
-            else
-            {
+            } else {
                 Chunk chunk = this.readChunkFromNBT(worldIn, nbttagcompound);
 
-                if (!chunk.isAtLocation(x, z))
-                {
+                if (!chunk.isAtLocation(x, z)) {
                     LOGGER.error("Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})", Integer.valueOf(x), Integer.valueOf(z), Integer.valueOf(x), Integer.valueOf(z), Integer.valueOf(chunk.x), Integer.valueOf(chunk.z));
                     nbttagcompound.setInteger("xPos", x);
                     nbttagcompound.setInteger("zPos", z);
@@ -138,10 +122,8 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
                     // Have to move tile entities since we don't load them at this stage
                     NBTTagList _tileEntities = nbttagcompound.getTagList("TileEntities", 10);
 
-                    if (_tileEntities != null)
-                    {
-                        for (int te = 0; te < _tileEntities.tagCount(); te++)
-                        {
+                    if (_tileEntities != null) {
+                        for (int te = 0; te < _tileEntities.tagCount(); te++) {
                             NBTTagCompound _nbt = (NBTTagCompound) _tileEntities.getCompoundTagAt(te);
                             _nbt.setInteger("x", x * 16 + (_nbt.getInteger("x") - chunk.x * 16));
                             _nbt.setInteger("z", z * 16 + (_nbt.getInteger("z") - chunk.z * 16));
@@ -161,12 +143,10 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         }
     }
 
-    public void saveChunk(World worldIn, Chunk chunkIn) throws MinecraftException, IOException
-    {
+    public void saveChunk(World worldIn, Chunk chunkIn) throws MinecraftException, IOException {
         worldIn.checkSessionLock();
 
-        try
-        {
+        try {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             nbttagcompound.setTag("Level", nbttagcompound1);
@@ -176,60 +156,44 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             net.minecraftforge.common.ForgeChunkManager.storeChunkNBT(chunkIn, nbttagcompound1);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkDataEvent.Save(chunkIn, nbttagcompound));
             this.addChunkToPending(chunkIn.getPos(), nbttagcompound);
-        }
-        catch (Exception exception)
-        {
-            LOGGER.error("Failed to save chunk", (Throwable)exception);
+        } catch (Exception exception) {
+            LOGGER.error("Failed to save chunk", (Throwable) exception);
         }
     }
 
-    protected void addChunkToPending(ChunkPos pos, NBTTagCompound compound)
-    {
-        if (!this.chunksBeingSaved.contains(pos))
-        {
+    protected void addChunkToPending(ChunkPos pos, NBTTagCompound compound) {
+        if (!this.chunksBeingSaved.contains(pos)) {
             this.chunksToSave.put(pos, compound);
         }
 
         ThreadedFileIOBase.getThreadedIOInstance().queueIO(this);
     }
 
-    public boolean writeNextIO()
-    {
-        if (this.chunksToSave.isEmpty())
-        {
-            if (this.flushing)
-            {
-                LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)this.chunkSaveLocation.getName());
+    public boolean writeNextIO() {
+        if (this.chunksToSave.isEmpty()) {
+            if (this.flushing) {
+                LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object) this.chunkSaveLocation.getName());
             }
 
             return false;
-        }
-        else
-        {
+        } else {
             ChunkPos chunkpos = this.chunksToSave.keySet().iterator().next();
             boolean lvt_3_1_;
 
-            try
-            {
+            try {
                 this.chunksBeingSaved.add(chunkpos);
                 NBTTagCompound nbttagcompound = this.chunksToSave.remove(chunkpos);
 
-                if (nbttagcompound != null)
-                {
-                    try
-                    {
+                if (nbttagcompound != null) {
+                    try {
                         this.writeChunkData(chunkpos, nbttagcompound);
-                    }
-                    catch (Exception exception)
-                    {
-                        LOGGER.error("Failed to save chunk", (Throwable)exception);
+                    } catch (Exception exception) {
+                        LOGGER.error("Failed to save chunk", (Throwable) exception);
                     }
                 }
 
                 lvt_3_1_ = true;
-            }
-            finally
-            {
+            } finally {
                 this.chunksBeingSaved.remove(chunkpos);
             }
 
@@ -237,63 +201,48 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         }
     }
 
-    private void writeChunkData(ChunkPos pos, NBTTagCompound compound) throws IOException
-    {
+    private void writeChunkData(ChunkPos pos, NBTTagCompound compound) throws IOException {
         // DataOutputStream dataoutputstream = RegionFileCache.getChunkOutputStream(this.chunkSaveLocation, pos.x, pos.z);
         // CompressedStreamTools.write(compound, dataoutputstream);
         // dataoutputstream.close();
         RegionFileCache.getChunkOutputStream(this.chunkSaveLocation, pos.x, pos.z, compound);
     }
 
-    public void saveExtraChunkData(World worldIn, Chunk chunkIn) throws IOException
-    {
+    public void saveExtraChunkData(World worldIn, Chunk chunkIn) throws IOException {
     }
 
-    public void chunkTick()
-    {
+    public void chunkTick() {
     }
 
-    public void flush()
-    {
-        try
-        {
+    public void flush() {
+        try {
             this.flushing = true;
 
-            while (this.writeNextIO());
-        }
-        finally
-        {
+            while (this.writeNextIO()) ;
+        } finally {
             this.flushing = false;
         }
     }
 
-    public static void registerFixes(DataFixer fixer)
-    {
-        fixer.registerWalker(FixTypes.CHUNK, new IDataWalker()
-        {
-            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
-            {
-                if (compound.hasKey("Level", 10))
-                {
+    public static void registerFixes(DataFixer fixer) {
+        fixer.registerWalker(FixTypes.CHUNK, new IDataWalker() {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn) {
+                if (compound.hasKey("Level", 10)) {
                     NBTTagCompound nbttagcompound = compound.getCompoundTag("Level");
 
-                    if (nbttagcompound.hasKey("Entities", 9))
-                    {
+                    if (nbttagcompound.hasKey("Entities", 9)) {
                         NBTTagList nbttaglist = nbttagcompound.getTagList("Entities", 10);
 
-                        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                        {
-                            nbttaglist.set(i, fixer.process(FixTypes.ENTITY, (NBTTagCompound)nbttaglist.get(i), versionIn));
+                        for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+                            nbttaglist.set(i, fixer.process(FixTypes.ENTITY, (NBTTagCompound) nbttaglist.get(i), versionIn));
                         }
                     }
 
-                    if (nbttagcompound.hasKey("TileEntities", 9))
-                    {
+                    if (nbttagcompound.hasKey("TileEntities", 9)) {
                         NBTTagList nbttaglist1 = nbttagcompound.getTagList("TileEntities", 10);
 
-                        for (int j = 0; j < nbttaglist1.tagCount(); ++j)
-                        {
-                            nbttaglist1.set(j, fixer.process(FixTypes.BLOCK_ENTITY, (NBTTagCompound)nbttaglist1.get(j), versionIn));
+                        for (int j = 0; j < nbttaglist1.tagCount(); ++j) {
+                            nbttaglist1.set(j, fixer.process(FixTypes.BLOCK_ENTITY, (NBTTagCompound) nbttaglist1.get(j), versionIn));
                         }
                     }
                 }
@@ -303,8 +252,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         });
     }
 
-    private void writeChunkToNBT(Chunk chunkIn, World worldIn, NBTTagCompound compound)
-    {
+    private void writeChunkToNBT(Chunk chunkIn, World worldIn, NBTTagCompound compound) {
         compound.setInteger("xPos", chunkIn.x);
         compound.setInteger("zPos", chunkIn.z);
         compound.setLong("LastUpdate", worldIn.getTotalWorldTime());
@@ -316,31 +264,25 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         NBTTagList nbttaglist = new NBTTagList();
         boolean flag = worldIn.provider.hasSkyLight();
 
-        for (ExtendedBlockStorage extendedblockstorage : aextendedblockstorage)
-        {
-            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE)
-            {
+        for (ExtendedBlockStorage extendedblockstorage : aextendedblockstorage) {
+            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE) {
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
-                nbttagcompound.setByte("Y", (byte)(extendedblockstorage.getYLocation() >> 4 & 255));
+                nbttagcompound.setByte("Y", (byte) (extendedblockstorage.getYLocation() >> 4 & 255));
                 byte[] abyte = new byte[4096];
                 NibbleArray nibblearray = new NibbleArray();
                 NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(abyte, nibblearray);
                 nbttagcompound.setByteArray("Blocks", abyte);
                 nbttagcompound.setByteArray("Data", nibblearray.getData());
 
-                if (nibblearray1 != null)
-                {
+                if (nibblearray1 != null) {
                     nbttagcompound.setByteArray("Add", nibblearray1.getData());
                 }
 
                 nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlockLight().getData());
 
-                if (flag)
-                {
+                if (flag) {
                     nbttagcompound.setByteArray("SkyLight", extendedblockstorage.getSkyLight().getData());
-                }
-                else
-                {
+                } else {
                     nbttagcompound.setByteArray("SkyLight", new byte[extendedblockstorage.getBlockLight().getData().length]);
                 }
 
@@ -353,22 +295,16 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         chunkIn.setHasEntities(false);
         NBTTagList nbttaglist1 = new NBTTagList();
 
-        for (int i = 0; i < chunkIn.getEntityLists().length; ++i)
-        {
-            for (Entity entity : chunkIn.getEntityLists()[i])
-            {
+        for (int i = 0; i < chunkIn.getEntityLists().length; ++i) {
+            for (Entity entity : chunkIn.getEntityLists()[i]) {
                 NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 
-                try
-                {
-                if (entity.writeToNBTOptional(nbttagcompound2))
-                {
-                    chunkIn.setHasEntities(true);
-                    nbttaglist1.appendTag(nbttagcompound2);
-                }
-                }
-                catch (Exception e)
-                {
+                try {
+                    if (entity.writeToNBTOptional(nbttagcompound2)) {
+                        chunkIn.setHasEntities(true);
+                        nbttaglist1.appendTag(nbttagcompound2);
+                    }
+                } catch (Exception e) {
                     net.minecraftforge.fml.common.FMLLog.log.error("An Entity type {} has thrown an exception trying to write state. It will not persist. Report this to the mod author",
                             entity.getClass().getName(), e);
                 }
@@ -378,15 +314,11 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         compound.setTag("Entities", nbttaglist1);
         NBTTagList nbttaglist2 = new NBTTagList();
 
-        for (TileEntity tileentity : chunkIn.getTileEntityMap().values())
-        {
-            try
-            {
-            NBTTagCompound nbttagcompound3 = tileentity.writeToNBT(new NBTTagCompound());
-            nbttaglist2.appendTag(nbttagcompound3);
-            }
-            catch (Exception e)
-            {
+        for (TileEntity tileentity : chunkIn.getTileEntityMap().values()) {
+            try {
+                NBTTagCompound nbttagcompound3 = tileentity.writeToNBT(new NBTTagCompound());
+                nbttaglist2.appendTag(nbttagcompound3);
+            } catch (Exception e) {
                 net.minecraftforge.fml.common.FMLLog.log.error("A TileEntity type {} has throw an exception trying to write state. It will not persist. Report this to the mod author",
                         tileentity.getClass().getName(), e);
             }
@@ -395,20 +327,18 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         compound.setTag("TileEntities", nbttaglist2);
         List<NextTickListEntry> list = worldIn.getPendingBlockUpdates(chunkIn, false);
 
-        if (list != null)
-        {
+        if (list != null) {
             long j = worldIn.getTotalWorldTime();
             NBTTagList nbttaglist3 = new NBTTagList();
 
-            for (NextTickListEntry nextticklistentry : list)
-            {
+            for (NextTickListEntry nextticklistentry : list) {
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
                 ResourceLocation resourcelocation = Block.REGISTRY.getNameForObject(nextticklistentry.getBlock());
                 nbttagcompound1.setString("i", resourcelocation == null ? "" : resourcelocation.toString());
                 nbttagcompound1.setInteger("x", nextticklistentry.position.getX());
                 nbttagcompound1.setInteger("y", nextticklistentry.position.getY());
                 nbttagcompound1.setInteger("z", nextticklistentry.position.getZ());
-                nbttagcompound1.setInteger("t", (int)(nextticklistentry.scheduledTime - j));
+                nbttagcompound1.setInteger("t", (int) (nextticklistentry.scheduledTime - j));
                 nbttagcompound1.setInteger("p", nextticklistentry.priority);
                 nbttaglist3.appendTag(nbttagcompound1);
             }
@@ -416,21 +346,16 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             compound.setTag("TileTicks", nbttaglist3);
         }
 
-        if (chunkIn.getCapabilities() != null)
-        {
-            try
-            {
+        if (chunkIn.getCapabilities() != null) {
+            try {
                 compound.setTag("ForgeCaps", chunkIn.getCapabilities().serializeNBT());
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 net.minecraftforge.fml.common.FMLLog.log.error("A capability provider has thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
             }
         }
     }
 
-    private Chunk readChunkFromNBT(World worldIn, NBTTagCompound compound)
-    {
+    private Chunk readChunkFromNBT(World worldIn, NBTTagCompound compound) {
         int i = compound.getInteger("xPos");
         int j = compound.getInteger("zPos");
         Chunk chunk = new Chunk(worldIn, i, j);
@@ -443,8 +368,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         ExtendedBlockStorage[] aextendedblockstorage = new ExtendedBlockStorage[16];
         boolean flag = worldIn.provider.hasSkyLight();
 
-        for (int l = 0; l < nbttaglist.tagCount(); ++l)
-        {
+        for (int l = 0; l < nbttaglist.tagCount(); ++l) {
             NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(l);
             int i1 = nbttagcompound.getByte("Y");
             ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(i1 << 4, flag);
@@ -454,8 +378,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
             extendedblockstorage.setBlockLight(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
 
-            if (flag)
-            {
+            if (flag) {
                 extendedblockstorage.setSkyLight(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
             }
 
@@ -465,8 +388,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
         chunk.setStorageArrays(aextendedblockstorage);
 
-        if (compound.hasKey("Biomes", 7))
-        {
+        if (compound.hasKey("Biomes", 7)) {
             chunk.setBiomeArray(compound.getByteArray("Biomes"));
         }
 
@@ -478,13 +400,11 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         return chunk;
     }
 
-    public void loadEntities(World worldIn, NBTTagCompound compound, Chunk chunk)
-    {
+    public void loadEntities(World worldIn, NBTTagCompound compound, Chunk chunk) {
         worldIn.timings.syncChunkLoadEntitiesTimer.startTiming(); // Spigot
         NBTTagList nbttaglist1 = compound.getTagList("Entities", 10);
 
-        for (int j1 = 0; j1 < nbttaglist1.tagCount(); ++j1)
-        {
+        for (int j1 = 0; j1 < nbttaglist1.tagCount(); ++j1) {
             NBTTagCompound nbttagcompound1 = nbttaglist1.getCompoundTagAt(j1);
             readChunkEntity(nbttagcompound1, worldIn, chunk);
             chunk.setHasEntities(true);
@@ -495,34 +415,27 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
         NBTTagList nbttaglist2 = compound.getTagList("TileEntities", 10);
 
-        for (int k1 = 0; k1 < nbttaglist2.tagCount(); ++k1)
-        {
+        for (int k1 = 0; k1 < nbttaglist2.tagCount(); ++k1) {
             NBTTagCompound nbttagcompound2 = nbttaglist2.getCompoundTagAt(k1);
             TileEntity tileentity = TileEntity.create(worldIn, nbttagcompound2);
 
-            if (tileentity != null)
-            {
+            if (tileentity != null) {
                 chunk.addTileEntity(tileentity);
             }
         }
         worldIn.timings.syncChunkLoadTileEntitiesTimer.stopTiming(); // Spigot
         worldIn.timings.syncChunkLoadTileTicksTimer.startTiming(); // Spigot
 
-        if (compound.hasKey("TileTicks", 9))
-        {
+        if (compound.hasKey("TileTicks", 9)) {
             NBTTagList nbttaglist3 = compound.getTagList("TileTicks", 10);
 
-            for (int l1 = 0; l1 < nbttaglist3.tagCount(); ++l1)
-            {
+            for (int l1 = 0; l1 < nbttaglist3.tagCount(); ++l1) {
                 NBTTagCompound nbttagcompound3 = nbttaglist3.getCompoundTagAt(l1);
                 Block block;
 
-                if (nbttagcompound3.hasKey("i", 8))
-                {
+                if (nbttagcompound3.hasKey("i", 8)) {
                     block = Block.getBlockFromName(nbttagcompound3.getString("i"));
-                }
-                else
-                {
+                } else {
                     block = Block.getBlockById(nbttagcompound3.getInteger("i"));
                 }
 
@@ -533,28 +446,21 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     }
 
     @Nullable
-    public static Entity readChunkEntity(NBTTagCompound compound, World worldIn, Chunk chunkIn)
-    {
+    public static Entity readChunkEntity(NBTTagCompound compound, World worldIn, Chunk chunkIn) {
         Entity entity = createEntityFromNBT(compound, worldIn);
 
-        if (entity == null)
-        {
+        if (entity == null) {
             return null;
-        }
-        else
-        {
+        } else {
             chunkIn.addEntity(entity);
 
-            if (compound.hasKey("Passengers", 9))
-            {
+            if (compound.hasKey("Passengers", 9)) {
                 NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
 
-                for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                {
+                for (int i = 0; i < nbttaglist.tagCount(); ++i) {
                     Entity entity1 = readChunkEntity(nbttaglist.getCompoundTagAt(i), worldIn, chunkIn);
 
-                    if (entity1 != null)
-                    {
+                    if (entity1 != null) {
                         entity1.startRiding(entity, true);
                     }
                 }
@@ -565,34 +471,24 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     }
 
     @Nullable
-    public static Entity readWorldEntityPos(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean attemptSpawn)
-    {
+    public static Entity readWorldEntityPos(NBTTagCompound compound, World worldIn, double x, double y, double z, boolean attemptSpawn) {
         Entity entity = createEntityFromNBT(compound, worldIn);
 
-        if (entity == null)
-        {
+        if (entity == null) {
             return null;
-        }
-        else
-        {
+        } else {
             entity.setLocationAndAngles(x, y, z, entity.rotationYaw, entity.rotationPitch);
 
-            if (attemptSpawn && !worldIn.spawnEntity(entity))
-            {
+            if (attemptSpawn && !worldIn.spawnEntity(entity)) {
                 return null;
-            }
-            else
-            {
-                if (compound.hasKey("Passengers", 9))
-                {
+            } else {
+                if (compound.hasKey("Passengers", 9)) {
                     NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
 
-                    for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                    {
+                    for (int i = 0; i < nbttaglist.tagCount(); ++i) {
                         Entity entity1 = readWorldEntityPos(nbttaglist.getCompoundTagAt(i), worldIn, x, y, z, attemptSpawn);
 
-                        if (entity1 != null)
-                        {
+                        if (entity1 != null) {
                             entity1.startRiding(entity, true);
                         }
                     }
@@ -604,57 +500,42 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     }
 
     @Nullable
-    protected static Entity createEntityFromNBT(NBTTagCompound compound, World worldIn)
-    {
-        try
-        {
+    protected static Entity createEntityFromNBT(NBTTagCompound compound, World worldIn) {
+        try {
             return EntityList.createEntityFromNBT(compound, worldIn);
-        }
-        catch (RuntimeException var3)
-        {
+        } catch (RuntimeException var3) {
             return null;
         }
     }
 
-    public static void spawnEntity(Entity entityIn, World worldIn)
-    {
+    public static void spawnEntity(Entity entityIn, World worldIn) {
         spawnEntity(entityIn, worldIn, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
     }
 
     public static void spawnEntity(Entity entityIn, World worldIn, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
         if (worldIn.spawnEntity(entityIn, reason) && entityIn.isBeingRidden()) {
-            for (Entity entity : entityIn.getPassengers())
-            {
+            for (Entity entity : entityIn.getPassengers()) {
                 spawnEntity(entity, worldIn);
             }
         }
     }
 
     @Nullable
-    public static Entity readWorldEntity(NBTTagCompound compound, World worldIn, boolean p_186051_2_)
-    {
+    public static Entity readWorldEntity(NBTTagCompound compound, World worldIn, boolean p_186051_2_) {
         Entity entity = createEntityFromNBT(compound, worldIn);
 
-        if (entity == null)
-        {
+        if (entity == null) {
             return null;
-        }
-        else if (p_186051_2_ && !worldIn.spawnEntity(entity))
-        {
+        } else if (p_186051_2_ && !worldIn.spawnEntity(entity)) {
             return null;
-        }
-        else
-        {
-            if (compound.hasKey("Passengers", 9))
-            {
+        } else {
+            if (compound.hasKey("Passengers", 9)) {
                 NBTTagList nbttaglist = compound.getTagList("Passengers", 10);
 
-                for (int i = 0; i < nbttaglist.tagCount(); ++i)
-                {
+                for (int i = 0; i < nbttaglist.tagCount(); ++i) {
                     Entity entity1 = readWorldEntity(nbttaglist.getCompoundTagAt(i), worldIn, p_186051_2_);
 
-                    if (entity1 != null)
-                    {
+                    if (entity1 != null) {
                         entity1.startRiding(entity, true);
                     }
                 }
@@ -664,8 +545,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         }
     }
 
-    public int getPendingSaveCount()
-    {
+    public int getPendingSaveCount() {
         return this.chunksToSave.size();
     }
 }

@@ -39,12 +39,10 @@ import javax.annotation.Nullable;
 
 /**
  * This is a fluid block implementation which emulates vanilla Minecraft fluid behavior.
- *
+ * <p>
  * It is highly recommended that you use/extend this class for "classic" fluid blocks.
- *
  */
-public class BlockFluidClassic extends BlockFluidBase
-{
+public class BlockFluidClassic extends BlockFluidBase {
     protected static final List<EnumFacing> SIDES = Collections.unmodifiableList(Arrays.asList(
             EnumFacing.WEST, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.SOUTH));
 
@@ -55,35 +53,29 @@ public class BlockFluidClassic extends BlockFluidBase
 
     protected FluidStack stack;
 
-    public BlockFluidClassic(Fluid fluid, Material material)
-    {
+    public BlockFluidClassic(Fluid fluid, Material material) {
         super(fluid, material);
         stack = new FluidStack(fluid, Fluid.BUCKET_VOLUME);
     }
 
-    public BlockFluidClassic setFluidStack(FluidStack stack)
-    {
+    public BlockFluidClassic setFluidStack(FluidStack stack) {
         this.stack = stack;
         return this;
     }
 
-    public BlockFluidClassic setFluidStackAmount(int amount)
-    {
+    public BlockFluidClassic setFluidStackAmount(int amount) {
         this.stack.amount = amount;
         return this;
     }
 
     @Override
-    public int getQuantaValue(IBlockAccess world, BlockPos pos)
-    {
+    public int getQuantaValue(IBlockAccess world, BlockPos pos) {
         IBlockState state = world.getBlockState(pos);
-        if (state.getBlock().isAir(state, world, pos))
-        {
+        if (state.getBlock().isAir(state, world, pos)) {
             return 0;
         }
 
-        if (state.getBlock() != this)
-        {
+        if (state.getBlock() != this) {
             return -1;
         }
 
@@ -91,39 +83,32 @@ public class BlockFluidClassic extends BlockFluidBase
     }
 
     @Override
-    public boolean canCollideCheck(@Nonnull IBlockState state, boolean fullHit)
-    {
+    public boolean canCollideCheck(@Nonnull IBlockState state, boolean fullHit) {
         return fullHit && state.getValue(LEVEL) == 0;
     }
 
     @Override
-    public int getMaxRenderHeightMeta()
-    {
+    public int getMaxRenderHeightMeta() {
         return 0;
     }
 
     @Override
-    public void updateTick(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull Random rand)
-    {
+    public void updateTick(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull Random rand) {
         int quantaRemaining = quantaPerBlock - state.getValue(LEVEL);
         int expQuanta = -101;
 
         // check adjacent block levels if non-source
-        if (quantaRemaining < quantaPerBlock)
-        {
+        if (quantaRemaining < quantaPerBlock) {
             int adjacentSourceBlocks = 0;
 
-            if (ForgeEventFactory.canCreateFluidSource(world, pos, state, canCreateSources))
-            {
-                for (EnumFacing side : EnumFacing.Plane.HORIZONTAL)
-                {
+            if (ForgeEventFactory.canCreateFluidSource(world, pos, state, canCreateSources)) {
+                for (EnumFacing side : EnumFacing.Plane.HORIZONTAL) {
                     if (isSourceBlock(world, pos.offset(side))) adjacentSourceBlocks++;
                 }
             }
 
             // new source block
-            if (adjacentSourceBlocks >= 2 && (world.getBlockState(pos.up(densityDir)).getMaterial().isSolid() || isSourceBlock(world, pos.up(densityDir))))
-            {
+            if (adjacentSourceBlocks >= 2 && (world.getBlockState(pos.up(densityDir)).getMaterial().isSolid() || isSourceBlock(world, pos.up(densityDir)))) {
                 expQuanta = quantaPerBlock;
             }
             // unobstructed flow from 'above'
@@ -131,31 +116,23 @@ public class BlockFluidClassic extends BlockFluidBase
                     || hasDownhillFlow(world, pos, EnumFacing.EAST)
                     || hasDownhillFlow(world, pos, EnumFacing.WEST)
                     || hasDownhillFlow(world, pos, EnumFacing.NORTH)
-                    || hasDownhillFlow(world, pos, EnumFacing.SOUTH))
-            {
+                    || hasDownhillFlow(world, pos, EnumFacing.SOUTH)) {
                 expQuanta = quantaPerBlock - 1;
-            }
-            else
-            {
+            } else {
                 int maxQuanta = -100;
-                for (EnumFacing side : EnumFacing.Plane.HORIZONTAL)
-                {
+                for (EnumFacing side : EnumFacing.Plane.HORIZONTAL) {
                     maxQuanta = getLargerQuanta(world, pos.offset(side), maxQuanta);
                 }
                 expQuanta = maxQuanta - 1;
             }
 
             // decay calculation
-            if (expQuanta != quantaRemaining)
-            {
+            if (expQuanta != quantaRemaining) {
                 quantaRemaining = expQuanta;
 
-                if (expQuanta <= 0)
-                {
+                if (expQuanta <= 0) {
                     world.setBlockToAir(pos);
-                }
-                else
-                {
+                } else {
                     world.setBlockState(pos, state.withProperty(LEVEL, quantaPerBlock - expQuanta), 2);
                     world.scheduleUpdate(pos, this, tickRate);
                     world.notifyNeighborsOfStateChange(pos, this, false);
@@ -164,113 +141,90 @@ public class BlockFluidClassic extends BlockFluidBase
         }
 
         // Flow vertically if possible
-        if (canDisplace(world, pos.up(densityDir)))
-        {
+        if (canDisplace(world, pos.up(densityDir))) {
             flowIntoBlock(world, pos.up(densityDir), 1);
             return;
         }
 
         // Flow outward if possible
         int flowMeta = quantaPerBlock - quantaRemaining + 1;
-        if (flowMeta >= quantaPerBlock)
-        {
+        if (flowMeta >= quantaPerBlock) {
             return;
         }
 
-        if (isSourceBlock(world, pos) || !isFlowingVertically(world, pos))
-        {
-            if (world.getBlockState(pos.down(densityDir)).getBlock() == this)
-            {
+        if (isSourceBlock(world, pos) || !isFlowingVertically(world, pos)) {
+            if (world.getBlockState(pos.down(densityDir)).getBlock() == this) {
                 flowMeta = 1;
             }
             boolean flowTo[] = getOptimalFlowDirections(world, pos);
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 if (flowTo[i]) flowIntoBlock(world, pos.offset(SIDES.get(i)), flowMeta);
             }
         }
     }
 
-    protected final boolean hasDownhillFlow(IBlockAccess world, BlockPos pos, EnumFacing direction)
-    {
+    protected final boolean hasDownhillFlow(IBlockAccess world, BlockPos pos, EnumFacing direction) {
         return world.getBlockState(pos.offset(direction).down(densityDir)).getBlock() == this
                 && (canFlowInto(world, pos.offset(direction))
-                ||  canFlowInto(world, pos.down(densityDir)));
+                || canFlowInto(world, pos.down(densityDir)));
     }
 
-    public boolean isFlowingVertically(IBlockAccess world, BlockPos pos)
-    {
+    public boolean isFlowingVertically(IBlockAccess world, BlockPos pos) {
         return world.getBlockState(pos.up(densityDir)).getBlock() == this ||
-            (world.getBlockState(pos).getBlock() == this && canFlowInto(world, pos.up(densityDir)));
+                (world.getBlockState(pos).getBlock() == this && canFlowInto(world, pos.up(densityDir)));
     }
 
-    public boolean isSourceBlock(IBlockAccess world, BlockPos pos)
-    {
+    public boolean isSourceBlock(IBlockAccess world, BlockPos pos) {
         IBlockState state = world.getBlockState(pos);
         return state.getBlock() == this && state.getValue(LEVEL) == 0;
     }
 
-    protected boolean[] getOptimalFlowDirections(World world, BlockPos pos)
-    {
-        for (int side = 0; side < 4; side++)
-        {
+    protected boolean[] getOptimalFlowDirections(World world, BlockPos pos) {
+        for (int side = 0; side < 4; side++) {
             flowCost[side] = 1000;
 
             BlockPos pos2 = pos.offset(SIDES.get(side));
 
-            if (!canFlowInto(world, pos2) || isSourceBlock(world, pos2))
-            {
+            if (!canFlowInto(world, pos2) || isSourceBlock(world, pos2)) {
                 continue;
             }
 
-            if (canFlowInto(world, pos2.up(densityDir)))
-            {
+            if (canFlowInto(world, pos2.up(densityDir))) {
                 flowCost[side] = 0;
-            }
-            else
-            {
+            } else {
                 flowCost[side] = calculateFlowCost(world, pos2, 1, side);
             }
         }
 
         int min = Ints.min(flowCost);
-        for (int side = 1; side < 4; side++)
-        {
-            if (flowCost[side] < min)
-            {
+        for (int side = 1; side < 4; side++) {
+            if (flowCost[side] < min) {
                 min = flowCost[side];
             }
         }
-        for (int side = 0; side < 4; side++)
-        {
+        for (int side = 0; side < 4; side++) {
             isOptimalFlowDirection[side] = flowCost[side] == min;
         }
         return isOptimalFlowDirection;
     }
 
-    protected int calculateFlowCost(World world, BlockPos pos, int recurseDepth, int side)
-    {
+    protected int calculateFlowCost(World world, BlockPos pos, int recurseDepth, int side) {
         int cost = 1000;
-        for (int adjSide = 0; adjSide < 4; adjSide++)
-        {
-            if (SIDES.get(adjSide) == SIDES.get(side).getOpposite())
-            {
+        for (int adjSide = 0; adjSide < 4; adjSide++) {
+            if (SIDES.get(adjSide) == SIDES.get(side).getOpposite()) {
                 continue;
             }
             BlockPos pos2 = pos.offset(SIDES.get(adjSide));
 
-            if (!canFlowInto(world, pos2) || isSourceBlock(world, pos2))
-            {
+            if (!canFlowInto(world, pos2) || isSourceBlock(world, pos2)) {
                 continue;
             }
 
-            if (canFlowInto(world, pos2.up(densityDir)))
-            {
+            if (canFlowInto(world, pos2.up(densityDir))) {
                 return recurseDepth;
             }
 
-            if (recurseDepth >= quantaPerBlock / 2)
-            {
+            if (recurseDepth >= quantaPerBlock / 2) {
                 continue;
             }
 
@@ -279,25 +233,20 @@ public class BlockFluidClassic extends BlockFluidBase
         return cost;
     }
 
-    protected void flowIntoBlock(World world, BlockPos pos, int meta)
-    {
+    protected void flowIntoBlock(World world, BlockPos pos, int meta) {
         if (meta < 0) return;
-        if (displaceIfPossible(world, pos))
-        {
+        if (displaceIfPossible(world, pos)) {
             world.setBlockState(pos, this.getDefaultState().withProperty(LEVEL, meta), 3);
         }
     }
 
-    protected boolean canFlowInto(IBlockAccess world, BlockPos pos)
-    {
+    protected boolean canFlowInto(IBlockAccess world, BlockPos pos) {
         return world.getBlockState(pos).getBlock() == this || canDisplace(world, pos);
     }
 
-    protected int getLargerQuanta(IBlockAccess world, BlockPos pos, int compare)
-    {
+    protected int getLargerQuanta(IBlockAccess world, BlockPos pos, int compare) {
         int quantaRemaining = getQuantaValue(world, pos);
-        if (quantaRemaining <= 0)
-        {
+        if (quantaRemaining <= 0) {
             return compare;
         }
         return quantaRemaining >= compare ? quantaRemaining : compare;
@@ -305,14 +254,11 @@ public class BlockFluidClassic extends BlockFluidBase
 
     /* IFluidBlock */
     @Override
-    public int place(World world, BlockPos pos, @Nonnull FluidStack fluidStack, boolean doPlace)
-    {
-        if (fluidStack.amount < Fluid.BUCKET_VOLUME)
-        {
+    public int place(World world, BlockPos pos, @Nonnull FluidStack fluidStack, boolean doPlace) {
+        if (fluidStack.amount < Fluid.BUCKET_VOLUME) {
             return 0;
         }
-        if (doPlace)
-        {
+        if (doPlace) {
             FluidUtil.destroyBlockOnFluidPlacement(world, pos);
             world.setBlockState(pos, this.getDefaultState(), 11);
         }
@@ -321,15 +267,12 @@ public class BlockFluidClassic extends BlockFluidBase
 
     @Override
     @Nullable
-    public FluidStack drain(World world, BlockPos pos, boolean doDrain)
-    {
-        if (!isSourceBlock(world, pos))
-        {
+    public FluidStack drain(World world, BlockPos pos, boolean doDrain) {
+        if (!isSourceBlock(world, pos)) {
             return null;
         }
 
-        if (doDrain)
-        {
+        if (doDrain) {
             world.setBlockToAir(pos);
         }
 
@@ -337,8 +280,7 @@ public class BlockFluidClassic extends BlockFluidBase
     }
 
     @Override
-    public boolean canDrain(World world, BlockPos pos)
-    {
+    public boolean canDrain(World world, BlockPos pos) {
         return isSourceBlock(world, pos);
     }
 }

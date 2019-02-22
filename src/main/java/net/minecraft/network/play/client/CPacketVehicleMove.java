@@ -1,25 +1,23 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class CPacketVehicleMove implements Packet<INetHandlerPlayServer>
-{
+public class CPacketVehicleMove implements Packet<INetHandlerPlayServer> {
     private double x;
     private double y;
     private double z;
     private float yaw;
     private float pitch;
 
-    public CPacketVehicleMove()
-    {
+    public CPacketVehicleMove() {
     }
 
-    public CPacketVehicleMove(Entity entityIn)
-    {
+    public CPacketVehicleMove(Entity entityIn) {
         this.x = entityIn.posX;
         this.y = entityIn.posY;
         this.z = entityIn.posZ;
@@ -27,8 +25,7 @@ public class CPacketVehicleMove implements Packet<INetHandlerPlayServer>
         this.pitch = entityIn.rotationPitch;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -36,8 +33,7 @@ public class CPacketVehicleMove implements Packet<INetHandlerPlayServer>
         this.pitch = buf.readFloat();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -45,33 +41,27 @@ public class CPacketVehicleMove implements Packet<INetHandlerPlayServer>
         buf.writeFloat(this.pitch);
     }
 
-    public void processPacket(INetHandlerPlayServer handler)
-    {
+    public void processPacket(INetHandlerPlayServer handler) {
         handler.processVehicleMove(this);
     }
 
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 
-    public float getYaw()
-    {
+    public float getYaw() {
         return this.yaw;
     }
 
-    public float getPitch()
-    {
+    public float getPitch() {
         return this.pitch;
     }
 }

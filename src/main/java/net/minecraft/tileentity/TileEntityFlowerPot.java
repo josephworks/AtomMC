@@ -1,6 +1,7 @@
 package net.minecraft.tileentity;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -8,27 +9,22 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.DataFixer;
 
-public class TileEntityFlowerPot extends TileEntity
-{
+public class TileEntityFlowerPot extends TileEntity {
     private Item flowerPotItem;
     private int flowerPotData;
 
-    public TileEntityFlowerPot()
-    {
+    public TileEntityFlowerPot() {
     }
 
-    public TileEntityFlowerPot(Item potItem, int potData)
-    {
+    public TileEntityFlowerPot(Item potItem, int potData) {
         this.flowerPotItem = potItem;
         this.flowerPotData = potData;
     }
 
-    public static void registerFixesFlowerPot(DataFixer fixer)
-    {
+    public static void registerFixesFlowerPot(DataFixer fixer) {
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         ResourceLocation resourcelocation = Item.REGISTRY.getNameForObject(this.flowerPotItem);
         compound.setString("Item", resourcelocation == null ? "" : resourcelocation.toString());
@@ -36,16 +32,12 @@ public class TileEntityFlowerPot extends TileEntity
         return compound;
     }
 
-    public void readFromNBT(NBTTagCompound compound)
-    {
+    public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
 
-        if (compound.hasKey("Item", 8))
-        {
+        if (compound.hasKey("Item", 8)) {
             this.flowerPotItem = Item.getByNameOrId(compound.getString("Item"));
-        }
-        else
-        {
+        } else {
             this.flowerPotItem = Item.getItemById(compound.getInteger("Item"));
         }
 
@@ -53,35 +45,29 @@ public class TileEntityFlowerPot extends TileEntity
     }
 
     @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(this.pos, 5, this.getUpdateTag());
     }
 
-    public NBTTagCompound getUpdateTag()
-    {
+    public NBTTagCompound getUpdateTag() {
         return this.writeToNBT(new NBTTagCompound());
     }
 
-    public void setItemStack(ItemStack stack)
-    {
+    public void setItemStack(ItemStack stack) {
         this.flowerPotItem = stack.getItem();
         this.flowerPotData = stack.getMetadata();
     }
 
-    public ItemStack getFlowerItemStack()
-    {
+    public ItemStack getFlowerItemStack() {
         return this.flowerPotItem == null ? ItemStack.EMPTY : new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
     }
 
     @Nullable
-    public Item getFlowerPotItem()
-    {
+    public Item getFlowerPotItem() {
         return this.flowerPotItem;
     }
 
-    public int getFlowerPotData()
-    {
+    public int getFlowerPotData() {
         return this.flowerPotData;
     }
 }

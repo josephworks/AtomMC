@@ -1,6 +1,7 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
@@ -9,55 +10,45 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class CPacketUpdateSign implements Packet<INetHandlerPlayServer>
-{
+public class CPacketUpdateSign implements Packet<INetHandlerPlayServer> {
     private BlockPos pos;
     private String[] lines;
 
-    public CPacketUpdateSign()
-    {
+    public CPacketUpdateSign() {
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketUpdateSign(BlockPos posIn, ITextComponent[] linesIn)
-    {
+    public CPacketUpdateSign(BlockPos posIn, ITextComponent[] linesIn) {
         this.pos = posIn;
-        this.lines = new String[] {linesIn[0].getUnformattedText(), linesIn[1].getUnformattedText(), linesIn[2].getUnformattedText(), linesIn[3].getUnformattedText()};
+        this.lines = new String[]{linesIn[0].getUnformattedText(), linesIn[1].getUnformattedText(), linesIn[2].getUnformattedText(), linesIn[3].getUnformattedText()};
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.pos = buf.readBlockPos();
         this.lines = new String[4];
 
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             this.lines[i] = buf.readString(384);
         }
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeBlockPos(this.pos);
 
-        for (int i = 0; i < 4; ++i)
-        {
+        for (int i = 0; i < 4; ++i) {
             buf.writeString(this.lines[i]);
         }
     }
 
-    public void processPacket(INetHandlerPlayServer handler)
-    {
+    public void processPacket(INetHandlerPlayServer handler) {
         handler.processUpdateSign(this);
     }
 
-    public BlockPos getPosition()
-    {
+    public BlockPos getPosition() {
         return this.pos;
     }
 
-    public String[] getLines()
-    {
+    public String[] getLines() {
         return this.lines;
     }
 }

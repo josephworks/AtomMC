@@ -28,8 +28,7 @@ import net.minecraftforge.registries.IForgeRegistry.*;
 
 import javax.annotation.Nullable;
 
-public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
-{
+public class RegistryBuilder<T extends IForgeRegistryEntry<T>> {
     private ResourceLocation registryName;
     private Class<T> registryType;
     private ResourceLocation optionalDefaultKey;
@@ -45,117 +44,100 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     private DummyFactory<T> dummyFactory;
     private MissingFactory<T> missingFactory;
 
-    public RegistryBuilder<T> setName(ResourceLocation name)
-    {
+    public RegistryBuilder<T> setName(ResourceLocation name) {
         this.registryName = name;
         return this;
     }
 
-    public RegistryBuilder<T> setType(Class<T> type)
-    {
+    public RegistryBuilder<T> setType(Class<T> type) {
         this.registryType = type;
         return this;
     }
 
-    public RegistryBuilder<T> setIDRange(int min, int max)
-    {
+    public RegistryBuilder<T> setIDRange(int min, int max) {
         this.minId = min;
         this.maxId = max;
         return this;
     }
 
-    public RegistryBuilder<T> setMaxID(int max)
-    {
+    public RegistryBuilder<T> setMaxID(int max) {
         return this.setIDRange(0, max);
     }
 
-    public RegistryBuilder<T> setDefaultKey(ResourceLocation key)
-    {
+    public RegistryBuilder<T> setDefaultKey(ResourceLocation key) {
         this.optionalDefaultKey = key;
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public RegistryBuilder<T> addCallback(Object inst)
-    {
+    public RegistryBuilder<T> addCallback(Object inst) {
         if (inst instanceof AddCallback)
-            this.add((AddCallback<T>)inst);
+            this.add((AddCallback<T>) inst);
         if (inst instanceof ClearCallback)
-            this.add((ClearCallback<T>)inst);
+            this.add((ClearCallback<T>) inst);
         if (inst instanceof CreateCallback)
-            this.add((CreateCallback<T>)inst);
+            this.add((CreateCallback<T>) inst);
         if (inst instanceof ValidateCallback)
-            this.add((ValidateCallback<T>)inst);
+            this.add((ValidateCallback<T>) inst);
         if (inst instanceof DummyFactory)
-            this.set((DummyFactory<T>)inst);
+            this.set((DummyFactory<T>) inst);
         if (inst instanceof MissingFactory)
-            this.set((MissingFactory<T>)inst);
+            this.set((MissingFactory<T>) inst);
         return this;
     }
 
-    public RegistryBuilder<T> add(AddCallback<T> add)
-    {
+    public RegistryBuilder<T> add(AddCallback<T> add) {
         this.addCallback.add(add);
         return this;
     }
 
-    public RegistryBuilder<T> add(ClearCallback<T> clear)
-    {
+    public RegistryBuilder<T> add(ClearCallback<T> clear) {
         this.clearCallback.add(clear);
         return this;
     }
 
-    public RegistryBuilder<T> add(CreateCallback<T> create)
-    {
+    public RegistryBuilder<T> add(CreateCallback<T> create) {
         this.createCallback.add(create);
         return this;
     }
 
-    public RegistryBuilder<T> add(ValidateCallback<T> validate)
-    {
+    public RegistryBuilder<T> add(ValidateCallback<T> validate) {
         this.validateCallback.add(validate);
         return this;
     }
 
-    public RegistryBuilder<T> set(DummyFactory<T> factory)
-    {
+    public RegistryBuilder<T> set(DummyFactory<T> factory) {
         this.dummyFactory = factory;
         return this;
     }
 
-    public RegistryBuilder<T> set(MissingFactory<T> missing)
-    {
+    public RegistryBuilder<T> set(MissingFactory<T> missing) {
         this.missingFactory = missing;
         return this;
     }
 
-    public RegistryBuilder<T> disableSaving()
-    {
+    public RegistryBuilder<T> disableSaving() {
         this.saveToDisc = false;
         return this;
     }
 
-    public RegistryBuilder<T> disableOverrides()
-    {
+    public RegistryBuilder<T> disableOverrides() {
         this.allowOverrides = false;
         return this;
     }
 
-    public RegistryBuilder<T> allowModification()
-    {
+    public RegistryBuilder<T> allowModification() {
         this.allowModifications = true;
         return this;
     }
 
-    public IForgeRegistry<T> create()
-    {
+    public IForgeRegistry<T> create() {
         return RegistryManager.ACTIVE.createRegistry(registryName, registryType, optionalDefaultKey, minId, maxId,
                 getAdd(), getClear(), getCreate(), getValidate(), saveToDisc, allowOverrides, allowModifications, dummyFactory, missingFactory);
     }
 
     @Nullable
-    private AddCallback<T> getAdd()
-    {
+    private AddCallback<T> getAdd() {
         if (addCallback.isEmpty())
             return null;
         if (addCallback.size() == 1)
@@ -169,8 +151,7 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     }
 
     @Nullable
-    private ClearCallback<T> getClear()
-    {
+    private ClearCallback<T> getClear() {
         if (clearCallback.isEmpty())
             return null;
         if (clearCallback.size() == 1)
@@ -184,8 +165,7 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     }
 
     @Nullable
-    private CreateCallback<T> getCreate()
-    {
+    private CreateCallback<T> getCreate() {
         if (createCallback.isEmpty())
             return null;
         if (createCallback.size() == 1)
@@ -199,8 +179,7 @@ public class RegistryBuilder<T extends IForgeRegistryEntry<T>>
     }
 
     @Nullable
-    private ValidateCallback<T> getValidate()
-    {
+    private ValidateCallback<T> getValidate() {
         if (validateCallback.isEmpty())
             return null;
         if (validateCallback.size() == 1)

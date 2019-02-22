@@ -5,8 +5,7 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Vec3i;
 
-public class StructureBoundingBox
-{
+public class StructureBoundingBox {
     public int minX;
     public int minY;
     public int minZ;
@@ -14,14 +13,11 @@ public class StructureBoundingBox
     public int maxY;
     public int maxZ;
 
-    public StructureBoundingBox()
-    {
+    public StructureBoundingBox() {
     }
 
-    public StructureBoundingBox(int[] coords)
-    {
-        if (coords.length == 6)
-        {
+    public StructureBoundingBox(int[] coords) {
+        if (coords.length == 6) {
             this.minX = coords[0];
             this.minY = coords[1];
             this.minZ = coords[2];
@@ -31,15 +27,12 @@ public class StructureBoundingBox
         }
     }
 
-    public static StructureBoundingBox getNewBoundingBox()
-    {
+    public static StructureBoundingBox getNewBoundingBox() {
         return new StructureBoundingBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
 
-    public static StructureBoundingBox getComponentToAddBoundingBox(int structureMinX, int structureMinY, int structureMinZ, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, EnumFacing facing)
-    {
-        switch (facing)
-        {
+    public static StructureBoundingBox getComponentToAddBoundingBox(int structureMinX, int structureMinY, int structureMinZ, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax, EnumFacing facing) {
+        switch (facing) {
             case NORTH:
                 return new StructureBoundingBox(structureMinX + xMin, structureMinY + yMin, structureMinZ - zMax + 1 + zMin, structureMinX + xMax - 1 + xMin, structureMinY + yMax - 1 + yMin, structureMinZ + zMin);
             case SOUTH:
@@ -53,13 +46,11 @@ public class StructureBoundingBox
         }
     }
 
-    public static StructureBoundingBox createProper(int x1, int y1, int z1, int x2, int y2, int z2)
-    {
+    public static StructureBoundingBox createProper(int x1, int y1, int z1, int x2, int y2, int z2) {
         return new StructureBoundingBox(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
     }
 
-    public StructureBoundingBox(StructureBoundingBox structurebb)
-    {
+    public StructureBoundingBox(StructureBoundingBox structurebb) {
         this.minX = structurebb.minX;
         this.minY = structurebb.minY;
         this.minZ = structurebb.minZ;
@@ -68,8 +59,7 @@ public class StructureBoundingBox
         this.maxZ = structurebb.maxZ;
     }
 
-    public StructureBoundingBox(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax)
-    {
+    public StructureBoundingBox(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
         this.minX = xMin;
         this.minY = yMin;
         this.minZ = zMin;
@@ -78,8 +68,7 @@ public class StructureBoundingBox
         this.maxZ = zMax;
     }
 
-    public StructureBoundingBox(Vec3i vec1, Vec3i vec2)
-    {
+    public StructureBoundingBox(Vec3i vec1, Vec3i vec2) {
         this.minX = Math.min(vec1.getX(), vec2.getX());
         this.minY = Math.min(vec1.getY(), vec2.getY());
         this.minZ = Math.min(vec1.getZ(), vec2.getZ());
@@ -88,8 +77,7 @@ public class StructureBoundingBox
         this.maxZ = Math.max(vec1.getZ(), vec2.getZ());
     }
 
-    public StructureBoundingBox(int xMin, int zMin, int xMax, int zMax)
-    {
+    public StructureBoundingBox(int xMin, int zMin, int xMax, int zMax) {
         this.minX = xMin;
         this.minZ = zMin;
         this.maxX = xMax;
@@ -98,18 +86,15 @@ public class StructureBoundingBox
         this.maxY = 512;
     }
 
-    public boolean intersectsWith(StructureBoundingBox structurebb)
-    {
+    public boolean intersectsWith(StructureBoundingBox structurebb) {
         return this.maxX >= structurebb.minX && this.minX <= structurebb.maxX && this.maxZ >= structurebb.minZ && this.minZ <= structurebb.maxZ && this.maxY >= structurebb.minY && this.minY <= structurebb.maxY;
     }
 
-    public boolean intersectsWith(int minXIn, int minZIn, int maxXIn, int maxZIn)
-    {
+    public boolean intersectsWith(int minXIn, int minZIn, int maxXIn, int maxZIn) {
         return this.maxX >= minXIn && this.minX <= maxXIn && this.maxZ >= minZIn && this.minZ <= maxZIn;
     }
 
-    public void expandTo(StructureBoundingBox sbb)
-    {
+    public void expandTo(StructureBoundingBox sbb) {
         this.minX = Math.min(this.minX, sbb.minX);
         this.minY = Math.min(this.minY, sbb.minY);
         this.minZ = Math.min(this.minZ, sbb.minZ);
@@ -118,8 +103,7 @@ public class StructureBoundingBox
         this.maxZ = Math.max(this.maxZ, sbb.maxZ);
     }
 
-    public void offset(int x, int y, int z)
-    {
+    public void offset(int x, int y, int z) {
         this.minX += x;
         this.minY += y;
         this.minZ += z;
@@ -128,38 +112,31 @@ public class StructureBoundingBox
         this.maxZ += z;
     }
 
-    public boolean isVecInside(Vec3i vec)
-    {
+    public boolean isVecInside(Vec3i vec) {
         return vec.getX() >= this.minX && vec.getX() <= this.maxX && vec.getZ() >= this.minZ && vec.getZ() <= this.maxZ && vec.getY() >= this.minY && vec.getY() <= this.maxY;
     }
 
-    public Vec3i getLength()
-    {
+    public Vec3i getLength() {
         return new Vec3i(this.maxX - this.minX, this.maxY - this.minY, this.maxZ - this.minZ);
     }
 
-    public int getXSize()
-    {
+    public int getXSize() {
         return this.maxX - this.minX + 1;
     }
 
-    public int getYSize()
-    {
+    public int getYSize() {
         return this.maxY - this.minY + 1;
     }
 
-    public int getZSize()
-    {
+    public int getZSize() {
         return this.maxZ - this.minZ + 1;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return MoreObjects.toStringHelper(this).add("x0", this.minX).add("y0", this.minY).add("z0", this.minZ).add("x1", this.maxX).add("y1", this.maxY).add("z1", this.maxZ).toString();
     }
 
-    public NBTTagIntArray toNBTTagIntArray()
-    {
-        return new NBTTagIntArray(new int[] {this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
+    public NBTTagIntArray toNBTTagIntArray() {
+        return new NBTTagIntArray(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
     }
 }

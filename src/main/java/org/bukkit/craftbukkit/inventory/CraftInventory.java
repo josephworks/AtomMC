@@ -457,7 +457,7 @@ public class CraftInventory implements Inventory {
         } else if (inventory instanceof TileEntityFurnace) {
             return InventoryType.FURNACE;
         } else if (this instanceof CraftInventoryEnchanting) {
-           return InventoryType.ENCHANTING;
+            return InventoryType.ENCHANTING;
         } else if (inventory instanceof TileEntityBrewingStand) {
             return InventoryType.BREWING;
         } else if (inventory instanceof CraftInventoryCustom.MinecraftInventory) {
@@ -469,7 +469,7 @@ public class CraftInventory implements Inventory {
         } else if (inventory instanceof TileEntityBeacon) {
             return InventoryType.BEACON;
         } else if (this instanceof CraftInventoryAnvil) {
-           return InventoryType.ANVIL;
+            return InventoryType.ANVIL;
         } else if (inventory instanceof IHopper) {
             return InventoryType.HOPPER;
         } else if (inventory instanceof TileEntityShulkerBox) {

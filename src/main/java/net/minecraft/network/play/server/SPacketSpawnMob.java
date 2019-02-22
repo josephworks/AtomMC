@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
@@ -13,8 +14,7 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
-{
+public class SPacketSpawnMob implements Packet<INetHandlerPlayClient> {
     private int entityId;
     private UUID uniqueId;
     private int type;
@@ -28,66 +28,57 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
     private byte pitch;
     private byte headPitch;
     private EntityDataManager dataManager;
-    private List < EntityDataManager.DataEntry<? >> dataManagerEntries;
+    private List<EntityDataManager.DataEntry<?>> dataManagerEntries;
 
-    public SPacketSpawnMob()
-    {
+    public SPacketSpawnMob() {
     }
 
-    public SPacketSpawnMob(EntityLivingBase entityIn)
-    {
+    public SPacketSpawnMob(EntityLivingBase entityIn) {
         this.entityId = entityIn.getEntityId();
         this.uniqueId = entityIn.getUniqueID();
         this.type = EntityList.getID(entityIn.getClass());
         this.x = entityIn.posX;
         this.y = entityIn.posY;
         this.z = entityIn.posZ;
-        this.yaw = (byte)((int)(entityIn.rotationYaw * 256.0F / 360.0F));
-        this.pitch = (byte)((int)(entityIn.rotationPitch * 256.0F / 360.0F));
-        this.headPitch = (byte)((int)(entityIn.rotationYawHead * 256.0F / 360.0F));
+        this.yaw = (byte) ((int) (entityIn.rotationYaw * 256.0F / 360.0F));
+        this.pitch = (byte) ((int) (entityIn.rotationPitch * 256.0F / 360.0F));
+        this.headPitch = (byte) ((int) (entityIn.rotationYawHead * 256.0F / 360.0F));
         double d0 = 3.9D;
         double d1 = entityIn.motionX;
         double d2 = entityIn.motionY;
         double d3 = entityIn.motionZ;
 
-        if (d1 < -3.9D)
-        {
+        if (d1 < -3.9D) {
             d1 = -3.9D;
         }
 
-        if (d2 < -3.9D)
-        {
+        if (d2 < -3.9D) {
             d2 = -3.9D;
         }
 
-        if (d3 < -3.9D)
-        {
+        if (d3 < -3.9D) {
             d3 = -3.9D;
         }
 
-        if (d1 > 3.9D)
-        {
+        if (d1 > 3.9D) {
             d1 = 3.9D;
         }
 
-        if (d2 > 3.9D)
-        {
+        if (d2 > 3.9D) {
             d2 = 3.9D;
         }
 
-        if (d3 > 3.9D)
-        {
+        if (d3 > 3.9D) {
             d3 = 3.9D;
         }
 
-        this.velocityX = (int)(d1 * 8000.0D);
-        this.velocityY = (int)(d2 * 8000.0D);
-        this.velocityZ = (int)(d3 * 8000.0D);
+        this.velocityX = (int) (d1 * 8000.0D);
+        this.velocityY = (int) (d2 * 8000.0D);
+        this.velocityZ = (int) (d3 * 8000.0D);
         this.dataManager = entityIn.getDataManager();
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.entityId = buf.readVarInt();
         this.uniqueId = buf.readUniqueId();
         this.type = buf.readVarInt();
@@ -103,8 +94,7 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
         this.dataManagerEntries = EntityDataManager.readEntries(buf);
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeVarInt(this.entityId);
         buf.writeUniqueId(this.uniqueId);
         buf.writeVarInt(this.type);
@@ -120,87 +110,73 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
         this.dataManager.writeEntries(buf);
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleSpawnMob(this);
     }
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public List < EntityDataManager.DataEntry<? >> getDataManagerEntries()
-    {
+    public List<EntityDataManager.DataEntry<?>> getDataManagerEntries() {
         return this.dataManagerEntries;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getEntityID()
-    {
+    public int getEntityID() {
         return this.entityId;
     }
 
     @SideOnly(Side.CLIENT)
-    public UUID getUniqueId()
-    {
+    public UUID getUniqueId() {
         return this.uniqueId;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getEntityType()
-    {
+    public int getEntityType() {
         return this.type;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getVelocityX()
-    {
+    public int getVelocityX() {
         return this.velocityX;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getVelocityY()
-    {
+    public int getVelocityY() {
         return this.velocityY;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getVelocityZ()
-    {
+    public int getVelocityZ() {
         return this.velocityZ;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getYaw()
-    {
+    public byte getYaw() {
         return this.yaw;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getPitch()
-    {
+    public byte getPitch() {
         return this.pitch;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getHeadPitch()
-    {
+    public byte getHeadPitch() {
         return this.headPitch;
     }
 }

@@ -41,7 +41,8 @@ import java.util.logging.Logger;
 public final class CraftMagicNumbers implements UnsafeValues {
     public static final UnsafeValues INSTANCE = new CraftMagicNumbers();
 
-    private CraftMagicNumbers() {}
+    private CraftMagicNumbers() {
+    }
 
     public static Block getBlock(org.bukkit.block.Block block) {
         return getBlock(block.getType());

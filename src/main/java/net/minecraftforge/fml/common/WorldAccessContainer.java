@@ -25,8 +25,8 @@ import net.minecraft.nbt.*;
 import net.minecraft.world.storage.*;
 
 
-public interface WorldAccessContainer
-{
+public interface WorldAccessContainer {
     NBTTagCompound getDataForWriting(SaveHandler handler, WorldInfo info);
+
     void readData(SaveHandler handler, WorldInfo info, Map<String, NBTBase> propertyMap, NBTTagCompound tag);
 }

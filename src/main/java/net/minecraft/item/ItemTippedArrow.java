@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,29 +17,22 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemTippedArrow extends ItemArrow
-{
+public class ItemTippedArrow extends ItemArrow {
     @SideOnly(Side.CLIENT)
-    public ItemStack getDefaultInstance()
-    {
+    public ItemStack getDefaultInstance() {
         return PotionUtils.addPotionToItemStack(super.getDefaultInstance(), PotionTypes.POISON);
     }
 
-    public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter)
-    {
+    public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter) {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(worldIn, shooter);
         entitytippedarrow.setPotionEffect(stack);
         return entitytippedarrow;
     }
 
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-    {
-        if (this.isInCreativeTab(tab))
-        {
-            for (PotionType potiontype : PotionType.REGISTRY)
-            {
-                if (!potiontype.getEffects().isEmpty())
-                {
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (this.isInCreativeTab(tab)) {
+            for (PotionType potiontype : PotionType.REGISTRY) {
+                if (!potiontype.getEffects().isEmpty()) {
                     items.add(PotionUtils.addPotionToItemStack(new ItemStack(this), potiontype));
                 }
             }
@@ -46,13 +40,11 @@ public class ItemTippedArrow extends ItemArrow
     }
 
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
-    {
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         PotionUtils.addPotionTooltip(stack, tooltip, 0.125F);
     }
 
-    public String getItemStackDisplayName(ItemStack stack)
-    {
+    public String getItemStackDisplayName(ItemStack stack) {
         return I18n.translateToLocal(PotionUtils.getPotionFromItem(stack).getNamePrefixed("tipped_arrow.effect."));
     }
 }

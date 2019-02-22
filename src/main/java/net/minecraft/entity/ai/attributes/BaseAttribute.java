@@ -2,59 +2,49 @@ package net.minecraft.entity.ai.attributes;
 
 import javax.annotation.Nullable;
 
-public abstract class BaseAttribute implements IAttribute
-{
+public abstract class BaseAttribute implements IAttribute {
     private final IAttribute parent;
     private final String unlocalizedName;
     private final double defaultValue;
     private boolean shouldWatch;
 
-    protected BaseAttribute(@Nullable IAttribute parentIn, String unlocalizedNameIn, double defaultValueIn)
-    {
+    protected BaseAttribute(@Nullable IAttribute parentIn, String unlocalizedNameIn, double defaultValueIn) {
         this.parent = parentIn;
         this.unlocalizedName = unlocalizedNameIn;
         this.defaultValue = defaultValueIn;
 
-        if (unlocalizedNameIn == null)
-        {
+        if (unlocalizedNameIn == null) {
             throw new IllegalArgumentException("Name cannot be null!");
         }
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.unlocalizedName;
     }
 
-    public double getDefaultValue()
-    {
+    public double getDefaultValue() {
         return this.defaultValue;
     }
 
-    public boolean getShouldWatch()
-    {
+    public boolean getShouldWatch() {
         return this.shouldWatch;
     }
 
-    public BaseAttribute setShouldWatch(boolean shouldWatchIn)
-    {
+    public BaseAttribute setShouldWatch(boolean shouldWatchIn) {
         this.shouldWatch = shouldWatchIn;
         return this;
     }
 
     @Nullable
-    public IAttribute getParent()
-    {
+    public IAttribute getParent() {
         return this.parent;
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         return this.unlocalizedName.hashCode();
     }
 
-    public boolean equals(Object p_equals_1_)
-    {
-        return p_equals_1_ instanceof IAttribute && this.unlocalizedName.equals(((IAttribute)p_equals_1_).getName());
+    public boolean equals(Object p_equals_1_) {
+        return p_equals_1_ instanceof IAttribute && this.unlocalizedName.equals(((IAttribute) p_equals_1_).getName());
     }
 }

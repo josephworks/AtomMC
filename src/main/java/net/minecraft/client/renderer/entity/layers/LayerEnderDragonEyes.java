@@ -10,18 +10,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerEnderDragonEyes implements LayerRenderer<EntityDragon>
-{
+public class LayerEnderDragonEyes implements LayerRenderer<EntityDragon> {
     private static final ResourceLocation TEXTURE = new ResourceLocation("textures/entity/enderdragon/dragon_eyes.png");
     private final RenderDragon dragonRenderer;
 
-    public LayerEnderDragonEyes(RenderDragon dragonRendererIn)
-    {
+    public LayerEnderDragonEyes(RenderDragon dragonRendererIn) {
         this.dragonRenderer = dragonRendererIn;
     }
 
-    public void doRenderLayer(EntityDragon entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void doRenderLayer(EntityDragon entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.dragonRenderer.bindTexture(TEXTURE);
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
@@ -43,8 +40,7 @@ public class LayerEnderDragonEyes implements LayerRenderer<EntityDragon>
         GlStateManager.depthFunc(515);
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return false;
     }
 }

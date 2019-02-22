@@ -3,11 +3,11 @@ package net.minecraft.entity.ai.attributes;
 import java.util.Collection;
 import java.util.UUID;
 import javax.annotation.Nullable;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public interface IAttributeInstance
-{
+public interface IAttributeInstance {
     IAttribute getAttribute();
 
     double getBaseValue();

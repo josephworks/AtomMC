@@ -2,11 +2,13 @@ package net.minecraft.tileentity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStainedGlass;
@@ -78,10 +80,8 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         }
     }
 
-    public void updateBeacon()
-    {
-        if (this.world != null)
-        {
+    public void updateBeacon() {
+        if (this.world != null) {
             this.updateSegmentColors();
             this.addEffectsToPlayers();
         }
@@ -107,7 +107,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         int k = this.pos.getX();
         int l = this.pos.getY();
         int i1 = this.pos.getZ();
-        AxisAlignedBB axisalignedbb = (new AxisAlignedBB((double)k, (double)l, (double)i1, (double)(k + 1), (double)(l + 1), (double)(i1 + 1))).grow(d0).expand(0.0D, (double)this.world.getHeight(), 0.0D);
+        AxisAlignedBB axisalignedbb = (new AxisAlignedBB((double) k, (double) l, (double) i1, (double) (k + 1), (double) (l + 1), (double) (i1 + 1))).grow(d0).expand(0.0D, (double) this.world.getHeight(), 0.0D);
         return this.world.getEntitiesWithinAABB(EntityPlayer.class, axisalignedbb);
     }
 
@@ -136,8 +136,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     }
     // CraftBukkit end
 
-    private void updateSegmentColors()
-    {
+    private void updateSegmentColors() {
         int i = this.pos.getX();
         int j = this.pos.getY();
         int k = this.pos.getZ();
@@ -150,21 +149,15 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         boolean flag = true;
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int i1 = j + 1; i1 < 256; ++i1)
-        {
+        for (int i1 = j + 1; i1 < 256; ++i1) {
             IBlockState iblockstate = this.world.getBlockState(blockpos$mutableblockpos.setPos(i, i1, k));
             float[] afloat;
 
-            if (iblockstate.getBlock() == Blocks.STAINED_GLASS)
-            {
-                afloat = ((EnumDyeColor)iblockstate.getValue(BlockStainedGlass.COLOR)).getColorComponentValues();
-            }
-            else
-            {
-                if (iblockstate.getBlock() != Blocks.STAINED_GLASS_PANE)
-                {
-                    if (iblockstate.getLightOpacity(world, blockpos$mutableblockpos) >= 15 && iblockstate.getBlock() != Blocks.BEDROCK)
-                    {
+            if (iblockstate.getBlock() == Blocks.STAINED_GLASS) {
+                afloat = ((EnumDyeColor) iblockstate.getValue(BlockStainedGlass.COLOR)).getColorComponentValues();
+            } else {
+                if (iblockstate.getBlock() != Blocks.STAINED_GLASS_PANE) {
+                    if (iblockstate.getLightOpacity(world, blockpos$mutableblockpos) >= 15 && iblockstate.getBlock() != Blocks.BEDROCK) {
                         this.isComplete = false;
                         this.beamSegments.clear();
                         break;
@@ -173,25 +166,20 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
                     if (customColor != null)
                         afloat = customColor;
                     else {
-                    tileentitybeacon$beamsegment.incrementHeight();
-                    continue;
+                        tileentitybeacon$beamsegment.incrementHeight();
+                        continue;
                     }
-                }
-                else
-                afloat = ((EnumDyeColor)iblockstate.getValue(BlockStainedGlassPane.COLOR)).getColorComponentValues();
+                } else
+                    afloat = ((EnumDyeColor) iblockstate.getValue(BlockStainedGlassPane.COLOR)).getColorComponentValues();
             }
 
-            if (!flag)
-            {
-                afloat = new float[] {(tileentitybeacon$beamsegment.getColors()[0] + afloat[0]) / 2.0F, (tileentitybeacon$beamsegment.getColors()[1] + afloat[1]) / 2.0F, (tileentitybeacon$beamsegment.getColors()[2] + afloat[2]) / 2.0F};
+            if (!flag) {
+                afloat = new float[]{(tileentitybeacon$beamsegment.getColors()[0] + afloat[0]) / 2.0F, (tileentitybeacon$beamsegment.getColors()[1] + afloat[1]) / 2.0F, (tileentitybeacon$beamsegment.getColors()[2] + afloat[2]) / 2.0F};
             }
 
-            if (Arrays.equals(afloat, tileentitybeacon$beamsegment.getColors()))
-            {
+            if (Arrays.equals(afloat, tileentitybeacon$beamsegment.getColors())) {
                 tileentitybeacon$beamsegment.incrementHeight();
-            }
-            else
-            {
+            } else {
                 tileentitybeacon$beamsegment = new BeamSegment(afloat);
                 this.beamSegments.add(tileentitybeacon$beamsegment);
             }
@@ -199,86 +187,68 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
             flag = false;
         }
 
-        if (this.isComplete)
-        {
-            for (int l1 = 1; l1 <= 4; this.levels = l1++)
-            {
+        if (this.isComplete) {
+            for (int l1 = 1; l1 <= 4; this.levels = l1++) {
                 int i2 = j - l1;
 
-                if (i2 < 0)
-                {
+                if (i2 < 0) {
                     break;
                 }
 
                 boolean flag1 = true;
 
-                for (int j1 = i - l1; j1 <= i + l1 && flag1; ++j1)
-                {
-                    for (int k1 = k - l1; k1 <= k + l1; ++k1)
-                    {
+                for (int j1 = i - l1; j1 <= i + l1 && flag1; ++j1) {
+                    for (int k1 = k - l1; k1 <= k + l1; ++k1) {
                         Block block = this.world.getBlockState(new BlockPos(j1, i2, k1)).getBlock();
 
-                        if (!block.isBeaconBase(this.world, new BlockPos(j1, i2, k1), getPos()))
-                        {
+                        if (!block.isBeaconBase(this.world, new BlockPos(j1, i2, k1), getPos())) {
                             flag1 = false;
                             break;
                         }
                     }
                 }
 
-                if (!flag1)
-                {
+                if (!flag1) {
                     break;
                 }
             }
 
-            if (this.levels == 0)
-            {
+            if (this.levels == 0) {
                 this.isComplete = false;
             }
         }
 
-        if (!this.world.isRemote && l < this.levels)
-        {
-            for (EntityPlayerMP entityplayermp : this.world.getEntitiesWithinAABB(EntityPlayerMP.class, (new AxisAlignedBB((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k)).grow(10.0D, 5.0D, 10.0D)))
-            {
+        if (!this.world.isRemote && l < this.levels) {
+            for (EntityPlayerMP entityplayermp : this.world.getEntitiesWithinAABB(EntityPlayerMP.class, (new AxisAlignedBB((double) i, (double) j, (double) k, (double) i, (double) (j - 4), (double) k)).grow(10.0D, 5.0D, 10.0D))) {
                 CriteriaTriggers.CONSTRUCT_BEACON.trigger(entityplayermp, this);
             }
         }
     }
 
     @SideOnly(Side.CLIENT)
-    public List<BeamSegment> getBeamSegments()
-    {
+    public List<BeamSegment> getBeamSegments() {
         return this.beamSegments;
     }
 
     @SideOnly(Side.CLIENT)
-    public float shouldBeamRender()
-    {
-        if (!this.isComplete)
-        {
+    public float shouldBeamRender() {
+        if (!this.isComplete) {
             return 0.0F;
-        }
-        else
-        {
-            int i = (int)(this.world.getTotalWorldTime() - this.beamRenderCounter);
+        } else {
+            int i = (int) (this.world.getTotalWorldTime() - this.beamRenderCounter);
             this.beamRenderCounter = this.world.getTotalWorldTime();
 
-            if (i > 1)
-            {
-                this.beamRenderScale -= (float)i / 40.0F;
+            if (i > 1) {
+                this.beamRenderScale -= (float) i / 40.0F;
 
-                if (this.beamRenderScale < 0.0F)
-                {
+                if (this.beamRenderScale < 0.0F) {
                     this.beamRenderScale = 0.0F;
                 }
             }
 
             this.beamRenderScale += 0.025F;
 
-            if (this.beamRenderScale > 1.0F)
-            {
+            if (this.beamRenderScale > 1.0F) {
                 this.beamRenderScale = 1.0F;
             }
 
@@ -286,37 +256,31 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         }
     }
 
-    public int getLevels()
-    {
+    public int getLevels() {
         return this.levels;
     }
 
     @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
-    {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
     }
 
-    public NBTTagCompound getUpdateTag()
-    {
+    public NBTTagCompound getUpdateTag() {
         return this.writeToNBT(new NBTTagCompound());
     }
 
     @SideOnly(Side.CLIENT)
-    public double getMaxRenderDistanceSquared()
-    {
+    public double getMaxRenderDistanceSquared() {
         return 65536.0D;
     }
 
     @Nullable
-    private static Potion isBeaconEffect(int p_184279_0_)
-    {
+    private static Potion isBeaconEffect(int p_184279_0_) {
         Potion potion = Potion.getPotionById(p_184279_0_);
         return VALID_EFFECTS.contains(potion) ? potion : null;
     }
 
-    public void readFromNBT(NBTTagCompound compound)
-    {
+    public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         // Craftbukkit start - persist manually set non-default beacon effects (SPIGOT-3598)
         // this.primaryEffect = isBeaconEffect(compound.getInteger("Primary"));
@@ -327,8 +291,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         this.levels = compound.getInteger("Levels");
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         compound.setInteger("Primary", Potion.getIdFromPotion(this.primaryEffect));
         compound.setInteger("Secondary", Potion.getIdFromPotion(this.secondaryEffect));
@@ -336,123 +299,92 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         return compound;
     }
 
-    public int getSizeInventory()
-    {
+    public int getSizeInventory() {
         return 1;
     }
 
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return this.payment.isEmpty();
     }
 
-    public ItemStack getStackInSlot(int index)
-    {
+    public ItemStack getStackInSlot(int index) {
         return index == 0 ? this.payment : ItemStack.EMPTY;
     }
 
-    public ItemStack decrStackSize(int index, int count)
-    {
-        if (index == 0 && !this.payment.isEmpty())
-        {
-            if (count >= this.payment.getCount())
-            {
+    public ItemStack decrStackSize(int index, int count) {
+        if (index == 0 && !this.payment.isEmpty()) {
+            if (count >= this.payment.getCount()) {
                 ItemStack itemstack = this.payment;
                 this.payment = ItemStack.EMPTY;
                 return itemstack;
-            }
-            else
-            {
+            } else {
                 return this.payment.splitStack(count);
             }
-        }
-        else
-        {
+        } else {
             return ItemStack.EMPTY;
         }
     }
 
-    public ItemStack removeStackFromSlot(int index)
-    {
-        if (index == 0)
-        {
+    public ItemStack removeStackFromSlot(int index) {
+        if (index == 0) {
             ItemStack itemstack = this.payment;
             this.payment = ItemStack.EMPTY;
             return itemstack;
-        }
-        else
-        {
+        } else {
             return ItemStack.EMPTY;
         }
     }
 
-    public void setInventorySlotContents(int index, ItemStack stack)
-    {
-        if (index == 0)
-        {
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        if (index == 0) {
             this.payment = stack;
         }
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.hasCustomName() ? this.customName : "container.beacon";
     }
 
-    public boolean hasCustomName()
-    {
+    public boolean hasCustomName() {
         return this.customName != null && !this.customName.isEmpty();
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.customName = name;
     }
 
-    public int getInventoryStackLimit()
-    {
+    public int getInventoryStackLimit() {
         return 1;
     }
 
-    public boolean isUsableByPlayer(EntityPlayer player)
-    {
-        if (this.world.getTileEntity(this.pos) != this)
-        {
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        if (this.world.getTileEntity(this.pos) != this) {
             return false;
-        }
-        else
-        {
-            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        } else {
+            return player.getDistanceSq((double) this.pos.getX() + 0.5D, (double) this.pos.getY() + 0.5D, (double) this.pos.getZ() + 0.5D) <= 64.0D;
         }
     }
 
-    public void openInventory(EntityPlayer player)
-    {
+    public void openInventory(EntityPlayer player) {
     }
 
-    public void closeInventory(EntityPlayer player)
-    {
+    public void closeInventory(EntityPlayer player) {
     }
 
-    public boolean isItemValidForSlot(int index, ItemStack stack)
-    {
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
         return stack.getItem() != null && stack.getItem().isBeaconPayment(stack);
     }
 
-    public String getGuiID()
-    {
+    public String getGuiID() {
         return "minecraft:beacon";
     }
 
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-    {
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
         return new ContainerBeacon(playerInventory, this);
     }
 
-    public int getField(int id)
-    {
-        switch (id)
-        {
+    public int getField(int id) {
+        switch (id) {
             case 0:
                 return this.levels;
             case 1:
@@ -464,10 +396,8 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         }
     }
 
-    public void setField(int id, int value)
-    {
-        switch (id)
-        {
+    public void setField(int id, int value) {
+        switch (id) {
             case 0:
                 this.levels = value;
                 break;
@@ -479,77 +409,61 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         }
     }
 
-    public int getFieldCount()
-    {
+    public int getFieldCount() {
         return 3;
     }
 
-    public void clear()
-    {
+    public void clear() {
         this.payment = ItemStack.EMPTY;
     }
 
-    public boolean receiveClientEvent(int id, int type)
-    {
-        if (id == 1)
-        {
+    public boolean receiveClientEvent(int id, int type) {
+        if (id == 1) {
             this.updateBeacon();
             return true;
-        }
-        else
-        {
+        } else {
             return super.receiveClientEvent(id, type);
         }
     }
 
-    public int[] getSlotsForFace(EnumFacing side)
-    {
+    public int[] getSlotsForFace(EnumFacing side) {
         return new int[0];
     }
 
-    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction)
-    {
+    public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction) {
         return false;
     }
 
-    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
-    {
+    public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction) {
         return false;
     }
 
-    static
-    {
-        for (Potion[] apotion : EFFECTS_LIST)
-        {
+    static {
+        for (Potion[] apotion : EFFECTS_LIST) {
             Collections.addAll(VALID_EFFECTS, apotion);
         }
     }
 
-    public static class BeamSegment
-        {
-            private final float[] colors;
-            private int height;
+    public static class BeamSegment {
+        private final float[] colors;
+        private int height;
 
-            public BeamSegment(float[] colorsIn)
-            {
-                this.colors = colorsIn;
-                this.height = 1;
-            }
-
-            protected void incrementHeight()
-            {
-                ++this.height;
-            }
-
-            public float[] getColors()
-            {
-                return this.colors;
-            }
-
-            @SideOnly(Side.CLIENT)
-            public int getHeight()
-            {
-                return this.height;
-            }
+        public BeamSegment(float[] colorsIn) {
+            this.colors = colorsIn;
+            this.height = 1;
         }
+
+        protected void incrementHeight() {
+            ++this.height;
+        }
+
+        public float[] getColors() {
+            return this.colors;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public int getHeight() {
+            return this.height;
+        }
+    }
 }

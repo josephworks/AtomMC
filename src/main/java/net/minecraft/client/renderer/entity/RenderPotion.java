@@ -8,15 +8,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderPotion extends RenderSnowball<EntityPotion>
-{
-    public RenderPotion(RenderManager renderManagerIn, RenderItem itemRendererIn)
-    {
+public class RenderPotion extends RenderSnowball<EntityPotion> {
+    public RenderPotion(RenderManager renderManagerIn, RenderItem itemRendererIn) {
         super(renderManagerIn, Items.POTIONITEM, itemRendererIn);
     }
 
-    public ItemStack getStackToRender(EntityPotion entityIn)
-    {
+    public ItemStack getStackToRender(EntityPotion entityIn) {
         return entityIn.getPotion();
     }
 }

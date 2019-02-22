@@ -6,79 +6,59 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.Village;
 import net.minecraft.village.VillageDoorInfo;
 
-public class EntityAIRestrictOpenDoor extends EntityAIBase
-{
+public class EntityAIRestrictOpenDoor extends EntityAIBase {
     private final EntityCreature entity;
     private VillageDoorInfo frontDoor;
 
-    public EntityAIRestrictOpenDoor(EntityCreature creatureIn)
-    {
+    public EntityAIRestrictOpenDoor(EntityCreature creatureIn) {
         this.entity = creatureIn;
 
-        if (!(creatureIn.getNavigator() instanceof PathNavigateGround))
-        {
+        if (!(creatureIn.getNavigator() instanceof PathNavigateGround)) {
             throw new IllegalArgumentException("Unsupported mob type for RestrictOpenDoorGoal");
         }
     }
 
-    public boolean shouldExecute()
-    {
-        if (this.entity.world.isDaytime())
-        {
+    public boolean shouldExecute() {
+        if (this.entity.world.isDaytime()) {
             return false;
-        }
-        else
-        {
+        } else {
             BlockPos blockpos = new BlockPos(this.entity);
             Village village = this.entity.world.getVillageCollection().getNearestVillage(blockpos, 16);
 
-            if (village == null)
-            {
+            if (village == null) {
                 return false;
-            }
-            else
-            {
+            } else {
                 this.frontDoor = village.getNearestDoor(blockpos);
 
-                if (this.frontDoor == null)
-                {
+                if (this.frontDoor == null) {
                     return false;
-                }
-                else
-                {
-                    return (double)this.frontDoor.getDistanceToInsideBlockSq(blockpos) < 2.25D;
+                } else {
+                    return (double) this.frontDoor.getDistanceToInsideBlockSq(blockpos) < 2.25D;
                 }
             }
         }
     }
 
-    public boolean shouldContinueExecuting()
-    {
-        if (this.entity.world.isDaytime())
-        {
+    public boolean shouldContinueExecuting() {
+        if (this.entity.world.isDaytime()) {
             return false;
-        }
-        else
-        {
+        } else {
             return !this.frontDoor.getIsDetachedFromVillageFlag() && this.frontDoor.isInsideSide(new BlockPos(this.entity));
         }
     }
 
-    public void startExecuting()
-    {
-        ((PathNavigateGround)this.entity.getNavigator()).setBreakDoors(false);
-        ((PathNavigateGround)this.entity.getNavigator()).setEnterDoors(false);
+    public void startExecuting() {
+        ((PathNavigateGround) this.entity.getNavigator()).setBreakDoors(false);
+        ((PathNavigateGround) this.entity.getNavigator()).setEnterDoors(false);
     }
 
-    public void resetTask()
-    {
-        ((PathNavigateGround)this.entity.getNavigator()).setBreakDoors(true);
-        ((PathNavigateGround)this.entity.getNavigator()).setEnterDoors(true);
+    public void resetTask() {
+        ((PathNavigateGround) this.entity.getNavigator()).setBreakDoors(true);
+        ((PathNavigateGround) this.entity.getNavigator()).setEnterDoors(true);
         this.frontDoor = null;
     }
 
-    public void updateTask()
-    {
+    public void updateTask() {
         this.frontDoor.incrementDoorOpeningRestrictionCounter();
     }
 }

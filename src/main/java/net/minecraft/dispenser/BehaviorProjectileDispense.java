@@ -9,13 +9,11 @@ import net.minecraft.world.World;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.block.BlockDispenseEvent;
 
-public abstract class BehaviorProjectileDispense extends BehaviorDefaultDispenseItem
-{
-    public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
-    {
+public abstract class BehaviorProjectileDispense extends BehaviorDefaultDispenseItem {
+    public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
         World world = source.getWorld();
         IPosition iposition = BlockDispenser.getDispensePosition(source);
-        EnumFacing enumfacing = (EnumFacing)source.getBlockState().getValue(BlockDispenser.FACING);
+        EnumFacing enumfacing = (EnumFacing) source.getBlockState().getValue(BlockDispenser.FACING);
         IProjectile iprojectile = this.getProjectileEntity(world, iposition, stack);
 //        iprojectile.shoot((double)enumfacing.getFrontOffsetX(), (double)((float)enumfacing.getFrontOffsetY() + 0.1F), (double)enumfacing.getFrontOffsetZ(), this.getProjectileVelocity(), this.getProjectileInaccuracy());
         ItemStack itemstack1 = stack.splitStack(1);
@@ -43,25 +41,22 @@ public abstract class BehaviorProjectileDispense extends BehaviorDefaultDispense
 
         iprojectile.shoot(event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), this.getProjectileVelocity(), this.getProjectileInaccuracy());
         ((Entity) iprojectile).projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource(source.getBlockTileEntity());
-        world.spawnEntity((Entity)iprojectile);
+        world.spawnEntity((Entity) iprojectile);
 //        stack.shrink(1); // CraftBukkit - Handled during event processing
         return stack;
     }
 
-    protected void playDispenseSound(IBlockSource source)
-    {
+    protected void playDispenseSound(IBlockSource source) {
         source.getWorld().playEvent(1002, source.getBlockPos(), 0);
     }
 
     protected abstract IProjectile getProjectileEntity(World worldIn, IPosition position, ItemStack stackIn);
 
-    protected float getProjectileInaccuracy()
-    {
+    protected float getProjectileInaccuracy() {
         return 6.0F;
     }
 
-    protected float getProjectileVelocity()
-    {
+    protected float getProjectileVelocity() {
         return 1.1F;
     }
 }

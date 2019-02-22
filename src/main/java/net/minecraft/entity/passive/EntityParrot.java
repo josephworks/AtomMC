@@ -5,11 +5,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
@@ -83,13 +85,10 @@ import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityParrot extends EntityShoulderRiding implements EntityFlying
-{
+public class EntityParrot extends EntityShoulderRiding implements EntityFlying {
     private static final DataParameter<Integer> VARIANT = EntityDataManager.<Integer>createKey(EntityParrot.class, DataSerializers.VARINT);
-    private static final Predicate<EntityLiving> CAN_MIMIC = new Predicate<EntityLiving>()
-    {
-        public boolean apply(@Nullable EntityLiving p_apply_1_)
-        {
+    private static final Predicate<EntityLiving> CAN_MIMIC = new Predicate<EntityLiving>() {
+        public boolean apply(@Nullable EntityLiving p_apply_1_) {
             return p_apply_1_ != null && EntityParrot.MIMIC_SOUNDS.containsKey(p_apply_1_.getClass());
         }
     };
@@ -104,22 +103,19 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
     private boolean partyParrot;
     private BlockPos jukeboxPosition;
 
-    public EntityParrot(World worldIn)
-    {
+    public EntityParrot(World worldIn) {
         super(worldIn);
         this.setSize(0.5F, 0.9F);
         this.moveHelper = new EntityFlyHelper(this);
     }
 
     @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-    {
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
         this.setVariant(this.rand.nextInt(5));
         return super.onInitialSpawn(difficulty, livingdata);
     }
 
-    protected void initEntityAI()
-    {
+    protected void initEntityAI() {
         this.aiSit = new EntityAISit(this);
         this.tasks.addTask(0, new EntityAIPanic(this, 1.25D));
         this.tasks.addTask(0, new EntityAISwimming(this));
@@ -131,8 +127,7 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         this.tasks.addTask(3, new EntityAIFollow(this, 1.0D, 3.0F, 7.0F));
     }
 
-    protected void applyEntityAttributes()
-    {
+    protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FLYING_SPEED);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(6.0D);
@@ -140,8 +135,7 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
     }
 
-    protected PathNavigate createNavigator(World worldIn)
-    {
+    protected PathNavigate createNavigator(World worldIn) {
         PathNavigateFlying pathnavigateflying = new PathNavigateFlying(this, worldIn);
         pathnavigateflying.setCanOpenDoors(false);
         pathnavigateflying.setCanFloat(true);
@@ -149,17 +143,14 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         return pathnavigateflying;
     }
 
-    public float getEyeHeight()
-    {
+    public float getEyeHeight() {
         return this.height * 0.6F;
     }
 
-    public void onLivingUpdate()
-    {
+    public void onLivingUpdate() {
         playMimicSound(this.world, this);
 
-        if (this.jukeboxPosition == null || this.jukeboxPosition.distanceSq(this.posX, this.posY, this.posZ) > 12.0D || this.world.getBlockState(this.jukeboxPosition).getBlock() != Blocks.JUKEBOX)
-        {
+        if (this.jukeboxPosition == null || this.jukeboxPosition.distanceSq(this.posX, this.posY, this.posZ) > 12.0D || this.world.getBlockState(this.jukeboxPosition).getBlock() != Blocks.JUKEBOX) {
             this.partyParrot = false;
             this.jukeboxPosition = null;
         }
@@ -169,119 +160,93 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
     }
 
     @SideOnly(Side.CLIENT)
-    public void setPartying(BlockPos pos, boolean p_191987_2_)
-    {
+    public void setPartying(BlockPos pos, boolean p_191987_2_) {
         this.jukeboxPosition = pos;
         this.partyParrot = p_191987_2_;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean isPartying()
-    {
+    public boolean isPartying() {
         return this.partyParrot;
     }
 
-    private void calculateFlapping()
-    {
+    private void calculateFlapping() {
         this.oFlap = this.flap;
         this.oFlapSpeed = this.flapSpeed;
-        this.flapSpeed = (float)((double)this.flapSpeed + (double)(this.onGround ? -1 : 4) * 0.3D);
+        this.flapSpeed = (float) ((double) this.flapSpeed + (double) (this.onGround ? -1 : 4) * 0.3D);
         this.flapSpeed = MathHelper.clamp(this.flapSpeed, 0.0F, 1.0F);
 
-        if (!this.onGround && this.flapping < 1.0F)
-        {
+        if (!this.onGround && this.flapping < 1.0F) {
             this.flapping = 1.0F;
         }
 
-        this.flapping = (float)((double)this.flapping * 0.9D);
+        this.flapping = (float) ((double) this.flapping * 0.9D);
 
-        if (!this.onGround && this.motionY < 0.0D)
-        {
+        if (!this.onGround && this.motionY < 0.0D) {
             this.motionY *= 0.6D;
         }
 
         this.flap += this.flapping * 2.0F;
     }
 
-    private static boolean playMimicSound(World worldIn, Entity p_192006_1_)
-    {
-        if (!p_192006_1_.isSilent() && worldIn.rand.nextInt(50) == 0)
-        {
+    private static boolean playMimicSound(World worldIn, Entity p_192006_1_) {
+        if (!p_192006_1_.isSilent() && worldIn.rand.nextInt(50) == 0) {
             List<EntityLiving> list = worldIn.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, p_192006_1_.getEntityBoundingBox().grow(20.0D), CAN_MIMIC);
 
-            if (!list.isEmpty())
-            {
+            if (!list.isEmpty()) {
                 EntityLiving entityliving = list.get(worldIn.rand.nextInt(list.size()));
 
-                if (!entityliving.isSilent())
-                {
+                if (!entityliving.isSilent()) {
                     SoundEvent soundevent = MIMIC_SOUNDS.get(entityliving.getClass());
-                    worldIn.playSound((EntityPlayer)null, p_192006_1_.posX, p_192006_1_.posY, p_192006_1_.posZ, soundevent, p_192006_1_.getSoundCategory(), 0.7F, getPitch(worldIn.rand));
+                    worldIn.playSound((EntityPlayer) null, p_192006_1_.posX, p_192006_1_.posY, p_192006_1_.posZ, soundevent, p_192006_1_.getSoundCategory(), 0.7F, getPitch(worldIn.rand));
                     return true;
                 }
             }
 
             return false;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand)
-    {
+    public boolean processInteract(EntityPlayer player, EnumHand hand) {
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (!this.isTamed() && TAME_ITEMS.contains(itemstack.getItem()))
-        {
-            if (!player.capabilities.isCreativeMode)
-            {
+        if (!this.isTamed() && TAME_ITEMS.contains(itemstack.getItem())) {
+            if (!player.capabilities.isCreativeMode) {
                 itemstack.shrink(1);
             }
 
-            if (!this.isSilent())
-            {
-                this.world.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PARROT_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
+            if (!this.isSilent()) {
+                this.world.playSound((EntityPlayer) null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PARROT_EAT, this.getSoundCategory(), 1.0F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
             }
 
-            if (!this.world.isRemote)
-            {
-                if (this.rand.nextInt(10) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTameEvent(this, player).isCancelled())
-                {
+            if (!this.world.isRemote) {
+                if (this.rand.nextInt(10) == 0 && !net.minecraftforge.event.ForgeEventFactory.onAnimalTame(this, player) && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTameEvent(this, player).isCancelled()) {
                     this.setTamedBy(player);
                     this.playTameEffect(true);
-                    this.world.setEntityState(this, (byte)7);
-                }
-                else
-                {
+                    this.world.setEntityState(this, (byte) 7);
+                } else {
                     this.playTameEffect(false);
-                    this.world.setEntityState(this, (byte)6);
+                    this.world.setEntityState(this, (byte) 6);
                 }
             }
 
             return true;
-        }
-        else if (itemstack.getItem() == DEADLY_ITEM)
-        {
-            if (!player.capabilities.isCreativeMode)
-            {
+        } else if (itemstack.getItem() == DEADLY_ITEM) {
+            if (!player.capabilities.isCreativeMode) {
                 itemstack.shrink(1);
             }
 
             this.addPotionEffect(new PotionEffect(MobEffects.POISON, 900));
 
-            if (player.isCreative() || !this.getIsInvulnerable())
-            {
+            if (player.isCreative() || !this.getIsInvulnerable()) {
                 this.attackEntityFrom(DamageSource.causePlayerDamage(player), Float.MAX_VALUE);
             }
 
             return true;
-        }
-        else
-        {
-            if (!this.world.isRemote && !this.isFlying() && this.isTamed() && this.isOwner(player))
-            {
+        } else {
+            if (!this.world.isRemote && !this.isFlying() && this.isTamed() && this.isOwner(player)) {
                 this.aiSit.setSitting(!this.isSitting());
             }
 
@@ -289,13 +254,11 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         }
     }
 
-    public boolean isBreedingItem(ItemStack stack)
-    {
+    public boolean isBreedingItem(ItemStack stack) {
         return false;
     }
 
-    public boolean getCanSpawnHere()
-    {
+    public boolean getCanSpawnHere() {
         int i = MathHelper.floor(this.posX);
         int j = MathHelper.floor(this.getEntityBoundingBox().minY);
         int k = MathHelper.floor(this.posZ);
@@ -304,122 +267,94 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         return block instanceof BlockLeaves || block == Blocks.GRASS || block instanceof BlockLog || block == Blocks.AIR && this.world.getLight(blockpos) > 8 && super.getCanSpawnHere();
     }
 
-    public void fall(float distance, float damageMultiplier)
-    {
+    public void fall(float distance, float damageMultiplier) {
     }
 
-    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
-    {
+    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos) {
     }
 
-    public boolean canMateWith(EntityAnimal otherAnimal)
-    {
+    public boolean canMateWith(EntityAnimal otherAnimal) {
         return false;
     }
 
     @Nullable
-    public EntityAgeable createChild(EntityAgeable ageable)
-    {
+    public EntityAgeable createChild(EntityAgeable ageable) {
         return null;
     }
 
-    public static void playAmbientSound(World worldIn, Entity p_192005_1_)
-    {
-        if (!p_192005_1_.isSilent() && !playMimicSound(worldIn, p_192005_1_) && worldIn.rand.nextInt(200) == 0)
-        {
-            worldIn.playSound((EntityPlayer)null, p_192005_1_.posX, p_192005_1_.posY, p_192005_1_.posZ, getAmbientSound(worldIn.rand), p_192005_1_.getSoundCategory(), 1.0F, getPitch(worldIn.rand));
+    public static void playAmbientSound(World worldIn, Entity p_192005_1_) {
+        if (!p_192005_1_.isSilent() && !playMimicSound(worldIn, p_192005_1_) && worldIn.rand.nextInt(200) == 0) {
+            worldIn.playSound((EntityPlayer) null, p_192005_1_.posX, p_192005_1_.posY, p_192005_1_.posZ, getAmbientSound(worldIn.rand), p_192005_1_.getSoundCategory(), 1.0F, getPitch(worldIn.rand));
         }
     }
 
-    public boolean attackEntityAsMob(Entity entityIn)
-    {
+    public boolean attackEntityAsMob(Entity entityIn) {
         return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), 3.0F);
     }
 
     @Nullable
-    public SoundEvent getAmbientSound()
-    {
+    public SoundEvent getAmbientSound() {
         return getAmbientSound(this.rand);
     }
 
-    private static SoundEvent getAmbientSound(Random random)
-    {
-        if (random.nextInt(1000) == 0)
-        {
+    private static SoundEvent getAmbientSound(Random random) {
+        if (random.nextInt(1000) == 0) {
             List<SoundEvent> list = new ArrayList<SoundEvent>(MIMIC_SOUNDS.values());
             SoundEvent ret = list.get(random.nextInt(list.size()));
             return ret == null ? SoundEvents.ENTITY_PARROT_AMBIENT : ret;
-        }
-        else
-        {
+        } else {
             return SoundEvents.ENTITY_PARROT_AMBIENT;
         }
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return SoundEvents.ENTITY_PARROT_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_PARROT_DEATH;
     }
 
-    protected void playStepSound(BlockPos pos, Block blockIn)
-    {
+    protected void playStepSound(BlockPos pos, Block blockIn) {
         this.playSound(SoundEvents.ENTITY_PARROT_STEP, 0.15F, 1.0F);
     }
 
-    protected float playFlySound(float p_191954_1_)
-    {
+    protected float playFlySound(float p_191954_1_) {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15F, 1.0F);
         return p_191954_1_ + this.flapSpeed / 2.0F;
     }
 
-    protected boolean makeFlySound()
-    {
+    protected boolean makeFlySound() {
         return true;
     }
 
-    protected float getSoundPitch()
-    {
+    protected float getSoundPitch() {
         return getPitch(this.rand);
     }
 
-    private static float getPitch(Random random)
-    {
+    private static float getPitch(Random random) {
         return (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F;
     }
 
-    public SoundCategory getSoundCategory()
-    {
+    public SoundCategory getSoundCategory() {
         return SoundCategory.NEUTRAL;
     }
 
-    public boolean canBePushed()
-    {
+    public boolean canBePushed() {
         return true;
     }
 
-    protected void collideWithEntity(Entity entityIn)
-    {
-        if (!(entityIn instanceof EntityPlayer))
-        {
+    protected void collideWithEntity(Entity entityIn) {
+        if (!(entityIn instanceof EntityPlayer)) {
             super.collideWithEntity(entityIn);
         }
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount)
-    {
-        if (this.isEntityInvulnerable(source))
-        {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (this.isEntityInvulnerable(source)) {
             return false;
-        }
-        else
-        {
-            if (this.aiSit != null)
-            {
+        } else {
+            if (this.aiSit != null) {
                 // CraftBukkit - moved into EntityLiving.damageEntity(DamageSource, float)
                 // this.aiSit.setSitting(false);
             }
@@ -428,79 +363,70 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         }
     }
 
-    public int getVariant()
-    {
-        return MathHelper.clamp(((Integer)this.dataManager.get(VARIANT)).intValue(), 0, 4);
+    public int getVariant() {
+        return MathHelper.clamp(((Integer) this.dataManager.get(VARIANT)).intValue(), 0, 4);
     }
 
-    public void setVariant(int p_191997_1_)
-    {
+    public void setVariant(int p_191997_1_) {
         this.dataManager.set(VARIANT, Integer.valueOf(p_191997_1_));
     }
 
-    protected void entityInit()
-    {
+    protected void entityInit() {
         super.entityInit();
         this.dataManager.register(VARIANT, Integer.valueOf(0));
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
+    public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         compound.setInteger("Variant", this.getVariant());
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         this.setVariant(compound.getInteger("Variant"));
     }
 
     @Nullable
-    protected ResourceLocation getLootTable()
-    {
+    protected ResourceLocation getLootTable() {
         return LootTableList.ENTITIES_PARROT;
     }
 
-    public boolean isFlying()
-    {
+    public boolean isFlying() {
         return !this.onGround;
     }
 
-    static
-    {
-        registerMimicSound(EntityBlaze.class,           SoundEvents.E_PARROT_IM_BLAZE);
-        registerMimicSound(EntityCaveSpider.class,      SoundEvents.E_PARROT_IM_SPIDER);
-        registerMimicSound(EntityCreeper.class,         SoundEvents.E_PARROT_IM_CREEPER);
-        registerMimicSound(EntityElderGuardian.class,   SoundEvents.E_PARROT_IM_ELDER_GUARDIAN);
-        registerMimicSound(EntityDragon.class,          SoundEvents.E_PARROT_IM_ENDERDRAGON);
-        registerMimicSound(EntityEnderman.class,        SoundEvents.E_PARROT_IM_ENDERMAN);
-        registerMimicSound(EntityEndermite.class,       SoundEvents.E_PARROT_IM_ENDERMITE);
-        registerMimicSound(EntityEvoker.class,          SoundEvents.E_PARROT_IM_EVOCATION_ILLAGER);
-        registerMimicSound(EntityGhast.class,           SoundEvents.E_PARROT_IM_GHAST);
-        registerMimicSound(EntityHusk.class,            SoundEvents.E_PARROT_IM_HUSK);
+    static {
+        registerMimicSound(EntityBlaze.class, SoundEvents.E_PARROT_IM_BLAZE);
+        registerMimicSound(EntityCaveSpider.class, SoundEvents.E_PARROT_IM_SPIDER);
+        registerMimicSound(EntityCreeper.class, SoundEvents.E_PARROT_IM_CREEPER);
+        registerMimicSound(EntityElderGuardian.class, SoundEvents.E_PARROT_IM_ELDER_GUARDIAN);
+        registerMimicSound(EntityDragon.class, SoundEvents.E_PARROT_IM_ENDERDRAGON);
+        registerMimicSound(EntityEnderman.class, SoundEvents.E_PARROT_IM_ENDERMAN);
+        registerMimicSound(EntityEndermite.class, SoundEvents.E_PARROT_IM_ENDERMITE);
+        registerMimicSound(EntityEvoker.class, SoundEvents.E_PARROT_IM_EVOCATION_ILLAGER);
+        registerMimicSound(EntityGhast.class, SoundEvents.E_PARROT_IM_GHAST);
+        registerMimicSound(EntityHusk.class, SoundEvents.E_PARROT_IM_HUSK);
         registerMimicSound(EntityIllusionIllager.class, SoundEvents.E_PARROT_IM_ILLUSION_ILLAGER);
-        registerMimicSound(EntityMagmaCube.class,       SoundEvents.E_PARROT_IM_MAGMACUBE);
-        registerMimicSound(EntityPigZombie.class,       SoundEvents.E_PARROT_IM_ZOMBIE_PIGMAN);
-        registerMimicSound(EntityPolarBear.class,       SoundEvents.E_PARROT_IM_POLAR_BEAR);
-        registerMimicSound(EntityShulker.class,         SoundEvents.E_PARROT_IM_SHULKER);
-        registerMimicSound(EntitySilverfish.class,      SoundEvents.E_PARROT_IM_SILVERFISH);
-        registerMimicSound(EntitySkeleton.class,        SoundEvents.E_PARROT_IM_SKELETON);
-        registerMimicSound(EntitySlime.class,           SoundEvents.E_PARROT_IM_SLIME);
-        registerMimicSound(EntitySpider.class,          SoundEvents.E_PARROT_IM_SPIDER);
-        registerMimicSound(EntityStray.class,           SoundEvents.E_PARROT_IM_STRAY);
-        registerMimicSound(EntityVex.class,             SoundEvents.E_PARROT_IM_VEX);
-        registerMimicSound(EntityVindicator.class,      SoundEvents.E_PARROT_IM_VINDICATION_ILLAGER);
-        registerMimicSound(EntityWitch.class,           SoundEvents.E_PARROT_IM_WITCH);
-        registerMimicSound(EntityWither.class,          SoundEvents.E_PARROT_IM_WITHER);
-        registerMimicSound(EntityWitherSkeleton.class,  SoundEvents.E_PARROT_IM_WITHER_SKELETON);
-        registerMimicSound(EntityWolf.class,            SoundEvents.E_PARROT_IM_WOLF);
-        registerMimicSound(EntityZombie.class,          SoundEvents.E_PARROT_IM_ZOMBIE);
-        registerMimicSound(EntityZombieVillager.class,  SoundEvents.E_PARROT_IM_ZOMBIE_VILLAGER);
+        registerMimicSound(EntityMagmaCube.class, SoundEvents.E_PARROT_IM_MAGMACUBE);
+        registerMimicSound(EntityPigZombie.class, SoundEvents.E_PARROT_IM_ZOMBIE_PIGMAN);
+        registerMimicSound(EntityPolarBear.class, SoundEvents.E_PARROT_IM_POLAR_BEAR);
+        registerMimicSound(EntityShulker.class, SoundEvents.E_PARROT_IM_SHULKER);
+        registerMimicSound(EntitySilverfish.class, SoundEvents.E_PARROT_IM_SILVERFISH);
+        registerMimicSound(EntitySkeleton.class, SoundEvents.E_PARROT_IM_SKELETON);
+        registerMimicSound(EntitySlime.class, SoundEvents.E_PARROT_IM_SLIME);
+        registerMimicSound(EntitySpider.class, SoundEvents.E_PARROT_IM_SPIDER);
+        registerMimicSound(EntityStray.class, SoundEvents.E_PARROT_IM_STRAY);
+        registerMimicSound(EntityVex.class, SoundEvents.E_PARROT_IM_VEX);
+        registerMimicSound(EntityVindicator.class, SoundEvents.E_PARROT_IM_VINDICATION_ILLAGER);
+        registerMimicSound(EntityWitch.class, SoundEvents.E_PARROT_IM_WITCH);
+        registerMimicSound(EntityWither.class, SoundEvents.E_PARROT_IM_WITHER);
+        registerMimicSound(EntityWitherSkeleton.class, SoundEvents.E_PARROT_IM_WITHER_SKELETON);
+        registerMimicSound(EntityWolf.class, SoundEvents.E_PARROT_IM_WOLF);
+        registerMimicSound(EntityZombie.class, SoundEvents.E_PARROT_IM_ZOMBIE);
+        registerMimicSound(EntityZombieVillager.class, SoundEvents.E_PARROT_IM_ZOMBIE_VILLAGER);
     }
 
-    public static void registerMimicSound(Class<? extends Entity> cls, SoundEvent sound)
-    {
+    public static void registerMimicSound(Class<? extends Entity> cls, SoundEvent sound) {
         MIMIC_SOUNDS.put(cls, sound);
     }
 }

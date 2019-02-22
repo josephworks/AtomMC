@@ -30,38 +30,31 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.WorldWorkerManager;
 
-class CommandGenerate extends CommandBase
-{
+class CommandGenerate extends CommandBase {
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "generate";
     }
 
     @Override
-    public List<String> getAliases()
-    {
+    public List<String> getAliases() {
         return Collections.singletonList("gen");
     }
 
     @Override
-    public String getUsage(ICommandSender sender)
-    {
+    public String getUsage(ICommandSender sender) {
         return "commands.forge.gen.usage";
     }
 
     @Override
-    public int getRequiredPermissionLevel()
-    {
+    public int getRequiredPermissionLevel() {
         return 4;
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-    {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         // x y z chunkCount [dim] [interval]
-        if (args.length < 4)
-        {
+        if (args.length < 4) {
             throw new WrongUsageException("commands.forge.gen.usage");
         }
 
@@ -77,10 +70,8 @@ class CommandGenerate extends CommandBase
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-    {
-        if (args.length < 4)
-        {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length < 4) {
             return getTabCompletionCoordinate(args, 0, targetPos);
         }
         // Chunk Count? No completion

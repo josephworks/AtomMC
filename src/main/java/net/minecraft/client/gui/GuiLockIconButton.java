@@ -6,59 +6,41 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiLockIconButton extends GuiButton
-{
+public class GuiLockIconButton extends GuiButton {
     private boolean locked;
 
-    public GuiLockIconButton(int buttonId, int x, int y)
-    {
+    public GuiLockIconButton(int buttonId, int x, int y) {
         super(buttonId, x, y, 20, 20, "");
     }
 
-    public boolean isLocked()
-    {
+    public boolean isLocked() {
         return this.locked;
     }
 
-    public void setLocked(boolean lockedIn)
-    {
+    public void setLocked(boolean lockedIn) {
         this.locked = lockedIn;
     }
 
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
-    {
-        if (this.visible)
-        {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        if (this.visible) {
             mc.getTextureManager().bindTexture(GuiButton.BUTTON_TEXTURES);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             Icon guilockiconbutton$icon;
 
-            if (this.locked)
-            {
-                if (!this.enabled)
-                {
+            if (this.locked) {
+                if (!this.enabled) {
                     guilockiconbutton$icon = Icon.LOCKED_DISABLED;
-                }
-                else if (flag)
-                {
+                } else if (flag) {
                     guilockiconbutton$icon = Icon.LOCKED_HOVER;
-                }
-                else
-                {
+                } else {
                     guilockiconbutton$icon = Icon.LOCKED;
                 }
-            }
-            else if (!this.enabled)
-            {
+            } else if (!this.enabled) {
                 guilockiconbutton$icon = Icon.UNLOCKED_DISABLED;
-            }
-            else if (flag)
-            {
+            } else if (flag) {
                 guilockiconbutton$icon = Icon.UNLOCKED_HOVER;
-            }
-            else
-            {
+            } else {
                 guilockiconbutton$icon = Icon.UNLOCKED;
             }
 
@@ -67,8 +49,7 @@ public class GuiLockIconButton extends GuiButton
     }
 
     @SideOnly(Side.CLIENT)
-    static enum Icon
-    {
+    static enum Icon {
         LOCKED(0, 146),
         LOCKED_HOVER(0, 166),
         LOCKED_DISABLED(0, 186),
@@ -79,19 +60,16 @@ public class GuiLockIconButton extends GuiButton
         private final int x;
         private final int y;
 
-        private Icon(int xIn, int yIn)
-        {
+        private Icon(int xIn, int yIn) {
             this.x = xIn;
             this.y = yIn;
         }
 
-        public int getX()
-        {
+        public int getX() {
             return this.x;
         }
 
-        public int getY()
-        {
+        public int getY() {
             return this.y;
         }
     }

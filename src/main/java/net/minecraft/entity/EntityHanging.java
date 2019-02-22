@@ -1,7 +1,9 @@
 package net.minecraft.entity;
 
 import com.google.common.base.Predicate;
+
 import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockRedstoneDiode;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -23,12 +25,9 @@ import org.bukkit.entity.Hanging;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 
-public abstract class EntityHanging extends Entity
-{
-    private static final Predicate<Entity> IS_HANGING_ENTITY = new Predicate<Entity>()
-    {
-        public boolean apply(@Nullable Entity p_apply_1_)
-        {
+public abstract class EntityHanging extends Entity {
+    private static final Predicate<Entity> IS_HANGING_ENTITY = new Predicate<Entity>() {
+        public boolean apply(@Nullable Entity p_apply_1_) {
             return p_apply_1_ instanceof EntityHanging;
         }
     };
@@ -37,36 +36,30 @@ public abstract class EntityHanging extends Entity
     @Nullable
     public EnumFacing facingDirection;
 
-    public EntityHanging(World worldIn)
-    {
+    public EntityHanging(World worldIn) {
         super(worldIn);
         this.setSize(0.5F, 0.5F);
     }
 
-    public EntityHanging(World worldIn, BlockPos hangingPositionIn)
-    {
+    public EntityHanging(World worldIn, BlockPos hangingPositionIn) {
         this(worldIn);
         this.hangingPosition = hangingPositionIn;
     }
 
-    protected void entityInit()
-    {
+    protected void entityInit() {
     }
 
-    public void updateFacingWithBoundingBox(EnumFacing facingDirectionIn)
-    {
+    public void updateFacingWithBoundingBox(EnumFacing facingDirectionIn) {
         Validate.notNull(facingDirectionIn);
         Validate.isTrue(facingDirectionIn.getAxis().isHorizontal());
         this.facingDirection = facingDirectionIn;
-        this.rotationYaw = (float)(this.facingDirection.getHorizontalIndex() * 90);
+        this.rotationYaw = (float) (this.facingDirection.getHorizontalIndex() * 90);
         this.prevRotationYaw = this.rotationYaw;
         this.updateBoundingBox();
     }
 
-    protected void updateBoundingBox()
-    {
-        if (this.facingDirection != null)
-        {
+    protected void updateBoundingBox() {
+        if (this.facingDirection != null) {
             // CraftBukkit start code moved in to calculateBoundingBox
             this.setEntityBoundingBox(calculateBoundingBox(this, this.hangingPosition, this.facingDirection, this.getWidthPixels(), this.getHeightPixels()));
             // CraftBukkit end
@@ -115,18 +108,15 @@ public abstract class EntityHanging extends Entity
         return p_190202_1_ % 32 == 0 ? 0.5D : 0.0D;
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
 
-        if (this.tickCounter1++ == 100 && !this.world.isRemote)
-        {
+        if (this.tickCounter1++ == 100 && !this.world.isRemote) {
             this.tickCounter1 = 0;
 
-            if (!this.isDead && !this.onValidSurface())
-            {
+            if (!this.isDead && !this.onValidSurface()) {
                 // CraftBukkit start - fire break events
                 Material material = this.world.getBlockState(new BlockPos(this)).getMaterial();
                 HangingBreakEvent.RemoveCause cause;
@@ -146,29 +136,23 @@ public abstract class EntityHanging extends Entity
                 }
                 // CraftBukkit end
                 this.setDead();
-                this.onBroken((Entity)null);
+                this.onBroken((Entity) null);
             }
         }
     }
 
-    public boolean onValidSurface()
-    {
-        if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
-        {
+    public boolean onValidSurface() {
+        if (!this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty()) {
             return false;
-        }
-        else
-        {
+        } else {
             int i = Math.max(1, this.getWidthPixels() / 16);
             int j = Math.max(1, this.getHeightPixels() / 16);
             BlockPos blockpos = this.hangingPosition.offset(this.facingDirection.getOpposite());
             EnumFacing enumfacing = this.facingDirection.rotateYCCW();
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-            for (int k = 0; k < i; ++k)
-            {
-                for (int l = 0; l < j; ++l)
-                {
+            for (int k = 0; k < i; ++k) {
+                for (int l = 0; l < j; ++l) {
                     int i1 = (i - 1) / -2;
                     int j1 = (j - 1) / -2;
                     blockpos$mutableblockpos.setPos(blockpos).move(enumfacing, k + i1).move(EnumFacing.UP, l + j1);
@@ -177,8 +161,7 @@ public abstract class EntityHanging extends Entity
                     if (iblockstate.isSideSolid(this.world, blockpos$mutableblockpos, this.facingDirection))
                         continue;
 
-                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate))
-                    {
+                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate)) {
                         return false;
                     }
                 }
@@ -188,31 +171,23 @@ public abstract class EntityHanging extends Entity
         }
     }
 
-    public boolean canBeCollidedWith()
-    {
+    public boolean canBeCollidedWith() {
         return true;
     }
 
-    public boolean hitByEntity(Entity entityIn)
-    {
-        return entityIn instanceof EntityPlayer ? this.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)entityIn), 0.0F) : false;
+    public boolean hitByEntity(Entity entityIn) {
+        return entityIn instanceof EntityPlayer ? this.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) entityIn), 0.0F) : false;
     }
 
-    public EnumFacing getHorizontalFacing()
-    {
+    public EnumFacing getHorizontalFacing() {
         return this.facingDirection;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount)
-    {
-        if (this.isEntityInvulnerable(source))
-        {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        if (this.isEntityInvulnerable(source)) {
             return false;
-        }
-        else
-        {
-            if (!this.isDead && !this.world.isRemote)
-            {
+        } else {
+            if (!this.isDead && !this.world.isRemote) {
                 // CraftBukkit start - fire break events
                 HangingBreakEvent event = new HangingBreakEvent((Hanging) this.getBukkitEntity(), HangingBreakEvent.RemoveCause.DEFAULT);
                 if (source.getTrueSource() != null) {
@@ -236,10 +211,8 @@ public abstract class EntityHanging extends Entity
         }
     }
 
-    public void move(MoverType type, double x, double y, double z)
-    {
-        if (!this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D)
-        {
+    public void move(MoverType type, double x, double y, double z) {
+        if (!this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D) {
             // CraftBukkit start - fire break events
             // TODO - Does this need its own cause? Seems to only be triggered by pistons
             HangingBreakEvent event = new HangingBreakEvent((Hanging) this.getBukkitEntity(), HangingBreakEvent.RemoveCause.PHYSICS);
@@ -250,30 +223,26 @@ public abstract class EntityHanging extends Entity
             }
             // CraftBukkit end
             this.setDead();
-            this.onBroken((Entity)null);
+            this.onBroken((Entity) null);
         }
     }
 
-    public void addVelocity(double x, double y, double z)
-    {
-        if (false && !this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D)
-        {
+    public void addVelocity(double x, double y, double z) {
+        if (false && !this.world.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D) {
             this.setDead();
-            this.onBroken((Entity)null);
+            this.onBroken((Entity) null);
         }
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
-        compound.setByte("Facing", (byte)this.facingDirection.getHorizontalIndex());
+    public void writeEntityToNBT(NBTTagCompound compound) {
+        compound.setByte("Facing", (byte) this.facingDirection.getHorizontalIndex());
         BlockPos blockpos = this.getHangingPosition();
         compound.setInteger("TileX", blockpos.getX());
         compound.setInteger("TileY", blockpos.getY());
         compound.setInteger("TileZ", blockpos.getZ());
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         this.hangingPosition = new BlockPos(compound.getInteger("TileX"), compound.getInteger("TileY"), compound.getInteger("TileZ"));
         this.updateFacingWithBoundingBox(EnumFacing.getHorizontal(compound.getByte("Facing")));
     }
@@ -286,38 +255,31 @@ public abstract class EntityHanging extends Entity
 
     public abstract void playPlaceSound();
 
-    public EntityItem entityDropItem(ItemStack stack, float offsetY)
-    {
-        EntityItem entityitem = new EntityItem(this.world, this.posX + (double)((float)this.facingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.facingDirection.getFrontOffsetZ() * 0.15F), stack);
+    public EntityItem entityDropItem(ItemStack stack, float offsetY) {
+        EntityItem entityitem = new EntityItem(this.world, this.posX + (double) ((float) this.facingDirection.getFrontOffsetX() * 0.15F), this.posY + (double) offsetY, this.posZ + (double) ((float) this.facingDirection.getFrontOffsetZ() * 0.15F), stack);
         entityitem.setDefaultPickupDelay();
         this.world.spawnEntity(entityitem);
         return entityitem;
     }
 
-    protected boolean shouldSetPosAfterLoading()
-    {
+    protected boolean shouldSetPosAfterLoading() {
         return false;
     }
 
-    public void setPosition(double x, double y, double z)
-    {
+    public void setPosition(double x, double y, double z) {
         this.hangingPosition = new BlockPos(x, y, z);
         this.updateBoundingBox();
         this.isAirBorne = true;
     }
 
-    public BlockPos getHangingPosition()
-    {
+    public BlockPos getHangingPosition() {
         return this.hangingPosition;
     }
 
     @SuppressWarnings("incomplete-switch")
-    public float getRotatedYaw(Rotation transformRotation)
-    {
-        if (this.facingDirection != null && this.facingDirection.getAxis() != EnumFacing.Axis.Y)
-        {
-            switch (transformRotation)
-            {
+    public float getRotatedYaw(Rotation transformRotation) {
+        if (this.facingDirection != null && this.facingDirection.getAxis() != EnumFacing.Axis.Y) {
+            switch (transformRotation) {
                 case CLOCKWISE_180:
                     this.facingDirection = this.facingDirection.getOpposite();
                     break;
@@ -331,8 +293,7 @@ public abstract class EntityHanging extends Entity
 
         float f = MathHelper.wrapDegrees(this.rotationYaw);
 
-        switch (transformRotation)
-        {
+        switch (transformRotation) {
             case CLOCKWISE_180:
                 return f + 180.0F;
             case COUNTERCLOCKWISE_90:
@@ -344,12 +305,10 @@ public abstract class EntityHanging extends Entity
         }
     }
 
-    public float getMirroredYaw(Mirror transformMirror)
-    {
+    public float getMirroredYaw(Mirror transformMirror) {
         return this.getRotatedYaw(transformMirror.toRotation(this.facingDirection));
     }
 
-    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt)
-    {
+    public void onStruckByLightning(@Nullable EntityLightningBolt lightningBolt) {
     }
 }

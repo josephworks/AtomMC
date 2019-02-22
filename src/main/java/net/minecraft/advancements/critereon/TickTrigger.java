@@ -5,29 +5,27 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+
 import java.util.Map;
 import java.util.Set;
+
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 
-public class TickTrigger implements ICriterionTrigger<TickTrigger.Instance>
-{
+public class TickTrigger implements ICriterionTrigger<TickTrigger.Instance> {
     public static final ResourceLocation ID = new ResourceLocation("tick");
     private final Map<PlayerAdvancements, Listeners> listeners = Maps.<PlayerAdvancements, Listeners>newHashMap();
 
-    public ResourceLocation getId()
-    {
+    public ResourceLocation getId() {
         return ID;
     }
 
-    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener)
-    {
+    public void addListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener) {
         Listeners ticktrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
-        if (ticktrigger$listeners == null)
-        {
+        if (ticktrigger$listeners == null) {
             ticktrigger$listeners = new Listeners(playerAdvancementsIn);
             this.listeners.put(playerAdvancementsIn, ticktrigger$listeners);
         }
@@ -35,80 +33,64 @@ public class TickTrigger implements ICriterionTrigger<TickTrigger.Instance>
         ticktrigger$listeners.add(listener);
     }
 
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener)
-    {
+    public void removeListener(PlayerAdvancements playerAdvancementsIn, ICriterionTrigger.Listener<Instance> listener) {
         Listeners ticktrigger$listeners = this.listeners.get(playerAdvancementsIn);
 
-        if (ticktrigger$listeners != null)
-        {
+        if (ticktrigger$listeners != null) {
             ticktrigger$listeners.remove(listener);
 
-            if (ticktrigger$listeners.isEmpty())
-            {
+            if (ticktrigger$listeners.isEmpty()) {
                 this.listeners.remove(playerAdvancementsIn);
             }
         }
     }
 
-    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn)
-    {
+    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn) {
         this.listeners.remove(playerAdvancementsIn);
     }
 
-    public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context)
-    {
+    public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context) {
         return new Instance();
     }
 
-    public void trigger(EntityPlayerMP player)
-    {
+    public void trigger(EntityPlayerMP player) {
         Listeners ticktrigger$listeners = this.listeners.get(player.getAdvancements());
 
-        if (ticktrigger$listeners != null)
-        {
+        if (ticktrigger$listeners != null) {
             ticktrigger$listeners.trigger();
         }
     }
 
-    public static class Instance extends AbstractCriterionInstance
-        {
-            public Instance()
-            {
-                super(TickTrigger.ID);
-            }
+    public static class Instance extends AbstractCriterionInstance {
+        public Instance() {
+            super(TickTrigger.ID);
+        }
+    }
+
+    static class Listeners {
+        private final PlayerAdvancements playerAdvancements;
+        private final Set<ICriterionTrigger.Listener<Instance>> listeners = Sets.<ICriterionTrigger.Listener<Instance>>newHashSet();
+
+        public Listeners(PlayerAdvancements playerAdvancementsIn) {
+            this.playerAdvancements = playerAdvancementsIn;
         }
 
-    static class Listeners
-        {
-            private final PlayerAdvancements playerAdvancements;
-            private final Set<ICriterionTrigger.Listener<Instance>> listeners = Sets.<ICriterionTrigger.Listener<Instance>>newHashSet();
+        public boolean isEmpty() {
+            return this.listeners.isEmpty();
+        }
 
-            public Listeners(PlayerAdvancements playerAdvancementsIn)
-            {
-                this.playerAdvancements = playerAdvancementsIn;
-            }
+        public void add(ICriterionTrigger.Listener<Instance> listener) {
+            this.listeners.add(listener);
+        }
 
-            public boolean isEmpty()
-            {
-                return this.listeners.isEmpty();
-            }
+        public void remove(ICriterionTrigger.Listener<Instance> listener) {
+            this.listeners.remove(listener);
+        }
 
-            public void add(ICriterionTrigger.Listener<Instance> listener)
-            {
-                this.listeners.add(listener);
-            }
-
-            public void remove(ICriterionTrigger.Listener<Instance> listener)
-            {
-                this.listeners.remove(listener);
-            }
-
-            public void trigger()
-            {
-                for (ICriterionTrigger.Listener<Instance> listener : Lists.newArrayList(this.listeners))
-                {
-                    listener.grantCriterion(this.playerAdvancements);
-                }
+        public void trigger() {
+            for (ICriterionTrigger.Listener<Instance> listener : Lists.newArrayList(this.listeners)) {
+                listener.grantCriterion(this.playerAdvancements);
             }
         }
+    }
 }

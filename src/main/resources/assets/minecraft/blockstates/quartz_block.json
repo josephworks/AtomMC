@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal":   { "model": "quartz_normal" }
+  "variants": {
+    "normal": {
+      "model": "quartz_normal"
     }
+  }
 }

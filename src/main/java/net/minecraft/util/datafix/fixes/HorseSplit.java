@@ -3,21 +3,16 @@ package net.minecraft.util.datafix.fixes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
-public class HorseSplit implements IFixableData
-{
-    public int getFixVersion()
-    {
+public class HorseSplit implements IFixableData {
+    public int getFixVersion() {
         return 703;
     }
 
-    public NBTTagCompound fixTagCompound(NBTTagCompound compound)
-    {
-        if ("EntityHorse".equals(compound.getString("id")))
-        {
+    public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
+        if ("EntityHorse".equals(compound.getString("id"))) {
             int i = compound.getInteger("Type");
 
-            switch (i)
-            {
+            switch (i) {
                 case 0:
                 default:
                     compound.setString("id", "Horse");

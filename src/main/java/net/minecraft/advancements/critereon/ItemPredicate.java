@@ -4,8 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+
 import java.util.Map;
 import javax.annotation.Nullable;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
@@ -15,8 +17,7 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 
-public class ItemPredicate
-{
+public class ItemPredicate {
     public static final ItemPredicate ANY = new ItemPredicate();
     private final Item item;
     private final Integer data;
@@ -26,8 +27,7 @@ public class ItemPredicate
     private final PotionType potion;
     private final NBTPredicate nbt;
 
-    public ItemPredicate()
-    {
+    public ItemPredicate() {
         this.item = null;
         this.data = null;
         this.potion = null;
@@ -37,8 +37,7 @@ public class ItemPredicate
         this.nbt = NBTPredicate.ANY;
     }
 
-    public ItemPredicate(@Nullable Item item, @Nullable Integer data, MinMaxBounds count, MinMaxBounds durability, EnchantmentPredicate[] enchantments, @Nullable PotionType potion, NBTPredicate nbt)
-    {
+    public ItemPredicate(@Nullable Item item, @Nullable Integer data, MinMaxBounds count, MinMaxBounds durability, EnchantmentPredicate[] enchantments, @Nullable PotionType potion, NBTPredicate nbt) {
         this.item = item;
         this.data = data;
         this.count = count;
@@ -48,68 +47,46 @@ public class ItemPredicate
         this.nbt = nbt;
     }
 
-    public boolean test(ItemStack item)
-    {
-        if (this.item != null && item.getItem() != this.item)
-        {
+    public boolean test(ItemStack item) {
+        if (this.item != null && item.getItem() != this.item) {
             return false;
-        }
-        else if (this.data != null && item.getMetadata() != this.data.intValue())
-        {
+        } else if (this.data != null && item.getMetadata() != this.data.intValue()) {
             return false;
-        }
-        else if (!this.count.test((float)item.getCount()))
-        {
+        } else if (!this.count.test((float) item.getCount())) {
             return false;
-        }
-        else if (this.durability != MinMaxBounds.UNBOUNDED && !item.isItemStackDamageable())
-        {
+        } else if (this.durability != MinMaxBounds.UNBOUNDED && !item.isItemStackDamageable()) {
             return false;
-        }
-        else if (!this.durability.test((float)(item.getMaxDamage() - item.getItemDamage())))
-        {
+        } else if (!this.durability.test((float) (item.getMaxDamage() - item.getItemDamage()))) {
             return false;
-        }
-        else if (!this.nbt.test(item))
-        {
+        } else if (!this.nbt.test(item)) {
             return false;
-        }
-        else
-        {
+        } else {
             Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(item);
 
-            for (int i = 0; i < this.enchantments.length; ++i)
-            {
-                if (!this.enchantments[i].test(map))
-                {
+            for (int i = 0; i < this.enchantments.length; ++i) {
+                if (!this.enchantments[i].test(map)) {
                     return false;
                 }
             }
 
             PotionType potiontype = PotionUtils.getPotionFromItem(item);
 
-            if (this.potion != null && this.potion != potiontype)
-            {
+            if (this.potion != null && this.potion != potiontype) {
                 return false;
-            }
-            else
-            {
+            } else {
                 return true;
             }
         }
     }
 
-    public static ItemPredicate deserialize(@Nullable JsonElement element)
-    {
-        if (element != null && !element.isJsonNull())
-        {
+    public static ItemPredicate deserialize(@Nullable JsonElement element) {
+        if (element != null && !element.isJsonNull()) {
             JsonObject jsonobject = JsonUtils.getJsonObject(element, "item");
-            if (jsonobject.has("type"))
-            {
-                 final ResourceLocation rl = new ResourceLocation(JsonUtils.getString(jsonobject, "type"));
-                 final Map<ResourceLocation, java.util.function.Function<JsonObject, ItemPredicate>> map = net.minecraftforge.advancements.critereon.ItemPredicates.getPredicates();
-                 if (map.containsKey(rl)) return map.get(rl).apply(jsonobject);
-                 else throw new JsonSyntaxException("There is no ItemPredicate of type "+rl);
+            if (jsonobject.has("type")) {
+                final ResourceLocation rl = new ResourceLocation(JsonUtils.getString(jsonobject, "type"));
+                final Map<ResourceLocation, java.util.function.Function<JsonObject, ItemPredicate>> map = net.minecraftforge.advancements.critereon.ItemPredicates.getPredicates();
+                if (map.containsKey(rl)) return map.get(rl).apply(jsonobject);
+                else throw new JsonSyntaxException("There is no ItemPredicate of type " + rl);
             }
             MinMaxBounds minmaxbounds = MinMaxBounds.deserialize(jsonobject.get("count"));
             MinMaxBounds minmaxbounds1 = MinMaxBounds.deserialize(jsonobject.get("durability"));
@@ -117,13 +94,11 @@ public class ItemPredicate
             NBTPredicate nbtpredicate = NBTPredicate.deserialize(jsonobject.get("nbt"));
             Item item = null;
 
-            if (jsonobject.has("item"))
-            {
+            if (jsonobject.has("item")) {
                 ResourceLocation resourcelocation = new ResourceLocation(JsonUtils.getString(jsonobject, "item"));
                 item = Item.REGISTRY.getObject(resourcelocation);
 
-                if (item == null)
-                {
+                if (item == null) {
                     throw new JsonSyntaxException("Unknown item id '" + resourcelocation + "'");
                 }
             }
@@ -131,12 +106,10 @@ public class ItemPredicate
             EnchantmentPredicate[] aenchantmentpredicate = EnchantmentPredicate.deserializeArray(jsonobject.get("enchantments"));
             PotionType potiontype = null;
 
-            if (jsonobject.has("potion"))
-            {
+            if (jsonobject.has("potion")) {
                 ResourceLocation resourcelocation1 = new ResourceLocation(JsonUtils.getString(jsonobject, "potion"));
 
-                if (!PotionType.REGISTRY.containsKey(resourcelocation1))
-                {
+                if (!PotionType.REGISTRY.containsKey(resourcelocation1)) {
                     throw new JsonSyntaxException("Unknown potion '" + resourcelocation1 + "'");
                 }
 
@@ -144,29 +117,22 @@ public class ItemPredicate
             }
 
             return new ItemPredicate(item, integer, minmaxbounds, minmaxbounds1, aenchantmentpredicate, potiontype, nbtpredicate);
-        }
-        else
-        {
+        } else {
             return ANY;
         }
     }
 
-    public static ItemPredicate[] deserializeArray(@Nullable JsonElement element)
-    {
-        if (element != null && !element.isJsonNull())
-        {
+    public static ItemPredicate[] deserializeArray(@Nullable JsonElement element) {
+        if (element != null && !element.isJsonNull()) {
             JsonArray jsonarray = JsonUtils.getJsonArray(element, "items");
             ItemPredicate[] aitempredicate = new ItemPredicate[jsonarray.size()];
 
-            for (int i = 0; i < aitempredicate.length; ++i)
-            {
+            for (int i = 0; i < aitempredicate.length; ++i) {
                 aitempredicate[i] = deserialize(jsonarray.get(i));
             }
 
             return aitempredicate;
-        }
-        else
-        {
+        } else {
             return new ItemPredicate[0];
         }
     }

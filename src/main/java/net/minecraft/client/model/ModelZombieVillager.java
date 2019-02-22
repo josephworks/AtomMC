@@ -7,19 +7,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelZombieVillager extends ModelBiped
-{
-    public ModelZombieVillager()
-    {
+public class ModelZombieVillager extends ModelBiped {
+    public ModelZombieVillager() {
         this(0.0F, 0.0F, false);
     }
 
-    public ModelZombieVillager(float p_i1165_1_, float p_i1165_2_, boolean p_i1165_3_)
-    {
+    public ModelZombieVillager(float p_i1165_1_, float p_i1165_2_, boolean p_i1165_3_) {
         super(p_i1165_1_, 0.0F, 64, p_i1165_3_ ? 32 : 64);
 
-        if (p_i1165_3_)
-        {
+        if (p_i1165_3_) {
             this.bipedHead = new ModelRenderer(this, 0, 0);
             this.bipedHead.addBox(-4.0F, -10.0F, -4.0F, 8, 8, 8, p_i1165_1_);
             this.bipedHead.setRotationPoint(0.0F, 0.0F + p_i1165_2_, 0.0F);
@@ -33,9 +29,7 @@ public class ModelZombieVillager extends ModelBiped
             this.bipedLeftLeg.mirror = true;
             this.bipedLeftLeg.setRotationPoint(2.0F, 12.0F + p_i1165_2_, 0.0F);
             this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, p_i1165_1_ + 0.1F);
-        }
-        else
-        {
+        } else {
             this.bipedHead = new ModelRenderer(this, 0, 0);
             this.bipedHead.setRotationPoint(0.0F, p_i1165_2_, 0.0F);
             this.bipedHead.setTextureOffset(0, 0).addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, p_i1165_1_);
@@ -61,17 +55,16 @@ public class ModelZombieVillager extends ModelBiped
         }
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
-        EntityZombie entityzombie = (EntityZombie)entityIn;
-        float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
-        float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
+        EntityZombie entityzombie = (EntityZombie) entityIn;
+        float f = MathHelper.sin(this.swingProgress * (float) Math.PI);
+        float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
         this.bipedRightArm.rotateAngleZ = 0.0F;
         this.bipedLeftArm.rotateAngleZ = 0.0F;
         this.bipedRightArm.rotateAngleY = -(0.1F - f * 0.6F);
         this.bipedLeftArm.rotateAngleY = 0.1F - f * 0.6F;
-        float f2 = -(float)Math.PI / (entityzombie.isArmsRaised() ? 1.5F : 2.25F);
+        float f2 = -(float) Math.PI / (entityzombie.isArmsRaised() ? 1.5F : 2.25F);
         this.bipedRightArm.rotateAngleX = f2;
         this.bipedLeftArm.rotateAngleX = f2;
         this.bipedRightArm.rotateAngleX += f * 1.2F - f1 * 0.4F;

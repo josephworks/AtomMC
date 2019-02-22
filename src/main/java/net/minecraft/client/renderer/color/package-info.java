@@ -4,4 +4,5 @@
 package net.minecraft.client.renderer.color;
 
 import mcp.MethodsReturnNonnullByDefault;
+
 import javax.annotation.ParametersAreNonnullByDefault;

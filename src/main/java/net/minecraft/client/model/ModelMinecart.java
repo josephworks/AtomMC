@@ -5,12 +5,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelMinecart extends ModelBase
-{
+public class ModelMinecart extends ModelBase {
     public ModelRenderer[] sideModels = new ModelRenderer[7];
 
-    public ModelMinecart()
-    {
+    public ModelMinecart() {
         this.sideModels[0] = new ModelRenderer(this, 0, 10);
         this.sideModels[1] = new ModelRenderer(this, 0, 0);
         this.sideModels[2] = new ModelRenderer(this, 0, 0);
@@ -33,19 +31,17 @@ public class ModelMinecart extends ModelBase
         this.sideModels[3].setRotationPoint(0.0F, 4.0F, -7.0F);
         this.sideModels[4].addBox(-8.0F, -9.0F, -1.0F, 16, 8, 2, 0.0F);
         this.sideModels[4].setRotationPoint(0.0F, 4.0F, 7.0F);
-        this.sideModels[0].rotateAngleX = ((float)Math.PI / 2F);
-        this.sideModels[1].rotateAngleY = ((float)Math.PI * 3F / 2F);
-        this.sideModels[2].rotateAngleY = ((float)Math.PI / 2F);
-        this.sideModels[3].rotateAngleY = (float)Math.PI;
-        this.sideModels[5].rotateAngleX = -((float)Math.PI / 2F);
+        this.sideModels[0].rotateAngleX = ((float) Math.PI / 2F);
+        this.sideModels[1].rotateAngleY = ((float) Math.PI * 3F / 2F);
+        this.sideModels[2].rotateAngleY = ((float) Math.PI / 2F);
+        this.sideModels[3].rotateAngleY = (float) Math.PI;
+        this.sideModels[5].rotateAngleX = -((float) Math.PI / 2F);
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.sideModels[5].rotationPointY = 4.0F - ageInTicks;
 
-        for (int i = 0; i < 6; ++i)
-        {
+        for (int i = 0; i < 6; ++i) {
             this.sideModels[i].render(scale);
         }
     }

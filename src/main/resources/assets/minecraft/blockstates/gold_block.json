@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "gold_block" }
+  "variants": {
+    "normal": {
+      "model": "gold_block"
     }
+  }
 }

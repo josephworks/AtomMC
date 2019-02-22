@@ -5,29 +5,24 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RealmsServerAddress
-{
+public class RealmsServerAddress {
     private final String host;
     private final int port;
 
-    protected RealmsServerAddress(String hostIn, int portIn)
-    {
+    protected RealmsServerAddress(String hostIn, int portIn) {
         this.host = hostIn;
         this.port = portIn;
     }
 
-    public String getHost()
-    {
+    public String getHost() {
         return this.host;
     }
 
-    public int getPort()
-    {
+    public int getPort() {
         return this.port;
     }
 
-    public static RealmsServerAddress parseString(String p_parseString_0_)
-    {
+    public static RealmsServerAddress parseString(String p_parseString_0_) {
         ServerAddress serveraddress = ServerAddress.fromString(p_parseString_0_);
         return new RealmsServerAddress(serveraddress.getIP(), serveraddress.getPort());
     }

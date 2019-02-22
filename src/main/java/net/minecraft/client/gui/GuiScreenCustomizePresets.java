@@ -1,8 +1,10 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
+
 import java.io.IOException;
 import java.util.List;
+
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -15,8 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
-public class GuiScreenCustomizePresets extends GuiScreen
-{
+public class GuiScreenCustomizePresets extends GuiScreen {
     private static final List<Info> PRESETS = Lists.<Info>newArrayList();
     private ListPreset list;
     private GuiButton select;
@@ -26,13 +27,11 @@ public class GuiScreenCustomizePresets extends GuiScreen
     private String shareText;
     private String listText;
 
-    public GuiScreenCustomizePresets(GuiCustomizeWorldScreen parentIn)
-    {
+    public GuiScreenCustomizePresets(GuiCustomizeWorldScreen parentIn) {
         this.parent = parentIn;
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
         this.title = I18n.format("createWorld.customize.custom.presets.title");
@@ -47,35 +46,28 @@ public class GuiScreenCustomizePresets extends GuiScreen
         this.updateButtonValidity();
     }
 
-    public void handleMouseInput() throws IOException
-    {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         this.list.handleMouseInput();
     }
 
-    public void onGuiClosed()
-    {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         this.export.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
-        if (!this.export.textboxKeyTyped(typedChar, keyCode))
-        {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (!this.export.textboxKeyTyped(typedChar, keyCode)) {
             super.keyTyped(typedChar, keyCode);
         }
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        switch (button.id)
-        {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        switch (button.id) {
             case 0:
                 this.parent.loadValues(this.export.getText());
                 this.mc.displayGuiScreen(this.parent);
@@ -85,8 +77,7 @@ public class GuiScreenCustomizePresets extends GuiScreen
         }
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         this.list.drawScreen(mouseX, mouseY, partialTicks);
         this.drawCenteredString(this.fontRenderer, this.title, this.width / 2, 8, 16777215);
@@ -96,24 +87,20 @@ public class GuiScreenCustomizePresets extends GuiScreen
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public void updateScreen()
-    {
+    public void updateScreen() {
         this.export.updateCursorCounter();
         super.updateScreen();
     }
 
-    public void updateButtonValidity()
-    {
+    public void updateButtonValidity() {
         this.select.enabled = this.hasValidSelection();
     }
 
-    private boolean hasValidSelection()
-    {
+    private boolean hasValidSelection() {
         return this.list.selected > -1 && this.list.selected < PRESETS.size() || this.export.getText().length() > 1;
     }
 
-    static
-    {
+    static {
         ChunkGeneratorSettings.Factory chunkgeneratorsettings$factory = ChunkGeneratorSettings.Factory.jsonToFactory("{ \"coordinateScale\":684.412, \"heightScale\":684.412, \"upperLimitScale\":512.0, \"lowerLimitScale\":512.0, \"depthNoiseScaleX\":200.0, \"depthNoiseScaleZ\":200.0, \"depthNoiseScaleExponent\":0.5, \"mainNoiseScaleX\":5000.0, \"mainNoiseScaleY\":1000.0, \"mainNoiseScaleZ\":5000.0, \"baseSize\":8.5, \"stretchY\":8.0, \"biomeDepthWeight\":2.0, \"biomeDepthOffset\":0.5, \"biomeScaleWeight\":2.0, \"biomeScaleOffset\":0.375, \"useCaves\":true, \"useDungeons\":true, \"dungeonChance\":8, \"useStrongholds\":true, \"useVillages\":true, \"useMineShafts\":true, \"useTemples\":true, \"useRavines\":true, \"useWaterLakes\":true, \"waterLakeChance\":4, \"useLavaLakes\":true, \"lavaLakeChance\":80, \"useLavaOceans\":false, \"seaLevel\":255 }");
         ResourceLocation resourcelocation = new ResourceLocation("textures/gui/presets/water.png");
         PRESETS.add(new Info(I18n.format("createWorld.customize.custom.preset.waterWorld"), resourcelocation, chunkgeneratorsettings$factory));
@@ -138,53 +125,44 @@ public class GuiScreenCustomizePresets extends GuiScreen
     }
 
     @SideOnly(Side.CLIENT)
-    static class Info
-        {
-            public String name;
-            public ResourceLocation texture;
-            public ChunkGeneratorSettings.Factory settings;
+    static class Info {
+        public String name;
+        public ResourceLocation texture;
+        public ChunkGeneratorSettings.Factory settings;
 
-            public Info(String nameIn, ResourceLocation textureIn, ChunkGeneratorSettings.Factory settingsIn)
-            {
-                this.name = nameIn;
-                this.texture = textureIn;
-                this.settings = settingsIn;
-            }
+        public Info(String nameIn, ResourceLocation textureIn, ChunkGeneratorSettings.Factory settingsIn) {
+            this.name = nameIn;
+            this.texture = textureIn;
+            this.settings = settingsIn;
         }
+    }
 
     @SideOnly(Side.CLIENT)
-    class ListPreset extends GuiSlot
-    {
+    class ListPreset extends GuiSlot {
         public int selected = -1;
 
-        public ListPreset()
-        {
+        public ListPreset() {
             super(GuiScreenCustomizePresets.this.mc, GuiScreenCustomizePresets.this.width, GuiScreenCustomizePresets.this.height, 80, GuiScreenCustomizePresets.this.height - 32, 38);
         }
 
-        protected int getSize()
-        {
+        protected int getSize() {
             return GuiScreenCustomizePresets.PRESETS.size();
         }
 
-        protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY)
-        {
+        protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY) {
             this.selected = slotIndex;
             GuiScreenCustomizePresets.this.updateButtonValidity();
             GuiScreenCustomizePresets.this.export.setText((GuiScreenCustomizePresets.PRESETS.get(GuiScreenCustomizePresets.this.list.selected)).settings.toString());
         }
 
-        protected boolean isSelected(int slotIndex)
-        {
+        protected boolean isSelected(int slotIndex) {
             return slotIndex == this.selected;
         }
 
-        protected void drawBackground()
-        {
+        protected void drawBackground() {
         }
 
-        private void blitIcon(int p_178051_1_, int p_178051_2_, ResourceLocation texture)
-        {
+        private void blitIcon(int p_178051_1_, int p_178051_2_, ResourceLocation texture) {
             int i = p_178051_1_ + 5;
             GuiScreenCustomizePresets.this.drawHorizontalLine(i - 1, i + 32, p_178051_2_ - 1, -2039584);
             GuiScreenCustomizePresets.this.drawHorizontalLine(i - 1, i + 32, p_178051_2_ + 32, -6250336);
@@ -197,15 +175,14 @@ public class GuiScreenCustomizePresets extends GuiScreen
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-            bufferbuilder.pos((double)(i + 0), (double)(p_178051_2_ + 32), 0.0D).tex(0.0D, 1.0D).endVertex();
-            bufferbuilder.pos((double)(i + 32), (double)(p_178051_2_ + 32), 0.0D).tex(1.0D, 1.0D).endVertex();
-            bufferbuilder.pos((double)(i + 32), (double)(p_178051_2_ + 0), 0.0D).tex(1.0D, 0.0D).endVertex();
-            bufferbuilder.pos((double)(i + 0), (double)(p_178051_2_ + 0), 0.0D).tex(0.0D, 0.0D).endVertex();
+            bufferbuilder.pos((double) (i + 0), (double) (p_178051_2_ + 32), 0.0D).tex(0.0D, 1.0D).endVertex();
+            bufferbuilder.pos((double) (i + 32), (double) (p_178051_2_ + 32), 0.0D).tex(1.0D, 1.0D).endVertex();
+            bufferbuilder.pos((double) (i + 32), (double) (p_178051_2_ + 0), 0.0D).tex(1.0D, 0.0D).endVertex();
+            bufferbuilder.pos((double) (i + 0), (double) (p_178051_2_ + 0), 0.0D).tex(0.0D, 0.0D).endVertex();
             tessellator.draw();
         }
 
-        protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks)
-        {
+        protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
             Info guiscreencustomizepresets$info = GuiScreenCustomizePresets.PRESETS.get(slotIndex);
             this.blitIcon(xPos, yPos, guiscreencustomizepresets$info.texture);
             GuiScreenCustomizePresets.this.fontRenderer.drawString(guiscreencustomizepresets$info.name, xPos + 32 + 10, yPos + 14, 16777215);

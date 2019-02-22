@@ -29,13 +29,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class FluidIdRegistryMessageHandler extends SimpleChannelInboundHandler<ForgeMessage.FluidIdMapMessage> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ForgeMessage.FluidIdMapMessage msg) throws Exception
-    {
+    protected void channelRead0(ChannelHandlerContext ctx, ForgeMessage.FluidIdMapMessage msg) throws Exception {
         FluidRegistry.initFluidIDs(msg.fluidIds, msg.defaultFluids);
     }
+
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
-    {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         FMLLog.log.error("FluidIdRegistryMessageHandler exception", cause);
         super.exceptionCaught(ctx, cause);
     }

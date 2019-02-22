@@ -11,19 +11,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerMooshroomMushroom implements LayerRenderer<EntityMooshroom>
-{
+public class LayerMooshroomMushroom implements LayerRenderer<EntityMooshroom> {
     private final RenderMooshroom mooshroomRenderer;
 
-    public LayerMooshroomMushroom(RenderMooshroom mooshroomRendererIn)
-    {
+    public LayerMooshroomMushroom(RenderMooshroom mooshroomRendererIn) {
         this.mooshroomRenderer = mooshroomRendererIn;
     }
 
-    public void doRenderLayer(EntityMooshroom entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
-        if (!entitylivingbaseIn.isChild() && !entitylivingbaseIn.isInvisible())
-        {
+    public void doRenderLayer(EntityMooshroom entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        if (!entitylivingbaseIn.isChild() && !entitylivingbaseIn.isInvisible()) {
             BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
             this.mooshroomRenderer.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             GlStateManager.enableCull();
@@ -56,8 +52,7 @@ public class LayerMooshroomMushroom implements LayerRenderer<EntityMooshroom>
         }
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return true;
     }
 }

@@ -29,16 +29,13 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.ResourceLocation;
 
-public interface ICustomModelLoader extends ISelectiveResourceReloadListener
-{
+public interface ICustomModelLoader extends ISelectiveResourceReloadListener {
     @Override
     void onResourceManagerReload(IResourceManager resourceManager);
 
     @Override
-    default void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate)
-    {
-        if (resourcePredicate.test(VanillaResourceType.MODELS))
-        {
+    default void onResourceManagerReload(IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+        if (resourcePredicate.test(VanillaResourceType.MODELS)) {
             onResourceManagerReload(resourceManager);
         }
     }

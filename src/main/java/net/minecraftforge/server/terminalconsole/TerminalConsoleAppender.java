@@ -86,16 +86,15 @@ import org.jline.terminal.TerminalBuilder;
  * </p>
  *
  * <ul>
- *     <li>{@link TerminalConsoleAppender#JLINE_OVERRIDE_PROPERTY} - To enable the extended JLine
- *     input. By default this will also enable the ANSI escape codes.</li>
- *     <li>{@link TerminalConsoleAppender#ANSI_OVERRIDE_PROPERTY} - To enable the output of ANSI
- *     escape codes. May be used to force the use of ANSI escape codes
- *     if JLine is disabled or to disable them if it is enabled.</li>
+ * <li>{@link TerminalConsoleAppender#JLINE_OVERRIDE_PROPERTY} - To enable the extended JLine
+ * input. By default this will also enable the ANSI escape codes.</li>
+ * <li>{@link TerminalConsoleAppender#ANSI_OVERRIDE_PROPERTY} - To enable the output of ANSI
+ * escape codes. May be used to force the use of ANSI escape codes
+ * if JLine is disabled or to disable them if it is enabled.</li>
  * </ul>
  */
 @Plugin(name = TerminalConsoleAppender.PLUGIN_NAME, category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
-public class TerminalConsoleAppender extends AbstractAppender
-{
+public class TerminalConsoleAppender extends AbstractAppender {
     public static final String PLUGIN_NAME = "TerminalConsole";
     /**
      * The prefix used for all system properties in TerminalConsoleAppender.
@@ -148,8 +147,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      * @see TerminalConsoleAppender
      */
     @Nullable
-    public static Terminal getTerminal()
-    {
+    public static Terminal getTerminal() {
         return terminal;
     }
 
@@ -161,8 +159,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      * @return The current line reader, or null if none
      */
     @Nullable
-    public static LineReader getReader()
-    {
+    public static LineReader getReader() {
         return reader;
     }
 
@@ -176,10 +173,8 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @param newReader The new line reader
      */
-    public static void setReader(@Nullable LineReader newReader)
-    {
-        if (newReader != null && newReader.getTerminal() != terminal)
-        {
+    public static void setReader(@Nullable LineReader newReader) {
+        if (newReader != null && newReader.getTerminal() != terminal) {
             throw new IllegalArgumentException("Reader was not created with TerminalConsoleAppender.getTerminal()");
         }
 
@@ -196,8 +191,7 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @return true if ANSI escapes codes should be written to the console
      */
-    public static boolean isAnsiSupported()
-    {
+    public static boolean isAnsiSupported() {
         return ANSI_OVERRIDE != null ? ANSI_OVERRIDE : terminal != null;
     }
 
@@ -211,16 +205,13 @@ public class TerminalConsoleAppender extends AbstractAppender
      *                         appending events are logged, otherwise they are propagated to the
      *                         caller
      */
-    protected TerminalConsoleAppender(String name, @Nullable Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions)
-    {
+    protected TerminalConsoleAppender(String name, @Nullable Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
         super(name, filter, layout, ignoreExceptions);
         initializeTerminal();
     }
 
-    private static void initializeTerminal()
-    {
-        if (!initialized)
-        {
+    private static void initializeTerminal() {
+        if (!initialized) {
             initialized = true;
 
             // A system property can be used to override our automatic detection
@@ -240,31 +231,22 @@ public class TerminalConsoleAppender extends AbstractAppender
             //  2. The system property forces the use of JLine.
             boolean dumb = jlineOverride == Boolean.TRUE || System.getProperty("java.class.path").contains("idea_rt.jar");
 
-            if (jlineOverride != Boolean.FALSE)
-            {
-                try
-                {
+            if (jlineOverride != Boolean.FALSE) {
+                try {
                     terminal = TerminalBuilder.builder().dumb(dumb).build();
-                }
-                catch (IllegalStateException e)
-                {
+                } catch (IllegalStateException e) {
                     // Unless disabled using one of the exceptions above,
                     // JLine throws an exception before creating a dumb terminal
                     // Dumb terminals are used if there is no real terminal attached
                     // to the application.
 
-                    if (LOGGER.isDebugEnabled())
-                    {
+                    if (LOGGER.isDebugEnabled()) {
                         // Log with stacktrace
                         LOGGER.warn("Disabling terminal, you're running in an unsupported environment.", e);
-                    }
-                    else
-                    {
+                    } else {
                         LOGGER.warn("Disabling terminal, you're running in an unsupported environment.");
                     }
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     LOGGER.error("Failed to initialize terminal. Falling back to standard output", e);
                 }
             }
@@ -272,51 +254,37 @@ public class TerminalConsoleAppender extends AbstractAppender
     }
 
     @Nullable
-    private static Boolean getOptionalBooleanProperty(String name)
-    {
+    private static Boolean getOptionalBooleanProperty(String name) {
         String value = PropertiesUtil.getProperties().getStringProperty(name);
-        if (value == null)
-        {
+        if (value == null) {
             return null;
         }
 
-        if (value.equalsIgnoreCase("true"))
-        {
+        if (value.equalsIgnoreCase("true")) {
             return Boolean.TRUE;
-        }
-        else if (value.equalsIgnoreCase("false"))
-        {
+        } else if (value.equalsIgnoreCase("false")) {
             return Boolean.FALSE;
-        }
-        else
-        {
+        } else {
             LOGGER.warn("Invalid value for boolean input property '{}': {}", name, value);
             return null;
         }
     }
 
     @Override
-    public void append(LogEvent event)
-    {
-        if (terminal != null)
-        {
-            if (reader != null)
-            {
+    public void append(LogEvent event) {
+        if (terminal != null) {
+            if (reader != null) {
                 // Draw the prompt line again if a reader is available
                 reader.callWidget(LineReader.CLEAR);
                 terminal.writer().print(getLayout().toSerializable(event));
                 reader.callWidget(LineReader.REDRAW_LINE);
                 reader.callWidget(LineReader.REDISPLAY);
-            }
-            else
-            {
+            } else {
                 terminal.writer().print(getLayout().toSerializable(event));
             }
 
             terminal.writer().flush();
-        }
-        else
-        {
+        } else {
             stdout.print(getLayout().toSerializable(event));
         }
     }
@@ -327,19 +295,13 @@ public class TerminalConsoleAppender extends AbstractAppender
      *
      * @throws IOException If an I/O error occurs
      */
-    public static void close() throws IOException
-    {
-        if (initialized)
-        {
+    public static void close() throws IOException {
+        if (initialized) {
             initialized = false;
-            if (terminal != null)
-            {
-                try
-                {
+            if (terminal != null) {
+                try {
                     terminal.close();
-                }
-                finally
-                {
+                } finally {
                     terminal = null;
                 }
             }
@@ -362,10 +324,8 @@ public class TerminalConsoleAppender extends AbstractAppender
             @Required(message = "No name provided for TerminalConsoleAppender") @PluginAttribute("name") String name,
             @PluginElement("Filter") @Nullable Filter filter,
             @PluginElement("Layout") @Nullable Layout<? extends Serializable> layout,
-            @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) boolean ignoreExceptions)
-    {
-        if (layout == null)
-        {
+            @PluginAttribute(value = "ignoreExceptions", defaultBoolean = true) boolean ignoreExceptions) {
+        if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
         }
 

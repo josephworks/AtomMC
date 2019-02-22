@@ -1,6 +1,5 @@
 package net.minecraft.world.storage;
 
-public interface IThreadedFileIO
-{
+public interface IThreadedFileIO {
     boolean writeNextIO();
 }

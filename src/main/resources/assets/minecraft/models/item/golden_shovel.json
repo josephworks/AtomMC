@@ -1,6 +1,6 @@
 {
-    "parent": "item/handheld",
-    "textures": {
-        "layer0": "items/gold_shovel"
-    }
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "items/gold_shovel"
+  }
 }

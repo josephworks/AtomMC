@@ -1,8 +1,10 @@
 package net.minecraft.block;
 
 import com.google.common.base.Predicate;
+
 import java.util.Random;
 import javax.annotation.Nullable;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -43,15 +45,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.craftbukkit.util.BlockStateListPopulator;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-public class BlockSkull extends BlockContainer
-{
+public class BlockSkull extends BlockContainer {
     public static final PropertyDirection FACING = BlockDirectional.FACING;
     public static final PropertyBool NODROP = PropertyBool.create("nodrop");
-    private static final Predicate<BlockWorldState> IS_WITHER_SKELETON = new Predicate<BlockWorldState>()
-    {
-        public boolean apply(@Nullable BlockWorldState p_apply_1_)
-        {
-            return p_apply_1_.getBlockState() != null && p_apply_1_.getBlockState().getBlock() == Blocks.SKULL && p_apply_1_.getTileEntity() instanceof TileEntitySkull && ((TileEntitySkull)p_apply_1_.getTileEntity()).getSkullType() == 1;
+    private static final Predicate<BlockWorldState> IS_WITHER_SKELETON = new Predicate<BlockWorldState>() {
+        public boolean apply(@Nullable BlockWorldState p_apply_1_) {
+            return p_apply_1_.getBlockState() != null && p_apply_1_.getBlockState().getBlock() == Blocks.SKULL && p_apply_1_.getTileEntity() instanceof TileEntitySkull && ((TileEntitySkull) p_apply_1_.getTileEntity()).getSkullType() == 1;
         }
     };
     protected static final AxisAlignedBB DEFAULT_AABB = new AxisAlignedBB(0.25D, 0.0D, 0.25D, 0.75D, 0.5D, 0.75D);
@@ -62,37 +61,30 @@ public class BlockSkull extends BlockContainer
     private BlockPattern witherBasePattern;
     private BlockPattern witherPattern;
 
-    protected BlockSkull()
-    {
+    protected BlockSkull() {
         super(Material.CIRCUITS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(NODROP, Boolean.valueOf(false)));
     }
 
-    public String getLocalizedName()
-    {
+    public String getLocalizedName() {
         return I18n.translateToLocal("tile.skull.skeleton.name");
     }
 
-    public boolean isOpaqueCube(IBlockState state)
-    {
+    public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
-    public boolean isFullCube(IBlockState state)
-    {
+    public boolean isFullCube(IBlockState state) {
         return false;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean hasCustomBreakingProgress(IBlockState state)
-    {
+    public boolean hasCustomBreakingProgress(IBlockState state) {
         return true;
     }
 
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
-        switch ((EnumFacing)state.getValue(FACING))
-        {
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        switch ((EnumFacing) state.getValue(FACING)) {
             case UP:
             default:
                 return DEFAULT_AABB;
@@ -107,24 +99,20 @@ public class BlockSkull extends BlockContainer
         }
     }
 
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing()).withProperty(NODROP, Boolean.valueOf(false));
     }
 
-    public TileEntity createNewTileEntity(World worldIn, int meta)
-    {
+    public TileEntity createNewTileEntity(World worldIn, int meta) {
         return new TileEntitySkull();
     }
 
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         int i = 0;
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntitySkull)
-        {
-            i = ((TileEntitySkull)tileentity).getSkullType();
+        if (tileentity instanceof TileEntitySkull) {
+            i = ((TileEntitySkull) tileentity).getSkullType();
         }
 
         return new ItemStack(Items.SKULL, 1, i);
@@ -154,10 +142,8 @@ public class BlockSkull extends BlockContainer
     }
     // CraftBukkit end
 
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
-    {
-        if (player.capabilities.isCreativeMode)
-        {
+    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
+        if (player.capabilities.isCreativeMode) {
             state = state.withProperty(NODROP, Boolean.valueOf(true));
             worldIn.setBlockState(pos, state, 4);
         }
@@ -165,26 +151,22 @@ public class BlockSkull extends BlockContainer
         super.onBlockHarvested(worldIn, pos, state, player);
     }
 
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
         super.breakBlock(worldIn, pos, state);
     }
-    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess worldIn, BlockPos pos, IBlockState state, int fortune)
-    {
+
+    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess worldIn, BlockPos pos, IBlockState state, int fortune) {
         {
             // CraftBukkit start - Drop item in code above, not here
             // if (!((Boolean)state.getValue(NODROP)).booleanValue())
-            if (false)
-            {
+            if (false) {
                 TileEntity tileentity = worldIn.getTileEntity(pos);
 
-                if (tileentity instanceof TileEntitySkull)
-                {
-                    TileEntitySkull tileentityskull = (TileEntitySkull)tileentity;
+                if (tileentity instanceof TileEntitySkull) {
+                    TileEntitySkull tileentityskull = (TileEntitySkull) tileentity;
                     ItemStack itemstack = new ItemStack(Items.SKULL, 1, tileentityskull.getSkullType());
 
-                    if (tileentityskull.getSkullType() == 3 && tileentityskull.getPlayerProfile() != null)
-                    {
+                    if (tileentityskull.getSkullType() == 3 && tileentityskull.getPlayerProfile() != null) {
                         itemstack.setTagCompound(new NBTTagCompound());
                         NBTTagCompound nbttagcompound = new NBTTagCompound();
                         NBTUtil.writeGameProfile(nbttagcompound, tileentityskull.getPlayerProfile());
@@ -197,36 +179,27 @@ public class BlockSkull extends BlockContainer
         }
     }
 
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Items.SKULL;
     }
 
-    public boolean canDispenserPlace(World worldIn, BlockPos pos, ItemStack stack)
-    {
-        if (stack.getMetadata() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote)
-        {
+    public boolean canDispenserPlace(World worldIn, BlockPos pos, ItemStack stack) {
+        if (stack.getMetadata() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote) {
             return this.getWitherBasePattern().match(worldIn, pos) != null;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public void checkWitherSpawn(World worldIn, BlockPos pos, TileEntitySkull te)
-    {
+    public void checkWitherSpawn(World worldIn, BlockPos pos, TileEntitySkull te) {
         if (worldIn.captureBlockSnapshots) return;
-        if (te.getSkullType() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote)
-        {
+        if (te.getSkullType() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL && !worldIn.isRemote) {
             BlockPattern blockpattern = this.getWitherPattern();
             BlockPattern.PatternHelper blockpattern$patternhelper = blockpattern.match(worldIn, pos);
 
-            if (blockpattern$patternhelper != null)
-            {
+            if (blockpattern$patternhelper != null) {
                 BlockStateListPopulator blockList = new BlockStateListPopulator(worldIn.getWorld());
-                for (int i = 0; i < 3; ++i)
-                {
+                for (int i = 0; i < 3; ++i) {
                     BlockWorldState blockworldstate = blockpattern$patternhelper.translateOffset(i, 0, 0);
                     BlockPos pos1 = blockworldstate.getPos();
                     IBlockState data = blockworldstate.getBlockState().withProperty(BlockSkull.NODROP, true);
@@ -234,10 +207,8 @@ public class BlockSkull extends BlockContainer
 //                    worldIn.setBlockState(blockworldstate.getPos(), blockworldstate.getBlockState().withProperty(NODROP, Boolean.valueOf(true)), 2);
                 }
 
-                for (int j = 0; j < blockpattern.getPalmLength(); ++j)
-                {
-                    for (int k = 0; k < blockpattern.getThumbLength(); ++k)
-                    {
+                for (int j = 0; j < blockpattern.getPalmLength(); ++j) {
+                    for (int k = 0; k < blockpattern.getThumbLength(); ++k) {
                         BlockWorldState blockworldstate1 = blockpattern$patternhelper.translateOffset(j, k, 0);
                         BlockPos pos1 = blockworldstate1.getPos();
                         blockList.setTypeAndData(pos1.getX(), pos1.getY(), pos1.getZ(), Blocks.AIR, 0, 2);
@@ -249,7 +220,7 @@ public class BlockSkull extends BlockContainer
                 BlockPos blockpos = blockpattern$patternhelper.translateOffset(1, 0, 0).getPos();
                 EntityWither entitywither = new EntityWither(worldIn);
                 BlockPos blockpos1 = blockpattern$patternhelper.translateOffset(1, 2, 0).getPos();
-                entitywither.setLocationAndAngles((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.55D, (double)blockpos1.getZ() + 0.5D, blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? 0.0F : 90.0F, 0.0F);
+                entitywither.setLocationAndAngles((double) blockpos1.getX() + 0.5D, (double) blockpos1.getY() + 0.55D, (double) blockpos1.getZ() + 0.5D, blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? 0.0F : 90.0F, 0.0F);
                 entitywither.renderYawOffset = blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? 0.0F : 90.0F;
                 entitywither.ignite();
                 if (worldIn.spawnEntity(entitywither, CreatureSpawnEvent.SpawnReason.BUILD_WITHER)) {
@@ -276,61 +247,50 @@ public class BlockSkull extends BlockContainer
         }
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(NODROP, Boolean.valueOf((meta & 8) > 0));
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
+    public int getMetaFromState(IBlockState state) {
         int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
+        i = i | ((EnumFacing) state.getValue(FACING)).getIndex();
 
-        if (((Boolean)state.getValue(NODROP)).booleanValue())
-        {
+        if (((Boolean) state.getValue(NODROP)).booleanValue()) {
             i |= 8;
         }
 
         return i;
     }
 
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.withProperty(FACING, rot.rotate((EnumFacing)state.getValue(FACING)));
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
     }
 
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {FACING, NODROP});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{FACING, NODROP});
     }
 
-    protected BlockPattern getWitherBasePattern()
-    {
-        if (this.witherBasePattern == null)
-        {
+    protected BlockPattern getWitherBasePattern() {
+        if (this.witherBasePattern == null) {
             this.witherBasePattern = FactoryBlockPattern.start().aisle("   ", "###", "~#~").where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('~', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
         }
 
         return this.witherBasePattern;
     }
 
-    protected BlockPattern getWitherPattern()
-    {
-        if (this.witherPattern == null)
-        {
+    protected BlockPattern getWitherPattern() {
+        if (this.witherPattern == null) {
             this.witherPattern = FactoryBlockPattern.start().aisle("^^^", "###", "~#~").where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('^', IS_WITHER_SKELETON).where('~', BlockWorldState.hasState(BlockMaterialMatcher.forMaterial(Material.AIR))).build();
         }
 
         return this.witherPattern;
     }
 
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
         return BlockFaceShape.UNDEFINED;
     }
 }

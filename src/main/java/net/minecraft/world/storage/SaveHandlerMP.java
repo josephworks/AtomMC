@@ -12,51 +12,40 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class SaveHandlerMP implements ISaveHandler
-{
-    public WorldInfo loadWorldInfo()
-    {
+public class SaveHandlerMP implements ISaveHandler {
+    public WorldInfo loadWorldInfo() {
         return null;
     }
 
-    public void checkSessionLock() throws MinecraftException
-    {
+    public void checkSessionLock() throws MinecraftException {
     }
 
-    public IChunkLoader getChunkLoader(WorldProvider provider)
-    {
+    public IChunkLoader getChunkLoader(WorldProvider provider) {
         return null;
     }
 
-    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, NBTTagCompound tagCompound)
-    {
+    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, NBTTagCompound tagCompound) {
     }
 
-    public void saveWorldInfo(WorldInfo worldInformation)
-    {
+    public void saveWorldInfo(WorldInfo worldInformation) {
     }
 
-    public IPlayerFileData getPlayerNBTManager()
-    {
+    public IPlayerFileData getPlayerNBTManager() {
         return null;
     }
 
-    public void flush()
-    {
+    public void flush() {
     }
 
-    public File getMapFileFromName(String mapName)
-    {
+    public File getMapFileFromName(String mapName) {
         return null;
     }
 
-    public File getWorldDirectory()
-    {
+    public File getWorldDirectory() {
         return null;
     }
 
-    public TemplateManager getStructureTemplateManager()
-    {
+    public TemplateManager getStructureTemplateManager() {
         return null;
     }
 

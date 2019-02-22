@@ -5,52 +5,38 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.village.Village;
 
-public class EntityAIDefendVillage extends EntityAITarget
-{
+public class EntityAIDefendVillage extends EntityAITarget {
     EntityIronGolem irongolem;
     EntityLivingBase villageAgressorTarget;
 
-    public EntityAIDefendVillage(EntityIronGolem ironGolemIn)
-    {
+    public EntityAIDefendVillage(EntityIronGolem ironGolemIn) {
         super(ironGolemIn, false, true);
         this.irongolem = ironGolemIn;
         this.setMutexBits(1);
     }
 
-    public boolean shouldExecute()
-    {
+    public boolean shouldExecute() {
         Village village = this.irongolem.getVillage();
 
-        if (village == null)
-        {
+        if (village == null) {
             return false;
-        }
-        else
-        {
+        } else {
             this.villageAgressorTarget = village.findNearestVillageAggressor(this.irongolem);
 
-            if (this.villageAgressorTarget instanceof EntityCreeper)
-            {
+            if (this.villageAgressorTarget instanceof EntityCreeper) {
                 return false;
-            }
-            else if (this.isSuitableTarget(this.villageAgressorTarget, false))
-            {
+            } else if (this.isSuitableTarget(this.villageAgressorTarget, false)) {
                 return true;
-            }
-            else if (this.taskOwner.getRNG().nextInt(20) == 0)
-            {
+            } else if (this.taskOwner.getRNG().nextInt(20) == 0) {
                 this.villageAgressorTarget = village.getNearestTargetPlayer(this.irongolem);
                 return this.isSuitableTarget(this.villageAgressorTarget, false);
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
     }
 
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.irongolem.setAttackTarget(this.villageAgressorTarget, org.bukkit.event.entity.EntityTargetEvent.TargetReason.DEFEND_VILLAGE, true);
         super.startExecuting();
     }

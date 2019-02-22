@@ -11,75 +11,60 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
-{
+public class GuiSimpleScrolledSelectionListProxy extends GuiSlot {
     private final RealmsSimpleScrolledSelectionList realmsScrolledSelectionList;
 
-    public GuiSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList realmsScrolledSelectionListIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
-    {
+    public GuiSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList realmsScrolledSelectionListIn, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn) {
         super(Minecraft.getMinecraft(), widthIn, heightIn, topIn, bottomIn, slotHeightIn);
         this.realmsScrolledSelectionList = realmsScrolledSelectionListIn;
     }
 
-    protected int getSize()
-    {
+    protected int getSize() {
         return this.realmsScrolledSelectionList.getItemCount();
     }
 
-    protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY)
-    {
+    protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY) {
         this.realmsScrolledSelectionList.selectItem(slotIndex, isDoubleClick, mouseX, mouseY);
     }
 
-    protected boolean isSelected(int slotIndex)
-    {
+    protected boolean isSelected(int slotIndex) {
         return this.realmsScrolledSelectionList.isSelectedItem(slotIndex);
     }
 
-    protected void drawBackground()
-    {
+    protected void drawBackground() {
         this.realmsScrolledSelectionList.renderBackground();
     }
 
-    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks)
-    {
+    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
         this.realmsScrolledSelectionList.renderItem(slotIndex, xPos, yPos, heightIn, mouseXIn, mouseYIn);
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return this.width;
     }
 
-    public int getMouseY()
-    {
+    public int getMouseY() {
         return this.mouseY;
     }
 
-    public int getMouseX()
-    {
+    public int getMouseX() {
         return this.mouseX;
     }
 
-    protected int getContentHeight()
-    {
+    protected int getContentHeight() {
         return this.realmsScrolledSelectionList.getMaxPosition();
     }
 
-    protected int getScrollBarX()
-    {
+    protected int getScrollBarX() {
         return this.realmsScrolledSelectionList.getScrollbarPosition();
     }
 
-    public void handleMouseInput()
-    {
+    public void handleMouseInput() {
         super.handleMouseInput();
     }
 
-    public void drawScreen(int mouseXIn, int mouseYIn, float partialTicks)
-    {
-        if (this.visible)
-        {
+    public void drawScreen(int mouseXIn, int mouseYIn, float partialTicks) {
+        if (this.visible) {
             this.mouseX = mouseXIn;
             this.mouseY = mouseYIn;
             this.drawBackground();
@@ -91,10 +76,9 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();
             int k = this.left + this.width / 2 - this.getListWidth() / 2 + 2;
-            int l = this.top + 4 - (int)this.amountScrolled;
+            int l = this.top + 4 - (int) this.amountScrolled;
 
-            if (this.hasListHeader)
-            {
+            if (this.hasListHeader) {
                 this.drawListHeader(k, l, tessellator);
             }
 
@@ -109,34 +93,32 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
             GlStateManager.disableTexture2D();
             int i1 = this.getMaxScroll();
 
-            if (i1 > 0)
-            {
+            if (i1 > 0) {
                 int j1 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
                 j1 = MathHelper.clamp(j1, 32, this.bottom - this.top - 8);
-                int k1 = (int)this.amountScrolled * (this.bottom - this.top - j1) / i1 + this.top;
+                int k1 = (int) this.amountScrolled * (this.bottom - this.top - j1) / i1 + this.top;
 
-                if (k1 < this.top)
-                {
+                if (k1 < this.top) {
                     k1 = this.top;
                 }
 
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                bufferbuilder.pos((double)i, (double)this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-                bufferbuilder.pos((double)j, (double)this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-                bufferbuilder.pos((double)j, (double)this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-                bufferbuilder.pos((double)i, (double)this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+                bufferbuilder.pos((double) i, (double) this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                bufferbuilder.pos((double) j, (double) this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                bufferbuilder.pos((double) j, (double) this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
+                bufferbuilder.pos((double) i, (double) this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
                 tessellator.draw();
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                bufferbuilder.pos((double)i, (double)(k1 + j1), 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-                bufferbuilder.pos((double)j, (double)(k1 + j1), 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-                bufferbuilder.pos((double)j, (double)k1, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
-                bufferbuilder.pos((double)i, (double)k1, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
+                bufferbuilder.pos((double) i, (double) (k1 + j1), 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+                bufferbuilder.pos((double) j, (double) (k1 + j1), 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+                bufferbuilder.pos((double) j, (double) k1, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
+                bufferbuilder.pos((double) i, (double) k1, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
                 tessellator.draw();
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                bufferbuilder.pos((double)i, (double)(k1 + j1 - 1), 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
-                bufferbuilder.pos((double)(j - 1), (double)(k1 + j1 - 1), 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();
-                bufferbuilder.pos((double)(j - 1), (double)k1, 0.0D).tex(1.0D, 0.0D).color(192, 192, 192, 255).endVertex();
-                bufferbuilder.pos((double)i, (double)k1, 0.0D).tex(0.0D, 0.0D).color(192, 192, 192, 255).endVertex();
+                bufferbuilder.pos((double) i, (double) (k1 + j1 - 1), 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
+                bufferbuilder.pos((double) (j - 1), (double) (k1 + j1 - 1), 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();
+                bufferbuilder.pos((double) (j - 1), (double) k1, 0.0D).tex(1.0D, 0.0D).color(192, 192, 192, 255).endVertex();
+                bufferbuilder.pos((double) i, (double) k1, 0.0D).tex(0.0D, 0.0D).color(192, 192, 192, 255).endVertex();
                 tessellator.draw();
             }
 

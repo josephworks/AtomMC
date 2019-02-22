@@ -1,60 +1,51 @@
 package net.minecraft.client.util;
 
 import com.google.common.collect.Lists;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
 
 @SideOnly(Side.CLIENT)
-public class JsonException extends IOException
-{
+public class JsonException extends IOException {
     private final List<Entry> entries = Lists.<Entry>newArrayList();
     private final String message;
 
-    public JsonException(String messageIn)
-    {
+    public JsonException(String messageIn) {
         this.entries.add(new Entry());
         this.message = messageIn;
     }
 
-    public JsonException(String messageIn, Throwable cause)
-    {
+    public JsonException(String messageIn, Throwable cause) {
         super(cause);
         this.entries.add(new Entry());
         this.message = messageIn;
     }
 
-    public void prependJsonKey(String key)
-    {
-        ((Entry)this.entries.get(0)).addJsonKey(key);
+    public void prependJsonKey(String key) {
+        ((Entry) this.entries.get(0)).addJsonKey(key);
     }
 
-    public void setFilenameAndFlush(String filenameIn)
-    {
+    public void setFilenameAndFlush(String filenameIn) {
         (this.entries.get(0)).filename = filenameIn;
         this.entries.add(0, new Entry());
     }
 
-    public String getMessage()
-    {
+    public String getMessage() {
         return "Invalid " + this.entries.get(this.entries.size() - 1) + ": " + this.message;
     }
 
-    public static JsonException forException(Exception exception)
-    {
-        if (exception instanceof JsonException)
-        {
-            return (JsonException)exception;
-        }
-        else
-        {
+    public static JsonException forException(Exception exception) {
+        if (exception instanceof JsonException) {
+            return (JsonException) exception;
+        } else {
             String s = exception.getMessage();
 
-            if (exception instanceof FileNotFoundException)
-            {
+            if (exception instanceof FileNotFoundException) {
                 s = "File not found";
             }
 
@@ -63,36 +54,28 @@ public class JsonException extends IOException
     }
 
     @SideOnly(Side.CLIENT)
-    public static class Entry
-        {
-            private String filename;
-            private final List<String> jsonKeys;
+    public static class Entry {
+        private String filename;
+        private final List<String> jsonKeys;
 
-            private Entry()
-            {
-                this.jsonKeys = Lists.<String>newArrayList();
-            }
+        private Entry() {
+            this.jsonKeys = Lists.<String>newArrayList();
+        }
 
-            private void addJsonKey(String key)
-            {
-                this.jsonKeys.add(0, key);
-            }
+        private void addJsonKey(String key) {
+            this.jsonKeys.add(0, key);
+        }
 
-            public String getJsonKeys()
-            {
-                return StringUtils.join((Iterable)this.jsonKeys, "->");
-            }
+        public String getJsonKeys() {
+            return StringUtils.join((Iterable) this.jsonKeys, "->");
+        }
 
-            public String toString()
-            {
-                if (this.filename != null)
-                {
-                    return this.jsonKeys.isEmpty() ? this.filename : this.filename + " " + this.getJsonKeys();
-                }
-                else
-                {
-                    return this.jsonKeys.isEmpty() ? "(Unknown file)" : "(Unknown file) " + this.getJsonKeys();
-                }
+        public String toString() {
+            if (this.filename != null) {
+                return this.jsonKeys.isEmpty() ? this.filename : this.filename + " " + this.getJsonKeys();
+            } else {
+                return this.jsonKeys.isEmpty() ? "(Unknown file)" : "(Unknown file) " + this.getJsonKeys();
             }
         }
+    }
 }

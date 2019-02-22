@@ -2,6 +2,7 @@ package net.minecraft.entity.ai;
 
 import java.util.List;
 import java.util.Random;
+
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.item.EntityXPOrb;
@@ -12,22 +13,19 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
-public class EntityAIMate extends EntityAIBase
-{
+public class EntityAIMate extends EntityAIBase {
     private final EntityAnimal animal;
-    private final Class <? extends EntityAnimal > mateClass;
+    private final Class<? extends EntityAnimal> mateClass;
     World world;
     private EntityAnimal targetMate;
     int spawnBabyDelay;
     double moveSpeed;
 
-    public EntityAIMate(EntityAnimal animal, double speedIn)
-    {
+    public EntityAIMate(EntityAnimal animal, double speedIn) {
         this(animal, speedIn, animal.getClass());
     }
 
-    public EntityAIMate(EntityAnimal p_i47306_1_, double p_i47306_2_, Class <? extends EntityAnimal > p_i47306_4_)
-    {
+    public EntityAIMate(EntityAnimal p_i47306_1_, double p_i47306_2_, Class<? extends EntityAnimal> p_i47306_4_) {
         this.animal = p_i47306_1_;
         this.world = p_i47306_1_.world;
         this.mateClass = p_i47306_4_;
@@ -35,52 +33,41 @@ public class EntityAIMate extends EntityAIBase
         this.setMutexBits(3);
     }
 
-    public boolean shouldExecute()
-    {
-        if (!this.animal.isInLove())
-        {
+    public boolean shouldExecute() {
+        if (!this.animal.isInLove()) {
             return false;
-        }
-        else
-        {
+        } else {
             this.targetMate = this.getNearbyMate();
             return this.targetMate != null;
         }
     }
 
-    public boolean shouldContinueExecuting()
-    {
+    public boolean shouldContinueExecuting() {
         return this.targetMate.isEntityAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
     }
 
-    public void resetTask()
-    {
+    public void resetTask() {
         this.targetMate = null;
         this.spawnBabyDelay = 0;
     }
 
-    public void updateTask()
-    {
-        this.animal.getLookHelper().setLookPositionWithEntity(this.targetMate, 10.0F, (float)this.animal.getVerticalFaceSpeed());
+    public void updateTask() {
+        this.animal.getLookHelper().setLookPositionWithEntity(this.targetMate, 10.0F, (float) this.animal.getVerticalFaceSpeed());
         this.animal.getNavigator().tryMoveToEntityLiving(this.targetMate, this.moveSpeed);
         ++this.spawnBabyDelay;
 
-        if (this.spawnBabyDelay >= 60 && this.animal.getDistanceSq(this.targetMate) < 9.0D)
-        {
+        if (this.spawnBabyDelay >= 60 && this.animal.getDistanceSq(this.targetMate) < 9.0D) {
             this.spawnBaby();
         }
     }
 
-    private EntityAnimal getNearbyMate()
-    {
+    private EntityAnimal getNearbyMate() {
         List<EntityAnimal> list = this.world.<EntityAnimal>getEntitiesWithinAABB(this.mateClass, this.animal.getEntityBoundingBox().grow(8.0D));
         double d0 = Double.MAX_VALUE;
         EntityAnimal entityanimal = null;
 
-        for (EntityAnimal entityanimal1 : list)
-        {
-            if (this.animal.canMateWith(entityanimal1) && this.animal.getDistanceSq(entityanimal1) < d0)
-            {
+        for (EntityAnimal entityanimal1 : list) {
+            if (this.animal.canMateWith(entityanimal1) && this.animal.getDistanceSq(entityanimal1) < d0) {
                 entityanimal = entityanimal1;
                 d0 = this.animal.getDistanceSq(entityanimal1);
             }
@@ -89,8 +76,7 @@ public class EntityAIMate extends EntityAIBase
         return entityanimal;
     }
 
-    private void spawnBaby()
-    {
+    private void spawnBaby() {
         EntityAgeable entityageable = this.animal.createChild(this.targetMate);
 
         final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, targetMate, entityageable);
@@ -105,15 +91,13 @@ public class EntityAIMate extends EntityAIBase
             return;
         }
 
-        if (entityageable != null)
-        {
+        if (entityageable != null) {
             if (entityageable instanceof EntityTameable && ((EntityTameable) entityageable).isTamed()) {
                 entityageable.persistenceRequired = true;
             }
             EntityPlayerMP entityplayermp = this.animal.getLoveCause();
 
-            if (entityplayermp == null && this.targetMate.getLoveCause() != null)
-            {
+            if (entityplayermp == null && this.targetMate.getLoveCause() != null) {
                 entityplayermp = this.targetMate.getLoveCause();
             }
 
@@ -124,8 +108,7 @@ public class EntityAIMate extends EntityAIBase
             }
             experience = entityBreedEvent.getExperience();
 
-            if (entityplayermp != null)
-            {
+            if (entityplayermp != null) {
                 entityplayermp.addStat(StatList.ANIMALS_BRED);
                 CriteriaTriggers.BRED_ANIMALS.trigger(entityplayermp, this.animal, this.targetMate, entityageable);
             }
@@ -139,19 +122,17 @@ public class EntityAIMate extends EntityAIBase
             this.world.spawnEntity(entityageable, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING);
             Random random = this.animal.getRNG();
 
-            for (int i = 0; i < 7; ++i)
-            {
+            for (int i = 0; i < 7; ++i) {
                 double d0 = random.nextGaussian() * 0.02D;
                 double d1 = random.nextGaussian() * 0.02D;
                 double d2 = random.nextGaussian() * 0.02D;
-                double d3 = random.nextDouble() * (double)this.animal.width * 2.0D - (double)this.animal.width;
-                double d4 = 0.5D + random.nextDouble() * (double)this.animal.height;
-                double d5 = random.nextDouble() * (double)this.animal.width * 2.0D - (double)this.animal.width;
+                double d3 = random.nextDouble() * (double) this.animal.width * 2.0D - (double) this.animal.width;
+                double d4 = 0.5D + random.nextDouble() * (double) this.animal.height;
+                double d5 = random.nextDouble() * (double) this.animal.width * 2.0D - (double) this.animal.width;
                 this.world.spawnParticle(EnumParticleTypes.HEART, this.animal.posX + d3, this.animal.posY + d4, this.animal.posZ + d5, d0, d1, d2);
             }
 
-            if (this.world.getGameRules().getBoolean("doMobLoot"))
-            {
+            if (this.world.getGameRules().getBoolean("doMobLoot")) {
                 if (experience > 0)
                     this.world.spawnEntity(new EntityXPOrb(this.world, this.animal.posX, this.animal.posY, this.animal.posZ, experience));
             }

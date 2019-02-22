@@ -1,6 +1,7 @@
 package net.minecraft.util;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,8 +13,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.Explosion;
 
-public class DamageSource
-{
+public class DamageSource {
     public static final DamageSource IN_FIRE = (new DamageSource("inFire")).setFireDamage();
     public static final DamageSource LIGHTNING_BOLT = new DamageSource("lightningBolt");
     public static final DamageSource ON_FIRE = (new DamageSource("onFire")).setDamageBypassesArmor().setFireDamage();
@@ -56,190 +56,156 @@ public class DamageSource
         return this;
     }
 
-    public static DamageSource causeMobDamage(EntityLivingBase mob)
-    {
+    public static DamageSource causeMobDamage(EntityLivingBase mob) {
         return new EntityDamageSource("mob", mob);
     }
 
-    public static DamageSource causeIndirectDamage(Entity source, EntityLivingBase indirectEntityIn)
-    {
+    public static DamageSource causeIndirectDamage(Entity source, EntityLivingBase indirectEntityIn) {
         return new EntityDamageSourceIndirect("mob", source, indirectEntityIn);
     }
 
-    public static DamageSource causePlayerDamage(EntityPlayer player)
-    {
+    public static DamageSource causePlayerDamage(EntityPlayer player) {
         return new EntityDamageSource("player", player);
     }
 
-    public static DamageSource causeArrowDamage(EntityArrow arrow, @Nullable Entity indirectEntityIn)
-    {
+    public static DamageSource causeArrowDamage(EntityArrow arrow, @Nullable Entity indirectEntityIn) {
         return (new EntityDamageSourceIndirect("arrow", arrow, indirectEntityIn)).setProjectile();
     }
 
-    public static DamageSource causeFireballDamage(EntityFireball fireball, @Nullable Entity indirectEntityIn)
-    {
+    public static DamageSource causeFireballDamage(EntityFireball fireball, @Nullable Entity indirectEntityIn) {
         return indirectEntityIn == null ? (new EntityDamageSourceIndirect("onFire", fireball, fireball)).setFireDamage().setProjectile() : (new EntityDamageSourceIndirect("fireball", fireball, indirectEntityIn)).setFireDamage().setProjectile();
     }
 
-    public static DamageSource causeThrownDamage(Entity source, @Nullable Entity indirectEntityIn)
-    {
+    public static DamageSource causeThrownDamage(Entity source, @Nullable Entity indirectEntityIn) {
         return (new EntityDamageSourceIndirect("thrown", source, indirectEntityIn)).setProjectile();
     }
 
-    public static DamageSource causeIndirectMagicDamage(Entity source, @Nullable Entity indirectEntityIn)
-    {
+    public static DamageSource causeIndirectMagicDamage(Entity source, @Nullable Entity indirectEntityIn) {
         return (new EntityDamageSourceIndirect("indirectMagic", source, indirectEntityIn)).setDamageBypassesArmor().setMagicDamage();
     }
 
-    public static DamageSource causeThornsDamage(Entity source)
-    {
+    public static DamageSource causeThornsDamage(Entity source) {
         return (new EntityDamageSource("thorns", source)).setIsThornsDamage().setMagicDamage();
     }
 
-    public static DamageSource causeExplosionDamage(@Nullable Explosion explosionIn)
-    {
+    public static DamageSource causeExplosionDamage(@Nullable Explosion explosionIn) {
         return explosionIn != null && explosionIn.getExplosivePlacedBy() != null ? (new EntityDamageSource("explosion.player", explosionIn.getExplosivePlacedBy())).setDifficultyScaled().setExplosion() : (new DamageSource("explosion")).setDifficultyScaled().setExplosion();
     }
 
-    public static DamageSource causeExplosionDamage(@Nullable EntityLivingBase entityLivingBaseIn)
-    {
+    public static DamageSource causeExplosionDamage(@Nullable EntityLivingBase entityLivingBaseIn) {
         return entityLivingBaseIn != null ? (new EntityDamageSource("explosion.player", entityLivingBaseIn)).setDifficultyScaled().setExplosion() : (new DamageSource("explosion")).setDifficultyScaled().setExplosion();
     }
 
-    public boolean isProjectile()
-    {
+    public boolean isProjectile() {
         return this.projectile;
     }
 
-    public DamageSource setProjectile()
-    {
+    public DamageSource setProjectile() {
         this.projectile = true;
         return this;
     }
 
-    public boolean isExplosion()
-    {
+    public boolean isExplosion() {
         return this.explosion;
     }
 
-    public DamageSource setExplosion()
-    {
+    public DamageSource setExplosion() {
         this.explosion = true;
         return this;
     }
 
-    public boolean isUnblockable()
-    {
+    public boolean isUnblockable() {
         return this.isUnblockable;
     }
 
-    public float getHungerDamage()
-    {
+    public float getHungerDamage() {
         return this.hungerDamage;
     }
 
-    public boolean canHarmInCreative()
-    {
+    public boolean canHarmInCreative() {
         return this.isDamageAllowedInCreativeMode;
     }
 
-    public boolean isDamageAbsolute()
-    {
+    public boolean isDamageAbsolute() {
         return this.damageIsAbsolute;
     }
 
-    public DamageSource(String damageTypeIn)
-    {
+    public DamageSource(String damageTypeIn) {
         this.damageType = damageTypeIn;
     }
 
     @Nullable
-    public Entity getImmediateSource()
-    {
+    public Entity getImmediateSource() {
         return this.getTrueSource();
     }
 
     @Nullable
-    public Entity getTrueSource()
-    {
+    public Entity getTrueSource() {
         return null;
     }
 
-    public DamageSource setDamageBypassesArmor()
-    {
+    public DamageSource setDamageBypassesArmor() {
         this.isUnblockable = true;
         this.hungerDamage = 0.0F;
         return this;
     }
 
-    public DamageSource setDamageAllowedInCreativeMode()
-    {
+    public DamageSource setDamageAllowedInCreativeMode() {
         this.isDamageAllowedInCreativeMode = true;
         return this;
     }
 
-    public DamageSource setDamageIsAbsolute()
-    {
+    public DamageSource setDamageIsAbsolute() {
         this.damageIsAbsolute = true;
         this.hungerDamage = 0.0F;
         return this;
     }
 
-    public DamageSource setFireDamage()
-    {
+    public DamageSource setFireDamage() {
         this.fireDamage = true;
         return this;
     }
 
-    public ITextComponent getDeathMessage(EntityLivingBase entityLivingBaseIn)
-    {
+    public ITextComponent getDeathMessage(EntityLivingBase entityLivingBaseIn) {
         EntityLivingBase entitylivingbase = entityLivingBaseIn.getAttackingEntity();
         String s = "death.attack." + this.damageType;
         String s1 = s + ".player";
-        return entitylivingbase != null && I18n.canTranslate(s1) ? new TextComponentTranslation(s1, new Object[] {entityLivingBaseIn.getDisplayName(), entitylivingbase.getDisplayName()}) : new TextComponentTranslation(s, new Object[] {entityLivingBaseIn.getDisplayName()});
+        return entitylivingbase != null && I18n.canTranslate(s1) ? new TextComponentTranslation(s1, new Object[]{entityLivingBaseIn.getDisplayName(), entitylivingbase.getDisplayName()}) : new TextComponentTranslation(s, new Object[]{entityLivingBaseIn.getDisplayName()});
     }
 
-    public boolean isFireDamage()
-    {
+    public boolean isFireDamage() {
         return this.fireDamage;
     }
 
-    public String getDamageType()
-    {
+    public String getDamageType() {
         return this.damageType;
     }
 
-    public DamageSource setDifficultyScaled()
-    {
+    public DamageSource setDifficultyScaled() {
         this.difficultyScaled = true;
         return this;
     }
 
-    public boolean isDifficultyScaled()
-    {
+    public boolean isDifficultyScaled() {
         return this.difficultyScaled;
     }
 
-    public boolean isMagicDamage()
-    {
+    public boolean isMagicDamage() {
         return this.magicDamage;
     }
 
-    public DamageSource setMagicDamage()
-    {
+    public DamageSource setMagicDamage() {
         this.magicDamage = true;
         return this;
     }
 
-    public boolean isCreativePlayer()
-    {
+    public boolean isCreativePlayer() {
         Entity entity = this.getTrueSource();
-        return entity instanceof EntityPlayer && ((EntityPlayer)entity).capabilities.isCreativeMode;
+        return entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isCreativeMode;
     }
 
     @Nullable
-    public Vec3d getDamageLocation()
-    {
+    public Vec3d getDamageLocation() {
         return null;
     }
 }

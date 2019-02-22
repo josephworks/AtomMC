@@ -1,80 +1,61 @@
 package net.minecraft.util.text.event;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
 
-public class ClickEvent
-{
+public class ClickEvent {
     private final Action action;
     private final String value;
 
-    public ClickEvent(Action theAction, String theValue)
-    {
+    public ClickEvent(Action theAction, String theValue) {
         this.action = theAction;
         this.value = theValue;
     }
 
-    public Action getAction()
-    {
+    public Action getAction() {
         return this.action;
     }
 
-    public String getValue()
-    {
+    public String getValue() {
         return this.value;
     }
 
-    public boolean equals(Object p_equals_1_)
-    {
-        if (this == p_equals_1_)
-        {
+    public boolean equals(Object p_equals_1_) {
+        if (this == p_equals_1_) {
             return true;
-        }
-        else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
-        {
-            ClickEvent clickevent = (ClickEvent)p_equals_1_;
+        } else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass()) {
+            ClickEvent clickevent = (ClickEvent) p_equals_1_;
 
-            if (this.action != clickevent.action)
-            {
+            if (this.action != clickevent.action) {
                 return false;
-            }
-            else
-            {
-                if (this.value != null)
-                {
-                    if (!this.value.equals(clickevent.value))
-                    {
+            } else {
+                if (this.value != null) {
+                    if (!this.value.equals(clickevent.value)) {
                         return false;
                     }
-                }
-                else if (clickevent.value != null)
-                {
+                } else if (clickevent.value != null) {
                     return false;
                 }
 
                 return true;
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "ClickEvent{action=" + this.action + ", value='" + this.value + '\'' + '}';
     }
 
-    public int hashCode()
-    {
+    public int hashCode() {
         int i = this.action.hashCode();
         i = 31 * i + (this.value != null ? this.value.hashCode() : 0);
         return i;
     }
 
-    public static enum Action
-    {
+    public static enum Action {
         OPEN_URL("open_url", true),
         OPEN_FILE("open_file", false),
         RUN_COMMAND("run_command", true),
@@ -85,31 +66,25 @@ public class ClickEvent
         private final boolean allowedInChat;
         private final String canonicalName;
 
-        private Action(String canonicalNameIn, boolean allowedInChatIn)
-        {
+        private Action(String canonicalNameIn, boolean allowedInChatIn) {
             this.canonicalName = canonicalNameIn;
             this.allowedInChat = allowedInChatIn;
         }
 
-        public boolean shouldAllowInChat()
-        {
+        public boolean shouldAllowInChat() {
             return this.allowedInChat;
         }
 
-        public String getCanonicalName()
-        {
+        public String getCanonicalName() {
             return this.canonicalName;
         }
 
-        public static Action getValueByCanonicalName(String canonicalNameIn)
-        {
+        public static Action getValueByCanonicalName(String canonicalNameIn) {
             return NAME_MAPPING.get(canonicalNameIn);
         }
 
-        static
-        {
-            for (Action clickevent$action : values())
-            {
+        static {
+            for (Action clickevent$action : values()) {
                 NAME_MAPPING.put(clickevent$action.getCanonicalName(), clickevent$action);
             }
         }

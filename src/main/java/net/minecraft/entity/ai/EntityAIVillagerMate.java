@@ -6,113 +6,84 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.Village;
 import net.minecraft.world.World;
 
-public class EntityAIVillagerMate extends EntityAIBase
-{
+public class EntityAIVillagerMate extends EntityAIBase {
     private final EntityVillager villager;
     private EntityVillager mate;
     private final World world;
     private int matingTimeout;
     Village village;
 
-    public EntityAIVillagerMate(EntityVillager villagerIn)
-    {
+    public EntityAIVillagerMate(EntityVillager villagerIn) {
         this.villager = villagerIn;
         this.world = villagerIn.world;
         this.setMutexBits(3);
     }
 
-    public boolean shouldExecute()
-    {
-        if (this.villager.getGrowingAge() != 0)
-        {
+    public boolean shouldExecute() {
+        if (this.villager.getGrowingAge() != 0) {
             return false;
-        }
-        else if (this.villager.getRNG().nextInt(500) != 0)
-        {
+        } else if (this.villager.getRNG().nextInt(500) != 0) {
             return false;
-        }
-        else
-        {
+        } else {
             this.village = this.world.getVillageCollection().getNearestVillage(new BlockPos(this.villager), 0);
 
-            if (this.village == null)
-            {
+            if (this.village == null) {
                 return false;
-            }
-            else if (this.checkSufficientDoorsPresentForNewVillager() && this.villager.getIsWillingToMate(true))
-            {
+            } else if (this.checkSufficientDoorsPresentForNewVillager() && this.villager.getIsWillingToMate(true)) {
                 Entity entity = this.world.findNearestEntityWithinAABB(EntityVillager.class, this.villager.getEntityBoundingBox().grow(8.0D, 3.0D, 8.0D), this.villager);
 
-                if (entity == null)
-                {
+                if (entity == null) {
                     return false;
-                }
-                else
-                {
-                    this.mate = (EntityVillager)entity;
+                } else {
+                    this.mate = (EntityVillager) entity;
                     return this.mate.getGrowingAge() == 0 && this.mate.getIsWillingToMate(true);
                 }
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
     }
 
-    public void startExecuting()
-    {
+    public void startExecuting() {
         this.matingTimeout = 300;
         this.villager.setMating(true);
     }
 
-    public void resetTask()
-    {
+    public void resetTask() {
         this.village = null;
         this.mate = null;
         this.villager.setMating(false);
     }
 
-    public boolean shouldContinueExecuting()
-    {
+    public boolean shouldContinueExecuting() {
         return this.matingTimeout >= 0 && this.checkSufficientDoorsPresentForNewVillager() && this.villager.getGrowingAge() == 0 && this.villager.getIsWillingToMate(false);
     }
 
-    public void updateTask()
-    {
+    public void updateTask() {
         --this.matingTimeout;
         this.villager.getLookHelper().setLookPositionWithEntity(this.mate, 10.0F, 30.0F);
 
-        if (this.villager.getDistanceSq(this.mate) > 2.25D)
-        {
+        if (this.villager.getDistanceSq(this.mate) > 2.25D) {
             this.villager.getNavigator().tryMoveToEntityLiving(this.mate, 0.25D);
-        }
-        else if (this.matingTimeout == 0 && this.mate.isMating())
-        {
+        } else if (this.matingTimeout == 0 && this.mate.isMating()) {
             this.giveBirth();
         }
 
-        if (this.villager.getRNG().nextInt(35) == 0)
-        {
-            this.world.setEntityState(this.villager, (byte)12);
+        if (this.villager.getRNG().nextInt(35) == 0) {
+            this.world.setEntityState(this.villager, (byte) 12);
         }
     }
 
-    private boolean checkSufficientDoorsPresentForNewVillager()
-    {
-        if (!this.village.isMatingSeason())
-        {
+    private boolean checkSufficientDoorsPresentForNewVillager() {
+        if (!this.village.isMatingSeason()) {
             return false;
-        }
-        else
-        {
-            int i = (int)((double)((float)this.village.getNumVillageDoors()) * 0.35D);
+        } else {
+            int i = (int) ((double) ((float) this.village.getNumVillageDoors()) * 0.35D);
             return this.village.getNumVillagers() < i;
         }
     }
 
-    private void giveBirth()
-    {
+    private void giveBirth() {
         net.minecraft.entity.EntityAgeable entityvillager = this.villager.createChild(this.mate);
         if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityBreedEvent(entityvillager, this.villager, this.mate, null, null, 0).isCancelled()) {
             return;
@@ -123,11 +94,13 @@ public class EntityAIVillagerMate extends EntityAIBase
         this.villager.setIsWillingToMate(false);
 
         final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(villager, mate, entityvillager);
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event) || event.getChild() == null) { return; }
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event) || event.getChild() == null) {
+            return;
+        }
         entityvillager = event.getChild();
         entityvillager.setGrowingAge(-24000);
         entityvillager.setLocationAndAngles(this.villager.posX, this.villager.posY, this.villager.posZ, 0.0F, 0.0F);
         this.world.spawnEntity(entityvillager, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.BREEDING);
-        this.world.setEntityState(entityvillager, (byte)12);
+        this.world.setEntityState(entityvillager, (byte) 12);
     }
 }

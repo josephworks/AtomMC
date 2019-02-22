@@ -5,10 +5,8 @@ import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BiomeEnd extends Biome
-{
-    public BiomeEnd(BiomeProperties properties)
-    {
+public class BiomeEnd extends Biome {
+    public BiomeEnd(BiomeProperties properties) {
         super(properties);
         this.spawnableMonsterList.clear();
         this.spawnableCreatureList.clear();
@@ -21,8 +19,7 @@ public class BiomeEnd extends Biome
     }
 
     @SideOnly(Side.CLIENT)
-    public int getSkyColorByTemp(float currentTemperature)
-    {
+    public int getSkyColorByTemp(float currentTemperature) {
         return 0;
     }
 }

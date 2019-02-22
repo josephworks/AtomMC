@@ -35,17 +35,17 @@ import java.nio.ByteBuffer;
  * For sources of random-access data, such as {@link RandomAccessFile}.
  */
 public interface SeekableSource extends Closeable {
-    
+
     /**
      * Sets the position for the next {@link #read(ByteBuffer)}.
      */
-    void seek(long pos) throws IOException ;
-    
+    void seek(long pos) throws IOException;
+
     /**
      * Reads up to {@link ByteBuffer#remaining()} bytes from the source,
      * returning the number of bytes read, or -1 if no bytes were read
      * and EOF was reached.
      */
     int read(ByteBuffer bb) throws IOException;
-    
+
 }

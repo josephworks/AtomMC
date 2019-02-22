@@ -13,6 +13,8 @@ import net.md_5.specialsource.provider.JointProvider;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -37,10 +39,12 @@ public class ReobfuscateTask extends DefaultTask {
 
     @Getter
     @Setter
+    @InputFiles
     private FileCollection classpath;
 
     @Getter
     @Setter
+    @OutputFile
     private File outputJar = new File(getProject().getBuildDir(), "localCache/reobfuscated.jar");
 
     @TaskAction

@@ -11,36 +11,29 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 
-public class EntityLargeFireball extends EntityFireball
-{
+public class EntityLargeFireball extends EntityFireball {
     public int explosionPower = 1;
 
-    public EntityLargeFireball(World worldIn)
-    {
+    public EntityLargeFireball(World worldIn) {
         super(worldIn);
         // TODO: Maybe we should use net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent instead of this?
         isIncendiary = this.world.getGameRules().getBoolean("mobGriefing");
     }
 
     @SideOnly(Side.CLIENT)
-    public EntityLargeFireball(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ)
-    {
+    public EntityLargeFireball(World worldIn, double x, double y, double z, double accelX, double accelY, double accelZ) {
         super(worldIn, x, y, z, accelX, accelY, accelZ);
     }
 
-    public EntityLargeFireball(World worldIn, EntityLivingBase shooter, double accelX, double accelY, double accelZ)
-    {
+    public EntityLargeFireball(World worldIn, EntityLivingBase shooter, double accelX, double accelY, double accelZ) {
         super(worldIn, shooter, accelX, accelY, accelZ);
         // TODO: Maybe we should use net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent instead of this?
         isIncendiary = this.world.getGameRules().getBoolean("mobGriefing");
     }
 
-    protected void onImpact(RayTraceResult result)
-    {
-        if (!this.world.isRemote)
-        {
-            if (result.entityHit != null)
-            {
+    protected void onImpact(RayTraceResult result) {
+        if (!this.world.isRemote) {
+            if (result.entityHit != null) {
                 result.entityHit.attackEntityFrom(DamageSource.causeFireballDamage(this, this.shootingEntity), 6.0F);
                 this.applyEnchantments(this.shootingEntity, result.entityHit);
             }
@@ -60,23 +53,19 @@ public class EntityLargeFireball extends EntityFireball
         }
     }
 
-    public static void registerFixesLargeFireball(DataFixer fixer)
-    {
+    public static void registerFixesLargeFireball(DataFixer fixer) {
         EntityFireball.registerFixesFireball(fixer, "Fireball");
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
+    public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         compound.setInteger("ExplosionPower", this.explosionPower);
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
 
-        if (compound.hasKey("ExplosionPower", 99))
-        {
+        if (compound.hasKey("ExplosionPower", 99)) {
             // CraftBukkit - set bukkitYield when setting explosionpower
             bukkitYield = this.explosionPower = compound.getInteger("ExplosionPower");
         }

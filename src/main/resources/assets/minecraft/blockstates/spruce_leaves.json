@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "spruce_leaves" }
+  "variants": {
+    "normal": {
+      "model": "spruce_leaves"
     }
+  }
 }

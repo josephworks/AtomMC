@@ -75,7 +75,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
         // Copied from net.minecraft.server.CommandHandler
         int i = getPlayerListSize(as);
         int j = 0;
-        // Some commands use the worldserver variable but we leave it full of null values,
+        // Some commands use the worlds variable but we leave it full of null values,
         // so we must temporarily populate it with the world of the commandsender
         WorldServer[] prev = MinecraftServer.getServerCB().worlds;
         MinecraftServer server = MinecraftServer.getServerCB();
@@ -110,7 +110,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
                             vanillaCommand.execute(server, icommandlistener, as);
                             j++;
                         } catch (WrongUsageException exceptionusage) {
-                            TextComponentTranslation chatmessage = new TextComponentTranslation("commands.generic.usage", new Object[] { new TextComponentTranslation(exceptionusage.getMessage(), exceptionusage.getErrorObjects())});
+                            TextComponentTranslation chatmessage = new TextComponentTranslation("commands.generic.usage", new Object[]{new TextComponentTranslation(exceptionusage.getMessage(), exceptionusage.getErrorObjects())});
                             chatmessage.getStyle().setColor(TextFormatting.RED);
                             icommandlistener.sendMessage(chatmessage);
                         } catch (CommandException commandexception) {
@@ -131,7 +131,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
                 icommandlistener.sendMessage(chatmessage);
             }
         } catch (WrongUsageException exceptionusage) {
-            TextComponentTranslation chatmessage1 = new TextComponentTranslation("commands.generic.usage", new Object[] { new TextComponentTranslation(exceptionusage.getMessage(), exceptionusage.getErrorObjects()) });
+            TextComponentTranslation chatmessage1 = new TextComponentTranslation("commands.generic.usage", new Object[]{new TextComponentTranslation(exceptionusage.getMessage(), exceptionusage.getErrorObjects())});
             chatmessage1.getStyle().setColor(TextFormatting.RED);
             icommandlistener.sendMessage(chatmessage1);
         } catch (CommandException commandexception) {
@@ -142,7 +142,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
             icommandlistener.sendMessage(chatmessage3);
             if (icommandlistener.getCommandSenderEntity() instanceof EntityMinecartCommandBlock) {
                 MinecraftServer.LOGGER.log(Level.WARN, String.format("MinecartCommandBlock at (%d,%d,%d) failed to handle command", icommandlistener.getPosition().getX(), icommandlistener.getPosition().getY(), icommandlistener.getPosition().getZ()), throwable);
-            } else if(icommandlistener instanceof CommandBlockBaseLogic) {
+            } else if (icommandlistener instanceof CommandBlockBaseLogic) {
                 CommandBlockBaseLogic listener = (CommandBlockBaseLogic) icommandlistener;
                 MinecraftServer.LOGGER.log(Level.WARN, String.format("CommandBlock at (%d,%d,%d) failed to handle command", listener.getPosition().getX(), listener.getPosition().getY(), listener.getPosition().getZ()), throwable);
             } else {
@@ -166,7 +166,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
             return ((EntityMinecartCommandBlock) ((CraftMinecartCommand) sender).getHandle()).getCommandBlockLogic();
         }
         if (sender instanceof RemoteConsoleCommandSender) {
-            return ((DedicatedServer)MinecraftServer.getServerCB()).rconConsoleSource;
+            return ((DedicatedServer) MinecraftServer.getServerCB()).rconConsoleSource;
         }
         if (sender instanceof ConsoleCommandSender) {
             return ((CraftServer) sender.getServer()).getServer();

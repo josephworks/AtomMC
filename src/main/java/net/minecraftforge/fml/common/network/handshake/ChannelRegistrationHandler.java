@@ -35,12 +35,10 @@ import com.google.common.collect.ImmutableSet;
 
 public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLProxyPacket> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, FMLProxyPacket msg) throws Exception
-    {
+    protected void channelRead0(ChannelHandlerContext ctx, FMLProxyPacket msg) throws Exception {
         Side side = msg.getTarget();
         NetworkManager manager = msg.getOrigin();
-        if (msg.channel().equals("REGISTER") || msg.channel().equals("UNREGISTER"))
-        {
+        if (msg.channel().equals("REGISTER") || msg.channel().equals("UNREGISTER")) {
             byte[] data = new byte[msg.payload().readableBytes()];
             msg.payload().readBytes(data);
             String channels = new String(data, StandardCharsets.UTF_8);
@@ -48,16 +46,13 @@ public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLP
             Set<String> channelSet = ImmutableSet.copyOf(split);
             FMLCommonHandler.instance().fireNetRegistrationEvent(manager, channelSet, msg.channel(), side);
             msg.payload().release();
-        }
-        else
-        {
+        } else {
             ctx.fireChannelRead(msg);
         }
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
-    {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         FMLLog.log.error("ChannelRegistrationHandler exception", cause);
         super.exceptionCaught(ctx, cause);
     }

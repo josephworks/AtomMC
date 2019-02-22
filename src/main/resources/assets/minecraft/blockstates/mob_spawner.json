@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "mob_spawner_cage" }
+  "variants": {
+    "normal": {
+      "model": "mob_spawner_cage"
     }
+  }
 }

@@ -66,6 +66,9 @@ import net.minecraft.world.storage.MapData;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -605,7 +608,13 @@ public final class CraftServer implements Server {
 
     @Override
     public long getConnectionThrottle() {
-        return this.configuration.getInt("settings.connection-throttle");
+        // Spigot Start - Automatically set connection throttle for bungee configurations
+        if (org.spigotmc.SpigotConfig.bungee) {
+            return -1;
+        } else {
+            return this.configuration.getInt("settings.connection-throttle");
+        }
+        // Spigot End
     }
 
     @Override
@@ -645,7 +654,7 @@ public final class CraftServer implements Server {
     // NOTE: Should only be called from DedicatedServer.ah()
     public boolean dispatchServerCommand(CommandSender sender, PendingCommand serverCommand) {
         if (sender instanceof Conversable) {
-            Conversable conversable = (Conversable)sender;
+            Conversable conversable = (Conversable) sender;
 
             if (conversable.isConversing()) {
                 conversable.acceptConversationInput(serverCommand.command);
@@ -765,7 +774,8 @@ public final class CraftServer implements Server {
         while (pollCount < 50 && getScheduler().getActiveWorkers().size() > 0) {
             try {
                 Thread.sleep(50);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
             pollCount++;
         }
 
@@ -777,10 +787,10 @@ public final class CraftServer implements Server {
                 author = plugin.getDescription().getAuthors().get(0);
             }
             getLogger().log(Level.SEVERE, String.format(
-                "Nag author: '%s' of '%s' about the following: %s",
-                author,
-                plugin.getDescription().getName(),
-                "This plugin is not properly shutting down its async tasks when it is being reloaded.  This may cause conflicts with the newly loaded version of the plugin"
+                    "Nag author: '%s' of '%s' about the following: %s",
+                    author,
+                    plugin.getDescription().getName(),
+                    "This plugin is not properly shutting down its async tasks when it is being reloaded.  This may cause conflicts with the newly loaded version of the plugin"
             ));
         }
         loadPlugins();
@@ -805,7 +815,7 @@ public final class CraftServer implements Server {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "finally" })
+    @SuppressWarnings({"unchecked", "finally"})
     private void loadCustomPermissions() {
         File file = new File(configuration.getString("settings.permissions-file"));
         FileInputStream stream;
@@ -833,7 +843,8 @@ public final class CraftServer implements Server {
         } finally {
             try {
                 stream.close();
-            } catch (IOException ex) {}
+            } catch (IOException ex) {
+            }
         }
 
         if (perms == null) {
@@ -903,7 +914,8 @@ public final class CraftServer implements Server {
                 private long b = System.currentTimeMillis();
 
                 @Override
-                public void displaySavingString(String s) {}
+                public void displaySavingString(String s) {
+                }
 
                 @Override
                 public void setLoadingProgress(int i) {
@@ -914,13 +926,16 @@ public final class CraftServer implements Server {
                 }
 
                 @Override
-                public void displayLoadingString(String s) {}
+                public void displayLoadingString(String s) {
+                }
 
                 @Override
-                public void resetProgressAndMessage(String message) {}
+                public void resetProgressAndMessage(String message) {
+                }
 
                 @Override
-                public void setDoneWorking() {}
+                public void setDoneWorking() {
+                }
             });
         }
 
@@ -934,7 +949,7 @@ public final class CraftServer implements Server {
                     break;
                 }
             }
-        } while(used);
+        } while (used);
         boolean hardcore = false;
 
         ISaveHandler sdm = new AnvilSaveHandler(getWorldContainer(), name, true, getHandle().getServerInstance().getDataFixer());
@@ -946,7 +961,8 @@ public final class CraftServer implements Server {
             worlddata = new WorldInfo(worldSettings, name);
         }
         worlddata.checkName(name); // CraftBukkit - Migration did not rewrite the level.dat; This forces 1.8 to take the last loaded world as respawn (in this case the end)
-        WorldServer internal = (WorldServer) new WorldServer(console, sdm, worlddata, dimension, console.profiler, creator.environment(), generator).init();
+        WorldSettings worldSettings1 = new WorldSettings(creator.seed(), WorldSettings.getGameTypeById(getDefaultGameMode().getValue()), generateStructures, false, type);
+        WorldServer internal = DimensionManager.initDimension(creator, worldSettings1);
 
         if (!(worlds.containsKey(name.toLowerCase(java.util.Locale.ENGLISH)))) {
             return null;
@@ -1034,9 +1050,10 @@ public final class CraftServer implements Server {
                 getLogger().log(Level.SEVERE, null, ex);
             }
         }
-
+        MinecraftForge.EVENT_BUS.post(new WorldEvent.Unload(handle));
         worlds.remove(world.getName().toLowerCase(java.util.Locale.ENGLISH));
         console.worldServerList.remove(console.worldServerList.indexOf(handle));
+        DimensionManager.setWorld(handle.provider.getDimension(), null, handle.getMinecraftServer());
         return true;
     }
 
@@ -1068,6 +1085,16 @@ public final class CraftServer implements Server {
             return;
         }
         worlds.put(world.getName().toLowerCase(java.util.Locale.ENGLISH), world);
+    }
+
+    /**
+     * Internal use only!
+     *
+     * @param world the world to remove.
+     */
+    public void removeWorld(World world) {
+        Validate.notNull(world, "World cannot be null");
+        this.worlds.remove(world.getName().toLowerCase(java.util.Locale.ENGLISH));
     }
 
     @Override
@@ -1374,7 +1401,7 @@ public final class CraftServer implements Server {
 
         for (UserListEntry entry : playerList.getBannedPlayers().getValuesCB()) {
             result.add(getOfflinePlayer((GameProfile) entry.getValue()));
-        }        
+        }
 
         return result;
     }
@@ -1383,12 +1410,12 @@ public final class CraftServer implements Server {
     public BanList getBanList(BanList.Type type) {
         Validate.notNull(type, "Type cannot be null");
 
-        switch(type){
-        case IP:
-            return new CraftIpBanList(playerList.getBannedIPs());
-        case NAME:
-        default:
-            return new CraftProfileBanList(playerList.getBannedPlayers());
+        switch (type) {
+            case IP:
+                return new CraftIpBanList(playerList.getBannedIPs());
+            case NAME:
+            default:
+                return new CraftProfileBanList(playerList.getBannedPlayers());
         }
     }
 
@@ -1458,6 +1485,9 @@ public final class CraftServer implements Server {
 
     @Override
     public File getWorldContainer() {
+        if (DimensionManager.getWorld(0) != null) {
+            return DimensionManager.getWorld(0).getSaveHandler().getWorldDirectory();
+        }
         if (this.getServer().anvilFile != null) {
             return this.getServer().anvilFile;
         }
@@ -1751,11 +1781,9 @@ public final class CraftServer implements Server {
         return CraftMagicNumbers.INSTANCE;
     }
 
-    private final Spigot spigot = new Spigot()
-    {
+    private final Spigot spigot = new Spigot() {
         @Override
-        public YamlConfiguration getConfig()
-        {
+        public YamlConfiguration getConfig() {
             return org.spigotmc.SpigotConfig.config;
         }
 
@@ -1774,8 +1802,7 @@ public final class CraftServer implements Server {
         }
     };
 
-    public Spigot spigot()
-    {
+    public Spigot spigot() {
         return spigot;
     }
 }

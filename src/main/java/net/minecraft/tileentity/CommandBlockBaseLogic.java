@@ -2,6 +2,7 @@ package net.minecraft.tileentity;
 
 import com.google.common.base.Joiner;
 import io.netty.buffer.ByteBuf;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,8 +38,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
 import org.bukkit.event.server.ServerCommandEvent;
 
-public abstract class CommandBlockBaseLogic implements ICommandSender
-{
+public abstract class CommandBlockBaseLogic implements ICommandSender {
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private long lastExecution = -1L;
     private boolean updateLastExecution = true;
@@ -50,37 +50,31 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
     private final CommandResultStats resultStats = new CommandResultStats();
     protected org.bukkit.command.CommandSender sender;
 
-    public int getSuccessCount()
-    {
+    public int getSuccessCount() {
         return this.successCount;
     }
 
-    public void setSuccessCount(int successCountIn)
-    {
+    public void setSuccessCount(int successCountIn) {
         this.successCount = successCountIn;
     }
 
-    public ITextComponent getLastOutput()
-    {
-        return (ITextComponent)(this.lastOutput == null ? new TextComponentString("") : this.lastOutput);
+    public ITextComponent getLastOutput() {
+        return (ITextComponent) (this.lastOutput == null ? new TextComponentString("") : this.lastOutput);
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound p_189510_1_)
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189510_1_) {
         p_189510_1_.setString("Command", this.commandStored);
         p_189510_1_.setInteger("SuccessCount", this.successCount);
         p_189510_1_.setString("CustomName", this.customName);
         p_189510_1_.setBoolean("TrackOutput", this.trackOutput);
 
-        if (this.lastOutput != null && this.trackOutput)
-        {
+        if (this.lastOutput != null && this.trackOutput) {
             p_189510_1_.setString("LastOutput", ITextComponent.Serializer.componentToJson(this.lastOutput));
         }
 
         p_189510_1_.setBoolean("UpdateLastExecution", this.updateLastExecution);
 
-        if (this.updateLastExecution && this.lastExecution > 0L)
-        {
+        if (this.updateLastExecution && this.lastExecution > 0L) {
             p_189510_1_.setLong("LastExecution", this.lastExecution);
         }
 
@@ -88,132 +82,96 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
         return p_189510_1_;
     }
 
-    public void readDataFromNBT(NBTTagCompound nbt)
-    {
+    public void readDataFromNBT(NBTTagCompound nbt) {
         this.commandStored = nbt.getString("Command");
         this.successCount = nbt.getInteger("SuccessCount");
 
-        if (nbt.hasKey("CustomName", 8))
-        {
+        if (nbt.hasKey("CustomName", 8)) {
             this.customName = nbt.getString("CustomName");
         }
 
-        if (nbt.hasKey("TrackOutput", 1))
-        {
+        if (nbt.hasKey("TrackOutput", 1)) {
             this.trackOutput = nbt.getBoolean("TrackOutput");
         }
 
-        if (nbt.hasKey("LastOutput", 8) && this.trackOutput)
-        {
-            try
-            {
+        if (nbt.hasKey("LastOutput", 8) && this.trackOutput) {
+            try {
                 this.lastOutput = ITextComponent.Serializer.jsonToComponent(nbt.getString("LastOutput"));
-            }
-            catch (Throwable throwable)
-            {
+            } catch (Throwable throwable) {
                 this.lastOutput = new TextComponentString(throwable.getMessage());
             }
-        }
-        else
-        {
+        } else {
             this.lastOutput = null;
         }
 
-        if (nbt.hasKey("UpdateLastExecution"))
-        {
+        if (nbt.hasKey("UpdateLastExecution")) {
             this.updateLastExecution = nbt.getBoolean("UpdateLastExecution");
         }
 
-        if (this.updateLastExecution && nbt.hasKey("LastExecution"))
-        {
+        if (this.updateLastExecution && nbt.hasKey("LastExecution")) {
             this.lastExecution = nbt.getLong("LastExecution");
-        }
-        else
-        {
+        } else {
             this.lastExecution = -1L;
         }
 
         this.resultStats.readStatsFromNBT(nbt);
     }
 
-    public boolean canUseCommand(int permLevel, String commandName)
-    {
+    public boolean canUseCommand(int permLevel, String commandName) {
         return permLevel <= 2;
     }
 
-    public void setCommand(String command)
-    {
+    public void setCommand(String command) {
         this.commandStored = command;
         this.successCount = 0;
     }
 
-    public String getCommand()
-    {
+    public String getCommand() {
         return this.commandStored;
     }
 
-    public boolean trigger(World worldIn)
-    {
-        if (!worldIn.isRemote && worldIn.getTotalWorldTime() != this.lastExecution)
-        {
-            if ("Searge".equalsIgnoreCase(this.commandStored))
-            {
+    public boolean trigger(World worldIn) {
+        if (!worldIn.isRemote && worldIn.getTotalWorldTime() != this.lastExecution) {
+            if ("Searge".equalsIgnoreCase(this.commandStored)) {
                 this.lastOutput = new TextComponentString("#itzlipofutzli");
                 this.successCount = 1;
                 return true;
-            }
-            else
-            {
+            } else {
                 MinecraftServer minecraftserver = this.getServer();
 
-                if (minecraftserver != null && minecraftserver.isAnvilFileSet() && minecraftserver.isCommandBlockEnabled())
-                {
-                    try
-                    {
+                if (minecraftserver != null && minecraftserver.isAnvilFileSet() && minecraftserver.isCommandBlockEnabled()) {
+                    try {
                         this.lastOutput = null;
 //                        this.successCount = minecraftserver.getCommandManager().executeCommand(this, this.commandStored);
                         this.successCount = executeSafely(this, sender, this.commandStored);
-                    }
-                    catch (Throwable throwable)
-                    {
+                    } catch (Throwable throwable) {
                         CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Executing command block");
                         CrashReportCategory crashreportcategory = crashreport.makeCategory("Command to be executed");
-                        crashreportcategory.addDetail("Command", new ICrashReportDetail<String>()
-                        {
-                            public String call() throws Exception
-                            {
+                        crashreportcategory.addDetail("Command", new ICrashReportDetail<String>() {
+                            public String call() throws Exception {
                                 return CommandBlockBaseLogic.this.getCommand();
                             }
                         });
-                        crashreportcategory.addDetail("Name", new ICrashReportDetail<String>()
-                        {
-                            public String call() throws Exception
-                            {
+                        crashreportcategory.addDetail("Name", new ICrashReportDetail<String>() {
+                            public String call() throws Exception {
                                 return CommandBlockBaseLogic.this.getName();
                             }
                         });
                         throw new ReportedException(crashreport);
                     }
-                }
-                else
-                {
+                } else {
                     this.successCount = 0;
                 }
 
-                if (this.updateLastExecution)
-                {
+                if (this.updateLastExecution) {
                     this.lastExecution = worldIn.getTotalWorldTime();
-                }
-                else
-                {
+                } else {
                     this.lastExecution = -1L;
                 }
 
                 return true;
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -381,33 +339,27 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
         return sender;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.customName;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.customName = name;
     }
 
-    public void sendMessage(ITextComponent component)
-    {
-        if (this.trackOutput && this.getEntityWorld() != null && !this.getEntityWorld().isRemote)
-        {
+    public void sendMessage(ITextComponent component) {
+        if (this.trackOutput && this.getEntityWorld() != null && !this.getEntityWorld().isRemote) {
             this.lastOutput = (new TextComponentString("[" + TIMESTAMP_FORMAT.format(new Date()) + "] ")).appendSibling(component);
             this.updateCommand();
         }
     }
 
-    public boolean sendCommandFeedback()
-    {
+    public boolean sendCommandFeedback() {
         MinecraftServer minecraftserver = this.getServer();
         return minecraftserver == null || !minecraftserver.isAnvilFileSet() || minecraftserver.worlds[0].getGameRules().getBoolean("commandBlockOutput");
     }
 
-    public void setCommandStat(CommandResultStats.Type type, int amount)
-    {
+    public void setCommandStat(CommandResultStats.Type type, int amount) {
         this.resultStats.setCommandStatForSender(this.getServer(), this, type, amount);
     }
 
@@ -419,31 +371,23 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
     @SideOnly(Side.CLIENT)
     public abstract void fillInInfo(ByteBuf buf);
 
-    public void setLastOutput(@Nullable ITextComponent lastOutputMessage)
-    {
+    public void setLastOutput(@Nullable ITextComponent lastOutputMessage) {
         this.lastOutput = lastOutputMessage;
     }
 
-    public void setTrackOutput(boolean shouldTrackOutput)
-    {
+    public void setTrackOutput(boolean shouldTrackOutput) {
         this.trackOutput = shouldTrackOutput;
     }
 
-    public boolean shouldTrackOutput()
-    {
+    public boolean shouldTrackOutput() {
         return this.trackOutput;
     }
 
-    public boolean tryOpenEditCommandBlock(EntityPlayer playerIn)
-    {
-        if (!playerIn.canUseCommandBlock())
-        {
+    public boolean tryOpenEditCommandBlock(EntityPlayer playerIn) {
+        if (!playerIn.canUseCommandBlock()) {
             return false;
-        }
-        else
-        {
-            if (playerIn.getEntityWorld().isRemote)
-            {
+        } else {
+            if (playerIn.getEntityWorld().isRemote) {
                 playerIn.displayGuiEditCommandCart(this);
             }
 
@@ -451,8 +395,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
         }
     }
 
-    public CommandResultStats getCommandResultStats()
-    {
+    public CommandResultStats getCommandResultStats() {
         return this.resultStats;
     }
 }

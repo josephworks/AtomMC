@@ -27,4 +27,5 @@ import java.lang.annotation.Target;
 
 @Retention(value = RUNTIME)
 @Target(value = TYPE)
-public @interface Cancelable{}
+public @interface Cancelable {
+}

@@ -1,4 +1,8 @@
 image: gradle:alpine
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+
 build:
     script:
         - gradle build

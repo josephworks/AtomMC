@@ -1,6 +1,7 @@
 package net.minecraft.item.crafting;
 
 import com.google.common.collect.Lists;
+
 import java.util.List;
 
 import net.minecraft.init.Items;
@@ -10,32 +11,26 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class RecipeRepairItem extends ShapelessRecipes implements IRecipe
-{
+public class RecipeRepairItem extends ShapelessRecipes implements IRecipe {
     // CraftBukkit start - Delegate to new parent class
     public RecipeRepairItem() {
         super("", new ItemStack(Items.LEATHER_HELMET), NonNullList.from(Ingredient.EMPTY, Ingredient.fromItem(Items.LEATHER_HELMET)));
     }
     // CraftBukkit end
 
-    public boolean matches(InventoryCrafting inv, World worldIn)
-    {
+    public boolean matches(InventoryCrafting inv, World worldIn) {
         List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-        for (int i = 0; i < inv.getSizeInventory(); ++i)
-        {
+        for (int i = 0; i < inv.getSizeInventory(); ++i) {
             ItemStack itemstack = inv.getStackInSlot(i);
 
-            if (!itemstack.isEmpty())
-            {
+            if (!itemstack.isEmpty()) {
                 list.add(itemstack);
 
-                if (list.size() > 1)
-                {
+                if (list.size() > 1) {
                     ItemStack itemstack1 = list.get(0);
 
-                    if (itemstack.getItem() != itemstack1.getItem() || itemstack1.getCount() != 1 || itemstack.getCount() != 1 || !itemstack1.getItem().isRepairable())
-                    {
+                    if (itemstack.getItem() != itemstack1.getItem() || itemstack1.getCount() != 1 || itemstack.getCount() != 1 || !itemstack1.getItem().isRepairable()) {
                         return false;
                     }
                 }
@@ -45,45 +40,37 @@ public class RecipeRepairItem extends ShapelessRecipes implements IRecipe
         return list.size() == 2;
     }
 
-    public ItemStack getCraftingResult(InventoryCrafting inv)
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inv) {
         List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-        for (int i = 0; i < inv.getSizeInventory(); ++i)
-        {
+        for (int i = 0; i < inv.getSizeInventory(); ++i) {
             ItemStack itemstack = inv.getStackInSlot(i);
 
-            if (!itemstack.isEmpty())
-            {
+            if (!itemstack.isEmpty()) {
                 list.add(itemstack);
 
-                if (list.size() > 1)
-                {
+                if (list.size() > 1) {
                     ItemStack itemstack1 = list.get(0);
 
-                    if (itemstack.getItem() != itemstack1.getItem() || itemstack1.getCount() != 1 || itemstack.getCount() != 1 || !itemstack1.getItem().isRepairable())
-                    {
+                    if (itemstack.getItem() != itemstack1.getItem() || itemstack1.getCount() != 1 || itemstack.getCount() != 1 || !itemstack1.getItem().isRepairable()) {
                         return ItemStack.EMPTY;
                     }
                 }
             }
         }
 
-        if (list.size() == 2)
-        {
+        if (list.size() == 2) {
             ItemStack itemstack2 = list.get(0);
             ItemStack itemstack3 = list.get(1);
 
-            if (itemstack2.getItem() == itemstack3.getItem() && itemstack2.getCount() == 1 && itemstack3.getCount() == 1 && itemstack2.getItem().isRepairable())
-            {
+            if (itemstack2.getItem() == itemstack3.getItem() && itemstack2.getCount() == 1 && itemstack3.getCount() == 1 && itemstack2.getItem().isRepairable()) {
                 // FORGE: Make itemstack sensitive // Item item = itemstack2.getItem();
                 int j = itemstack2.getMaxDamage() - itemstack2.getItemDamage();
                 int k = itemstack2.getMaxDamage() - itemstack3.getItemDamage();
                 int l = j + k + itemstack2.getMaxDamage() * 5 / 100;
                 int i1 = itemstack2.getMaxDamage() - l;
 
-                if (i1 < 0)
-                {
+                if (i1 < 0) {
                     i1 = 0;
                 }
 
@@ -105,17 +92,14 @@ public class RecipeRepairItem extends ShapelessRecipes implements IRecipe
         return ItemStack.EMPTY;
     }
 
-    public ItemStack getRecipeOutput()
-    {
+    public ItemStack getRecipeOutput() {
         return ItemStack.EMPTY;
     }
 
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-    {
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
         NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
 
-        for (int i = 0; i < nonnulllist.size(); ++i)
-        {
+        for (int i = 0; i < nonnulllist.size(); ++i) {
             ItemStack itemstack = inv.getStackInSlot(i);
             nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
         }
@@ -123,13 +107,11 @@ public class RecipeRepairItem extends ShapelessRecipes implements IRecipe
         return nonnulllist;
     }
 
-    public boolean isDynamic()
-    {
+    public boolean isDynamic() {
         return true;
     }
 
-    public boolean canFit(int width, int height)
-    {
+    public boolean canFit(int width, int height) {
         return width * height >= 2;
     }
 }

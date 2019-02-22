@@ -10,25 +10,22 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class NetHandlerHandshakeMemory implements INetHandlerHandshakeServer
-{
+public class NetHandlerHandshakeMemory implements INetHandlerHandshakeServer {
     private final MinecraftServer mcServer;
     private final NetworkManager networkManager;
 
-    public NetHandlerHandshakeMemory(MinecraftServer mcServerIn, NetworkManager networkManagerIn)
-    {
+    public NetHandlerHandshakeMemory(MinecraftServer mcServerIn, NetworkManager networkManagerIn) {
         this.mcServer = mcServerIn;
         this.networkManager = networkManagerIn;
     }
 
-    public void processHandshake(C00Handshake packetIn)
-    {
-        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager)) return;
+    public void processHandshake(C00Handshake packetIn) {
+        if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerHandshake(packetIn, this.networkManager))
+            return;
         this.networkManager.setConnectionState(packetIn.getRequestedState());
         this.networkManager.setNetHandler(new NetHandlerLoginServer(this.mcServer, this.networkManager));
     }
 
-    public void onDisconnect(ITextComponent reason)
-    {
+    public void onDisconnect(ITextComponent reason) {
     }
 }

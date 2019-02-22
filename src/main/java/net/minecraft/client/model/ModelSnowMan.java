@@ -6,16 +6,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelSnowMan extends ModelBase
-{
+public class ModelSnowMan extends ModelBase {
     public ModelRenderer body;
     public ModelRenderer bottomBody;
     public ModelRenderer head;
     public ModelRenderer rightHand;
     public ModelRenderer leftHand;
 
-    public ModelSnowMan()
-    {
+    public ModelSnowMan() {
         float f = 4.0F;
         float f1 = 0.0F;
         this.head = (new ModelRenderer(this, 0, 0)).setTextureSize(64, 64);
@@ -35,8 +33,7 @@ public class ModelSnowMan extends ModelBase
         this.bottomBody.setRotationPoint(0.0F, 24.0F, 0.0F);
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
         this.head.rotateAngleY = netHeadYaw * 0.017453292F;
         this.head.rotateAngleX = headPitch * 0.017453292F;
@@ -46,15 +43,14 @@ public class ModelSnowMan extends ModelBase
         this.rightHand.rotateAngleZ = 1.0F;
         this.leftHand.rotateAngleZ = -1.0F;
         this.rightHand.rotateAngleY = 0.0F + this.body.rotateAngleY;
-        this.leftHand.rotateAngleY = (float)Math.PI + this.body.rotateAngleY;
+        this.leftHand.rotateAngleY = (float) Math.PI + this.body.rotateAngleY;
         this.rightHand.rotationPointX = f1 * 5.0F;
         this.rightHand.rotationPointZ = -f * 5.0F;
         this.leftHand.rotationPointX = -f1 * 5.0F;
         this.leftHand.rotationPointZ = f * 5.0F;
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.body.render(scale);
         this.bottomBody.render(scale);

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -18,27 +19,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockHugeMushroom extends Block
-{
+public class BlockHugeMushroom extends Block {
     public static final PropertyEnum<EnumType> VARIANT = PropertyEnum.<EnumType>create("variant", EnumType.class);
     private final Block smallBlock;
 
-    public BlockHugeMushroom(Material materialIn, MapColor color, Block smallBlockIn)
-    {
+    public BlockHugeMushroom(Material materialIn, MapColor color, Block smallBlockIn) {
         super(materialIn, color);
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, EnumType.ALL_OUTSIDE));
         this.smallBlock = smallBlockIn;
     }
 
-    public int quantityDropped(Random random)
-    {
+    public int quantityDropped(Random random) {
         return Math.max(0, random.nextInt(10) - 7);
     }
 
-    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
-        switch ((EnumType)state.getValue(VARIANT))
-        {
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        switch ((EnumType) state.getValue(VARIANT)) {
             case ALL_STEM:
                 return MapColor.CLOTH;
             case ALL_INSIDE:
@@ -50,39 +46,31 @@ public class BlockHugeMushroom extends Block
         }
     }
 
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return Item.getItemFromBlock(this.smallBlock);
     }
 
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-    {
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {
         return new ItemStack(this.smallBlock);
     }
 
-    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return this.getDefaultState();
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(VARIANT, EnumType.byMetadata(meta));
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumType)state.getValue(VARIANT)).getMetadata();
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumType) state.getValue(VARIANT)).getMetadata();
     }
 
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        switch (rot)
-        {
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        switch (rot) {
             case CLOCKWISE_180:
 
-                switch ((EnumType)state.getValue(VARIANT))
-                {
+                switch ((EnumType) state.getValue(VARIANT)) {
                     case STEM:
                         break;
                     case NORTH_WEST:
@@ -107,8 +95,7 @@ public class BlockHugeMushroom extends Block
 
             case COUNTERCLOCKWISE_90:
 
-                switch ((EnumType)state.getValue(VARIANT))
-                {
+                switch ((EnumType) state.getValue(VARIANT)) {
                     case STEM:
                         break;
                     case NORTH_WEST:
@@ -133,8 +120,7 @@ public class BlockHugeMushroom extends Block
 
             case CLOCKWISE_90:
 
-                switch ((EnumType)state.getValue(VARIANT))
-                {
+                switch ((EnumType) state.getValue(VARIANT)) {
                     case STEM:
                         break;
                     case NORTH_WEST:
@@ -163,16 +149,13 @@ public class BlockHugeMushroom extends Block
     }
 
     @SuppressWarnings("incomplete-switch")
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-    {
-        EnumType blockhugemushroom$enumtype = (EnumType)state.getValue(VARIANT);
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        EnumType blockhugemushroom$enumtype = (EnumType) state.getValue(VARIANT);
 
-        switch (mirrorIn)
-        {
+        switch (mirrorIn) {
             case LEFT_RIGHT:
 
-                switch (blockhugemushroom$enumtype)
-                {
+                switch (blockhugemushroom$enumtype) {
                     case NORTH_WEST:
                         return state.withProperty(VARIANT, EnumType.SOUTH_WEST);
                     case NORTH:
@@ -193,8 +176,7 @@ public class BlockHugeMushroom extends Block
 
             case FRONT_BACK:
 
-                switch (blockhugemushroom$enumtype)
-                {
+                switch (blockhugemushroom$enumtype) {
                     case NORTH_WEST:
                         return state.withProperty(VARIANT, EnumType.NORTH_EAST);
                     case NORTH:
@@ -217,18 +199,14 @@ public class BlockHugeMushroom extends Block
         return super.withMirror(state, mirrorIn);
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {VARIANT});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{VARIANT});
     }
 
-    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
-    {
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
         IBlockState state = world.getBlockState(pos);
-        for (IProperty prop : (java.util.Set<IProperty<?>>)state.getProperties().keySet())
-        {
-            if (prop.getName().equals("variant"))
-            {
+        for (IProperty prop : (java.util.Set<IProperty<?>>) state.getProperties().keySet()) {
+            if (prop.getName().equals("variant")) {
                 world.setBlockState(pos, state.cycleProperty(prop));
                 return true;
             }
@@ -236,8 +214,7 @@ public class BlockHugeMushroom extends Block
         return false;
     }
 
-    public static enum EnumType implements IStringSerializable
-    {
+    public static enum EnumType implements IStringSerializable {
         NORTH_WEST(1, "north_west"),
         NORTH(2, "north"),
         NORTH_EAST(3, "north_east"),
@@ -256,26 +233,21 @@ public class BlockHugeMushroom extends Block
         private final int meta;
         private final String name;
 
-        private EnumType(int meta, String name)
-        {
+        private EnumType(int meta, String name) {
             this.meta = meta;
             this.name = name;
         }
 
-        public int getMetadata()
-        {
+        public int getMetadata() {
             return this.meta;
         }
 
-        public String toString()
-        {
+        public String toString() {
             return this.name;
         }
 
-        public static EnumType byMetadata(int meta)
-        {
-            if (meta < 0 || meta >= META_LOOKUP.length)
-            {
+        public static EnumType byMetadata(int meta) {
+            if (meta < 0 || meta >= META_LOOKUP.length) {
                 meta = 0;
             }
 
@@ -283,15 +255,12 @@ public class BlockHugeMushroom extends Block
             return blockhugemushroom$enumtype == null ? META_LOOKUP[0] : blockhugemushroom$enumtype;
         }
 
-        public String getName()
-        {
+        public String getName() {
             return this.name;
         }
 
-        static
-        {
-            for (EnumType blockhugemushroom$enumtype : values())
-            {
+        static {
+            for (EnumType blockhugemushroom$enumtype : values()) {
                 META_LOOKUP[blockhugemushroom$enumtype.getMetadata()] = blockhugemushroom$enumtype;
             }
         }

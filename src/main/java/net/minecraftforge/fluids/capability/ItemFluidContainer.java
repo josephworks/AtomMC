@@ -33,21 +33,18 @@ import javax.annotation.Nullable;
  * This fluid container may be set so that is can only completely filled or empty. (binary)
  * It may also be set so that it gets consumed when it is drained. (consumable)
  */
-public class ItemFluidContainer extends Item
-{
+public class ItemFluidContainer extends Item {
     protected final int capacity;
 
     /**
-     * @param capacity   The maximum capacity of this fluid container.
+     * @param capacity The maximum capacity of this fluid container.
      */
-    public ItemFluidContainer(int capacity)
-    {
+    public ItemFluidContainer(int capacity) {
         this.capacity = capacity;
     }
 
     @Override
-    public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable NBTTagCompound nbt)
-    {
+    public ICapabilityProvider initCapabilities(@Nonnull ItemStack stack, @Nullable NBTTagCompound nbt) {
         return new FluidHandlerItemStack(stack, capacity);
     }
 }

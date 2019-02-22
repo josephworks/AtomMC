@@ -1,40 +1,32 @@
 package net.minecraft.entity.ai;
 
-public abstract class EntityAIBase
-{
+public abstract class EntityAIBase {
     private int mutexBits;
 
     public abstract boolean shouldExecute();
 
-    public boolean shouldContinueExecuting()
-    {
+    public boolean shouldContinueExecuting() {
         return this.shouldExecute();
     }
 
-    public boolean isInterruptible()
-    {
+    public boolean isInterruptible() {
         return true;
     }
 
-    public void startExecuting()
-    {
+    public void startExecuting() {
     }
 
-    public void resetTask()
-    {
+    public void resetTask() {
     }
 
-    public void updateTask()
-    {
+    public void updateTask() {
     }
 
-    public void setMutexBits(int mutexBitsIn)
-    {
+    public void setMutexBits(int mutexBitsIn) {
         this.mutexBits = mutexBitsIn;
     }
 
-    public int getMutexBits()
-    {
+    public int getMutexBits() {
         return this.mutexBits;
     }
 }

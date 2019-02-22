@@ -10,19 +10,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
-public class ItemShears extends Item
-{
-    public ItemShears()
-    {
+public class ItemShears extends Item {
+    public ItemShears() {
         this.setMaxStackSize(1);
         this.setMaxDamage(238);
         this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
-    {
-        if (!worldIn.isRemote)
-        {
+    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
+        if (!worldIn.isRemote) {
             stack.damageItem(1, entityLiving);
         }
 
@@ -31,26 +27,21 @@ public class ItemShears extends Item
         return state.getMaterial() != Material.LEAVES && block != Blocks.WEB && block != Blocks.TALLGRASS && block != Blocks.VINE && block != Blocks.TRIPWIRE && block != Blocks.WOOL ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving) : true;
     }
 
-    public boolean canHarvestBlock(IBlockState blockIn)
-    {
+    public boolean canHarvestBlock(IBlockState blockIn) {
         Block block = blockIn.getBlock();
         return block == Blocks.WEB || block == Blocks.REDSTONE_WIRE || block == Blocks.TRIPWIRE;
     }
 
 
     @Override
-    public boolean itemInteractionForEntity(ItemStack itemstack, net.minecraft.entity.player.EntityPlayer player, EntityLivingBase entity, net.minecraft.util.EnumHand hand)
-    {
-        if (entity.world.isRemote)
-        {
+    public boolean itemInteractionForEntity(ItemStack itemstack, net.minecraft.entity.player.EntityPlayer player, EntityLivingBase entity, net.minecraft.util.EnumHand hand) {
+        if (entity.world.isRemote) {
             return false;
         }
-        if (entity instanceof net.minecraftforge.common.IShearable)
-        {
-            net.minecraftforge.common.IShearable target = (net.minecraftforge.common.IShearable)entity;
+        if (entity instanceof net.minecraftforge.common.IShearable) {
+            net.minecraftforge.common.IShearable target = (net.minecraftforge.common.IShearable) entity;
             BlockPos pos = new BlockPos(entity.posX, entity.posY, entity.posZ);
-            if (target.isShearable(itemstack, entity.world, pos))
-            {
+            if (target.isShearable(itemstack, entity.world, pos)) {
                 PlayerShearEntityEvent event = new PlayerShearEntityEvent((org.bukkit.entity.Player) player.getBukkitEntity(), entity.getBukkitEntity());
                 entity.world.getServer().getPluginManager().callEvent(event);
 
@@ -65,8 +56,7 @@ public class ItemShears extends Item
 
                 entity.forceDrops = true;
 
-                for(ItemStack stack : drops)
-                {
+                for (ItemStack stack : drops) {
                     net.minecraft.entity.item.EntityItem ent = entity.entityDropItem(stack, 1.0F);
                     ent.motionY += rand.nextFloat() * 0.05F;
                     ent.motionX += (rand.nextFloat() - rand.nextFloat()) * 0.1F;
@@ -83,29 +73,24 @@ public class ItemShears extends Item
     }
 
     @Override
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, net.minecraft.entity.player.EntityPlayer player)
-    {
-        if (player.world.isRemote || player.capabilities.isCreativeMode)
-        {
+    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, net.minecraft.entity.player.EntityPlayer player) {
+        if (player.world.isRemote || player.capabilities.isCreativeMode) {
             return false;
         }
         Block block = player.world.getBlockState(pos).getBlock();
-        if (block instanceof net.minecraftforge.common.IShearable)
-        {
-            net.minecraftforge.common.IShearable target = (net.minecraftforge.common.IShearable)block;
-            if (target.isShearable(itemstack, player.world, pos))
-            {
+        if (block instanceof net.minecraftforge.common.IShearable) {
+            net.minecraftforge.common.IShearable target = (net.minecraftforge.common.IShearable) block;
+            if (target.isShearable(itemstack, player.world, pos)) {
                 java.util.List<ItemStack> drops = target.onSheared(itemstack, player.world, pos,
                         net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.FORTUNE, itemstack));
                 java.util.Random rand = new java.util.Random();
 
-                for (ItemStack stack : drops)
-                {
+                for (ItemStack stack : drops) {
                     float f = 0.7F;
-                    double d  = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    double d1 = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    double d2 = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    net.minecraft.entity.item.EntityItem entityitem = new net.minecraft.entity.item.EntityItem(player.world, (double)pos.getX() + d, (double)pos.getY() + d1, (double)pos.getZ() + d2, stack);
+                    double d = (double) (rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    double d1 = (double) (rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    double d2 = (double) (rand.nextFloat() * f) + (double) (1.0F - f) * 0.5D;
+                    net.minecraft.entity.item.EntityItem entityitem = new net.minecraft.entity.item.EntityItem(player.world, (double) pos.getX() + d, (double) pos.getY() + d1, (double) pos.getZ() + d2, stack);
                     entityitem.setDefaultPickupDelay();
                     player.world.spawnEntity(entityitem);
                 }
@@ -119,16 +104,12 @@ public class ItemShears extends Item
         return false;
     }
 
-    public float getDestroySpeed(ItemStack stack, IBlockState state)
-    {
+    public float getDestroySpeed(ItemStack stack, IBlockState state) {
         Block block = state.getBlock();
 
-        if (block != Blocks.WEB && state.getMaterial() != Material.LEAVES)
-        {
+        if (block != Blocks.WEB && state.getMaterial() != Material.LEAVES) {
             return block == Blocks.WOOL ? 5.0F : super.getDestroySpeed(stack, state);
-        }
-        else
-        {
+        } else {
             return 15.0F;
         }
     }

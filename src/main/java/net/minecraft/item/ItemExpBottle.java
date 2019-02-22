@@ -13,32 +13,26 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemExpBottle extends Item
-{
-    public ItemExpBottle()
-    {
+public class ItemExpBottle extends Item {
+    public ItemExpBottle() {
         this.setCreativeTab(CreativeTabs.MISC);
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack stack)
-    {
+    public boolean hasEffect(ItemStack stack) {
         return true;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
 
-        if (!playerIn.capabilities.isCreativeMode)
-        {
+        if (!playerIn.capabilities.isCreativeMode) {
             itemstack.shrink(1);
         }
 
-        worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        worldIn.playSound((EntityPlayer) null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
-        if (!worldIn.isRemote)
-        {
+        if (!worldIn.isRemote) {
             EntityExpBottle entityexpbottle = new EntityExpBottle(worldIn, playerIn);
             entityexpbottle.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, -20.0F, 0.7F, 1.0F);
             worldIn.spawnEntity(entityexpbottle);

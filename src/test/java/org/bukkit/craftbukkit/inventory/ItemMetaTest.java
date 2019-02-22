@@ -49,22 +49,22 @@ public class ItemMetaTest extends AbstractTestingBase {
 
     static final int MAX_FIREWORK_POWER = 127; // Please update ItemStackFireworkTest if/when this gets changed.
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testPowerLimitExact() {
         newFireworkMeta().setPower(MAX_FIREWORK_POWER + 1);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testPowerLimitMax() {
         newFireworkMeta().setPower(Integer.MAX_VALUE);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testPowerLimitMin() {
         newFireworkMeta().setPower(Integer.MIN_VALUE);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testPowerLimitNegative() {
         newFireworkMeta().setPower(-1);
     }
@@ -172,26 +172,28 @@ public class ItemMetaTest extends AbstractTestingBase {
     @Test
     public void testEachExtraData() {
         final List<StackProvider> providers = Arrays.asList(
-            new StackProvider(Material.BOOK_AND_QUILL) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final BookMeta meta = (BookMeta) cleanStack.getItemMeta();
-                    meta.setAuthor("Some author");
-                    meta.setPages("Page 1", "Page 2");
-                    meta.setTitle("A title");
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
-            new StackProvider(Material.WRITTEN_BOOK) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final BookMeta meta = (BookMeta) cleanStack.getItemMeta();
-                    meta.setAuthor("Some author");
-                    meta.setPages("Page 1", "Page 2");
-                    meta.setTitle("A title");
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
+                new StackProvider(Material.BOOK_AND_QUILL) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final BookMeta meta = (BookMeta) cleanStack.getItemMeta();
+                        meta.setAuthor("Some author");
+                        meta.setPages("Page 1", "Page 2");
+                        meta.setTitle("A title");
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.WRITTEN_BOOK) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final BookMeta meta = (BookMeta) cleanStack.getItemMeta();
+                        meta.setAuthor("Some author");
+                        meta.setPages("Page 1", "Page 2");
+                        meta.setTitle("A title");
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
             /* Skulls rely on a running server instance
             new StackProvider(Material.SKULL_ITEM) {
                 @Override ItemStack operate(final ItemStack cleanStack) {
@@ -202,80 +204,89 @@ public class ItemMetaTest extends AbstractTestingBase {
                 }
             },
             */
-            new StackProvider(Material.MAP) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final MapMeta meta = (MapMeta) cleanStack.getItemMeta();
-                    meta.setScaling(true);
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
+                new StackProvider(Material.MAP) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final MapMeta meta = (MapMeta) cleanStack.getItemMeta();
+                        meta.setScaling(true);
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.LEATHER_BOOTS) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final LeatherArmorMeta meta = (LeatherArmorMeta) cleanStack.getItemMeta();
+                        meta.setColor(Color.FUCHSIA);
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.POTION) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final PotionMeta meta = (PotionMeta) cleanStack.getItemMeta();
+                        meta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE, false, false));
+                        meta.addCustomEffect(PotionEffectType.CONFUSION.createEffect(1, 1), false);
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.FIREWORK) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final FireworkMeta meta = (FireworkMeta) cleanStack.getItemMeta();
+                        meta.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.OLIVE).with(Type.BALL_LARGE).build());
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.ENCHANTED_BOOK) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) cleanStack.getItemMeta();
+                        meta.addStoredEnchant(Enchantment.ARROW_FIRE, 1, true);
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.FIREWORK_CHARGE) {
+                    @Override
+                    ItemStack operate(final ItemStack cleanStack) {
+                        final FireworkEffectMeta meta = (FireworkEffectMeta) cleanStack.getItemMeta();
+                        meta.setEffect(FireworkEffect.builder().withColor(Color.MAROON, Color.BLACK).with(Type.CREEPER).withFlicker().build());
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.BANNER) {
+                    @Override
+                    ItemStack operate(ItemStack cleanStack) {
+                        final BannerMeta meta = (BannerMeta) cleanStack.getItemMeta();
+                        meta.setBaseColor(DyeColor.CYAN);
+                        meta.addPattern(new Pattern(DyeColor.WHITE, PatternType.BRICKS));
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.MONSTER_EGG) {
+                    @Override
+                    ItemStack operate(ItemStack cleanStack) {
+                        final SpawnEggMeta meta = (SpawnEggMeta) cleanStack.getItemMeta();
+                        meta.setSpawnedType(EntityType.ZOMBIE);
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
+                },
+                new StackProvider(Material.KNOWLEDGE_BOOK) {
+                    @Override
+                    ItemStack operate(ItemStack cleanStack) {
+                        final KnowledgeBookMeta meta = (KnowledgeBookMeta) cleanStack.getItemMeta();
+                        meta.addRecipe(new NamespacedKey("minecraft", "test"), new NamespacedKey("plugin", "test"));
+                        cleanStack.setItemMeta(meta);
+                        return cleanStack;
+                    }
                 }
-            },
-            new StackProvider(Material.LEATHER_BOOTS) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final LeatherArmorMeta meta = (LeatherArmorMeta) cleanStack.getItemMeta();
-                    meta.setColor(Color.FUCHSIA);
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
-            new StackProvider(Material.POTION) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final PotionMeta meta = (PotionMeta) cleanStack.getItemMeta();
-                    meta.setBasePotionData(new PotionData(PotionType.UNCRAFTABLE, false, false));
-                    meta.addCustomEffect(PotionEffectType.CONFUSION.createEffect(1, 1), false);
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
-            new StackProvider(Material.FIREWORK) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final FireworkMeta meta = (FireworkMeta) cleanStack.getItemMeta();
-                    meta.addEffect(FireworkEffect.builder().withColor(Color.GREEN).withFade(Color.OLIVE).with(Type.BALL_LARGE).build());
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
-            new StackProvider(Material.ENCHANTED_BOOK) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final EnchantmentStorageMeta meta = (EnchantmentStorageMeta) cleanStack.getItemMeta();
-                    meta.addStoredEnchant(Enchantment.ARROW_FIRE, 1, true);
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
-            new StackProvider(Material.FIREWORK_CHARGE) {
-                @Override ItemStack operate(final ItemStack cleanStack) {
-                    final FireworkEffectMeta meta = (FireworkEffectMeta) cleanStack.getItemMeta();
-                    meta.setEffect(FireworkEffect.builder().withColor(Color.MAROON, Color.BLACK).with(Type.CREEPER).withFlicker().build());
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            },
-            new StackProvider(Material.BANNER) {
-                @Override ItemStack operate(ItemStack cleanStack) {
-                    final BannerMeta meta = (BannerMeta) cleanStack.getItemMeta();
-                    meta.setBaseColor(DyeColor.CYAN);
-                    meta.addPattern(new Pattern(DyeColor.WHITE, PatternType.BRICKS));
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            }, 
-            new StackProvider(Material.MONSTER_EGG) {
-                @Override ItemStack operate(ItemStack cleanStack) {
-                    final SpawnEggMeta meta = (SpawnEggMeta) cleanStack.getItemMeta();
-                    meta.setSpawnedType(EntityType.ZOMBIE);
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-            }
-        },
-          new StackProvider(Material.KNOWLEDGE_BOOK) {
-                @Override ItemStack operate(ItemStack cleanStack) {
-                    final KnowledgeBookMeta meta = (KnowledgeBookMeta) cleanStack.getItemMeta();
-                    meta.addRecipe(new NamespacedKey("minecraft", "test"), new NamespacedKey("plugin", "test"));
-                    cleanStack.setItemMeta(meta);
-                    return cleanStack;
-                }
-            }
         );
 
         assertThat("Forgotten test?", providers, hasSize(ItemStackTest.COMPOUND_MATERIALS.length - 3/* Normal item meta, skulls and tile entities */));

@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.tileentity;
 
 import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
@@ -14,61 +15,50 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class TileEntitySignRenderer extends TileEntitySpecialRenderer<TileEntitySign>
-{
+public class TileEntitySignRenderer extends TileEntitySpecialRenderer<TileEntitySign> {
     private static final ResourceLocation SIGN_TEXTURE = new ResourceLocation("textures/entity/sign.png");
     private final ModelSign model = new ModelSign();
 
-    public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
-    {
+    public void render(TileEntitySign te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         Block block = te.getBlockType();
         GlStateManager.pushMatrix();
         float f = 0.6666667F;
 
-        if (block == Blocks.STANDING_SIGN)
-        {
-            GlStateManager.translate((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F);
-            float f1 = (float)(te.getBlockMetadata() * 360) / 16.0F;
+        if (block == Blocks.STANDING_SIGN) {
+            GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
+            float f1 = (float) (te.getBlockMetadata() * 360) / 16.0F;
             GlStateManager.rotate(-f1, 0.0F, 1.0F, 0.0F);
             this.model.signStick.showModel = true;
-        }
-        else
-        {
+        } else {
             int k = te.getBlockMetadata();
             float f2 = 0.0F;
 
-            if (k == 2)
-            {
+            if (k == 2) {
                 f2 = 180.0F;
             }
 
-            if (k == 4)
-            {
+            if (k == 4) {
                 f2 = 90.0F;
             }
 
-            if (k == 5)
-            {
+            if (k == 5) {
                 f2 = -90.0F;
             }
 
-            GlStateManager.translate((float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F);
+            GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
             GlStateManager.rotate(-f2, 0.0F, 1.0F, 0.0F);
             GlStateManager.translate(0.0F, -0.3125F, -0.4375F);
             this.model.signStick.showModel = false;
         }
 
-        if (destroyStage >= 0)
-        {
+        if (destroyStage >= 0) {
             this.bindTexture(DESTROY_STAGES[destroyStage]);
             GlStateManager.matrixMode(5890);
             GlStateManager.pushMatrix();
             GlStateManager.scale(4.0F, 2.0F, 1.0F);
             GlStateManager.translate(0.0625F, 0.0625F, 0.0625F);
             GlStateManager.matrixMode(5888);
-        }
-        else
-        {
+        } else {
             this.bindTexture(SIGN_TEXTURE);
         }
 
@@ -85,23 +75,17 @@ public class TileEntitySignRenderer extends TileEntitySpecialRenderer<TileEntity
         GlStateManager.depthMask(false);
         int i = 0;
 
-        if (destroyStage < 0)
-        {
-            for (int j = 0; j < te.signText.length; ++j)
-            {
-                if (te.signText[j] != null)
-                {
+        if (destroyStage < 0) {
+            for (int j = 0; j < te.signText.length; ++j) {
+                if (te.signText[j] != null) {
                     ITextComponent itextcomponent = te.signText[j];
                     List<ITextComponent> list = GuiUtilRenderComponents.splitText(itextcomponent, 90, fontrenderer, false, true);
-                    String s = list != null && !list.isEmpty() ? ((ITextComponent)list.get(0)).getFormattedText() : "";
+                    String s = list != null && !list.isEmpty() ? ((ITextComponent) list.get(0)).getFormattedText() : "";
 
-                    if (j == te.lineBeingEdited)
-                    {
+                    if (j == te.lineBeingEdited) {
                         s = "> " + s + " <";
                         fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, 0);
-                    }
-                    else
-                    {
+                    } else {
                         fontrenderer.drawString(s, -fontrenderer.getStringWidth(s) / 2, j * 10 - te.signText.length * 5, 0);
                     }
                 }
@@ -112,8 +96,7 @@ public class TileEntitySignRenderer extends TileEntitySpecialRenderer<TileEntity
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();
 
-        if (destroyStage >= 0)
-        {
+        if (destroyStage >= 0) {
             GlStateManager.matrixMode(5890);
             GlStateManager.popMatrix();
             GlStateManager.matrixMode(5888);

@@ -9,21 +9,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelManager implements IResourceManagerReloadListener
-{
+public class ModelManager implements IResourceManagerReloadListener {
     private IRegistry<ModelResourceLocation, IBakedModel> modelRegistry;
     private final TextureMap texMap;
     private final BlockModelShapes modelProvider;
     private IBakedModel defaultModel;
 
-    public ModelManager(TextureMap textures)
-    {
+    public ModelManager(TextureMap textures) {
         this.texMap = textures;
         this.modelProvider = new BlockModelShapes(this);
     }
 
-    public void onResourceManagerReload(IResourceManager resourceManager)
-    {
+    public void onResourceManagerReload(IResourceManager resourceManager) {
         net.minecraftforge.client.model.ModelLoader modelbakery = new net.minecraftforge.client.model.ModelLoader(resourceManager, this.texMap, this.modelProvider);
         this.modelRegistry = modelbakery.setupModelRegistry();
         this.defaultModel = this.modelRegistry.getObject(ModelBakery.MODEL_MISSING);
@@ -31,31 +28,24 @@ public class ModelManager implements IResourceManagerReloadListener
         this.modelProvider.reloadModels();
     }
 
-    public IBakedModel getModel(ModelResourceLocation modelLocation)
-    {
-        if (modelLocation == null)
-        {
+    public IBakedModel getModel(ModelResourceLocation modelLocation) {
+        if (modelLocation == null) {
             return this.defaultModel;
-        }
-        else
-        {
+        } else {
             IBakedModel ibakedmodel = this.modelRegistry.getObject(modelLocation);
             return ibakedmodel == null ? this.defaultModel : ibakedmodel;
         }
     }
 
-    public IBakedModel getMissingModel()
-    {
+    public IBakedModel getMissingModel() {
         return this.defaultModel;
     }
 
-    public TextureMap getTextureMap()
-    {
+    public TextureMap getTextureMap() {
         return this.texMap;
     }
 
-    public BlockModelShapes getBlockModelShapes()
-    {
+    public BlockModelShapes getBlockModelShapes() {
         return this.modelProvider;
     }
 }

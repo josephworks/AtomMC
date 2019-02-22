@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -8,20 +9,17 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketMoveVehicle implements Packet<INetHandlerPlayClient>
-{
+public class SPacketMoveVehicle implements Packet<INetHandlerPlayClient> {
     private double x;
     private double y;
     private double z;
     private float yaw;
     private float pitch;
 
-    public SPacketMoveVehicle()
-    {
+    public SPacketMoveVehicle() {
     }
 
-    public SPacketMoveVehicle(Entity entityIn)
-    {
+    public SPacketMoveVehicle(Entity entityIn) {
         this.x = entityIn.posX;
         this.y = entityIn.posY;
         this.z = entityIn.posZ;
@@ -29,8 +27,7 @@ public class SPacketMoveVehicle implements Packet<INetHandlerPlayClient>
         this.pitch = entityIn.rotationPitch;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -38,8 +35,7 @@ public class SPacketMoveVehicle implements Packet<INetHandlerPlayClient>
         this.pitch = buf.readFloat();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -47,38 +43,32 @@ public class SPacketMoveVehicle implements Packet<INetHandlerPlayClient>
         buf.writeFloat(this.pitch);
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleMoveVehicle(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getYaw()
-    {
+    public float getYaw() {
         return this.yaw;
     }
 
     @SideOnly(Side.CLIENT)
-    public float getPitch()
-    {
+    public float getPitch() {
         return this.pitch;
     }
 }

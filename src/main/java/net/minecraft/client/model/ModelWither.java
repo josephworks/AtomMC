@@ -8,13 +8,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelWither extends ModelBase
-{
+public class ModelWither extends ModelBase {
     private final ModelRenderer[] upperBodyParts;
     private final ModelRenderer[] heads;
 
-    public ModelWither(float p_i46302_1_)
-    {
+    public ModelWither(float p_i46302_1_) {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.upperBodyParts = new ModelRenderer[3];
@@ -41,37 +39,31 @@ public class ModelWither extends ModelBase
         this.heads[2].rotationPointY = 4.0F;
     }
 
-    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 
-        for (ModelRenderer modelrenderer : this.heads)
-        {
+        for (ModelRenderer modelrenderer : this.heads) {
             modelrenderer.render(scale);
         }
 
-        for (ModelRenderer modelrenderer1 : this.upperBodyParts)
-        {
+        for (ModelRenderer modelrenderer1 : this.upperBodyParts) {
             modelrenderer1.render(scale);
         }
     }
 
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         float f = MathHelper.cos(ageInTicks * 0.1F);
-        this.upperBodyParts[1].rotateAngleX = (0.065F + 0.05F * f) * (float)Math.PI;
+        this.upperBodyParts[1].rotateAngleX = (0.065F + 0.05F * f) * (float) Math.PI;
         this.upperBodyParts[2].setRotationPoint(-2.0F, 6.9F + MathHelper.cos(this.upperBodyParts[1].rotateAngleX) * 10.0F, -0.5F + MathHelper.sin(this.upperBodyParts[1].rotateAngleX) * 10.0F);
-        this.upperBodyParts[2].rotateAngleX = (0.265F + 0.1F * f) * (float)Math.PI;
+        this.upperBodyParts[2].rotateAngleX = (0.265F + 0.1F * f) * (float) Math.PI;
         this.heads[0].rotateAngleY = netHeadYaw * 0.017453292F;
         this.heads[0].rotateAngleX = headPitch * 0.017453292F;
     }
 
-    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime)
-    {
-        EntityWither entitywither = (EntityWither)entitylivingbaseIn;
+    public void setLivingAnimations(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTickTime) {
+        EntityWither entitywither = (EntityWither) entitylivingbaseIn;
 
-        for (int i = 1; i < 3; ++i)
-        {
+        for (int i = 1; i < 3; ++i) {
             this.heads[i].rotateAngleY = (entitywither.getHeadYRotation(i - 1) - entitylivingbaseIn.renderYawOffset) * 0.017453292F;
             this.heads[i].rotateAngleX = entitywither.getHeadXRotation(i - 1) * 0.017453292F;
         }

@@ -29,41 +29,34 @@ import net.minecraft.util.EnumFacing;
 /**
  * Assumes VertexFormatElement is present in the BufferBuilder's vertex format.
  */
-public class VertexBufferConsumer implements IVertexConsumer
-{
-    private static final float[] dummyColor = new float[]{ 1, 1, 1, 1 };
+public class VertexBufferConsumer implements IVertexConsumer {
+    private static final float[] dummyColor = new float[]{1, 1, 1, 1};
     private final BufferBuilder renderer;
     private final int[] quadData;
     private int v = 0;
     private BlockPos offset = BlockPos.ORIGIN;
 
-    public VertexBufferConsumer(BufferBuilder renderer)
-    {
+    public VertexBufferConsumer(BufferBuilder renderer) {
         super();
         this.renderer = renderer;
         quadData = new int[renderer.getVertexFormat().getNextOffset()/* / 4 * 4 */];
     }
 
     @Override
-    public VertexFormat getVertexFormat()
-    {
+    public VertexFormat getVertexFormat() {
         return renderer.getVertexFormat();
     }
 
     @Override
-    public void put(int e, float... data)
-    {
+    public void put(int e, float... data) {
         VertexFormat format = getVertexFormat();
-        if(renderer.isColorDisabled() && format.getElement(e).getUsage() == EnumUsage.COLOR)
-        {
+        if (renderer.isColorDisabled() && format.getElement(e).getUsage() == EnumUsage.COLOR) {
             data = dummyColor;
         }
         LightUtil.pack(data, quadData, format, v, e);
-        if(e == format.getElementCount() - 1)
-        {
+        if (e == format.getElementCount() - 1) {
             v++;
-            if(v == 4)
-            {
+            if (v == 4) {
                 renderer.addVertexData(quadData);
                 renderer.putPosition(offset.getX(), offset.getY(), offset.getZ());
                 //Arrays.fill(quadData, 0);
@@ -72,17 +65,23 @@ public class VertexBufferConsumer implements IVertexConsumer
         }
     }
 
-    public void setOffset(BlockPos offset)
-    {
+    public void setOffset(BlockPos offset) {
         this.offset = new BlockPos(offset);
     }
 
     @Override
-    public void setQuadTint(int tint) {}
+    public void setQuadTint(int tint) {
+    }
+
     @Override
-    public void setQuadOrientation(EnumFacing orientation) {}
+    public void setQuadOrientation(EnumFacing orientation) {
+    }
+
     @Override
-    public void setApplyDiffuseLighting(boolean diffuse) {}
+    public void setApplyDiffuseLighting(boolean diffuse) {
+    }
+
     @Override
-    public void setTexture(TextureAtlasSprite texture ) {}
+    public void setTexture(TextureAtlasSprite texture) {
+    }
 }

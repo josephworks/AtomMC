@@ -9,39 +9,32 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LocalBlockIntercommunication implements IInteractionObject
-{
+public class LocalBlockIntercommunication implements IInteractionObject {
     private final String guiID;
     private final ITextComponent displayName;
 
-    public LocalBlockIntercommunication(String guiIdIn, ITextComponent displayNameIn)
-    {
+    public LocalBlockIntercommunication(String guiIdIn, ITextComponent displayNameIn) {
         this.guiID = guiIdIn;
         this.displayName = displayNameIn;
     }
 
-    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)
-    {
+    public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
         throw new UnsupportedOperationException();
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.displayName.getUnformattedText();
     }
 
-    public boolean hasCustomName()
-    {
+    public boolean hasCustomName() {
         return true;
     }
 
-    public String getGuiID()
-    {
+    public String getGuiID() {
         return this.guiID;
     }
 
-    public ITextComponent getDisplayName()
-    {
+    public ITextComponent getDisplayName() {
         return this.displayName;
     }
 }

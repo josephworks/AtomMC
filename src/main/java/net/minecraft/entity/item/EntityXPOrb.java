@@ -20,8 +20,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 
-public class EntityXPOrb extends Entity
-{
+public class EntityXPOrb extends Entity {
     public int xpColor;
     public int xpOrbAge;
     public int delayBeforeCanPickup;
@@ -30,58 +29,50 @@ public class EntityXPOrb extends Entity
     private EntityPlayer closestPlayer;
     private int xpTargetColor;
 
-    public EntityXPOrb(World worldIn, double x, double y, double z, int expValue)
-    {
+    public EntityXPOrb(World worldIn, double x, double y, double z, int expValue) {
         super(worldIn);
         this.setSize(0.5F, 0.5F);
         this.setPosition(x, y, z);
-        this.rotationYaw = (float)(Math.random() * 360.0D);
-        this.motionX = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
-        this.motionY = (double)((float)(Math.random() * 0.2D) * 2.0F);
-        this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.rotationYaw = (float) (Math.random() * 360.0D);
+        this.motionX = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motionY = (double) ((float) (Math.random() * 0.2D) * 2.0F);
+        this.motionZ = (double) ((float) (Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
         this.xpValue = expValue;
     }
 
-    protected boolean canTriggerWalking()
-    {
+    protected boolean canTriggerWalking() {
         return false;
     }
 
-    public EntityXPOrb(World worldIn)
-    {
+    public EntityXPOrb(World worldIn) {
         super(worldIn);
         this.setSize(0.25F, 0.25F);
     }
 
-    protected void entityInit()
-    {
+    protected void entityInit() {
     }
 
     @SideOnly(Side.CLIENT)
-    public int getBrightnessForRender()
-    {
+    public int getBrightnessForRender() {
         float f = 0.5F;
         f = MathHelper.clamp(f, 0.0F, 1.0F);
         int i = super.getBrightnessForRender();
         int j = i & 255;
         int k = i >> 16 & 255;
-        j = j + (int)(f * 15.0F * 16.0F);
+        j = j + (int) (f * 15.0F * 16.0F);
 
-        if (j > 240)
-        {
+        if (j > 240) {
             j = 240;
         }
 
         return j | k << 16;
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         super.onUpdate();
         EntityPlayer prevTarget = this.closestPlayer;// CraftBukkit - store old target
 
-        if (this.delayBeforeCanPickup > 0)
-        {
+        if (this.delayBeforeCanPickup > 0) {
             --this.delayBeforeCanPickup;
         }
 
@@ -89,39 +80,33 @@ public class EntityXPOrb extends Entity
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
 
-        if (!this.hasNoGravity())
-        {
+        if (!this.hasNoGravity()) {
             this.motionY -= 0.029999999329447746D;
         }
 
-        if (this.world.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA)
-        {
+        if (this.world.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA) {
             this.motionY = 0.20000000298023224D;
-            this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
-            this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
+            this.motionX = (double) ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
+            this.motionZ = (double) ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
         }
 
         this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
         double d0 = 8.0D;
 
-        if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100)
-        {
-            if (this.closestPlayer == null || this.closestPlayer.getDistanceSq(this) > 64.0D)
-            {
+        if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100) {
+            if (this.closestPlayer == null || this.closestPlayer.getDistanceSq(this) > 64.0D) {
                 this.closestPlayer = this.world.getClosestPlayerToEntity(this, 8.0D);
             }
 
             this.xpTargetColor = this.xpColor;
         }
 
-        if (this.closestPlayer != null && this.closestPlayer.isSpectator())
-        {
+        if (this.closestPlayer != null && this.closestPlayer.isSpectator()) {
             this.closestPlayer = null;
         }
 
-        if (this.closestPlayer != null)
-        {
+        if (this.closestPlayer != null) {
             boolean cancelled = false;
             if (this.closestPlayer != prevTarget) {
                 EntityTargetLivingEntityEvent event = CraftEventFactory.callEntityTargetLivingEvent(this, closestPlayer, EntityTargetEvent.TargetReason.CLOSEST_PLAYER);
@@ -149,55 +134,45 @@ public class EntityXPOrb extends Entity
         this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
         float f = 0.98F;
 
-        if (this.onGround)
-        {
+        if (this.onGround) {
             BlockPos underPos = new BlockPos(MathHelper.floor(this.posX), MathHelper.floor(this.getEntityBoundingBox().minY) - 1, MathHelper.floor(this.posZ));
             net.minecraft.block.state.IBlockState underState = this.world.getBlockState(underPos);
             f = underState.getBlock().getSlipperiness(underState, this.world, underPos, this) * 0.98F;
         }
 
-        this.motionX *= (double)f;
+        this.motionX *= (double) f;
         this.motionY *= 0.9800000190734863D;
-        this.motionZ *= (double)f;
+        this.motionZ *= (double) f;
 
-        if (this.onGround)
-        {
+        if (this.onGround) {
             this.motionY *= -0.8999999761581421D;
         }
 
         ++this.xpColor;
         ++this.xpOrbAge;
 
-        if (this.xpOrbAge >= 6000)
-        {
+        if (this.xpOrbAge >= 6000) {
             this.setDead();
         }
     }
 
-    public boolean handleWaterMovement()
-    {
+    public boolean handleWaterMovement() {
         return this.world.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.WATER, this);
     }
 
-    protected void dealFireDamage(int amount)
-    {
-        this.attackEntityFrom(DamageSource.IN_FIRE, (float)amount);
+    protected void dealFireDamage(int amount) {
+        this.attackEntityFrom(DamageSource.IN_FIRE, (float) amount);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount)
-    {
+    public boolean attackEntityFrom(DamageSource source, float amount) {
         if (this.world.isRemote || this.isDead) return false; //Forge: Fixes MC-53850
-        if (this.isEntityInvulnerable(source))
-        {
+        if (this.isEntityInvulnerable(source)) {
             return false;
-        }
-        else
-        {
+        } else {
             this.markVelocityChanged();
-            this.xpOrbHealth = (int)((float)this.xpOrbHealth - amount);
+            this.xpOrbHealth = (int) ((float) this.xpOrbHealth - amount);
 
-            if (this.xpOrbHealth <= 0)
-            {
+            if (this.xpOrbHealth <= 0) {
                 this.setDead();
             }
 
@@ -205,33 +180,28 @@ public class EntityXPOrb extends Entity
         }
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
-        compound.setShort("Health", (short)this.xpOrbHealth);
-        compound.setShort("Age", (short)this.xpOrbAge);
-        compound.setShort("Value", (short)this.xpValue);
+    public void writeEntityToNBT(NBTTagCompound compound) {
+        compound.setShort("Health", (short) this.xpOrbHealth);
+        compound.setShort("Age", (short) this.xpOrbAge);
+        compound.setShort("Value", (short) this.xpValue);
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         this.xpOrbHealth = compound.getShort("Health");
         this.xpOrbAge = compound.getShort("Age");
         this.xpValue = compound.getShort("Value");
     }
 
-    public void onCollideWithPlayer(EntityPlayer entityIn)
-    {
-        if (!this.world.isRemote)
-        {
-            if (this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0)
-            {
-                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerPickupXpEvent(entityIn, this))) return;
+    public void onCollideWithPlayer(EntityPlayer entityIn) {
+        if (!this.world.isRemote) {
+            if (this.delayBeforeCanPickup == 0 && entityIn.xpCooldown == 0) {
+                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerPickupXpEvent(entityIn, this)))
+                    return;
                 entityIn.xpCooldown = 2;
                 entityIn.onItemPickup(this, 1);
                 ItemStack itemstack = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, entityIn);
 
-                if (!itemstack.isEmpty() && itemstack.isItemDamaged())
-                {
+                if (!itemstack.isEmpty() && itemstack.isItemDamaged()) {
                     int i = Math.min(this.xpToDurability(this.xpValue), itemstack.getItemDamage());
 //                    this.xpValue -= this.durabilityToXp(i);
 //                    itemstack.setItemDamage(itemstack.getItemDamage() - i);
@@ -243,8 +213,7 @@ public class EntityXPOrb extends Entity
                     }
                 }
 
-                if (this.xpValue > 0)
-                {
+                if (this.xpValue > 0) {
                     entityIn.addExperience(CraftEventFactory.callPlayerExpChangeEvent(entityIn, this.xpValue).getAmount()); // CraftBukkit - this.value -> event.getAmount()
                 }
 
@@ -253,68 +222,44 @@ public class EntityXPOrb extends Entity
         }
     }
 
-    private int durabilityToXp(int durability)
-    {
+    private int durabilityToXp(int durability) {
         return durability / 2;
     }
 
-    private int xpToDurability(int xp)
-    {
+    private int xpToDurability(int xp) {
         return xp * 2;
     }
 
-    public int getXpValue()
-    {
+    public int getXpValue() {
         return this.xpValue;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getTextureByXP()
-    {
-        if (this.xpValue >= 2477)
-        {
+    public int getTextureByXP() {
+        if (this.xpValue >= 2477) {
             return 10;
-        }
-        else if (this.xpValue >= 1237)
-        {
+        } else if (this.xpValue >= 1237) {
             return 9;
-        }
-        else if (this.xpValue >= 617)
-        {
+        } else if (this.xpValue >= 617) {
             return 8;
-        }
-        else if (this.xpValue >= 307)
-        {
+        } else if (this.xpValue >= 307) {
             return 7;
-        }
-        else if (this.xpValue >= 149)
-        {
+        } else if (this.xpValue >= 149) {
             return 6;
-        }
-        else if (this.xpValue >= 73)
-        {
+        } else if (this.xpValue >= 73) {
             return 5;
-        }
-        else if (this.xpValue >= 37)
-        {
+        } else if (this.xpValue >= 37) {
             return 4;
-        }
-        else if (this.xpValue >= 17)
-        {
+        } else if (this.xpValue >= 17) {
             return 3;
-        }
-        else if (this.xpValue >= 7)
-        {
+        } else if (this.xpValue >= 7) {
             return 2;
-        }
-        else
-        {
+        } else {
             return this.xpValue >= 3 ? 1 : 0;
         }
     }
 
-    public static int getXPSplit(int expValue)
-    {
+    public static int getXPSplit(int expValue) {
         // CraftBukkit start
         if (expValue > 162670129) return expValue - 100000;
         if (expValue > 81335063) return 81335063;
@@ -333,50 +278,30 @@ public class EntityXPOrb extends Entity
         if (expValue > 9923) return 9923;
         if (expValue > 4957) return 4957;
         // CraftBukkit end
-        if (expValue >= 2477)
-        {
+        if (expValue >= 2477) {
             return 2477;
-        }
-        else if (expValue >= 1237)
-        {
+        } else if (expValue >= 1237) {
             return 1237;
-        }
-        else if (expValue >= 617)
-        {
+        } else if (expValue >= 617) {
             return 617;
-        }
-        else if (expValue >= 307)
-        {
+        } else if (expValue >= 307) {
             return 307;
-        }
-        else if (expValue >= 149)
-        {
+        } else if (expValue >= 149) {
             return 149;
-        }
-        else if (expValue >= 73)
-        {
+        } else if (expValue >= 73) {
             return 73;
-        }
-        else if (expValue >= 37)
-        {
+        } else if (expValue >= 37) {
             return 37;
-        }
-        else if (expValue >= 17)
-        {
+        } else if (expValue >= 17) {
             return 17;
-        }
-        else if (expValue >= 7)
-        {
+        } else if (expValue >= 7) {
             return 7;
-        }
-        else
-        {
+        } else {
             return expValue >= 3 ? 3 : 1;
         }
     }
 
-    public boolean canBeAttackedWithItem()
-    {
+    public boolean canBeAttackedWithItem() {
         return false;
     }
 }

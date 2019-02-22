@@ -5,8 +5,7 @@ import net.minecraft.util.IntHashMap;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 
-public abstract class NodeProcessor
-{
+public abstract class NodeProcessor {
     protected IBlockAccess blockaccess;
     protected EntityLiving entity;
     protected final IntHashMap<PathPoint> pointMap = new IntHashMap<PathPoint>();
@@ -17,8 +16,7 @@ public abstract class NodeProcessor
     protected boolean canOpenDoors;
     protected boolean canSwim;
 
-    public void init(IBlockAccess sourceIn, EntityLiving mob)
-    {
+    public void init(IBlockAccess sourceIn, EntityLiving mob) {
         this.blockaccess = sourceIn;
         this.entity = mob;
         this.pointMap.clearMap();
@@ -27,19 +25,16 @@ public abstract class NodeProcessor
         this.entitySizeZ = MathHelper.floor(mob.width + 1.0F);
     }
 
-    public void postProcess()
-    {
+    public void postProcess() {
         this.blockaccess = null;
         this.entity = null;
     }
 
-    protected PathPoint openPoint(int x, int y, int z)
-    {
+    protected PathPoint openPoint(int x, int y, int z) {
         int i = PathPoint.makeHash(x, y, z);
         PathPoint pathpoint = this.pointMap.lookup(i);
 
-        if (pathpoint == null)
-        {
+        if (pathpoint == null) {
             pathpoint = new PathPoint(x, y, z);
             this.pointMap.addKey(i, pathpoint);
         }
@@ -57,33 +52,27 @@ public abstract class NodeProcessor
 
     public abstract PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z);
 
-    public void setCanEnterDoors(boolean canEnterDoorsIn)
-    {
+    public void setCanEnterDoors(boolean canEnterDoorsIn) {
         this.canEnterDoors = canEnterDoorsIn;
     }
 
-    public void setCanOpenDoors(boolean canOpenDoorsIn)
-    {
+    public void setCanOpenDoors(boolean canOpenDoorsIn) {
         this.canOpenDoors = canOpenDoorsIn;
     }
 
-    public void setCanSwim(boolean canSwimIn)
-    {
+    public void setCanSwim(boolean canSwimIn) {
         this.canSwim = canSwimIn;
     }
 
-    public boolean getCanEnterDoors()
-    {
+    public boolean getCanEnterDoors() {
         return this.canEnterDoors;
     }
 
-    public boolean getCanOpenDoors()
-    {
+    public boolean getCanOpenDoors() {
         return this.canOpenDoors;
     }
 
-    public boolean getCanSwim()
-    {
+    public boolean getCanSwim() {
         return this.canSwim;
     }
 }

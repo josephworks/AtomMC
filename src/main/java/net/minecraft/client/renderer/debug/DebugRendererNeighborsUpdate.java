@@ -3,10 +3,12 @@ package net.minecraft.client.renderer.debug;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -18,43 +20,37 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class DebugRendererNeighborsUpdate implements DebugRenderer.IDebugRenderer
-{
+public class DebugRendererNeighborsUpdate implements DebugRenderer.IDebugRenderer {
     private final Minecraft minecraft;
     private final Map<Long, Map<BlockPos, Integer>> lastUpdate = Maps.newTreeMap(Ordering.natural().reverse());
 
-    DebugRendererNeighborsUpdate(Minecraft minecraftIn)
-    {
+    DebugRendererNeighborsUpdate(Minecraft minecraftIn) {
         this.minecraft = minecraftIn;
     }
 
-    public void addUpdate(long worldTime, BlockPos pos)
-    {
-        Map<BlockPos, Integer> map = (Map)this.lastUpdate.get(Long.valueOf(worldTime));
+    public void addUpdate(long worldTime, BlockPos pos) {
+        Map<BlockPos, Integer> map = (Map) this.lastUpdate.get(Long.valueOf(worldTime));
 
-        if (map == null)
-        {
+        if (map == null) {
             map = Maps.<BlockPos, Integer>newHashMap();
             this.lastUpdate.put(Long.valueOf(worldTime), map);
         }
 
         Integer integer = map.get(pos);
 
-        if (integer == null)
-        {
+        if (integer == null) {
             integer = Integer.valueOf(0);
         }
 
         map.put(pos, Integer.valueOf(integer.intValue() + 1));
     }
 
-    public void render(float partialTicks, long finishTimeNano)
-    {
+    public void render(float partialTicks, long finishTimeNano) {
         long i = this.minecraft.world.getTotalWorldTime();
         EntityPlayer entityplayer = this.minecraft.player;
-        double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double)partialTicks;
-        double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double)partialTicks;
-        double d2 = entityplayer.lastTickPosZ + (entityplayer.posZ - entityplayer.lastTickPosZ) * (double)partialTicks;
+        double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double) partialTicks;
+        double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double) partialTicks;
+        double d2 = entityplayer.lastTickPosZ + (entityplayer.posZ - entityplayer.lastTickPosZ) * (double) partialTicks;
         World world = this.minecraft.player.world;
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -67,38 +63,31 @@ public class DebugRendererNeighborsUpdate implements DebugRenderer.IDebugRendere
         Map<BlockPos, Integer> map = Maps.<BlockPos, Integer>newHashMap();
         Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.lastUpdate.entrySet().iterator();
 
-        while (iterator.hasNext())
-        {
-            Entry<Long, Map<BlockPos, Integer>> entry = (Entry)iterator.next();
+        while (iterator.hasNext()) {
+            Entry<Long, Map<BlockPos, Integer>> entry = (Entry) iterator.next();
             Long olong = entry.getKey();
-            Map<BlockPos, Integer> map1 = (Map)entry.getValue();
+            Map<BlockPos, Integer> map1 = (Map) entry.getValue();
             long k = i - olong.longValue();
 
-            if (k > 200L)
-            {
+            if (k > 200L) {
                 iterator.remove();
-            }
-            else
-            {
-                for (Entry<BlockPos, Integer> entry1 : map1.entrySet())
-                {
+            } else {
+                for (Entry<BlockPos, Integer> entry1 : map1.entrySet()) {
                     BlockPos blockpos = entry1.getKey();
                     Integer integer = entry1.getValue();
 
-                    if (set.add(blockpos))
-                    {
-                        RenderGlobal.drawSelectionBoundingBox((new AxisAlignedBB(BlockPos.ORIGIN)).grow(0.002D).shrink(0.0025D * (double)k).offset((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ()).offset(-d0, -d1, -d2), 1.0F, 1.0F, 1.0F, 1.0F);
+                    if (set.add(blockpos)) {
+                        RenderGlobal.drawSelectionBoundingBox((new AxisAlignedBB(BlockPos.ORIGIN)).grow(0.002D).shrink(0.0025D * (double) k).offset((double) blockpos.getX(), (double) blockpos.getY(), (double) blockpos.getZ()).offset(-d0, -d1, -d2), 1.0F, 1.0F, 1.0F, 1.0F);
                         map.put(blockpos, integer);
                     }
                 }
             }
         }
 
-        for (Entry<BlockPos, Integer> entry2 : map.entrySet())
-        {
+        for (Entry<BlockPos, Integer> entry2 : map.entrySet()) {
             BlockPos blockpos1 = entry2.getKey();
             Integer integer1 = entry2.getValue();
-            DebugRenderer.renderDebugText(String.valueOf((Object)integer1), blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), partialTicks, -1);
+            DebugRenderer.renderDebugText(String.valueOf((Object) integer1), blockpos1.getX(), blockpos1.getY(), blockpos1.getZ(), partialTicks, -1);
         }
 
         GlStateManager.depthMask(true);

@@ -10,18 +10,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerEndermanEyes implements LayerRenderer<EntityEnderman>
-{
+public class LayerEndermanEyes implements LayerRenderer<EntityEnderman> {
     private static final ResourceLocation RES_ENDERMAN_EYES = new ResourceLocation("textures/entity/enderman/enderman_eyes.png");
     private final RenderEnderman endermanRenderer;
 
-    public LayerEndermanEyes(RenderEnderman endermanRendererIn)
-    {
+    public LayerEndermanEyes(RenderEnderman endermanRendererIn) {
         this.endermanRenderer = endermanRendererIn;
     }
 
-    public void doRenderLayer(EntityEnderman entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
-    {
+    public void doRenderLayer(EntityEnderman entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         this.endermanRenderer.bindTexture(RES_ENDERMAN_EYES);
         GlStateManager.enableBlend();
         GlStateManager.disableAlpha();
@@ -43,8 +40,7 @@ public class LayerEndermanEyes implements LayerRenderer<EntityEnderman>
         GlStateManager.enableAlpha();
     }
 
-    public boolean shouldCombineTextures()
-    {
+    public boolean shouldCombineTextures() {
         return false;
     }
 }

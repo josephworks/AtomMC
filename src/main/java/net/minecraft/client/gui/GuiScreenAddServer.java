@@ -1,9 +1,11 @@
 package net.minecraft.client.gui;
 
 import com.google.common.base.Predicate;
+
 import java.io.IOException;
 import java.net.IDN;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.StringUtils;
@@ -12,38 +14,26 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
-public class GuiScreenAddServer extends GuiScreen
-{
+public class GuiScreenAddServer extends GuiScreen {
     private final GuiScreen parentScreen;
     private final ServerData serverData;
     private GuiTextField serverIPField;
     private GuiTextField serverNameField;
     private GuiButton serverResourcePacks;
-    private final Predicate<String> addressFilter = new Predicate<String>()
-    {
-        public boolean apply(@Nullable String p_apply_1_)
-        {
-            if (StringUtils.isNullOrEmpty(p_apply_1_))
-            {
+    private final Predicate<String> addressFilter = new Predicate<String>() {
+        public boolean apply(@Nullable String p_apply_1_) {
+            if (StringUtils.isNullOrEmpty(p_apply_1_)) {
                 return true;
-            }
-            else
-            {
+            } else {
                 String[] astring = p_apply_1_.split(":");
 
-                if (astring.length == 0)
-                {
+                if (astring.length == 0) {
                     return true;
-                }
-                else
-                {
-                    try
-                    {
+                } else {
+                    try {
                         String s = IDN.toASCII(astring[0]);
                         return true;
-                    }
-                    catch (IllegalArgumentException var4)
-                    {
+                    } catch (IllegalArgumentException var4) {
                         return false;
                     }
                 }
@@ -51,20 +41,17 @@ public class GuiScreenAddServer extends GuiScreen
         }
     };
 
-    public GuiScreenAddServer(GuiScreen parentScreenIn, ServerData serverDataIn)
-    {
+    public GuiScreenAddServer(GuiScreen parentScreenIn, ServerData serverDataIn) {
         this.parentScreen = parentScreenIn;
         this.serverData = serverDataIn;
     }
 
-    public void updateScreen()
-    {
+    public void updateScreen() {
         this.serverNameField.updateCursorCounter();
         this.serverIPField.updateCursorCounter();
     }
 
-    public void initGui()
-    {
+    public void initGui() {
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 18, I18n.format("addServer.add")));
@@ -80,26 +67,18 @@ public class GuiScreenAddServer extends GuiScreen
         (this.buttonList.get(0)).enabled = !this.serverIPField.getText().isEmpty() && this.serverIPField.getText().split(":").length > 0 && !this.serverNameField.getText().isEmpty();
     }
 
-    public void onGuiClosed()
-    {
+    public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.enabled)
-        {
-            if (button.id == 2)
-            {
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.enabled) {
+            if (button.id == 2) {
                 this.serverData.setResourceMode(ServerData.ServerResourceMode.values()[(this.serverData.getResourceMode().ordinal() + 1) % ServerData.ServerResourceMode.values().length]);
                 this.serverResourcePacks.displayString = I18n.format("addServer.resourcePack") + ": " + this.serverData.getResourceMode().getMotd().getFormattedText();
-            }
-            else if (button.id == 1)
-            {
+            } else if (button.id == 1) {
                 this.parentScreen.confirmClicked(false, 0);
-            }
-            else if (button.id == 0)
-            {
+            } else if (button.id == 0) {
                 this.serverData.serverName = this.serverNameField.getText();
                 this.serverData.serverIP = this.serverIPField.getText();
                 this.parentScreen.confirmClicked(true, 0);
@@ -107,34 +86,29 @@ public class GuiScreenAddServer extends GuiScreen
         }
     }
 
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
         this.serverNameField.textboxKeyTyped(typedChar, keyCode);
         this.serverIPField.textboxKeyTyped(typedChar, keyCode);
 
-        if (keyCode == 15)
-        {
+        if (keyCode == 15) {
             this.serverNameField.setFocused(!this.serverNameField.isFocused());
             this.serverIPField.setFocused(!this.serverIPField.isFocused());
         }
 
-        if (keyCode == 28 || keyCode == 156)
-        {
+        if (keyCode == 28 || keyCode == 156) {
             this.actionPerformed(this.buttonList.get(0));
         }
 
         (this.buttonList.get(0)).enabled = !this.serverIPField.getText().isEmpty() && this.serverIPField.getText().split(":").length > 0 && !this.serverNameField.getText().isEmpty();
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
         this.serverIPField.mouseClicked(mouseX, mouseY, mouseButton);
         this.serverNameField.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRenderer, I18n.format("addServer.title"), this.width / 2, 17, 16777215);
         this.drawString(this.fontRenderer, I18n.format("addServer.enterName"), this.width / 2 - 100, 53, 10526880);

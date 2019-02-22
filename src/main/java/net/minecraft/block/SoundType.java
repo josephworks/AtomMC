@@ -5,8 +5,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SoundType
-{
+public class SoundType {
     public static final SoundType WOOD = new SoundType(1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.BLOCK_WOOD_PLACE, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL);
     public static final SoundType GROUND = new SoundType(1.0F, 1.0F, SoundEvents.BLOCK_GRAVEL_BREAK, SoundEvents.BLOCK_GRAVEL_STEP, SoundEvents.BLOCK_GRAVEL_PLACE, SoundEvents.BLOCK_GRAVEL_HIT, SoundEvents.BLOCK_GRAVEL_FALL);
     public static final SoundType PLANT = new SoundType(1.0F, 1.0F, SoundEvents.BLOCK_GRASS_BREAK, SoundEvents.BLOCK_GRASS_STEP, SoundEvents.BLOCK_GRASS_PLACE, SoundEvents.BLOCK_GRASS_HIT, SoundEvents.BLOCK_GRASS_FALL);
@@ -27,8 +26,7 @@ public class SoundType
     private final SoundEvent hitSound;
     private final SoundEvent fallSound;
 
-    public SoundType(float volumeIn, float pitchIn, SoundEvent breakSoundIn, SoundEvent stepSoundIn, SoundEvent placeSoundIn, SoundEvent hitSoundIn, SoundEvent fallSoundIn)
-    {
+    public SoundType(float volumeIn, float pitchIn, SoundEvent breakSoundIn, SoundEvent stepSoundIn, SoundEvent placeSoundIn, SoundEvent hitSoundIn, SoundEvent fallSoundIn) {
         this.volume = volumeIn;
         this.pitch = pitchIn;
         this.breakSound = breakSoundIn;
@@ -38,38 +36,31 @@ public class SoundType
         this.fallSound = fallSoundIn;
     }
 
-    public float getVolume()
-    {
+    public float getVolume() {
         return this.volume;
     }
 
-    public float getPitch()
-    {
+    public float getPitch() {
         return this.pitch;
     }
 
-    public SoundEvent getBreakSound()
-    {
+    public SoundEvent getBreakSound() {
         return this.breakSound;
     }
 
-    public SoundEvent getStepSound()
-    {
+    public SoundEvent getStepSound() {
         return this.stepSound;
     }
 
-    public SoundEvent getPlaceSound()
-    {
+    public SoundEvent getPlaceSound() {
         return this.placeSound;
     }
 
-    public SoundEvent getHitSound()
-    {
+    public SoundEvent getHitSound() {
         return this.hitSound;
     }
 
-    public SoundEvent getFallSound()
-    {
+    public SoundEvent getFallSound() {
         return this.fallSound;
     }
 }

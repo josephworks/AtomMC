@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -8,8 +9,7 @@ import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SPacketEntityTeleport implements Packet<INetHandlerPlayClient>
-{
+public class SPacketEntityTeleport implements Packet<INetHandlerPlayClient> {
     private int entityId;
     private double posX;
     private double posY;
@@ -18,23 +18,20 @@ public class SPacketEntityTeleport implements Packet<INetHandlerPlayClient>
     private byte pitch;
     private boolean onGround;
 
-    public SPacketEntityTeleport()
-    {
+    public SPacketEntityTeleport() {
     }
 
-    public SPacketEntityTeleport(Entity entityIn)
-    {
+    public SPacketEntityTeleport(Entity entityIn) {
         this.entityId = entityIn.getEntityId();
         this.posX = entityIn.posX;
         this.posY = entityIn.posY;
         this.posZ = entityIn.posZ;
-        this.yaw = (byte)((int)(entityIn.rotationYaw * 256.0F / 360.0F));
-        this.pitch = (byte)((int)(entityIn.rotationPitch * 256.0F / 360.0F));
+        this.yaw = (byte) ((int) (entityIn.rotationYaw * 256.0F / 360.0F));
+        this.pitch = (byte) ((int) (entityIn.rotationPitch * 256.0F / 360.0F));
         this.onGround = entityIn.onGround;
     }
 
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) throws IOException {
         this.entityId = buf.readVarInt();
         this.posX = buf.readDouble();
         this.posY = buf.readDouble();
@@ -44,8 +41,7 @@ public class SPacketEntityTeleport implements Packet<INetHandlerPlayClient>
         this.onGround = buf.readBoolean();
     }
 
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) throws IOException {
         buf.writeVarInt(this.entityId);
         buf.writeDouble(this.posX);
         buf.writeDouble(this.posY);
@@ -55,50 +51,42 @@ public class SPacketEntityTeleport implements Packet<INetHandlerPlayClient>
         buf.writeBoolean(this.onGround);
     }
 
-    public void processPacket(INetHandlerPlayClient handler)
-    {
+    public void processPacket(INetHandlerPlayClient handler) {
         handler.handleEntityTeleport(this);
     }
 
     @SideOnly(Side.CLIENT)
-    public int getEntityId()
-    {
+    public int getEntityId() {
         return this.entityId;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getX()
-    {
+    public double getX() {
         return this.posX;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getY()
-    {
+    public double getY() {
         return this.posY;
     }
 
     @SideOnly(Side.CLIENT)
-    public double getZ()
-    {
+    public double getZ() {
         return this.posZ;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getYaw()
-    {
+    public byte getYaw() {
         return this.yaw;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte getPitch()
-    {
+    public byte getPitch() {
         return this.pitch;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean getOnGround()
-    {
+    public boolean getOnGround() {
         return this.onGround;
     }
 }

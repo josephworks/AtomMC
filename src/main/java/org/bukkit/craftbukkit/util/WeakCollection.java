@@ -36,7 +36,7 @@ public final class WeakCollection<T> implements Collection<T> {
     }
 
     public boolean contains(Object object) {
-        if (object  == null) {
+        if (object == null) {
             return false;
         }
         for (T compare : this) {

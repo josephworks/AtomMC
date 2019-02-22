@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,56 +22,45 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntityWitherSkeleton extends AbstractSkeleton
-{
-    public EntityWitherSkeleton(World worldIn)
-    {
+public class EntityWitherSkeleton extends AbstractSkeleton {
+    public EntityWitherSkeleton(World worldIn) {
         super(worldIn);
         this.setSize(0.7F, 2.4F);
         this.isImmuneToFire = true;
     }
 
-    public static void registerFixesWitherSkeleton(DataFixer fixer)
-    {
+    public static void registerFixesWitherSkeleton(DataFixer fixer) {
         EntityLiving.registerFixesMob(fixer, EntityWitherSkeleton.class);
     }
 
     @Nullable
-    protected ResourceLocation getLootTable()
-    {
+    protected ResourceLocation getLootTable() {
         return LootTableList.ENTITIES_WITHER_SKELETON;
     }
 
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
     }
 
-    protected SoundEvent getStepSound()
-    {
+    protected SoundEvent getStepSound() {
         return SoundEvents.ENTITY_WITHER_SKELETON_STEP;
     }
 
-    public void onDeath(DamageSource cause)
-    {
+    public void onDeath(DamageSource cause) {
         // super.onDeath(cause); // CraftBukkit - down
 
-        if (cause.getTrueSource() instanceof EntityCreeper)
-        {
-            EntityCreeper entitycreeper = (EntityCreeper)cause.getTrueSource();
+        if (cause.getTrueSource() instanceof EntityCreeper) {
+            EntityCreeper entitycreeper = (EntityCreeper) cause.getTrueSource();
 
-            if (entitycreeper.getPowered() && entitycreeper.ableToCauseSkullDrop())
-            {
+            if (entitycreeper.getPowered() && entitycreeper.ableToCauseSkullDrop()) {
                 entitycreeper.incrementDroppedSkulls();
                 this.entityDropItem(new ItemStack(Items.SKULL, 1, 1), 0.0F);
             }
@@ -78,48 +68,38 @@ public class EntityWitherSkeleton extends AbstractSkeleton
         super.onDeath(cause); // CraftBukkit - moved from above
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
-    {
+    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
         this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
     }
 
-    protected void setEnchantmentBasedOnDifficulty(DifficultyInstance difficulty)
-    {
+    protected void setEnchantmentBasedOnDifficulty(DifficultyInstance difficulty) {
     }
 
     @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
-    {
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
         IEntityLivingData ientitylivingdata = super.onInitialSpawn(difficulty, livingdata);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
         this.setCombatTask();
         return ientitylivingdata;
     }
 
-    public float getEyeHeight()
-    {
+    public float getEyeHeight() {
         return 2.1F;
     }
 
-    public boolean attackEntityAsMob(Entity entityIn)
-    {
-        if (!super.attackEntityAsMob(entityIn))
-        {
+    public boolean attackEntityAsMob(Entity entityIn) {
+        if (!super.attackEntityAsMob(entityIn)) {
             return false;
-        }
-        else
-        {
-            if (entityIn instanceof EntityLivingBase)
-            {
-                ((EntityLivingBase)entityIn).addPotionEffect(new PotionEffect(MobEffects.WITHER, 200));
+        } else {
+            if (entityIn instanceof EntityLivingBase) {
+                ((EntityLivingBase) entityIn).addPotionEffect(new PotionEffect(MobEffects.WITHER, 200));
             }
 
             return true;
         }
     }
 
-    protected EntityArrow getArrow(float p_190726_1_)
-    {
+    protected EntityArrow getArrow(float p_190726_1_) {
         EntityArrow entityarrow = super.getArrow(p_190726_1_);
         entityarrow.setFire(100);
         return entityarrow;

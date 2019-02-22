@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -24,8 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
-public class SaveHandler implements ISaveHandler, IPlayerFileData
-{
+public class SaveHandler implements ISaveHandler, IPlayerFileData {
     private static final Logger LOGGER = LogManager.getLogger();
     private final File worldDirectory;
     private final File playersDirectory;
@@ -37,8 +37,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
 
     private UUID uuid = null;
 
-    public SaveHandler(File p_i46648_1_, String saveDirectoryNameIn, boolean p_i46648_3_, DataFixer dataFixerIn)
-    {
+    public SaveHandler(File p_i46648_1_, String saveDirectoryNameIn, boolean p_i46648_3_, DataFixer dataFixerIn) {
         this.dataFixer = dataFixerIn;
         this.worldDirectory = new File(p_i46648_1_, saveDirectoryNameIn);
         this.worldDirectory.mkdirs();
@@ -47,88 +46,65 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         this.mapDataDir.mkdirs();
         this.saveDirectoryName = saveDirectoryNameIn;
 
-        if (p_i46648_3_)
-        {
+        if (p_i46648_3_) {
             this.playersDirectory.mkdirs();
             this.structureTemplateManager = new TemplateManager((new File(this.worldDirectory, "structures")).toString(), dataFixerIn);
-        }
-        else
-        {
+        } else {
             this.structureTemplateManager = null;
         }
 
         this.setSessionLock();
     }
 
-    private void setSessionLock()
-    {
-        try
-        {
+    private void setSessionLock() {
+        try {
             File file1 = new File(this.worldDirectory, "session.lock");
             DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(file1));
 
-            try
-            {
+            try {
                 dataoutputstream.writeLong(this.initializationTime);
-            }
-            finally
-            {
+            } finally {
                 dataoutputstream.close();
             }
-        }
-        catch (IOException ioexception)
-        {
+        } catch (IOException ioexception) {
             ioexception.printStackTrace();
             throw new RuntimeException("Failed to check session lock, aborting");
         }
     }
 
-    public File getWorldDirectory()
-    {
+    public File getWorldDirectory() {
         return this.worldDirectory;
     }
 
-    public void checkSessionLock() throws MinecraftException
-    {
-        try
-        {
+    public void checkSessionLock() throws MinecraftException {
+        try {
             File file1 = new File(this.worldDirectory, "session.lock");
             DataInputStream datainputstream = new DataInputStream(new FileInputStream(file1));
 
-            try
-            {
-                if (datainputstream.readLong() != this.initializationTime)
-                {
+            try {
+                if (datainputstream.readLong() != this.initializationTime) {
                     throw new MinecraftException("The save is being accessed from another location, aborting");
                 }
-            }
-            finally
-            {
+            } finally {
                 datainputstream.close();
             }
-        }
-        catch (IOException var7)
-        {
+        } catch (IOException var7) {
             throw new MinecraftException("Failed to check session lock, aborting");
         }
     }
 
-    public IChunkLoader getChunkLoader(WorldProvider provider)
-    {
+    public IChunkLoader getChunkLoader(WorldProvider provider) {
         throw new RuntimeException("Old Chunk Storage is no longer supported.");
     }
 
     @Nullable
-    public WorldInfo loadWorldInfo()
-    {
+    public WorldInfo loadWorldInfo() {
         File file1 = new File(this.worldDirectory, "level.dat");
 
-        if (file1.exists())
-        {
+        if (file1.exists()) {
             WorldInfo worldinfo = SaveFormatOld.loadAndFix(file1, this.dataFixer, this);
 
-            if (worldinfo != null)
-            {
+            if (worldinfo != null) {
                 return worldinfo;
             }
         }
@@ -138,95 +114,76 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         return file1.exists() ? SaveFormatOld.loadAndFix(file1, this.dataFixer, this) : null;
     }
 
-    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, @Nullable NBTTagCompound tagCompound)
-    {
+    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, @Nullable NBTTagCompound tagCompound) {
         NBTTagCompound nbttagcompound = worldInformation.cloneNBTCompound(tagCompound);
         NBTTagCompound nbttagcompound1 = new NBTTagCompound();
         nbttagcompound1.setTag("Data", nbttagcompound);
 
         net.minecraftforge.fml.common.FMLCommonHandler.instance().handleWorldDataSave(this, worldInformation, nbttagcompound1);
 
-        try
-        {
+        try {
             File file1 = new File(this.worldDirectory, "level.dat_new");
             File file2 = new File(this.worldDirectory, "level.dat_old");
             File file3 = new File(this.worldDirectory, "level.dat");
             CompressedStreamTools.writeCompressed(nbttagcompound1, new FileOutputStream(file1));
 
-            if (file2.exists())
-            {
+            if (file2.exists()) {
                 file2.delete();
             }
 
             file3.renameTo(file2);
 
-            if (file3.exists())
-            {
+            if (file3.exists()) {
                 file3.delete();
             }
 
             file1.renameTo(file3);
 
-            if (file1.exists())
-            {
+            if (file1.exists()) {
                 file1.delete();
             }
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
 
-    public void saveWorldInfo(WorldInfo worldInformation)
-    {
-        this.saveWorldInfoWithPlayer(worldInformation, (NBTTagCompound)null);
+    public void saveWorldInfo(WorldInfo worldInformation) {
+        this.saveWorldInfoWithPlayer(worldInformation, (NBTTagCompound) null);
     }
 
-    public void writePlayerData(EntityPlayer player)
-    {
-        try
-        {
+    public void writePlayerData(EntityPlayer player) {
+        try {
             NBTTagCompound nbttagcompound = player.writeToNBT(new NBTTagCompound());
             File file1 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat.tmp");
             File file2 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat");
             CompressedStreamTools.writeCompressed(nbttagcompound, new FileOutputStream(file1));
 
-            if (file2.exists())
-            {
+            if (file2.exists()) {
                 file2.delete();
             }
 
             file1.renameTo(file2);
             net.minecraftforge.event.ForgeEventFactory.firePlayerSavingEvent(player, this.playersDirectory, player.getUniqueID().toString());
-        }
-        catch (Exception var5)
-        {
-            LOGGER.warn("Failed to save player data for {}", (Object)player.getName());
+        } catch (Exception var5) {
+            LOGGER.warn("Failed to save player data for {}", (Object) player.getName());
         }
     }
 
     @Nullable
-    public NBTTagCompound readPlayerData(EntityPlayer player)
-    {
+    public NBTTagCompound readPlayerData(EntityPlayer player) {
         NBTTagCompound nbttagcompound = null;
 
-        try
-        {
+        try {
             File file1 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat");
 
-            if (file1.exists() && file1.isFile())
-            {
+            if (file1.exists() && file1.isFile()) {
                 nbttagcompound = CompressedStreamTools.readCompressed(new FileInputStream(file1));
             }
-        }
-        catch (Exception var4)
-        {
-            LOGGER.warn("Failed to load player data for {}", (Object)player.getName());
+        } catch (Exception var4) {
+            LOGGER.warn("Failed to load player data for {}", (Object) player.getName());
         }
 
-        if (nbttagcompound != null)
-        {
+        if (nbttagcompound != null) {
             if (player instanceof EntityPlayerMP) {
                 CraftPlayer playerCB = (CraftPlayer) player.getBukkitEntity();
                 // Only update first played if it is older than the one we have
@@ -256,24 +213,19 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         return null;
     }
 
-    public IPlayerFileData getPlayerNBTManager()
-    {
+    public IPlayerFileData getPlayerNBTManager() {
         return this;
     }
 
-    public String[] getAvailablePlayerDat()
-    {
+    public String[] getAvailablePlayerDat() {
         String[] astring = this.playersDirectory.list();
 
-        if (astring == null)
-        {
+        if (astring == null) {
             astring = new String[0];
         }
 
-        for (int i = 0; i < astring.length; ++i)
-        {
-            if (astring[i].endsWith(".dat"))
-            {
+        for (int i = 0; i < astring.length; ++i) {
+            if (astring[i].endsWith(".dat")) {
                 astring[i] = astring[i].substring(0, astring[i].length() - 4);
             }
         }
@@ -281,33 +233,25 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         return astring;
     }
 
-    public void flush()
-    {
+    public void flush() {
     }
 
-    public File getMapFileFromName(String mapName)
-    {
+    public File getMapFileFromName(String mapName) {
         return new File(this.mapDataDir, mapName + ".dat");
     }
 
-    public TemplateManager getStructureTemplateManager()
-    {
+    public TemplateManager getStructureTemplateManager() {
         return this.structureTemplateManager;
     }
 
-    public NBTTagCompound getPlayerNBT(net.minecraft.entity.player.EntityPlayerMP player)
-    {
-        try
-        {
+    public NBTTagCompound getPlayerNBT(net.minecraft.entity.player.EntityPlayerMP player) {
+        try {
             File file1 = new File(this.playersDirectory, player.getUniqueID().toString() + ".dat");
 
-            if (file1.exists() && file1.isFile())
-            {
+            if (file1.exists() && file1.isFile()) {
                 return CompressedStreamTools.readCompressed(new FileInputStream(file1));
             }
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             LOGGER.warn("Failed to load player data for " + player.getName());
         }
         return null;

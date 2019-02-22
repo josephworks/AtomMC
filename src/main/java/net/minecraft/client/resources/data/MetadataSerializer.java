@@ -12,59 +12,43 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MetadataSerializer
-{
-    private final IRegistry < String, Registration <? extends IMetadataSection >> metadataSectionSerializerRegistry = new RegistrySimple < String, Registration <? extends IMetadataSection >> ();
+public class MetadataSerializer {
+    private final IRegistry<String, Registration<? extends IMetadataSection>> metadataSectionSerializerRegistry = new RegistrySimple<String, Registration<? extends IMetadataSection>>();
     private final GsonBuilder gsonBuilder = new GsonBuilder();
     private Gson gson;
 
-    public MetadataSerializer()
-    {
+    public MetadataSerializer() {
         this.gsonBuilder.registerTypeHierarchyAdapter(ITextComponent.class, new ITextComponent.Serializer());
         this.gsonBuilder.registerTypeHierarchyAdapter(Style.class, new Style.Serializer());
         this.gsonBuilder.registerTypeAdapterFactory(new EnumTypeAdapterFactory());
     }
 
-    public <T extends IMetadataSection> void registerMetadataSectionType(IMetadataSectionSerializer<T> metadataSectionSerializer, Class<T> clazz)
-    {
+    public <T extends IMetadataSection> void registerMetadataSectionType(IMetadataSectionSerializer<T> metadataSectionSerializer, Class<T> clazz) {
         this.metadataSectionSerializerRegistry.putObject(metadataSectionSerializer.getSectionName(), new Registration(metadataSectionSerializer, clazz));
         this.gsonBuilder.registerTypeAdapter(clazz, metadataSectionSerializer);
         this.gson = null;
     }
 
-    public <T extends IMetadataSection> T parseMetadataSection(String sectionName, JsonObject json)
-    {
-        if (sectionName == null)
-        {
+    public <T extends IMetadataSection> T parseMetadataSection(String sectionName, JsonObject json) {
+        if (sectionName == null) {
             throw new IllegalArgumentException("Metadata section name cannot be null");
-        }
-        else if (!json.has(sectionName))
-        {
-            return (T)null;
-        }
-        else if (!json.get(sectionName).isJsonObject())
-        {
+        } else if (!json.has(sectionName)) {
+            return (T) null;
+        } else if (!json.get(sectionName).isJsonObject()) {
             throw new IllegalArgumentException("Invalid metadata for '" + sectionName + "' - expected object, found " + json.get(sectionName));
-        }
-        else
-        {
-            Registration<?> registration = (Registration)this.metadataSectionSerializerRegistry.getObject(sectionName);
+        } else {
+            Registration<?> registration = (Registration) this.metadataSectionSerializerRegistry.getObject(sectionName);
 
-            if (registration == null)
-            {
+            if (registration == null) {
                 throw new IllegalArgumentException("Don't know how to handle metadata section '" + sectionName + "'");
-            }
-            else
-            {
-                return (T)(this.getGson().fromJson(json.getAsJsonObject(sectionName), registration.clazz));
+            } else {
+                return (T) (this.getGson().fromJson(json.getAsJsonObject(sectionName), registration.clazz));
             }
         }
     }
 
-    private Gson getGson()
-    {
-        if (this.gson == null)
-        {
+    private Gson getGson() {
+        if (this.gson == null) {
             this.gson = this.gsonBuilder.create();
         }
 
@@ -72,13 +56,11 @@ public class MetadataSerializer
     }
 
     @SideOnly(Side.CLIENT)
-    class Registration<T extends IMetadataSection>
-    {
+    class Registration<T extends IMetadataSection> {
         final IMetadataSectionSerializer<T> section;
         final Class<T> clazz;
 
-        private Registration(IMetadataSectionSerializer<T> metadataSectionSerializer, Class<T> clazzToRegister)
-        {
+        private Registration(IMetadataSectionSerializer<T> metadataSectionSerializer, Class<T> clazzToRegister) {
             this.section = metadataSectionSerializer;
             this.clazz = clazzToRegister;
         }

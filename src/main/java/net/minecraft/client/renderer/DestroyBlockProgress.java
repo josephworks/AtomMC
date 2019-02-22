@@ -5,46 +5,38 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class DestroyBlockProgress
-{
+public class DestroyBlockProgress {
     private final int miningPlayerEntId;
     private final BlockPos position;
     private int partialBlockProgress;
     private int createdAtCloudUpdateTick;
 
-    public DestroyBlockProgress(int miningPlayerEntIdIn, BlockPos positionIn)
-    {
+    public DestroyBlockProgress(int miningPlayerEntIdIn, BlockPos positionIn) {
         this.miningPlayerEntId = miningPlayerEntIdIn;
         this.position = positionIn;
     }
 
-    public BlockPos getPosition()
-    {
+    public BlockPos getPosition() {
         return this.position;
     }
 
-    public void setPartialBlockDamage(int damage)
-    {
-        if (damage > 10)
-        {
+    public void setPartialBlockDamage(int damage) {
+        if (damage > 10) {
             damage = 10;
         }
 
         this.partialBlockProgress = damage;
     }
 
-    public int getPartialBlockDamage()
-    {
+    public int getPartialBlockDamage() {
         return this.partialBlockProgress;
     }
 
-    public void setCloudUpdateTick(int createdAtCloudUpdateTickIn)
-    {
+    public void setCloudUpdateTick(int createdAtCloudUpdateTickIn) {
         this.createdAtCloudUpdateTick = createdAtCloudUpdateTickIn;
     }
 
-    public int getCreationCloudUpdateTick()
-    {
+    public int getCreationCloudUpdateTick() {
         return this.createdAtCloudUpdateTick;
     }
 }

@@ -10,18 +10,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderCreeper extends RenderLiving<EntityCreeper>
-{
+public class RenderCreeper extends RenderLiving<EntityCreeper> {
     private static final ResourceLocation CREEPER_TEXTURES = new ResourceLocation("textures/entity/creeper/creeper.png");
 
-    public RenderCreeper(RenderManager renderManagerIn)
-    {
+    public RenderCreeper(RenderManager renderManagerIn) {
         super(renderManagerIn, new ModelCreeper(), 0.5F);
         this.addLayer(new LayerCreeperCharge(this));
     }
 
-    protected void preRenderCallback(EntityCreeper entitylivingbaseIn, float partialTickTime)
-    {
+    protected void preRenderCallback(EntityCreeper entitylivingbaseIn, float partialTickTime) {
         float f = entitylivingbaseIn.getCreeperFlashIntensity(partialTickTime);
         float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
         f = MathHelper.clamp(f, 0.0F, 1.0F);
@@ -32,24 +29,19 @@ public class RenderCreeper extends RenderLiving<EntityCreeper>
         GlStateManager.scale(f2, f3, f2);
     }
 
-    protected int getColorMultiplier(EntityCreeper entitylivingbaseIn, float lightBrightness, float partialTickTime)
-    {
+    protected int getColorMultiplier(EntityCreeper entitylivingbaseIn, float lightBrightness, float partialTickTime) {
         float f = entitylivingbaseIn.getCreeperFlashIntensity(partialTickTime);
 
-        if ((int)(f * 10.0F) % 2 == 0)
-        {
+        if ((int) (f * 10.0F) % 2 == 0) {
             return 0;
-        }
-        else
-        {
-            int i = (int)(f * 0.2F * 255.0F);
+        } else {
+            int i = (int) (f * 0.2F * 255.0F);
             i = MathHelper.clamp(i, 0, 255);
             return i << 24 | 822083583;
         }
     }
 
-    protected ResourceLocation getEntityTexture(EntityCreeper entity)
-    {
+    protected ResourceLocation getEntityTexture(EntityCreeper entity) {
         return CREEPER_TEXTURES;
     }
 }

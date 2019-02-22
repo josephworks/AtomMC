@@ -1,5 +1,7 @@
 {
-    "variants": {
-        "normal": { "model": "coal_ore" }
+  "variants": {
+    "normal": {
+      "model": "coal_ore"
     }
+  }
 }

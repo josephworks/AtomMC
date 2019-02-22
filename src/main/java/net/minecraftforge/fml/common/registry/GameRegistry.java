@@ -71,8 +71,7 @@ import com.google.common.collect.Sets;
 
 import javax.annotation.Nonnull;
 
-public class GameRegistry
-{
+public class GameRegistry {
     private static Set<IWorldGenerator> worldGenerators = Sets.newHashSet();
     private static Map<IWorldGenerator, Integer> worldGeneratorIndex = Maps.newHashMap();
     private static List<IFuelHandler> fuelHandlers = Lists.newArrayList();
@@ -86,12 +85,10 @@ public class GameRegistry
      * @param modGenerationWeight a weight to assign to this generator. Heavy weights tend to sink to the bottom of
      *                            list of world generators (i.e. they run later)
      */
-    public static void registerWorldGenerator(IWorldGenerator generator, int modGenerationWeight)
-    {
+    public static void registerWorldGenerator(IWorldGenerator generator, int modGenerationWeight) {
         worldGenerators.add(generator);
         worldGeneratorIndex.put(generator, modGenerationWeight);
-        if (sortedGeneratorList != null)
-        {
+        if (sortedGeneratorList != null) {
             sortedGeneratorList = null;
         }
     }
@@ -99,20 +96,19 @@ public class GameRegistry
     /**
      * Registers a entity selector factory which is used to create predicates whenever a command containing selectors is executed
      * Any non vanilla arguments that you expect has to be registered. Otherwise Minecraft will throw an CommandException on usage.
-     *
+     * <p>
      * If you want to react to a command like "/kill @e[xyz=5]", you would have to register the argument "xyz" here and check for that argument in the factory.
      * One factory can listen to any number of arguments as long as they are registered here.
-     *
+     * <p>
      * For inter mod compatibility you might want to use "modid:xyz" (e.g. "forge:min_health") as argument.
-     *
+     * <p>
      * For an example usage, see CustomEntitySelectorTest
+     *
      * @param arguments Expected string arguments in commands
      */
-    public static void registerEntitySelector(IEntitySelectorFactory factory, String... arguments)
-    {
+    public static void registerEntitySelector(IEntitySelectorFactory factory, String... arguments) {
         entitySelectorFactories.add(factory);
-        for (String s : arguments)
-        {
+        for (String s : arguments) {
             EntitySelector.addArgument(s);
         }
     }
@@ -121,17 +117,12 @@ public class GameRegistry
      * Creates a list of entity selectors using the registered factories.
      * Should probably only be called by Forge
      */
-    public static List<Predicate<Entity>> createEntitySelectors(Map<String, String> arguments, String mainSelector, ICommandSender sender, Vec3d position)
-    {
+    public static List<Predicate<Entity>> createEntitySelectors(Map<String, String> arguments, String mainSelector, ICommandSender sender, Vec3d position) {
         List<Predicate<Entity>> selectors = Lists.newArrayList();
-        for (IEntitySelectorFactory factory : entitySelectorFactories)
-        {
-            try
-            {
+        for (IEntitySelectorFactory factory : entitySelectorFactories) {
+            try {
                 selectors.addAll(factory.createPredicates(arguments, mainSelector, sender, position));
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 FMLLog.log.error("Exception caught during entity selector creation with {} for argument map {} of {} for {} at {}", factory,
                         arguments, mainSelector, sender, position, e);
             }
@@ -149,10 +140,8 @@ public class GameRegistry
      * @param chunkGenerator The chunk generator
      * @param chunkProvider  The chunk provider
      */
-    public static void generateWorld(int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider)
-    {
-        if (sortedGeneratorList == null)
-        {
+    public static void generateWorld(int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+        if (sortedGeneratorList == null) {
             computeSortedGeneratorList();
         }
         long worldSeed = world.getSeed();
@@ -161,15 +150,13 @@ public class GameRegistry
         long zSeed = fmlRandom.nextLong() >> 2 + 1L;
         long chunkSeed = (xSeed * chunkX + zSeed * chunkZ) ^ worldSeed;
 
-        for (IWorldGenerator generator : sortedGeneratorList)
-        {
+        for (IWorldGenerator generator : sortedGeneratorList) {
             fmlRandom.setSeed(chunkSeed);
             generator.generate(fmlRandom, chunkX, chunkZ, world, chunkGenerator, chunkProvider);
         }
     }
 
-    private static void computeSortedGeneratorList()
-    {
+    private static void computeSortedGeneratorList() {
         ArrayList<IWorldGenerator> list = Lists.newArrayList(worldGenerators);
         list.sort(Comparator.comparingInt(o -> worldGeneratorIndex.get(o)));
         sortedGeneratorList = ImmutableList.copyOf(list);
@@ -179,9 +166,8 @@ public class GameRegistry
      * This is now private, you should use either ForgeRegistries constants.
      * Or the registry passed in during the RegistryEvent.Register<T> event.
      */
-    private static <K extends IForgeRegistryEntry<K>> K register(K object)
-    {
-        return (K)GameData.register_impl(object);
+    private static <K extends IForgeRegistryEntry<K>> K register(K object) {
+        return (K) GameData.register_impl(object);
     }
 
     /**
@@ -192,50 +178,42 @@ public class GameRegistry
      * @param registryType The base class of items in this registry.
      * @return The registry, Null if none is registered.
      */
-    public static <K extends IForgeRegistryEntry<K>> IForgeRegistry<K> findRegistry(Class<K> registryType)
-    {
+    public static <K extends IForgeRegistryEntry<K>> IForgeRegistry<K> findRegistry(Class<K> registryType) {
         return RegistryManager.ACTIVE.getRegistry(registryType);
     }
 
-    public static void addShapedRecipe(ResourceLocation name, ResourceLocation group, @Nonnull ItemStack output, Object... params)
-    {
+    public static void addShapedRecipe(ResourceLocation name, ResourceLocation group, @Nonnull ItemStack output, Object... params) {
         ShapedPrimer primer = CraftingHelper.parseShaped(params);
         register(new ShapedRecipes(group == null ? "" : group.toString(), primer.width, primer.height, primer.input, output).setRegistryName(name));
     }
 
-    public static void addShapelessRecipe(ResourceLocation name, ResourceLocation group, @Nonnull ItemStack output, Ingredient... params)
-    {
+    public static void addShapelessRecipe(ResourceLocation name, ResourceLocation group, @Nonnull ItemStack output, Ingredient... params) {
         NonNullList<Ingredient> lst = NonNullList.create();
         for (Ingredient i : params)
             lst.add(i);
         register(new ShapelessRecipes(group == null ? "" : group.toString(), output, lst).setRegistryName(name));
     }
 
-    public static void addSmelting(Block input, @Nonnull ItemStack output, float xp)
-    {
+    public static void addSmelting(Block input, @Nonnull ItemStack output, float xp) {
         FurnaceRecipes.instance().addSmeltingRecipeForBlock(input, output, xp);
     }
 
-    public static void addSmelting(Item input, @Nonnull ItemStack output, float xp)
-    {
+    public static void addSmelting(Item input, @Nonnull ItemStack output, float xp) {
         FurnaceRecipes.instance().addSmelting(input, output, xp);
     }
 
-    public static void addSmelting(@Nonnull ItemStack input, @Nonnull ItemStack output, float xp)
-    {
+    public static void addSmelting(@Nonnull ItemStack input, @Nonnull ItemStack output, float xp) {
         FurnaceRecipes.instance().addSmeltingRecipe(input, output, xp);
     }
 
     @Deprecated //TODO: Remove in 1.13, Use ResourceLocation version.
-    public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String key)
-    {
+    public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String key) {
         // As return is ignored for compatibility, always check namespace
         GameData.checkPrefix(new ResourceLocation(key).toString());
         TileEntity.register(key, tileEntityClass);
     }
 
-    public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, ResourceLocation key)
-    {
+    public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, ResourceLocation key) {
         registerTileEntity(tileEntityClass, key.toString());
     }
 
@@ -243,8 +221,7 @@ public class GameRegistry
      * @deprecated set your item's {@link Item#getItemBurnTime(ItemStack)} or subscribe to {@link FurnaceFuelBurnTimeEvent} instead.
      */
     @Deprecated
-    public static void registerFuelHandler(IFuelHandler handler)
-    {
+    public static void registerFuelHandler(IFuelHandler handler) {
         fuelHandlers.add(handler);
     }
 
@@ -252,8 +229,7 @@ public class GameRegistry
      * @deprecated use {@link ForgeEventFactory#getItemBurnTime(ItemStack)}
      */
     @Deprecated
-    public static int getFuelValue(@Nonnull ItemStack itemStack)
-    {
+    public static int getFuelValue(@Nonnull ItemStack itemStack) {
         return ForgeEventFactory.getItemBurnTime(itemStack);
     }
 
@@ -261,11 +237,9 @@ public class GameRegistry
      * @deprecated use {@link ForgeEventFactory#getItemBurnTime(ItemStack)}
      */
     @Deprecated
-    public static int getFuelValueLegacy(@Nonnull ItemStack itemStack)
-    {
+    public static int getFuelValueLegacy(@Nonnull ItemStack itemStack) {
         int fuelValue = 0;
-        for (IFuelHandler handler : fuelHandlers)
-        {
+        for (IFuelHandler handler : fuelHandlers) {
             fuelValue = Math.max(fuelValue, handler.getBurnTime(itemStack));
         }
         return fuelValue;
@@ -277,8 +251,7 @@ public class GameRegistry
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE, ElementType.FIELD})
-    public @interface ObjectHolder
-    {
+    public @interface ObjectHolder {
         /**
          * If used on a class, this represents a modid only.
          * If used on a field, it represents a name, which can be abbreviated or complete.
@@ -299,8 +272,7 @@ public class GameRegistry
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    public @interface ItemStackHolder
-    {
+    public @interface ItemStackHolder {
         /**
          * The registry name of the item being looked up.
          *
@@ -336,27 +308,20 @@ public class GameRegistry
      * @return a new itemstack
      */
     @Nonnull
-    public static ItemStack makeItemStack(String itemName, int meta, int stackSize, String nbtString)
-    {
-        if (itemName == null)
-        {
+    public static ItemStack makeItemStack(String itemName, int meta, int stackSize, String nbtString) {
+        if (itemName == null) {
             throw new IllegalArgumentException("The itemName cannot be null");
         }
         Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
-        if (item == null)
-        {
+        if (item == null) {
             FMLLog.log.trace("Unable to find item with name {}", itemName);
             return ItemStack.EMPTY;
         }
         ItemStack is = new ItemStack(item, stackSize, meta);
-        if (!Strings.isNullOrEmpty(nbtString))
-        {
-            try
-            {
+        if (!Strings.isNullOrEmpty(nbtString)) {
+            try {
                 is.setTagCompound(JsonToNBT.getTagFromJson(nbtString));
-            }
-            catch (NBTException e)
-            {
+            } catch (NBTException e) {
                 throw new RuntimeException("Encountered an exception parsing ItemStack NBT string " + nbtString, e);
             }
         }

@@ -32,8 +32,7 @@ import net.minecraft.network.play.client.CPacketUpdateSign;
 import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.client.CPacketVehicleMove;
 
-public interface INetHandlerPlayServer extends INetHandler
-{
+public interface INetHandlerPlayServer extends INetHandler {
     void handleAnimation(CPacketAnimation packetIn);
 
     void processChatMessage(CPacketChatMessage packetIn);

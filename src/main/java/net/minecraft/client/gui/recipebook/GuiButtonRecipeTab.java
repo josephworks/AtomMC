@@ -2,6 +2,7 @@ package net.minecraft.client.gui.recipebook;
 
 import java.util.Iterator;
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButtonToggle;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,38 +17,31 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiButtonRecipeTab extends GuiButtonToggle
-{
+public class GuiButtonRecipeTab extends GuiButtonToggle {
     private final CreativeTabs category;
     private float animationTime;
 
-    public GuiButtonRecipeTab(int p_i47588_1_, CreativeTabs p_i47588_2_)
-    {
+    public GuiButtonRecipeTab(int p_i47588_1_, CreativeTabs p_i47588_2_) {
         super(p_i47588_1_, 0, 0, 35, 27, false);
         this.category = p_i47588_2_;
         this.initTextureValues(153, 2, 35, 0, GuiRecipeBook.RECIPE_BOOK);
     }
 
-    public void startAnimation(Minecraft p_193918_1_)
-    {
+    public void startAnimation(Minecraft p_193918_1_) {
         RecipeBook recipebook = p_193918_1_.player.getRecipeBook();
         label21:
 
-        for (RecipeList recipelist : RecipeBookClient.RECIPES_BY_TAB.get(this.category))
-        {
+        for (RecipeList recipelist : RecipeBookClient.RECIPES_BY_TAB.get(this.category)) {
             Iterator iterator = recipelist.getRecipes(recipebook.isFilteringCraftable()).iterator();
 
-            while (true)
-            {
-                if (!iterator.hasNext())
-                {
+            while (true) {
+                if (!iterator.hasNext()) {
                     continue label21;
                 }
 
-                IRecipe irecipe = (IRecipe)iterator.next();
+                IRecipe irecipe = (IRecipe) iterator.next();
 
-                if (recipebook.isNew(irecipe))
-                {
+                if (recipebook.isNew(irecipe)) {
                     break;
                 }
             }
@@ -57,17 +51,14 @@ public class GuiButtonRecipeTab extends GuiButtonToggle
         }
     }
 
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
-    {
-        if (this.visible)
-        {
-            if (this.animationTime > 0.0F)
-            {
-                float f = 1.0F + 0.1F * (float)Math.sin((double)(this.animationTime / 15.0F * (float)Math.PI));
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        if (this.visible) {
+            if (this.animationTime > 0.0F) {
+                float f = 1.0F + 0.1F * (float) Math.sin((double) (this.animationTime / 15.0F * (float) Math.PI));
                 GlStateManager.pushMatrix();
-                GlStateManager.translate((float)(this.x + 8), (float)(this.y + 12), 0.0F);
+                GlStateManager.translate((float) (this.x + 8), (float) (this.y + 12), 0.0F);
                 GlStateManager.scale(1.0F, f, 1.0F);
-                GlStateManager.translate((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
+                GlStateManager.translate((float) (-(this.x + 8)), (float) (-(this.y + 12)), 0.0F);
             }
 
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
@@ -76,20 +67,17 @@ public class GuiButtonRecipeTab extends GuiButtonToggle
             int k = this.xTexStart;
             int i = this.yTexStart;
 
-            if (this.stateTriggered)
-            {
+            if (this.stateTriggered) {
                 k += this.xDiffTex;
             }
 
-            if (this.hovered)
-            {
+            if (this.hovered) {
                 i += this.yDiffTex;
             }
 
             int j = this.x;
 
-            if (this.stateTriggered)
-            {
+            if (this.stateTriggered) {
                 j -= 2;
             }
 
@@ -102,48 +90,37 @@ public class GuiButtonRecipeTab extends GuiButtonToggle
             GlStateManager.enableLighting();
             RenderHelper.disableStandardItemLighting();
 
-            if (this.animationTime > 0.0F)
-            {
+            if (this.animationTime > 0.0F) {
                 GlStateManager.popMatrix();
                 this.animationTime -= partialTicks;
             }
         }
     }
 
-    private void renderIcon(RenderItem p_193920_1_)
-    {
+    private void renderIcon(RenderItem p_193920_1_) {
         ItemStack itemstack = this.category.getIconItemStack();
 
-        if (this.category == CreativeTabs.TOOLS)
-        {
+        if (this.category == CreativeTabs.TOOLS) {
             p_193920_1_.renderItemAndEffectIntoGUI(itemstack, this.x + 3, this.y + 5);
             p_193920_1_.renderItemAndEffectIntoGUI(CreativeTabs.COMBAT.getIconItemStack(), this.x + 14, this.y + 5);
-        }
-        else if (this.category == CreativeTabs.MISC)
-        {
+        } else if (this.category == CreativeTabs.MISC) {
             p_193920_1_.renderItemAndEffectIntoGUI(itemstack, this.x + 3, this.y + 5);
             p_193920_1_.renderItemAndEffectIntoGUI(CreativeTabs.FOOD.getIconItemStack(), this.x + 14, this.y + 5);
-        }
-        else
-        {
+        } else {
             p_193920_1_.renderItemAndEffectIntoGUI(itemstack, this.x + 9, this.y + 5);
         }
     }
 
-    public CreativeTabs getCategory()
-    {
+    public CreativeTabs getCategory() {
         return this.category;
     }
 
-    public boolean updateVisibility()
-    {
-        List<RecipeList> list = (List)RecipeBookClient.RECIPES_BY_TAB.get(this.category);
+    public boolean updateVisibility() {
+        List<RecipeList> list = (List) RecipeBookClient.RECIPES_BY_TAB.get(this.category);
         this.visible = false;
 
-        for (RecipeList recipelist : list)
-        {
-            if (recipelist.isNotEmpty() && recipelist.containsValidRecipes())
-            {
+        for (RecipeList recipelist : list) {
+            if (recipelist.isNotEmpty() && recipelist.containsValidRecipes()) {
                 this.visible = true;
                 break;
             }

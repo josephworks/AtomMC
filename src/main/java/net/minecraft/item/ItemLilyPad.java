@@ -18,45 +18,35 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class ItemLilyPad extends ItemColored
-{
-    public ItemLilyPad(Block block)
-    {
+public class ItemLilyPad extends ItemColored {
+    public ItemLilyPad(Block block) {
         super(block, false);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
 
-        if (raytraceresult == null)
-        {
+        if (raytraceresult == null) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, itemstack);
-        }
-        else
-        {
-            if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK)
-            {
+        } else {
+            if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK) {
                 BlockPos blockpos = raytraceresult.getBlockPos();
 
-                if (!worldIn.isBlockModifiable(playerIn, blockpos) || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack))
-                {
+                if (!worldIn.isBlockModifiable(playerIn, blockpos) || !playerIn.canPlayerEdit(blockpos.offset(raytraceresult.sideHit), raytraceresult.sideHit, itemstack)) {
                     return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                 }
 
                 BlockPos blockpos1 = blockpos.up();
                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-                if (iblockstate.getMaterial() == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1))
-                {
+                if (iblockstate.getMaterial() == Material.WATER && ((Integer) iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1)) {
                     // CraftBukkit start - special case for handling block placement with water lilies
                     org.bukkit.block.BlockState blockstate = org.bukkit.craftbukkit.block.CraftBlockState.getBlockState(worldIn, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
                     // special case for handling block placement with water lilies
                     net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, blockpos1);
                     worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState());
-                    if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(playerIn, blocksnapshot, net.minecraft.util.EnumFacing.UP, handIn).isCanceled())
-                    {
+                    if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(playerIn, blocksnapshot, net.minecraft.util.EnumFacing.UP, handIn).isCanceled()) {
                         blocksnapshot.restore(true, false);
                         return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
                     }
@@ -69,13 +59,11 @@ public class ItemLilyPad extends ItemColored
                         return new ActionResult<>(EnumActionResult.PASS, itemstack);
                     }
 
-                    if (playerIn instanceof EntityPlayerMP)
-                    {
-                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP)playerIn, blockpos1, itemstack);
+                    if (playerIn instanceof EntityPlayerMP) {
+                        CriteriaTriggers.PLACED_BLOCK.trigger((EntityPlayerMP) playerIn, blockpos1, itemstack);
                     }
 
-                    if (!playerIn.capabilities.isCreativeMode)
-                    {
+                    if (!playerIn.capabilities.isCreativeMode) {
                         itemstack.shrink(1);
                     }
 

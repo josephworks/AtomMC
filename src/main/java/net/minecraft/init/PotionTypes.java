@@ -1,12 +1,13 @@
 package net.minecraft.init;
 
 import com.google.common.collect.Sets;
+
 import java.util.Set;
+
 import net.minecraft.potion.PotionType;
 import net.minecraft.util.ResourceLocation;
 
-public class PotionTypes
-{
+public class PotionTypes {
     private static final Set<PotionType> CACHE;
     public static final PotionType EMPTY;
     public static final PotionType WATER;
@@ -45,28 +46,20 @@ public class PotionTypes
     public static final PotionType WEAKNESS;
     public static final PotionType LONG_WEAKNESS;
 
-    private static PotionType getRegisteredPotionType(String id)
-    {
+    private static PotionType getRegisteredPotionType(String id) {
         PotionType potiontype = PotionType.REGISTRY.getObject(new ResourceLocation(id));
 
-        if (!CACHE.add(potiontype))
-        {
+        if (!CACHE.add(potiontype)) {
             throw new IllegalStateException("Invalid Potion requested: " + id);
-        }
-        else
-        {
+        } else {
             return potiontype;
         }
     }
 
-    static
-    {
-        if (!Bootstrap.isRegistered())
-        {
+    static {
+        if (!Bootstrap.isRegistered()) {
             throw new RuntimeException("Accessed Potions before Bootstrap!");
-        }
-        else
-        {
+        } else {
             CACHE = Sets.<PotionType>newHashSet();
             EMPTY = getRegisteredPotionType("empty");
             WATER = getRegisteredPotionType("water");

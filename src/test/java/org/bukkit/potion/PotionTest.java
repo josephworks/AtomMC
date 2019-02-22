@@ -16,7 +16,7 @@ public class PotionTest extends AbstractTestingBase {
     public void testEffectCompleteness() throws Throwable {
         Map<PotionType, String> effects = new EnumMap(PotionType.class);
         for (Object reg : net.minecraft.potion.PotionType.REGISTRY) {
-            List<PotionEffect> eff = ((net.minecraft.potion.PotionType)reg).getEffects();
+            List<PotionEffect> eff = ((net.minecraft.potion.PotionType) reg).getEffects();
             if (eff.size() != 1) continue;
             int id = Potion.getIdFromPotion(eff.get(0).getPotion());
             PotionEffectType type = PotionEffectType.getById(id);

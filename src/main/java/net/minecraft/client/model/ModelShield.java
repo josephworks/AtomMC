@@ -4,13 +4,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelShield extends ModelBase
-{
+public class ModelShield extends ModelBase {
     public ModelRenderer plate;
     public ModelRenderer handle;
 
-    public ModelShield()
-    {
+    public ModelShield() {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.plate = new ModelRenderer(this, 0, 0);
@@ -19,8 +17,7 @@ public class ModelShield extends ModelBase
         this.handle.addBox(-1.0F, -3.0F, -1.0F, 2, 6, 6, 0.0F);
     }
 
-    public void render()
-    {
+    public void render() {
         this.plate.render(0.0625F);
         this.handle.render(0.0625F);
     }

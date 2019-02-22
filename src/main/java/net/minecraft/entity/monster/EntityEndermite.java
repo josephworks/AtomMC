@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -24,20 +25,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntityEndermite extends EntityMob
-{
+public class EntityEndermite extends EntityMob {
     private int lifetime;
     private boolean playerSpawned;
 
-    public EntityEndermite(World worldIn)
-    {
+    public EntityEndermite(World worldIn) {
         super(worldIn);
         this.experienceValue = 3;
         this.setSize(0.4F, 0.3F);
     }
 
-    protected void initEntityAI()
-    {
+    protected void initEntityAI() {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, false));
         this.tasks.addTask(3, new EntityAIWanderAvoidWater(this, 1.0D));
@@ -47,141 +45,112 @@ public class EntityEndermite extends EntityMob
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
     }
 
-    public float getEyeHeight()
-    {
+    public float getEyeHeight() {
         return 0.1F;
     }
 
-    protected void applyEntityAttributes()
-    {
+    protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
     }
 
-    protected boolean canTriggerWalking()
-    {
+    protected boolean canTriggerWalking() {
         return false;
     }
 
-    protected SoundEvent getAmbientSound()
-    {
+    protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return SoundEvents.ENTITY_ENDERMITE_HURT;
     }
 
-    protected SoundEvent getDeathSound()
-    {
+    protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_ENDERMITE_DEATH;
     }
 
-    protected void playStepSound(BlockPos pos, Block blockIn)
-    {
+    protected void playStepSound(BlockPos pos, Block blockIn) {
         this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
     }
 
     @Nullable
-    protected ResourceLocation getLootTable()
-    {
+    protected ResourceLocation getLootTable() {
         return LootTableList.ENTITIES_ENDERMITE;
     }
 
-    public static void registerFixesEndermite(DataFixer fixer)
-    {
+    public static void registerFixesEndermite(DataFixer fixer) {
         EntityLiving.registerFixesMob(fixer, EntityEndermite.class);
     }
 
-    public void readEntityFromNBT(NBTTagCompound compound)
-    {
+    public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
         this.lifetime = compound.getInteger("Lifetime");
         this.playerSpawned = compound.getBoolean("PlayerSpawned");
     }
 
-    public void writeEntityToNBT(NBTTagCompound compound)
-    {
+    public void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
         compound.setInteger("Lifetime", this.lifetime);
         compound.setBoolean("PlayerSpawned", this.playerSpawned);
     }
 
-    public void onUpdate()
-    {
+    public void onUpdate() {
         this.renderYawOffset = this.rotationYaw;
         super.onUpdate();
     }
 
-    public void setRenderYawOffset(float offset)
-    {
+    public void setRenderYawOffset(float offset) {
         this.rotationYaw = offset;
         super.setRenderYawOffset(offset);
     }
 
-    public double getYOffset()
-    {
+    public double getYOffset() {
         return 0.1D;
     }
 
-    public boolean isSpawnedByPlayer()
-    {
+    public boolean isSpawnedByPlayer() {
         return this.playerSpawned;
     }
 
-    public void setSpawnedByPlayer(boolean spawnedByPlayer)
-    {
+    public void setSpawnedByPlayer(boolean spawnedByPlayer) {
         this.playerSpawned = spawnedByPlayer;
     }
 
-    public void onLivingUpdate()
-    {
+    public void onLivingUpdate() {
         super.onLivingUpdate();
 
-        if (this.world.isRemote)
-        {
-            for (int i = 0; i < 2; ++i)
-            {
-                this.world.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+        if (this.world.isRemote) {
+            for (int i = 0; i < 2; ++i) {
+                this.world.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double) this.width, this.posY + this.rand.nextDouble() * (double) this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double) this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
             }
-        }
-        else
-        {
-            if (!this.isNoDespawnRequired())
-            {
+        } else {
+            if (!this.isNoDespawnRequired()) {
                 ++this.lifetime;
             }
 
-            if (this.lifetime >= 2400)
-            {
+            if (this.lifetime >= 2400) {
                 this.setDead();
             }
         }
     }
 
-    protected boolean isValidLightLevel()
-    {
+    protected boolean isValidLightLevel() {
         return true;
     }
 
-    public boolean getCanSpawnHere()
-    {
-        if (super.getCanSpawnHere())
-        {
+    public boolean getCanSpawnHere() {
+        if (super.getCanSpawnHere()) {
             EntityPlayer entityplayer = this.world.getClosestPlayerToEntity(this, 5.0D);
             return entityplayer == null;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public EnumCreatureAttribute getCreatureAttribute()
-    {
+    public EnumCreatureAttribute getCreatureAttribute() {
         return EnumCreatureAttribute.ARTHROPOD;
     }
 }

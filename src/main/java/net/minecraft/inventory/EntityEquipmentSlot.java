@@ -1,7 +1,6 @@
 package net.minecraft.inventory;
 
-public enum EntityEquipmentSlot
-{
+public enum EntityEquipmentSlot {
     MAINHAND(Type.HAND, 0, 0, "mainhand"),
     OFFHAND(Type.HAND, 1, 5, "offhand"),
     FEET(Type.ARMOR, 0, 1, "feet"),
@@ -14,40 +13,32 @@ public enum EntityEquipmentSlot
     private final int slotIndex;
     private final String name;
 
-    private EntityEquipmentSlot(Type slotTypeIn, int indexIn, int slotIndexIn, String nameIn)
-    {
+    private EntityEquipmentSlot(Type slotTypeIn, int indexIn, int slotIndexIn, String nameIn) {
         this.slotType = slotTypeIn;
         this.index = indexIn;
         this.slotIndex = slotIndexIn;
         this.name = nameIn;
     }
 
-    public Type getSlotType()
-    {
+    public Type getSlotType() {
         return this.slotType;
     }
 
-    public int getIndex()
-    {
+    public int getIndex() {
         return this.index;
     }
 
-    public int getSlotIndex()
-    {
+    public int getSlotIndex() {
         return this.slotIndex;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
-    public static EntityEquipmentSlot fromString(String targetName)
-    {
-        for (EntityEquipmentSlot entityequipmentslot : values())
-        {
-            if (entityequipmentslot.getName().equals(targetName))
-            {
+    public static EntityEquipmentSlot fromString(String targetName) {
+        for (EntityEquipmentSlot entityequipmentslot : values()) {
+            if (entityequipmentslot.getName().equals(targetName)) {
                 return entityequipmentslot;
             }
         }

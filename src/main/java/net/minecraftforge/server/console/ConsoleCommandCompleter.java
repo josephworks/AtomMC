@@ -38,29 +38,23 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
-final class ConsoleCommandCompleter implements Completer
-{
+final class ConsoleCommandCompleter implements Completer {
 
     private static final Logger logger = LogManager.getLogger();
     private final DedicatedServer server;
 
-    public ConsoleCommandCompleter(DedicatedServer server)
-    {
+    public ConsoleCommandCompleter(DedicatedServer server) {
         this.server = checkNotNull(server, "server");
     }
 
     @Override
-    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates)
-    {
+    public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
         String buffer = line.line();
         boolean prefix;
-        if (buffer.isEmpty() || buffer.charAt(0) != '/')
-        {
+        if (buffer.isEmpty() || buffer.charAt(0) != '/') {
             buffer = '/' + buffer;
             prefix = false;
-        }
-        else
-        {
+        } else {
             prefix = true;
         }
 
@@ -78,24 +72,17 @@ final class ConsoleCommandCompleter implements Completer
             return tabEvent.isCancelled() ? Collections.emptyList() : tabEvent.getCompletions();
         });
 
-        try
-        {
-            for (String completion : tabComplete.get())
-            {
-                if (!completion.isEmpty())
-                {
+        try {
+            for (String completion : tabComplete.get()) {
+                if (!completion.isEmpty()) {
                     boolean hasPrefix = completion.charAt(0) != '/' || prefix;
                     Candidate candidate = new Candidate(hasPrefix ? completion : completion.substring(1));
                     candidates.add(candidate);
                 }
             }
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-        catch (ExecutionException e)
-        {
+        } catch (ExecutionException e) {
             logger.error("Failed to tab complete", e);
         }
     }

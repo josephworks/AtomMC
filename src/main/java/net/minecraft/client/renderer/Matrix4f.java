@@ -4,10 +4,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class Matrix4f extends org.lwjgl.util.vector.Matrix4f
-{
-    public Matrix4f(float[] matrix)
-    {
+public class Matrix4f extends org.lwjgl.util.vector.Matrix4f {
+    public Matrix4f(float[] matrix) {
         this.m00 = matrix[0];
         this.m01 = matrix[1];
         this.m02 = matrix[2];
@@ -26,8 +24,7 @@ public class Matrix4f extends org.lwjgl.util.vector.Matrix4f
         this.m33 = matrix[15];
     }
 
-    public Matrix4f()
-    {
+    public Matrix4f() {
         this.m00 = 0.0F;
         this.m01 = 0.0F;
         this.m02 = 0.0F;

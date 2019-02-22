@@ -13,47 +13,38 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockColored extends Block
-{
+public class BlockColored extends Block {
     public static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.<EnumDyeColor>create("color", EnumDyeColor.class);
 
-    public BlockColored(Material materialIn)
-    {
+    public BlockColored(Material materialIn) {
         super(materialIn);
         this.setDefaultState(this.blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
-    public int damageDropped(IBlockState state)
-    {
-        return ((EnumDyeColor)state.getValue(COLOR)).getMetadata();
+    public int damageDropped(IBlockState state) {
+        return ((EnumDyeColor) state.getValue(COLOR)).getMetadata();
     }
 
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items)
-    {
-        for (EnumDyeColor enumdyecolor : EnumDyeColor.values())
-        {
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        for (EnumDyeColor enumdyecolor : EnumDyeColor.values()) {
             items.add(new ItemStack(this, 1, enumdyecolor.getMetadata()));
         }
     }
 
-    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-    {
-        return MapColor.getBlockColor((EnumDyeColor)state.getValue(COLOR));
+    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        return MapColor.getBlockColor((EnumDyeColor) state.getValue(COLOR));
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
+    public IBlockState getStateFromMeta(int meta) {
         return this.getDefaultState().withProperty(COLOR, EnumDyeColor.byMetadata(meta));
     }
 
-    public int getMetaFromState(IBlockState state)
-    {
-        return ((EnumDyeColor)state.getValue(COLOR)).getMetadata();
+    public int getMetaFromState(IBlockState state) {
+        return ((EnumDyeColor) state.getValue(COLOR)).getMetadata();
     }
 
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {COLOR});
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{COLOR});
     }
 }

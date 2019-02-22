@@ -1,6 +1,7 @@
 package net.minecraft.tileentity;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockFlower;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -8,8 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public enum BannerPattern
-{
+public enum BannerPattern {
     BASE("base", "b"),
     SQUARE_BOTTOM_LEFT("square_bottom_left", "bl", "   ", "   ", "#  "),
     SQUARE_BOTTOM_RIGHT("square_bottom_right", "br", "   ", "   ", "  #"),
@@ -55,22 +55,19 @@ public enum BannerPattern
     private final String[] patterns;
     private ItemStack patternItem;
 
-    private BannerPattern(String p_i47245_3_, String p_i47245_4_)
-    {
+    private BannerPattern(String p_i47245_3_, String p_i47245_4_) {
         this.patterns = new String[3];
         this.patternItem = ItemStack.EMPTY;
         this.fileName = p_i47245_3_;
         this.hashname = p_i47245_4_;
     }
 
-    private BannerPattern(String p_i47246_3_, String p_i47246_4_, ItemStack p_i47246_5_)
-    {
+    private BannerPattern(String p_i47246_3_, String p_i47246_4_, ItemStack p_i47246_5_) {
         this(p_i47246_3_, p_i47246_4_);
         this.patternItem = p_i47246_5_;
     }
 
-    private BannerPattern(String p_i47247_3_, String p_i47247_4_, String p_i47247_5_, String p_i47247_6_, String p_i47247_7_)
-    {
+    private BannerPattern(String p_i47247_3_, String p_i47247_4_, String p_i47247_5_, String p_i47247_6_, String p_i47247_7_) {
         this(p_i47247_3_, p_i47247_4_);
         this.patterns[0] = p_i47247_5_;
         this.patterns[1] = p_i47247_6_;
@@ -78,44 +75,35 @@ public enum BannerPattern
     }
 
     @SideOnly(Side.CLIENT)
-    public String getFileName()
-    {
+    public String getFileName() {
         return this.fileName;
     }
 
-    public String getHashname()
-    {
+    public String getHashname() {
         return this.hashname;
     }
 
-    public String[] getPatterns()
-    {
+    public String[] getPatterns() {
         return this.patterns;
     }
 
-    public boolean hasPattern()
-    {
+    public boolean hasPattern() {
         return !this.patternItem.isEmpty() || this.patterns[0] != null;
     }
 
-    public boolean hasPatternItem()
-    {
+    public boolean hasPatternItem() {
         return !this.patternItem.isEmpty();
     }
 
-    public ItemStack getPatternItem()
-    {
+    public ItemStack getPatternItem() {
         return this.patternItem;
     }
 
     @Nullable
     @SideOnly(Side.CLIENT)
-    public static BannerPattern byHash(String hash)
-    {
-        for (BannerPattern bannerpattern : values())
-        {
-            if (bannerpattern.hashname.equals(hash))
-            {
+    public static BannerPattern byHash(String hash) {
+        for (BannerPattern bannerpattern : values()) {
+            if (bannerpattern.hashname.equals(hash)) {
                 return bannerpattern;
             }
         }

@@ -1,7 +1,9 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.Maps;
+
 import java.util.Map;
+
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -44,22 +46,18 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.passive.EntityZombieHorse;
 
-public class EntitySpawnPlacementRegistry
-{
-    private static final Map < Class<?>, EntityLiving.SpawnPlacementType > ENTITY_PLACEMENTS = Maps. < Class<?>, EntityLiving.SpawnPlacementType > newHashMap();
+public class EntitySpawnPlacementRegistry {
+    private static final Map<Class<?>, EntityLiving.SpawnPlacementType> ENTITY_PLACEMENTS = Maps.<Class<?>, EntityLiving.SpawnPlacementType>newHashMap();
 
-    public static EntityLiving.SpawnPlacementType getPlacementForEntity(Class<?> entityClass)
-    {
+    public static EntityLiving.SpawnPlacementType getPlacementForEntity(Class<?> entityClass) {
         return ENTITY_PLACEMENTS.getOrDefault(entityClass, EntityLiving.SpawnPlacementType.ON_GROUND);
     }
 
-    public static void setPlacementType(Class<? extends Entity> entityClass, EntityLiving.SpawnPlacementType placementType)
-    {
+    public static void setPlacementType(Class<? extends Entity> entityClass, EntityLiving.SpawnPlacementType placementType) {
         ENTITY_PLACEMENTS.putIfAbsent(entityClass, placementType);
     }
 
-    static
-    {
+    static {
         ENTITY_PLACEMENTS.put(EntityBat.class, EntityLiving.SpawnPlacementType.ON_GROUND);
         ENTITY_PLACEMENTS.put(EntityChicken.class, EntityLiving.SpawnPlacementType.ON_GROUND);
         ENTITY_PLACEMENTS.put(EntityCow.class, EntityLiving.SpawnPlacementType.ON_GROUND);

@@ -3,6 +3,7 @@ package net.minecraft.command;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.server.MinecraftServer;
@@ -10,39 +11,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.GameRules;
 
-public class CommandGameRule extends CommandBase
-{
-    public String getName()
-    {
+public class CommandGameRule extends CommandBase {
+    public String getName() {
         return "gamerule";
     }
 
-    public int getRequiredPermissionLevel()
-    {
+    public int getRequiredPermissionLevel() {
         return 2;
     }
 
-    public String getUsage(ICommandSender sender)
-    {
+    public String getUsage(ICommandSender sender) {
         return "commands.gamerule.usage";
     }
 
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
-    {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         GameRules gamerules = sender.getEntityWorld().getGameRules(); // CraftBukkit - Use current world
         String s = args.length > 0 ? args[0] : "";
         String s1 = args.length > 1 ? buildString(args, 1) : "";
 
-        switch (args.length)
-        {
+        switch (args.length) {
             case 0:
                 sender.sendMessage(new TextComponentString(joinNiceString(gamerules.getRules())));
                 break;
             case 1:
 
-                if (!gamerules.hasRule(s))
-                {
-                    throw new CommandException("commands.gamerule.norule", new Object[] {s});
+                if (!gamerules.hasRule(s)) {
+                    throw new CommandException("commands.gamerule.norule", new Object[]{s});
                 }
 
                 String s2 = gamerules.getString(s);
@@ -51,50 +45,39 @@ public class CommandGameRule extends CommandBase
                 break;
             default:
 
-                if (gamerules.areSameType(s, GameRules.ValueType.BOOLEAN_VALUE) && !"true".equals(s1) && !"false".equals(s1))
-                {
-                    throw new CommandException("commands.generic.boolean.invalid", new Object[] {s1});
+                if (gamerules.areSameType(s, GameRules.ValueType.BOOLEAN_VALUE) && !"true".equals(s1) && !"false".equals(s1)) {
+                    throw new CommandException("commands.generic.boolean.invalid", new Object[]{s1});
                 }
 
                 gamerules.setOrCreateGameRule(s, s1);
                 notifyGameRuleChange(gamerules, s, server);
-                notifyCommandListener(sender, this, "commands.gamerule.success", new Object[] {s, s1});
+                notifyCommandListener(sender, this, "commands.gamerule.success", new Object[]{s, s1});
         }
     }
 
-    public static void notifyGameRuleChange(GameRules rules, String p_184898_1_, MinecraftServer server)
-    {
-        if ("reducedDebugInfo".equals(p_184898_1_))
-        {
-            byte b0 = (byte)(rules.getBoolean(p_184898_1_) ? 22 : 23);
+    public static void notifyGameRuleChange(GameRules rules, String p_184898_1_, MinecraftServer server) {
+        if ("reducedDebugInfo".equals(p_184898_1_)) {
+            byte b0 = (byte) (rules.getBoolean(p_184898_1_) ? 22 : 23);
 
-            for (EntityPlayerMP entityplayermp : server.getPlayerList().getPlayers())
-            {
+            for (EntityPlayerMP entityplayermp : server.getPlayerList().getPlayers()) {
                 entityplayermp.connection.sendPacket(new SPacketEntityStatus(entityplayermp, b0));
             }
         }
         net.minecraftforge.event.ForgeEventFactory.onGameRuleChange(rules, p_184898_1_, server);
     }
 
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
-    {
-        if (args.length == 1)
-        {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args, this.getOverWorldGameRules(server).getRules());
-        }
-        else
-        {
-            if (args.length == 2)
-            {
+        } else {
+            if (args.length == 2) {
                 GameRules gamerules = this.getOverWorldGameRules(server);
 
-                if (gamerules.areSameType(args[0], GameRules.ValueType.BOOLEAN_VALUE))
-                {
-                    return getListOfStringsMatchingLastWord(args, new String[] {"true", "false"});
+                if (gamerules.areSameType(args[0], GameRules.ValueType.BOOLEAN_VALUE)) {
+                    return getListOfStringsMatchingLastWord(args, new String[]{"true", "false"});
                 }
 
-                if (gamerules.areSameType(args[0], GameRules.ValueType.FUNCTION))
-                {
+                if (gamerules.areSameType(args[0], GameRules.ValueType.FUNCTION)) {
                     return getListOfStringsMatchingLastWord(args, server.getFunctionManager().getFunctions().keySet());
                 }
             }
@@ -103,8 +86,7 @@ public class CommandGameRule extends CommandBase
         }
     }
 
-    private GameRules getOverWorldGameRules(MinecraftServer server)
-    {
+    private GameRules getOverWorldGameRules(MinecraftServer server) {
         return server.getWorld(0).getGameRules();
     }
 }

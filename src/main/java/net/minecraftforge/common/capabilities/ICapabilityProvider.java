@@ -26,8 +26,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.util.EnumFacing;
 
-public interface ICapabilityProvider
-{
+public interface ICapabilityProvider {
     /**
      * Determines if this object has support for the capability in question on the specific side.
      * The return value of this MIGHT change during runtime if this object gains or loses support
@@ -37,13 +36,14 @@ public interface ICapabilityProvider
      * Basically, this method functions analogously to {@link Map#containsKey(Object)}.
      * <p>
      * <em>Example:</em>
-     *   A Pipe getting a cover placed on one side causing it lose the Inventory attachment function for that side.
+     * A Pipe getting a cover placed on one side causing it lose the Inventory attachment function for that side.
      * </p><p>
      * This is a light weight version of getCapability, intended for metadata uses.
      * </p>
+     *
      * @param capability The capability to check
-     * @param facing The Side to check from:
-     *   CAN BE NULL. Null is defined to represent 'internal' or 'self'
+     * @param facing     The Side to check from:
+     *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
      * @return True if this object supports the capability. If true, then {@link #getCapability(Capability, EnumFacing)}
      * must not return null.
      */
@@ -59,8 +59,8 @@ public interface ICapabilityProvider
      * Basically, this method functions analogously to {@link Map#get(Object)}.
      *
      * @param capability The capability to check
-     * @param facing The Side to check from,
-     *   <strong>CAN BE NULL</strong>. Null is defined to represent 'internal' or 'self'
+     * @param facing     The Side to check from,
+     *                   <strong>CAN BE NULL</strong>. Null is defined to represent 'internal' or 'self'
      * @return The requested capability. Must <strong>NOT</strong> be null when {@link #hasCapability(Capability, EnumFacing)}
      * would return true.
      */

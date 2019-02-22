@@ -2,6 +2,7 @@ package net.minecraft.world.biome;
 
 import java.util.Iterator;
 import java.util.Random;
+
 import net.minecraft.entity.monster.EntityHusk;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.EntityZombieVillager;
@@ -12,10 +13,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenDesertWells;
 import net.minecraft.world.gen.feature.WorldGenFossils;
 
-public class BiomeDesert extends Biome
-{
-    public BiomeDesert(BiomeProperties properties)
-    {
+public class BiomeDesert extends Biome {
+    public BiomeDesert(BiomeProperties properties) {
         super(properties);
         this.spawnableCreatureList.clear();
         this.topBlock = Blocks.SAND.getDefaultState();
@@ -28,12 +27,10 @@ public class BiomeDesert extends Biome
         this.spawnableCreatureList.add(new SpawnListEntry(EntityRabbit.class, 4, 2, 3));
         Iterator<SpawnListEntry> iterator = this.spawnableMonsterList.iterator();
 
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             SpawnListEntry biome$spawnlistentry = iterator.next();
 
-            if (biome$spawnlistentry.entityClass == EntityZombie.class || biome$spawnlistentry.entityClass == EntityZombieVillager.class)
-            {
+            if (biome$spawnlistentry.entityClass == EntityZombie.class || biome$spawnlistentry.entityClass == EntityZombieVillager.class) {
                 iterator.remove();
             }
         }
@@ -43,23 +40,20 @@ public class BiomeDesert extends Biome
         this.spawnableMonsterList.add(new SpawnListEntry(EntityHusk.class, 80, 4, 4));
     }
 
-    public void decorate(World worldIn, Random rand, BlockPos pos)
-    {
+    public void decorate(World worldIn, Random rand, BlockPos pos) {
         super.decorate(worldIn, rand, pos);
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DESERT_WELL))
-        if (rand.nextInt(1000) == 0)
-        {
-            int i = rand.nextInt(16) + 8;
-            int j = rand.nextInt(16) + 8;
-            BlockPos blockpos = worldIn.getHeight(pos.add(i, 0, j)).up();
-            (new WorldGenDesertWells()).generate(worldIn, rand, blockpos);
-        }
+        if (net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.DESERT_WELL))
+            if (rand.nextInt(1000) == 0) {
+                int i = rand.nextInt(16) + 8;
+                int j = rand.nextInt(16) + 8;
+                BlockPos blockpos = worldIn.getHeight(pos.add(i, 0, j)).up();
+                (new WorldGenDesertWells()).generate(worldIn, rand, blockpos);
+            }
 
-        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
-        if (rand.nextInt(64) == 0)
-        {
-            (new WorldGenFossils()).generate(worldIn, rand, pos);
-        }
+        if (net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, new net.minecraft.util.math.ChunkPos(pos), net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FOSSIL))
+            if (rand.nextInt(64) == 0) {
+                (new WorldGenFossils()).generate(worldIn, rand, pos);
+            }
     }
 }

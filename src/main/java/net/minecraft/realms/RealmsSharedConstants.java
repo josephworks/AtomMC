@@ -5,8 +5,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RealmsSharedConstants
-{
+public class RealmsSharedConstants {
     public static int NETWORK_PROTOCOL_VERSION = 340;
     public static int TICKS_PER_SECOND = 20;
     public static String VERSION_STRING = "1.12.2";

@@ -7,8 +7,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiButtonToggle extends GuiButton
-{
+public class GuiButtonToggle extends GuiButton {
     protected ResourceLocation resourceLocation;
     protected boolean stateTriggered;
     protected int xTexStart;
@@ -16,14 +15,12 @@ public class GuiButtonToggle extends GuiButton
     protected int xDiffTex;
     protected int yDiffTex;
 
-    public GuiButtonToggle(int buttonId, int xIn, int yIn, int widthIn, int heightIn, boolean buttonText)
-    {
+    public GuiButtonToggle(int buttonId, int xIn, int yIn, int widthIn, int heightIn, boolean buttonText) {
         super(buttonId, xIn, yIn, widthIn, heightIn, "");
         this.stateTriggered = buttonText;
     }
 
-    public void initTextureValues(int xTexStartIn, int yTexStartIn, int xDiffTexIn, int yDiffTexIn, ResourceLocation resourceLocationIn)
-    {
+    public void initTextureValues(int xTexStartIn, int yTexStartIn, int xDiffTexIn, int yDiffTexIn, ResourceLocation resourceLocationIn) {
         this.xTexStart = xTexStartIn;
         this.yTexStart = yTexStartIn;
         this.xDiffTex = xDiffTexIn;
@@ -31,39 +28,32 @@ public class GuiButtonToggle extends GuiButton
         this.resourceLocation = resourceLocationIn;
     }
 
-    public void setStateTriggered(boolean p_191753_1_)
-    {
+    public void setStateTriggered(boolean p_191753_1_) {
         this.stateTriggered = p_191753_1_;
     }
 
-    public boolean isStateTriggered()
-    {
+    public boolean isStateTriggered() {
         return this.stateTriggered;
     }
 
-    public void setPosition(int p_191752_1_, int p_191752_2_)
-    {
+    public void setPosition(int p_191752_1_, int p_191752_2_) {
         this.x = p_191752_1_;
         this.y = p_191752_2_;
     }
 
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
-    {
-        if (this.visible)
-        {
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        if (this.visible) {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             mc.getTextureManager().bindTexture(this.resourceLocation);
             GlStateManager.disableDepth();
             int i = this.xTexStart;
             int j = this.yTexStart;
 
-            if (this.stateTriggered)
-            {
+            if (this.stateTriggered) {
                 i += this.xDiffTex;
             }
 
-            if (this.hovered)
-            {
+            if (this.hovered) {
                 j += this.yDiffTex;
             }
 

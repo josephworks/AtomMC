@@ -27,8 +27,7 @@ import javax.annotation.Nullable;
 /**
  * Use {@link BlockPosContext} or {@link PlayerContext} when possible
  */
-public interface IContext
-{
+public interface IContext {
     /**
      * World from where permission is requested. Can be null
      */

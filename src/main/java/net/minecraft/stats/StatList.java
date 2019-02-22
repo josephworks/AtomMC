@@ -3,10 +3,12 @@ package net.minecraft.stats;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
@@ -20,8 +22,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class StatList
-{
+public class StatList {
     protected static final Map<String, StatBase> ID_TO_STAT_MAP = Maps.<String, StatBase>newHashMap();
     public static final List<StatBase> ALL_STATS = Lists.<StatBase>newArrayList();
     public static final List<StatBase> BASIC_STATS = Lists.<StatBase>newArrayList();
@@ -85,43 +86,36 @@ public class StatList
     private static final StatBase[] OBJECTS_DROPPED_STATS = new StatBase[32000];
 
     @Nullable
-    public static StatBase getBlockStats(Block blockIn)
-    {
+    public static StatBase getBlockStats(Block blockIn) {
         return BLOCKS_STATS[Block.getIdFromBlock(blockIn)];
     }
 
     @Nullable
-    public static StatBase getCraftStats(Item itemIn)
-    {
+    public static StatBase getCraftStats(Item itemIn) {
         return CRAFTS_STATS[Item.getIdFromItem(itemIn)];
     }
 
     @Nullable
-    public static StatBase getObjectUseStats(Item itemIn)
-    {
+    public static StatBase getObjectUseStats(Item itemIn) {
         return OBJECT_USE_STATS[Item.getIdFromItem(itemIn)];
     }
 
     @Nullable
-    public static StatBase getObjectBreakStats(Item itemIn)
-    {
+    public static StatBase getObjectBreakStats(Item itemIn) {
         return OBJECT_BREAK_STATS[Item.getIdFromItem(itemIn)];
     }
 
     @Nullable
-    public static StatBase getObjectsPickedUpStats(Item itemIn)
-    {
+    public static StatBase getObjectsPickedUpStats(Item itemIn) {
         return OBJECTS_PICKED_UP_STATS[Item.getIdFromItem(itemIn)];
     }
 
     @Nullable
-    public static StatBase getDroppedObjectStats(Item itemIn)
-    {
+    public static StatBase getDroppedObjectStats(Item itemIn) {
         return OBJECTS_DROPPED_STATS[Item.getIdFromItem(itemIn)];
     }
 
-    public static void init()
-    {
+    public static void init() {
         initMiningStats();
         initStats();
         initItemDepleteStats();
@@ -129,35 +123,28 @@ public class StatList
         initPickedUpAndDroppedStats();
     }
 
-    private static void initCraftableStats()
-    {
+    private static void initCraftableStats() {
         Set<Item> set = Sets.<Item>newHashSet();
 
-        for (IRecipe irecipe : CraftingManager.REGISTRY)
-        {
+        for (IRecipe irecipe : CraftingManager.REGISTRY) {
             ItemStack itemstack = irecipe.getRecipeOutput();
 
-            if (!itemstack.isEmpty())
-            {
+            if (!itemstack.isEmpty()) {
                 set.add(irecipe.getRecipeOutput().getItem());
             }
         }
 
-        for (ItemStack itemstack1 : FurnaceRecipes.instance().getSmeltingList().values())
-        {
+        for (ItemStack itemstack1 : FurnaceRecipes.instance().getSmeltingList().values()) {
             set.add(itemstack1.getItem());
         }
 
-        for (Item item : set)
-        {
-            if (item != null)
-            {
+        for (Item item : set) {
+            if (item != null) {
                 int i = Item.getIdFromItem(item);
                 String s = getItemName(item);
 
-                if (s != null)
-                {
-                    CRAFTS_STATS[i] = (new StatCrafting("stat.craftItem.", s, new TextComponentTranslation("stat.craftItem", new Object[] {(new ItemStack(item)).getTextComponent()}), item)).registerStat();
+                if (s != null) {
+                    CRAFTS_STATS[i] = (new StatCrafting("stat.craftItem.", s, new TextComponentTranslation("stat.craftItem", new Object[]{(new ItemStack(item)).getTextComponent()}), item)).registerStat();
                 }
             }
         }
@@ -165,21 +152,17 @@ public class StatList
         replaceAllSimilarBlocks(CRAFTS_STATS, true);
     }
 
-    private static void initMiningStats()
-    {
-        for (Block block : Block.REGISTRY)
-        {
+    private static void initMiningStats() {
+        for (Block block : Block.REGISTRY) {
             Item item = Item.getItemFromBlock(block);
 
-            if (item != Items.AIR)
-            {
+            if (item != Items.AIR) {
                 int i = Block.getIdFromBlock(block);
                 String s = getItemName(item);
 
-                if (s != null && block.getEnableStats())
-                {
-                    BLOCKS_STATS[i] = (new StatCrafting("stat.mineBlock.", s, new TextComponentTranslation("stat.mineBlock", new Object[] {(new ItemStack(block)).getTextComponent()}), item)).registerStat();
-                    MINE_BLOCK_STATS.add((StatCrafting)BLOCKS_STATS[i]);
+                if (s != null && block.getEnableStats()) {
+                    BLOCKS_STATS[i] = (new StatCrafting("stat.mineBlock.", s, new TextComponentTranslation("stat.mineBlock", new Object[]{(new ItemStack(block)).getTextComponent()}), item)).registerStat();
+                    MINE_BLOCK_STATS.add((StatCrafting) BLOCKS_STATS[i]);
                 }
             }
         }
@@ -187,22 +170,17 @@ public class StatList
         replaceAllSimilarBlocks(BLOCKS_STATS, false);
     }
 
-    private static void initStats()
-    {
-        for (Item item : Item.REGISTRY)
-        {
-            if (item != null)
-            {
+    private static void initStats() {
+        for (Item item : Item.REGISTRY) {
+            if (item != null) {
                 int i = Item.getIdFromItem(item);
                 String s = getItemName(item);
 
-                if (s != null)
-                {
-                    OBJECT_USE_STATS[i] = (new StatCrafting("stat.useItem.", s, new TextComponentTranslation("stat.useItem", new Object[] {(new ItemStack(item)).getTextComponent()}), item)).registerStat();
+                if (s != null) {
+                    OBJECT_USE_STATS[i] = (new StatCrafting("stat.useItem.", s, new TextComponentTranslation("stat.useItem", new Object[]{(new ItemStack(item)).getTextComponent()}), item)).registerStat();
 
-                    if (!(item instanceof ItemBlock))
-                    {
-                        USE_ITEM_STATS.add((StatCrafting)OBJECT_USE_STATS[i]);
+                    if (!(item instanceof ItemBlock)) {
+                        USE_ITEM_STATS.add((StatCrafting) OBJECT_USE_STATS[i]);
                     }
                 }
             }
@@ -211,18 +189,14 @@ public class StatList
         replaceAllSimilarBlocks(OBJECT_USE_STATS, true);
     }
 
-    private static void initItemDepleteStats()
-    {
-        for (Item item : Item.REGISTRY)
-        {
-            if (item != null)
-            {
+    private static void initItemDepleteStats() {
+        for (Item item : Item.REGISTRY) {
+            if (item != null) {
                 int i = Item.getIdFromItem(item);
                 String s = getItemName(item);
 
-                if (s != null && item.isDamageable())
-                {
-                    OBJECT_BREAK_STATS[i] = (new StatCrafting("stat.breakItem.", s, new TextComponentTranslation("stat.breakItem", new Object[] {(new ItemStack(item)).getTextComponent()}), item)).registerStat();
+                if (s != null && item.isDamageable()) {
+                    OBJECT_BREAK_STATS[i] = (new StatCrafting("stat.breakItem.", s, new TextComponentTranslation("stat.breakItem", new Object[]{(new ItemStack(item)).getTextComponent()}), item)).registerStat();
                 }
             }
         }
@@ -230,19 +204,15 @@ public class StatList
         replaceAllSimilarBlocks(OBJECT_BREAK_STATS, true);
     }
 
-    private static void initPickedUpAndDroppedStats()
-    {
-        for (Item item : Item.REGISTRY)
-        {
-            if (item != null)
-            {
+    private static void initPickedUpAndDroppedStats() {
+        for (Item item : Item.REGISTRY) {
+            if (item != null) {
                 int i = Item.getIdFromItem(item);
                 String s = getItemName(item);
 
-                if (s != null)
-                {
-                    OBJECTS_PICKED_UP_STATS[i] = (new StatCrafting("stat.pickup.", s, new TextComponentTranslation("stat.pickup", new Object[] {(new ItemStack(item)).getTextComponent()}), item)).registerStat();
-                    OBJECTS_DROPPED_STATS[i] = (new StatCrafting("stat.drop.", s, new TextComponentTranslation("stat.drop", new Object[] {(new ItemStack(item)).getTextComponent()}), item)).registerStat();
+                if (s != null) {
+                    OBJECTS_PICKED_UP_STATS[i] = (new StatCrafting("stat.pickup.", s, new TextComponentTranslation("stat.pickup", new Object[]{(new ItemStack(item)).getTextComponent()}), item)).registerStat();
+                    OBJECTS_DROPPED_STATS[i] = (new StatCrafting("stat.drop.", s, new TextComponentTranslation("stat.drop", new Object[]{(new ItemStack(item)).getTextComponent()}), item)).registerStat();
                 }
             }
         }
@@ -250,14 +220,12 @@ public class StatList
         replaceAllSimilarBlocks(OBJECT_BREAK_STATS, true);
     }
 
-    private static String getItemName(Item itemIn)
-    {
+    private static String getItemName(Item itemIn) {
         ResourceLocation resourcelocation = Item.REGISTRY.getNameForObject(itemIn);
         return resourcelocation != null ? resourcelocation.toString().replace(':', '.') : null;
     }
 
-    private static void replaceAllSimilarBlocks(StatBase[] stat, boolean useItemIds)
-    {
+    private static void replaceAllSimilarBlocks(StatBase[] stat, boolean useItemIds) {
         mergeStatBases(stat, Blocks.WATER, Blocks.FLOWING_WATER, useItemIds);
         mergeStatBases(stat, Blocks.LAVA, Blocks.FLOWING_LAVA, useItemIds);
         mergeStatBases(stat, Blocks.LIT_PUMPKIN, Blocks.PUMPKIN, useItemIds);
@@ -274,8 +242,7 @@ public class StatList
         mergeStatBases(stat, Blocks.FARMLAND, Blocks.DIRT, useItemIds);
     }
 
-    private static void mergeStatBases(StatBase[] statBaseIn, Block block1, Block block2, boolean useItemIds)
-    {
+    private static void mergeStatBases(StatBase[] statBaseIn, Block block1, Block block2, boolean useItemIds) {
         int i;
         int j;
         if (useItemIds) {
@@ -286,12 +253,9 @@ public class StatList
             j = Block.getIdFromBlock(block2);
         }
 
-        if (statBaseIn[i] != null && statBaseIn[j] == null)
-        {
+        if (statBaseIn[i] != null && statBaseIn[j] == null) {
             statBaseIn[j] = statBaseIn[i];
-        }
-        else
-        {
+        } else {
             ALL_STATS.remove(statBaseIn[i]);
             MINE_BLOCK_STATS.remove(statBaseIn[i]);
             BASIC_STATS.remove(statBaseIn[i]);
@@ -299,38 +263,31 @@ public class StatList
         }
     }
 
-    public static StatBase getStatKillEntity(EntityList.EntityEggInfo eggInfo)
-    {
+    public static StatBase getStatKillEntity(EntityList.EntityEggInfo eggInfo) {
         String s = EntityList.getTranslationName(eggInfo.spawnedID);
-        return s == null ? null : (new StatBase("stat.killEntity." + s, new TextComponentTranslation("stat.entityKill", new Object[] {new TextComponentTranslation("entity." + s + ".name", new Object[0])}))).registerStat();
+        return s == null ? null : (new StatBase("stat.killEntity." + s, new TextComponentTranslation("stat.entityKill", new Object[]{new TextComponentTranslation("entity." + s + ".name", new Object[0])}))).registerStat();
     }
 
-    public static StatBase getStatEntityKilledBy(EntityList.EntityEggInfo eggInfo)
-    {
+    public static StatBase getStatEntityKilledBy(EntityList.EntityEggInfo eggInfo) {
         String s = EntityList.getTranslationName(eggInfo.spawnedID);
-        return s == null ? null : (new StatBase("stat.entityKilledBy." + s, new TextComponentTranslation("stat.entityKilledBy", new Object[] {new TextComponentTranslation("entity." + s + ".name", new Object[0])}))).registerStat();
+        return s == null ? null : (new StatBase("stat.entityKilledBy." + s, new TextComponentTranslation("stat.entityKilledBy", new Object[]{new TextComponentTranslation("entity." + s + ".name", new Object[0])}))).registerStat();
     }
 
     @Nullable
-    public static StatBase getOneShotStat(String statName)
-    {
+    public static StatBase getOneShotStat(String statName) {
         return ID_TO_STAT_MAP.get(statName);
     }
 
     @Deprecated //MODDER DO NOT CALL THIS ITS JUST A EVENT CALLBACK FOR FORGE
-    public static void reinit()
-    {
+    public static void reinit() {
         ID_TO_STAT_MAP.clear();
         BASIC_STATS.clear();
         USE_ITEM_STATS.clear();
         MINE_BLOCK_STATS.clear();
 
-        for (StatBase[] sb : new StatBase[][]{BLOCKS_STATS,  CRAFTS_STATS, OBJECT_USE_STATS, OBJECT_BREAK_STATS, OBJECTS_PICKED_UP_STATS, OBJECTS_DROPPED_STATS})
-        {
-            for (int x = 0; x < sb.length; x++)
-            {
-                if (sb[x] != null)
-                {
+        for (StatBase[] sb : new StatBase[][]{BLOCKS_STATS, CRAFTS_STATS, OBJECT_USE_STATS, OBJECT_BREAK_STATS, OBJECTS_PICKED_UP_STATS, OBJECTS_DROPPED_STATS}) {
+            for (int x = 0; x < sb.length; x++) {
+                if (sb[x] != null) {
                     ALL_STATS.remove(sb[x]);
                     sb[x] = null;
                 }
