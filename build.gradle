@@ -79,7 +79,7 @@ dependencies {
     compile 'org.apache.httpcomponents:httpcore:4.3.2'
     compile 'it.unimi.dsi:fastutil:7.1.0'
     compile 'org.apache.logging.log4j:log4j-api:2.8.1'
-    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.8.1' // log4j uses annotation processors
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.11.2' // log4j uses annotation processors
     compile 'org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209'
     compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209'
     compile 'com.mojang:text2speech:1.10.3'
