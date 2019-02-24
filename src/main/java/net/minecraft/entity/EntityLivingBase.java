@@ -1337,7 +1337,11 @@ public abstract class EntityLivingBase extends Entity {
             Function<Double, Double> armor = new Function<Double, Double>() {
                 @Override
                 public Double apply(Double f) {
-                    return -(f - EntityLivingBase.this.applyArmorCalculations(damagesource, f.floatValue()));
+                    if (human) {
+                        return -(f - ISpecialArmor.ArmorProperties.applyArmor(EntityLivingBase.this, ((EntityPlayer) EntityLivingBase.this).inventory.armorInventory, damagesource, f.floatValue(), false));
+                    } else {
+                        return -(f - EntityLivingBase.this.applyArmorCalculations(damagesource, f.floatValue()));
+                    }
                 }
             };
             float armorModifier = armor.apply((double) f).floatValue();
@@ -1394,9 +1398,9 @@ public abstract class EntityLivingBase extends Entity {
                 if (human) {
                     EntityPlayer player = (EntityPlayer) this;
                     armorDamage = ISpecialArmor.ArmorProperties.applyArmor(player, player.inventory.armorInventory, damagesource, armorDamage);
+                } else {
+                    this.damageArmor(armorDamage);
                 }
-
-                this.damageArmor(armorDamage);
             }
 
             // Apply blocking code // PAIL: steal from above
