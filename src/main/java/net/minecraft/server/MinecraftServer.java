@@ -41,7 +41,6 @@ import java.util.concurrent.FutureTask;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
-//import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
