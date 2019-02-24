@@ -139,18 +139,9 @@ public abstract class PlayerList {
         PlayerProfileCache playerprofilecache = this.mcServer.getPlayerProfileCache();
         GameProfile gameprofile1 = playerprofilecache.getProfileByUUID(gameprofile.getId());
         String s = gameprofile1 == null ? gameprofile.getName() : gameprofile1.getName();
+
         playerprofilecache.addEntry(gameprofile);
         NBTTagCompound nbttagcompound = this.readPlayerDataFromFile(playerIn);
-        playerIn.setWorld(this.mcServer.getWorld(playerIn.dimension));
-
-        World playerWorld = this.mcServer.getWorld(playerIn.dimension);
-        if (playerWorld == null) {
-            playerIn.dimension = 0;
-            playerWorld = this.mcServer.getWorld(0);
-            BlockPos spawnPoint = playerWorld.provider.getRandomizedSpawnPoint();
-            playerIn.setPosition(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ());
-        }
-
         // CraftBukkit start - Better rename detection
         if (nbttagcompound != null && nbttagcompound.hasKey("bukkit")) {
             NBTTagCompound bukkit = nbttagcompound.getCompoundTag("bukkit");
@@ -158,13 +149,7 @@ public abstract class PlayerList {
         }
         // CraftBukkit end
 
-        playerIn.setWorld(playerWorld);
-        playerIn.interactionManager.setWorld((WorldServer) playerIn.world);
-        String s1 = "local";
-
-        if (netManager.getRemoteAddress() != null) {
-            s1 = netManager.getRemoteAddress().toString();
-        }
+        playerIn.setWorld(this.mcServer.getWorld(playerIn.dimension));
 
         // Spigot start - spawn location event
         Player bukkitPlayer = playerIn.getBukkitEntity();
@@ -172,11 +157,25 @@ public abstract class PlayerList {
         Bukkit.getPluginManager().callEvent(ev);
 
         Location loc = ev.getSpawnLocation();
-        WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
+        WorldServer playerWorld = ((CraftWorld) loc.getWorld()).getHandle();
 
-        playerIn.setWorld(world);
+        if (playerWorld == null) {
+            playerIn.dimension = 0;
+            playerWorld = this.mcServer.getWorld(0);
+            BlockPos spawnPoint = playerWorld.provider.getRandomizedSpawnPoint();
+            playerIn.setPosition(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ());
+        }
+
+        playerIn.setWorld(playerWorld);
         playerIn.setPositionAndRotation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         // Spigot end
+
+        playerIn.interactionManager.setWorld((WorldServer) playerIn.world);
+        String s1 = "local";
+
+        if (netManager.getRemoteAddress() != null) {
+            s1 = netManager.getRemoteAddress().toString();
+        }
 
         // CraftBukkit - Moved message to after join
         // LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", playerIn.getName(), s1, Integer.valueOf(playerIn.getEntityId()), Double.valueOf(playerIn.posX), Double.valueOf(playerIn.posY), Double.valueOf(playerIn.posZ));
@@ -210,6 +209,8 @@ public abstract class PlayerList {
         // textcomponenttranslation.getStyle().setColor(TextFormatting.YELLOW);
         // this.sendMessage(textcomponenttranslation);
         this.playerLoggedIn(playerIn, joinMessage);
+        // CraftBukkit end
+        worldserver = mcServer.getWorld(playerIn.dimension);  // CraftBukkit - Update in case join event changed it
         nethandlerplayserver.setPlayerLocation(playerIn.posX, playerIn.posY, playerIn.posZ, playerIn.rotationYaw, playerIn.rotationPitch);
         this.updateTimeAndWeatherForPlayer(playerIn, worldserver);
 
@@ -253,7 +254,7 @@ public abstract class PlayerList {
         playerIn.addSelfToInternalCraftingInventory();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerLoggedIn(playerIn);
         // CraftBukkit - Moved from above, added world
-        PlayerList.LOGGER.info(playerIn.getName() + "[" + s1 + "] logged in with entity id " + playerIn.getEntityId() + " at ([" + playerIn.world.worldInfo.getWorldName() + "]" + playerIn.posX + ", " + playerIn.posY + ", " + playerIn.posZ + ")");
+        LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", playerIn.getName(), s1, Integer.valueOf(playerIn.getEntityId()), Double.valueOf(playerIn.posX), Double.valueOf(playerIn.posY), Double.valueOf(playerIn.posZ));
     }
 
     public void sendScoreboard(ServerScoreboard scoreboardIn, EntityPlayerMP playerIn) {
@@ -376,18 +377,7 @@ public abstract class PlayerList {
     }
 
     public void playerLoggedIn(EntityPlayerMP playerIn) {
-        this.playerEntityList.add(playerIn);
-        this.uuidToPlayerMap.put(playerIn.getUniqueID(), playerIn);
-        this.sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.ADD_PLAYER, new EntityPlayerMP[]{playerIn}));
-        WorldServer worldserver = this.mcServer.getWorld(playerIn.dimension);
-
-        for (int i = 0; i < this.playerEntityList.size(); ++i) {
-            playerIn.connection.sendPacket(new SPacketPlayerListItem(SPacketPlayerListItem.Action.ADD_PLAYER, new EntityPlayerMP[]{this.playerEntityList.get(i)}));
-        }
-
-        net.minecraftforge.common.chunkio.ChunkIOExecutor.adjustPoolSize(this.getCurrentPlayerCount());
-        worldserver.spawnEntity(playerIn);
-        this.preparePlayer(playerIn, (WorldServer) null);
+        this.playerLoggedIn(playerIn, null);
     }
 
     public void playerLoggedIn(EntityPlayerMP playerIn, String joinMessage) {
@@ -396,6 +386,7 @@ public abstract class PlayerList {
         // this.sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.ADD_PLAYER, new EntityPlayerMP[] {playerIn})); // CraftBukkit - replaced with loop below
         WorldServer worldserver = this.mcServer.getWorld(playerIn.dimension);
 
+        // CraftBukkit start
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(cserver.getPlayer(playerIn), joinMessage);
         cserver.getPluginManager().callEvent(playerJoinEvent);
 
@@ -412,9 +403,11 @@ public abstract class PlayerList {
         }
 
         ChunkIOExecutor.adjustPoolSize(getCurrentPlayerCount());
+        // CraftBukkit end
 
         // CraftBukkit start - sendAll above replaced with this loop
         SPacketPlayerListItem packet = new SPacketPlayerListItem(SPacketPlayerListItem.Action.ADD_PLAYER, playerIn);
+
         for (int i = 0; i < this.playerEntityList.size(); ++i) {
             // playerIn.connection.sendPacket(new SPacketPlayerListItem(SPacketPlayerListItem.Action.ADD_PLAYER, new EntityPlayerMP[] {this.playerEntityList.get(i)}));
             EntityPlayerMP entityplayer1 = this.playerEntityList.get(i);
@@ -434,6 +427,7 @@ public abstract class PlayerList {
 
         playerIn.connection.sendPacket(new SPacketEntityMetadata(playerIn.getEntityId(), playerIn.getDataManager(), true)); // CraftBukkit - BungeeCord#2321, send complete data to self on spawn
         net.minecraftforge.common.chunkio.ChunkIOExecutor.adjustPoolSize(this.getCurrentPlayerCount());
+
         // CraftBukkit start - Only add if the player wasn't moved in the event
         if (playerIn.world == worldserver && !worldserver.playerEntities.contains(playerIn)) {
             worldserver.spawnEntity(playerIn);
@@ -568,7 +562,7 @@ public abstract class PlayerList {
 
         EntityPlayerMP entity = new EntityPlayerMP(mcServer, mcServer.getWorld(0), profile, new PlayerInteractionManager(mcServer.getWorld(0)));
         Player player = entity.getBukkitEntity();
-        PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
+        PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress(), ((java.net.InetSocketAddress) loginServer.networkManager.getRawAddress()).getAddress());
         if (getBannedPlayers().isBanned(profile) && !getBannedPlayers().getEntry(profile).hasBanExpired()) {
             UserListBansEntry userlistbansentry = (UserListBansEntry) this.bannedPlayers.getEntry(profile);
             String s1 = "You are banned from this server!\nReason: " + userlistbansentry.getBanReason();

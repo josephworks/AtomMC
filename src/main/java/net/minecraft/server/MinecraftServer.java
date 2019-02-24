@@ -247,14 +247,17 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.setUserMessage("menu.loadingLevel");
         this.worlds = new WorldServer[3];
 
+        WorldServer world;
+
         WorldSettings worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
         worldsettings.setGeneratorOptions(generatorOptions);
 
-        WorldInfo worldInfo = new WorldInfo(worldsettings, worldNameIn);
-
-        WorldServer world;
         ISaveHandler overWorldSaveHandler = new AnvilSaveHandler(server.getWorldContainer(), worldNameIn, true, dataFixer);
-        WorldServer overWorld = (WorldServer) new WorldServer(this, overWorldSaveHandler, worldInfo, 0, profiler, org.bukkit.World.Environment.getEnvironment(0), null, worldNameIn).init();
+        WorldInfo overWorldData = overWorldSaveHandler.loadWorldInfo();
+        if (overWorldData == null) {
+            overWorldData = new WorldInfo(worldsettings, worldNameIn);
+        }
+        WorldServer overWorld = (WorldServer) new WorldServer(this, overWorldSaveHandler, overWorldData, 0, profiler, org.bukkit.World.Environment.getEnvironment(0), null, worldNameIn).init();
 
         org.bukkit.World.Environment worldEnvironment;
         for (int dim : DimensionManager.getStaticDimensionIDs()) {
@@ -293,7 +296,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             if (!this.isSinglePlayer()) {
                 world.getWorldInfo().setGameType(this.getGameType());
             }
-            worldServerList.add(world);
             getPlayerList().setPlayerManager(worldServerList.toArray(new WorldServer[worldServerList.size()]));
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Load(world));
         }

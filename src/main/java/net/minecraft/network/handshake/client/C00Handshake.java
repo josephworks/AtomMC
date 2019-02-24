@@ -34,11 +34,33 @@ public class C00Handshake implements Packet<INetHandlerHandshakeServer> {
 
     public void readPacketData(PacketBuffer buf) throws IOException {
         this.protocolVersion = buf.readVarInt();
-        this.ip = buf.readString(255);
+
+        //Sponge start
+        if (!org.spigotmc.SpigotConfig.bungee) {
+            this.ip = buf.readString(255);  // Spigot
+        } else {
+            this.ip = buf.readString(Short.MAX_VALUE);
+            String[] split = this.ip.split("\0\\|", 2);
+            this.ip = split[0];
+            // If we have extra data, check to see if it is telling us we have a
+            // FML marker
+            if (split.length == 2) {
+                this.hasFMLMarker = split[1].contains("\0FML\0");
+            }
+        }
+
+        // Check for FML marker and strip if found, but only if it wasn't
+        // already in the extra data.
+        if (!this.hasFMLMarker) {
+            this.hasFMLMarker = this.ip.contains("\0FML\0");
+            if (this.hasFMLMarker) {
+                this.ip = this.ip.split("\0")[0];
+            }
+        }
+        //Sponge end
+
         this.port = buf.readUnsignedShort();
         this.requestedState = EnumConnectionState.getById(buf.readVarInt());
-        this.hasFMLMarker = this.ip.contains("\0FML\0");
-        this.ip = this.ip.split("\0")[0];
     }
 
     public void writePacketData(PacketBuffer buf) throws IOException {

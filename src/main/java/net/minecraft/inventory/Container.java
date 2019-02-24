@@ -781,6 +781,12 @@ public abstract class Container {
             ItemStack itemstack = ItemStack.EMPTY;
             IRecipe irecipe = CraftingManager.findMatchingRecipe(p_192389_3_, p_192389_1_);
 
+            /* Forge mods doesn't know about InventoryCrafting#resultInventory
+            so we must assign it ourselves*/
+            if (p_192389_3_.resultInventory == null) {
+                p_192389_3_.resultInventory = p_192389_4_;
+            }
+
             if (irecipe != null && (irecipe.isDynamic() || !p_192389_1_.getGameRules().getBoolean("doLimitedCrafting") || entityplayermp.getRecipeBook().isUnlocked(irecipe))) {
                 p_192389_4_.setRecipeUsed(irecipe);
                 itemstack = irecipe.getCraftingResult(p_192389_3_);
