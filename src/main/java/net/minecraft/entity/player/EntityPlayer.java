@@ -1008,18 +1008,12 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     protected void damageEntity(DamageSource damageSrc, float damageAmount) {
         this.damageEntity_CB(damageSrc, damageAmount);
-    }
-
-    // TODO: Check if Cauldron way is correct
-    protected boolean damageEntity_CB(DamageSource damageSrc, float damageAmount) {
-        if (true) {
-            return super.damageEntity_CB(damageSrc, damageAmount);
-        }
+        /*
         if (!this.isEntityInvulnerable(damageSrc)) {
             damageAmount = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, damageSrc, damageAmount);
-            if (damageAmount <= 0) return false;
+            if (damageAmount <= 0) return;
             damageAmount = net.minecraftforge.common.ISpecialArmor.ArmorProperties.applyArmor(this, inventory.armorInventory, damageSrc, damageAmount);
-            if (damageAmount <= 0) return false;
+            if (damageAmount <= 0) return;
             damageAmount = this.applyPotionDamageCalculations(damageSrc, damageAmount);
             float f = damageAmount;
             damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
@@ -1037,7 +1031,12 @@ public abstract class EntityPlayer extends EntityLivingBase {
                 }
             }
         }
-        return false;
+        */
+    }
+
+    // TODO: Check if Cauldron way is correct
+    protected boolean damageEntity_CB(DamageSource damageSrc, float damageAmount) {
+        return super.damageEntity_CB(damageSrc, damageAmount);
     }
 
     public void openEditSign(TileEntitySign signTile) {
