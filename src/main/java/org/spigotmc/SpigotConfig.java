@@ -126,4 +126,8 @@ public class SpigotConfig {
         }
         bungee = getBoolean( "settings.bungeecord", false );
     }
+
+    private static void tpsCommand() {
+        commands.put("tps", new TicksPerSecondCommand("tps"));
+    }
 }
