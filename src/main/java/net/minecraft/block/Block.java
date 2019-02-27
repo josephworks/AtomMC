@@ -1,9 +1,5 @@
 package net.minecraft.block;
 
-import java.util.List;
-import java.util.Random;
-import javax.annotation.Nullable;
-
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -28,20 +24,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ObjectIntIdentityMap;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.*;
+import net.minecraft.util.math.*;
 import net.minecraft.util.registry.RegistryNamespacedDefaultedByKey;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.Explosion;
@@ -49,6 +33,10 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
 
 public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Block> {
     private static final ResourceLocation AIR_ID = new ResourceLocation("air");
@@ -1359,10 +1347,13 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      * @return True to allow the torch to be placed
      */
     public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos) {
-        if (state.isTopSolid() || state.getBlockFaceShape(world, pos, EnumFacing.UP) == BlockFaceShape.SOLID) {
-            return this != Blocks.END_GATEWAY && this != Blocks.LIT_PUMPKIN;
+        if (this == Blocks.END_GATEWAY || this == Blocks.LIT_PUMPKIN) {
+            return false;
+        } else if (state.isTopSolid() || this instanceof BlockFence || this == Blocks.GLASS || this == Blocks.COBBLESTONE_WALL || this == Blocks.STAINED_GLASS) {
+            return true;
         } else {
-            return this instanceof BlockFence || this == Blocks.GLASS || this == Blocks.COBBLESTONE_WALL || this == Blocks.STAINED_GLASS;
+            BlockFaceShape shape = state.getBlockFaceShape(world, pos, EnumFacing.UP);
+            return (shape == BlockFaceShape.SOLID || shape == BlockFaceShape.CENTER || shape == BlockFaceShape.CENTER_BIG) && !isExceptionBlockForAttaching(this);
         }
     }
 
@@ -2013,13 +2004,22 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
     }
 
     /**
+     * @deprecated use {@link #getAiPathNodeType(IBlockState, IBlockAccess, BlockPos, net.minecraft.entity.EntityLiving)}
+     */
+    @Nullable
+    @Deprecated // TODO: remove
+    public net.minecraft.pathfinding.PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return isBurning(world, pos) ? net.minecraft.pathfinding.PathNodeType.DAMAGE_FIRE : null;
+    }
+
+    /**
      * Get the {@code PathNodeType} for this block. Return {@code null} for vanilla behavior.
      *
      * @return the PathNodeType
      */
     @Nullable
-    public net.minecraft.pathfinding.PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return isBurning(world, pos) ? net.minecraft.pathfinding.PathNodeType.DAMAGE_FIRE : null;
+    public net.minecraft.pathfinding.PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable net.minecraft.entity.EntityLiving entity) {
+        return getAiPathNodeType(state, world, pos);
     }
 
     /**

@@ -416,7 +416,7 @@ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener {
 
                 Ingredient ingredient = iterator.next();
 
-                if (ingredient != Ingredient.EMPTY) {
+                if (ingredient.getMatchingStacks().length > 0) {
                     Slot slot = p_193951_2_.get(l);
                     this.ghostRecipe.addIngredient(ingredient, slot.xPos, slot.yPos);
                 }

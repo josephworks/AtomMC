@@ -1,28 +1,8 @@
 package net.minecraft.item;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import javax.annotation.Nullable;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
-import net.minecraft.block.BlockPlanks;
-import net.minecraft.block.BlockPrismarine;
-import net.minecraft.block.BlockRedSandstone;
-import net.minecraft.block.BlockSand;
-import net.minecraft.block.BlockSandStone;
-import net.minecraft.block.BlockSilverfish;
-import net.minecraft.block.BlockStone;
-import net.minecraft.block.BlockStoneBrick;
-import net.minecraft.block.BlockWall;
+import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -41,13 +21,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -59,6 +33,12 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Item> {
     public static final RegistryNamespaced<ResourceLocation, Item> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(Item.class);
@@ -446,6 +426,14 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     public Item setNoRepair() {
         canRepair = false;
         return this;
+    }
+
+    /**
+     * Determines the amount of durability the mending enchantment
+     * will repair, on average, per point of experience.
+     */
+    public float getXpRepairRatio(ItemStack stack) {
+        return 2f;
     }
 
     /**
@@ -957,6 +945,18 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
      */
     public boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack) {
         return !(newStack.getItem() == oldStack.getItem() && ItemStack.areItemStackTagsEqual(newStack, oldStack) && (newStack.isItemStackDamageable() || newStack.getMetadata() == oldStack.getMetadata()));
+    }
+
+    /**
+     * Called while an item is in 'active' use to determine if usage should continue.
+     * Allows items to continue being used while sustaining damage, for example.
+     *
+     * @param oldStack the previous 'active' stack
+     * @param newStack the stack currently in the active hand
+     * @return true to set the new stack to active and continue using it
+     */
+    public boolean canContinueUsing(ItemStack oldStack, ItemStack newStack) {
+        return oldStack.equals(newStack);
     }
 
     /**

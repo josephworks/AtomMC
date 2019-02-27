@@ -52,7 +52,7 @@ public class JsonContext {
         return constants.get(name);
     }
 
-    void loadConstants(JsonObject[] jsons) {
+    void loadConstants(JsonObject... jsons) {
         for (JsonObject json : jsons) {
             if (json.has("conditions") && !CraftingHelper.processConditions(json.getAsJsonArray("conditions"), this))
                 continue;

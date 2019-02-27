@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
 
 /**
  * This interface provides the information needed by GuiConfig and GuiConfigEntries to display config elements for editing.
- *
+ * 
  * @author bspkrs
  */
 public interface IConfigElement {
@@ -172,6 +172,14 @@ public interface IConfigElement {
     String[] getValidValues();
 
     /**
+     * [Property] Gets a String array of the versions of this property's valid values that will display in the config GUI.
+     * This is generally used for String properties to allow the user to select a value from a list of valid values.
+     */
+    default String[] getValidValuesDisplay() {
+        return null;
+    }
+
+    /**
      * [Property] Gets this property's minimum value.
      */
     Object getMinValue();
@@ -185,4 +193,11 @@ public interface IConfigElement {
      * [Property] Gets a Pattern object used in String property input validation.
      */
     Pattern getValidationPattern();
+
+    /**
+     * @return true if this element is going to have a slider attached
+     */
+    default boolean hasSlidingControl() {
+        return false;
+    }
 }

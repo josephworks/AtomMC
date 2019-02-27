@@ -22,6 +22,7 @@ package net.minecraftforge.fluids;
 
 import java.util.Random;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -38,8 +39,12 @@ import javax.annotation.Nonnull;
  * It is highly recommended that you use/extend this class for finite fluid blocks.
  */
 public class BlockFluidFinite extends BlockFluidBase {
+    public BlockFluidFinite(Fluid fluid, Material material, MapColor mapColor) {
+        super(fluid, material, mapColor);
+    }
+
     public BlockFluidFinite(Fluid fluid, Material material) {
-        super(fluid, material);
+        this(fluid, material, material.getMaterialMapColor());
     }
 
     @Override
