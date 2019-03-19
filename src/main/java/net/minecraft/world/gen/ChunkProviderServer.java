@@ -88,8 +88,27 @@ public class ChunkProviderServer implements IChunkProvider {
         return loadChunk(x, z, null);
     }
 
+    // CraftBukkit start - loadChunk method aliases
+    public Chunk getChunkAt(int i, int j) {
+        return getChunkAt(i, j, null);
+    }
+
+    public Chunk getChunkAt(int i, int j, Runnable runnable) {
+        return getChunkAt(i, j, runnable, true);
+    }
+
+    public Chunk getChunkAt(int i, int j, Runnable runnable, boolean generate) {
+        return loadChunk(i, j, runnable, generate);
+    }
+    // CraftBukkit end
+
     @Nullable
     public Chunk loadChunk(int x, int z, @Nullable Runnable runnable) {
+        return loadChunk(x, z, runnable, false);
+    }
+
+    @Nullable
+    public Chunk loadChunk(int x, int z, @Nullable Runnable runnable, boolean generate) {
         Chunk chunk = this.getLoadedChunk(x, z);
         if (chunk == null) {
             long pos = ChunkPos.asLong(x, z);
@@ -114,6 +133,8 @@ public class ChunkProviderServer implements IChunkProvider {
                     // We can only use the async queue for already generated chunks
                     net.minecraftforge.common.chunkio.ChunkIOExecutor.queueChunkLoad(this.world, loader, this, x, z, runnable);
                     return null;
+                } else if (generate) {
+                    chunk = provideChunk(x, z);
                 }
             }
         }
