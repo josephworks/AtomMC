@@ -350,7 +350,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         BlockPos pos = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         TileEntity container = getHandle().world.getTileEntity(pos);
         if (container == null && force) {
-            container = new TileEntityBrewingStand();
+            container = new TileEntityEnchantmentTable();
             container.setWorld(getHandle().world);
             container.setPos(pos);
         }
