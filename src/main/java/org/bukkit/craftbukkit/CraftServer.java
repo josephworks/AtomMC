@@ -423,7 +423,7 @@ public final class CraftServer implements Server {
 
     @Override
     public String getVersion() {
-        return serverVersion + " (MC: " + console.getMinecraftVersion() + ")";
+        return serverVersion + " (MC: 1.12)";
     }
 
     @Override

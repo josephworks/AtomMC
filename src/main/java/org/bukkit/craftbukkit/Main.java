@@ -154,16 +154,7 @@ public class Main {
 
             try {
                 if (Main.class.getPackage().getImplementationVendor() != null && System.getProperty("IReallyKnowWhatIAmDoingISwear") == null) {
-                    Date buildDate = new SimpleDateFormat("yyyyMMdd-HHmm").parse(Main.class.getPackage().getImplementationVendor());
-
-                    Calendar deadline = Calendar.getInstance();
-                    deadline.add(Calendar.DAY_OF_YEAR, -14);
-                    if (buildDate.before(deadline.getTime())) {
-                        System.err.println("*** Error, this build is outdated ***");
-                        System.err.println("*** Please download a new build as per instructions from https://www.spigotmc.org/ ***");
-                        System.err.println("*** Server will start in 15 seconds ***");
-                        Thread.sleep(TimeUnit.SECONDS.toMillis(15));
-                    }
+                    System.out.println("Team core by" + Main.class.getPackage().getImplementationVendor());
                 }
 
                 System.out.println("Loading libraries, please wait...");
