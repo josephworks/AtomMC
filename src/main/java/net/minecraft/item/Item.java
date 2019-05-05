@@ -291,6 +291,7 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         return stack.isItemEnchanted();
     }
 
+    @Deprecated // use Forge version
     public EnumRarity getRarity(ItemStack stack) {
         return stack.isItemEnchanted() ? EnumRarity.RARE : EnumRarity.COMMON;
     }
@@ -1082,6 +1083,10 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     @SideOnly(Side.CLIENT)
     public void setTileEntityItemStackRenderer(@Nullable net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer teisr) {
         this.teisr = teisr;
+    }
+
+    public net.minecraftforge.common.IRarity getForgeRarity(ItemStack stack){
+        return this.getRarity(stack);
     }
 
     /* ======================================== FORGE END   =====================================*/
