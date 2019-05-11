@@ -9,6 +9,7 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.inventory.InventoryMerchant;
 import net.minecraft.tileentity.TileEntity;
+import org.atom.inventory.CustomInventory;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.InventoryHolder;
@@ -41,6 +42,8 @@ public class InventoryUtils {
             return inventory.getOwner();
         } else if (inventory instanceof InventoryMerchant) {
             return ((InventoryMerchant) inventory).getPlayer().getBukkitEntity();
+        } else {
+            return new CustomInventory(inventory).getInventory().getHolder();
         }
         return null;
     }

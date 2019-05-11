@@ -19,6 +19,7 @@
 
 package net.minecraftforge.items.wrapper;
 
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -202,4 +203,8 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return inv.isItemValidForSlot(slot, stack);
     }//https://github.com/MinecraftForge/MinecraftForge/commit/c7c2921b2fa05b6d0fa9e6c2934c08fc84dcb71f
+
+    public IInventory getInv() {
+        return this.inv;
+    }
 }
