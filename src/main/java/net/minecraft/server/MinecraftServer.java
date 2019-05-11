@@ -96,6 +96,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.atom.AtomServerWatchDog;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.Main;
@@ -660,6 +661,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
         this.profiler.endSection();
         this.profiler.endSection();
+        AtomServerWatchDog.updateTickTime();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
         SpigotTimings.serverTickTimer.stopTiming(); // Spigot
         org.spigotmc.CustomTimingsHandler.tick(); // Spigot
