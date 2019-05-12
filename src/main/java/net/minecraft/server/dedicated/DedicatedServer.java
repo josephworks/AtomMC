@@ -52,6 +52,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.atom.AtomServerWatchDog;
 import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.craftbukkit.util.Waitable;
@@ -302,11 +303,13 @@ public class DedicatedServer extends MinecraftServer implements IServer {
                     this.settings.saveProperties();
                 }
 
-                if (this.getMaxTickTime() > 0L) {
-                    Thread thread1 = new Thread(new ServerHangWatchdog(this));
-                    thread1.setName("Server Watchdog");
-                    thread1.setDaemon(true);
-                    thread1.start();
+                if (getMaxTickTime() > -1) {
+                    try {
+                        AtomServerWatchDog.startWatchDog(this);
+                    } catch (IllegalAccessException e) {
+                        logger.error("init server watch dog failed..");
+                    }
+
                 }
 
                 Items.AIR.getSubItems(CreativeTabs.SEARCH, NonNullList.create());
@@ -685,5 +688,9 @@ public class DedicatedServer extends MinecraftServer implements IServer {
     @Override
     public PropertyManager getPropertyManager() {
         return this.settings;
+    }
+
+    public static Logger getLOGGER() {
+        return LOGGER;
     }
 }

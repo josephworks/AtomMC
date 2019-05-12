@@ -43,7 +43,7 @@ public class FMLSecurityManager extends SecurityManager {
                     || ("net.minecraft.client.Minecraft".equals(callingClass) && "net.minecraft.client.Minecraft".equals(callingParent))
                     || ("net.minecraft.server.dedicated.DedicatedServer".equals(callingClass) && "net.minecraft.server.MinecraftServer".equals(callingParent))
                     || "com.intellij.rt.execution.junit.JUnitStarter".equals(callingClass) // JUnitStarter is needed for test running
-                    || "org.atom.runner.MinecraftServerRunner".equals(callingClass)
+                    || "org.atom.AtomServerWatchDog".equals(callingClass)
                     || "worker.org.gradle.process.internal.worker.GradleWorkerMain".equals(callingClass)) // GradleWorkerMain is needed for test running from Gradle test task
             ) {
                 throw new ExitTrappedException();

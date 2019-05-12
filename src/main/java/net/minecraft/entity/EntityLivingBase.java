@@ -1340,7 +1340,11 @@ public abstract class EntityLivingBase extends Entity {
             Function<Double, Double> armor = new Function<Double, Double>() {
                 @Override
                 public Double apply(Double f) {
-                    return -(f - EntityLivingBase.this.applyArmorCalculations(damagesource, f.floatValue()));
+                    if (human) {
+                        return -(f - ISpecialArmor.ArmorProperties.applyArmor(EntityLivingBase.this, ((EntityPlayer) EntityLivingBase.this).inventory.armorInventory, damagesource, f.floatValue(), false));
+                    } else {
+                        return -(f - EntityLivingBase.this.applyArmorCalculations(damagesource, f.floatValue()));
+                    }
                 }
             };
             float armorModifier = armor.apply((double) f).floatValue();
@@ -1378,10 +1382,6 @@ public abstract class EntityLivingBase extends Entity {
             };
             float absorptionModifier = absorption.apply((double) f).floatValue();
 
-            // Call forge event and save new original damage
-            final float livingDamage = ForgeHooks.onLivingDamage(this, damagesource, f);
-            originalDamage = livingDamage - (f - originalDamage) + armorModifier + magicModifier;
-
             EntityDamageEvent event = CraftEventFactory.handleLivingEntityDamageEvent(this, damagesource, originalDamage, hardHatModifier, blockingModifier, armorModifier, resistanceModifier, magicModifier, absorptionModifier, hardHat, blocking, armor, resistance, magic, absorption);
             if (event.isCancelled()) {
                 return false;
@@ -1401,9 +1401,9 @@ public abstract class EntityLivingBase extends Entity {
                 if (human) {
                     EntityPlayer player = (EntityPlayer) this;
                     armorDamage = ISpecialArmor.ArmorProperties.applyArmor(player, player.inventory.armorInventory, damagesource, armorDamage);
+                } else {
+                    this.damageArmor(armorDamage);
                 }
-
-                this.damageArmor(armorDamage);
             }
 
             // Apply blocking code // PAIL: steal from above
@@ -1418,6 +1418,7 @@ public abstract class EntityLivingBase extends Entity {
 
             absorptionModifier = (float) -event.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION);
             this.setAbsorptionAmount(Math.max(this.getAbsorptionAmount() - absorptionModifier, 0.0F));
+            f = ForgeHooks.onLivingDamage(this, damagesource, f); // Bukkit event don't receive new damage if it modified in forge event but we don't have chose in this situation.
             if (f > 0 || !human) {
                 if (human) {
                     // PAIL: Be sure to drag all this code from the EntityPlayer subclass each update.
