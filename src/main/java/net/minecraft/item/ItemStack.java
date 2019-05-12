@@ -801,6 +801,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return this.getItem().hasEffect(this);
     }
 
+    @Deprecated // Use Forge version
     public EnumRarity getRarity() {
         return this.getItem().getRarity(this);
     }
@@ -936,7 +937,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         if (!this.isEmpty) {
             NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
             itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
-            itextcomponent.getStyle().setColor(this.getRarity().rarityColor);
+            itextcomponent.getStyle().setColor(this.getItem().getForgeRarity(this).getColor());
         }
 
         return itextcomponent;

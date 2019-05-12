@@ -143,7 +143,9 @@ public class EnumHelper {
         return addEnum(ToolMaterial.class, name, harvestLevel, maxUses, efficiency, damage, enchantability);
     }
 
+    /** @deprecated use {@link net.minecraftforge.common.IRarity} instead */
     @Nullable
+    @Deprecated
     public static EnumRarity addRarity(String name, TextFormatting color, String displayName) {
         return addEnum(EnumRarity.class, name, color, displayName);
     }

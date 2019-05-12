@@ -35,6 +35,7 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 import net.minecraftforge.fml.common.ModContainer;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class ASMDataTable {
     public final static class ASMData implements Cloneable {
@@ -97,7 +98,7 @@ public class ASMDataTable {
         }
     }
 
-    private SetMultimap<String, ASMData> globalAnnotationData = HashMultimap.create();
+    private final SetMultimap<String, ASMData> globalAnnotationData = HashMultimap.create();
     private Map<ModContainer, SetMultimap<String, ASMData>> containerAnnotationData;
 
     private List<ModContainer> containers = Lists.newArrayList();
@@ -105,12 +106,10 @@ public class ASMDataTable {
 
     public SetMultimap<String, ASMData> getAnnotationsFor(ModContainer container) {
         if (containerAnnotationData == null) {
-            ImmutableMap.Builder<ModContainer, SetMultimap<String, ASMData>> mapBuilder = ImmutableMap.builder();
-            for (ModContainer cont : containers) {
-                Multimap<String, ASMData> values = Multimaps.filterValues(globalAnnotationData, new ModContainerPredicate(cont));
-                mapBuilder.put(cont, ImmutableSetMultimap.copyOf(values));
-            }
-            containerAnnotationData = mapBuilder.build();
+            //concurrently filter the values to speed this up
+            containerAnnotationData = containers.parallelStream()
+                    .map(cont -> Pair.of(cont, ImmutableSetMultimap.copyOf(Multimaps.filterValues(globalAnnotationData, new ModContainerPredicate(cont)))))
+                    .collect(ImmutableMap.toImmutableMap(Pair::getKey, Pair::getValue));
         }
         return containerAnnotationData.get(container);
     }

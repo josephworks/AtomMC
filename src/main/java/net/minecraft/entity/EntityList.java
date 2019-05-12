@@ -103,6 +103,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.atom.util.AtomRegistryNamespaced;
 
 public class EntityList {
     public static final ResourceLocation LIGHTNING_BOLT = new ResourceLocation("lightning_bolt");
@@ -110,6 +111,7 @@ public class EntityList {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Map<ResourceLocation, EntityEggInfo> ENTITY_EGGS = Maps.<ResourceLocation, EntityEggInfo>newLinkedHashMap();
     private static final Set<ResourceLocation> EXTRA_NAMES = Sets.newHashSet();
+    public static final RegistryNamespaced<ResourceLocation,Class<? extends Entity>> REGISTRY = new AtomRegistryNamespaced();
 
     @Nullable
     public static ResourceLocation getKey(Entity entityIn) {

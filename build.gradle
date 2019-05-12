@@ -13,7 +13,7 @@ repositories {
     mavenCentral()
     maven {
         name = "forge"
-        url = "http://files.minecraftforge.net/maven"
+        url = "https://files.minecraftforge.net/maven"
     }
     maven {
         name = "sonatype"
@@ -144,6 +144,12 @@ task jar_server(type: Jar) {
     classifier = 'server'
     manifest {
         attributes(
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.version,
+                "Implementation-Vendor": "AtomMC",
+                "Specification-Vendor": "AtomMC",
+                "Specification-Title": "Bukkit",
+                "Specification-Version": "1.12-R0.1-SNAPSHOT",
                 "Main-Class": "net.minecraftforge.fml.relauncher.ServerLaunchWrapper",
                 "TweakClass": "net.minecraftforge.fml.common.launcher.FMLTweaker",
                 "Class-Path": configurations.compile.collect { 'libraries/' + it.getName() }.join(' '),

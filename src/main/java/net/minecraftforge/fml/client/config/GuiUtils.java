@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,22 +55,21 @@ public class GuiUtils {
     public static int getColorCode(char c, boolean isLighter) {
         return colorCodes[isLighter ? "0123456789abcdef".indexOf(c) : "0123456789abcdef".indexOf(c) + 16];
     }
-
     /**
      * Draws a textured box of any size (smallest size is borderSize * 2 square) based on a fixed size textured box with continuous borders
      * and filler. It is assumed that the desired texture ResourceLocation object has been bound using
      * Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation).
      *
-     * @param x             x axis offset
-     * @param y             y axis offset
-     * @param u             bound resource location image x offset
-     * @param v             bound resource location image y offset
-     * @param width         the desired box width
-     * @param height        the desired box height
-     * @param textureWidth  the width of the box texture in the resource location image
+     * @param x x axis offset
+     * @param y y axis offset
+     * @param u bound resource location image x offset
+     * @param v bound resource location image y offset
+     * @param width the desired box width
+     * @param height the desired box height
+     * @param textureWidth the width of the box texture in the resource location image
      * @param textureHeight the height of the box texture in the resource location image
-     * @param borderSize    the size of the box's borders
-     * @param zLevel        the zLevel to draw at
+     * @param borderSize the size of the box's borders
+     * @param zLevel the zLevel to draw at
      */
     public static void drawContinuousTexturedBox(int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight,
                                                  int borderSize, float zLevel) {
@@ -82,17 +81,17 @@ public class GuiUtils {
      * and filler. The provided ResourceLocation object will be bound using
      * Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation).
      *
-     * @param res           the ResourceLocation object that contains the desired image
-     * @param x             x axis offset
-     * @param y             y axis offset
-     * @param u             bound resource location image x offset
-     * @param v             bound resource location image y offset
-     * @param width         the desired box width
-     * @param height        the desired box height
-     * @param textureWidth  the width of the box texture in the resource location image
+     * @param res the ResourceLocation object that contains the desired image
+     * @param x x axis offset
+     * @param y y axis offset
+     * @param u bound resource location image x offset
+     * @param v bound resource location image y offset
+     * @param width the desired box width
+     * @param height the desired box height
+     * @param textureWidth the width of the box texture in the resource location image
      * @param textureHeight the height of the box texture in the resource location image
-     * @param borderSize    the size of the box's borders
-     * @param zLevel        the zLevel to draw at
+     * @param borderSize the size of the box's borders
+     * @param zLevel the zLevel to draw at
      */
     public static void drawContinuousTexturedBox(ResourceLocation res, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight,
                                                  int borderSize, float zLevel) {
@@ -104,20 +103,20 @@ public class GuiUtils {
      * and filler. The provided ResourceLocation object will be bound using
      * Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation).
      *
-     * @param res           the ResourceLocation object that contains the desired image
-     * @param x             x axis offset
-     * @param y             y axis offset
-     * @param u             bound resource location image x offset
-     * @param v             bound resource location image y offset
-     * @param width         the desired box width
-     * @param height        the desired box height
-     * @param textureWidth  the width of the box texture in the resource location image
+     * @param res the ResourceLocation object that contains the desired image
+     * @param x x axis offset
+     * @param y y axis offset
+     * @param u bound resource location image x offset
+     * @param v bound resource location image y offset
+     * @param width the desired box width
+     * @param height the desired box height
+     * @param textureWidth the width of the box texture in the resource location image
      * @param textureHeight the height of the box texture in the resource location image
-     * @param topBorder     the size of the box's top border
-     * @param bottomBorder  the size of the box's bottom border
-     * @param leftBorder    the size of the box's left border
-     * @param rightBorder   the size of the box's right border
-     * @param zLevel        the zLevel to draw at
+     * @param topBorder the size of the box's top border
+     * @param bottomBorder the size of the box's bottom border
+     * @param leftBorder the size of the box's left border
+     * @param rightBorder the size of the box's right border
+     * @param zLevel the zLevel to draw at
      */
     public static void drawContinuousTexturedBox(ResourceLocation res, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight,
                                                  int topBorder, int bottomBorder, int leftBorder, int rightBorder, float zLevel) {
@@ -130,19 +129,19 @@ public class GuiUtils {
      * and filler. It is assumed that the desired texture ResourceLocation object has been bound using
      * Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation).
      *
-     * @param x             x axis offset
-     * @param y             y axis offset
-     * @param u             bound resource location image x offset
-     * @param v             bound resource location image y offset
-     * @param width         the desired box width
-     * @param height        the desired box height
-     * @param textureWidth  the width of the box texture in the resource location image
+     * @param x x axis offset
+     * @param y y axis offset
+     * @param u bound resource location image x offset
+     * @param v bound resource location image y offset
+     * @param width the desired box width
+     * @param height the desired box height
+     * @param textureWidth the width of the box texture in the resource location image
      * @param textureHeight the height of the box texture in the resource location image
-     * @param topBorder     the size of the box's top border
-     * @param bottomBorder  the size of the box's bottom border
-     * @param leftBorder    the size of the box's left border
-     * @param rightBorder   the size of the box's right border
-     * @param zLevel        the zLevel to draw at
+     * @param topBorder the size of the box's top border
+     * @param bottomBorder the size of the box's bottom border
+     * @param leftBorder the size of the box's left border
+     * @param rightBorder the size of the box's right border
+     * @param zLevel the zLevel to draw at
      */
     public static void drawContinuousTexturedBox(int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight,
                                                  int topBorder, int bottomBorder, int leftBorder, int rightBorder, float zLevel) {
@@ -223,19 +222,19 @@ public class GuiUtils {
     }
 
     /**
-     * Draws a tooltip box on the screen with text in it.
-     * Automatically positions the box relative to the mouse to match Mojang's implementation.
-     * Automatically wraps text when there is not enough space on the screen to display the text without wrapping.
-     * Can have a maximum width set to avoid creating very wide tooltips.
+     *  Draws a tooltip box on the screen with text in it.
+     *  Automatically positions the box relative to the mouse to match Mojang's implementation.
+     *  Automatically wraps text when there is not enough space on the screen to display the text without wrapping.
+     *  Can have a maximum width set to avoid creating very wide tooltips.
      *
-     * @param textLines    the lines of text to be drawn in a hovering tooltip box.
-     * @param mouseX       the mouse X position
-     * @param mouseY       the mouse Y position
-     * @param screenWidth  the available screen width for the tooltip to drawn in
+     * @param textLines the lines of text to be drawn in a hovering tooltip box.
+     * @param mouseX the mouse X position
+     * @param mouseY the mouse Y position
+     * @param screenWidth the available screen width for the tooltip to drawn in
      * @param screenHeight the available  screen height for the tooltip to drawn in
      * @param maxTextWidth the maximum width of the text in the tooltip box.
      *                     Set to a negative number to have no max width.
-     * @param font         the font for drawing the text in the tooltip box
+     * @param font the font for drawing the text in the tooltip box
      */
     public static void drawHoveringText(List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font) {
         drawHoveringText(cachedTooltipStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font);

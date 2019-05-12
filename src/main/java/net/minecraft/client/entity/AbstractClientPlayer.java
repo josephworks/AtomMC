@@ -118,7 +118,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer {
             f = 1.0F;
         }
 
-        if (this.isHandActive() && this.getActiveItemStack().getItem() == Items.BOW) {
+        if (this.isHandActive() && this.getActiveItemStack().getItem() instanceof net.minecraft.item.ItemBow) {
             int i = this.getItemInUseMaxCount();
             float f1 = (float) i / 20.0F;
 

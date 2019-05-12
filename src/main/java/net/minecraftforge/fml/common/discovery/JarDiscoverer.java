@@ -88,7 +88,7 @@ public class JarDiscoverer implements ITypeDiscoverer {
                     }
                     candidate.addClassEntry(ze.getName());
                 } catch (LoaderException e) {
-                    FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", candidate.getModContainer().getPath(), e);
+                    FMLLog.log.error("There was a problem reading the entry {} in the jar {} - probably a corrupt zip", ze.getName(), candidate.getModContainer().getPath(), e);
                     jar.close();
                     throw e;
                 }

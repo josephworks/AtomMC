@@ -1,12 +1,6 @@
 package net.minecraft.potion;
 
 import com.google.common.collect.Maps;
-
-import java.util.Map;
-import java.util.UUID;
-import java.util.Map.Entry;
-import javax.annotation.Nullable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -27,6 +21,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<Potion> {
     public static final RegistryNamespaced<ResourceLocation, Potion> REGISTRY = net.minecraftforge.registries.GameData.getWrapper(Potion.class);
@@ -277,9 +276,26 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
      * @param y      the y coordinate
      * @param effect the active PotionEffect
      * @param mc     the Minecraft instance, for convenience
+     * @deprecated use {@link #renderInventoryEffect(PotionEffect, net.minecraft.client.gui.Gui, int, int, float)}
      */
     @SideOnly(Side.CLIENT)
+    @Deprecated // TODO: remove
     public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) {
+    }
+
+    /**
+     * Called to draw the this Potion onto the player's inventory when it's active.
+     * This can be used to e.g. render Potion icons from your own texture.
+     *
+     * @param effect the active PotionEffect
+     * @param gui    the gui instance
+     * @param x      the x coordinate
+     * @param y      the y coordinate
+     * @param z      the z level
+     */
+    @SideOnly(Side.CLIENT)
+    public void renderInventoryEffect(PotionEffect effect, net.minecraft.client.gui.Gui gui, int x, int y, float z) {
+        renderInventoryEffect(x, y, effect, net.minecraft.client.Minecraft.getMinecraft());
     }
 
     /**
@@ -291,9 +307,27 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
      * @param effect the active PotionEffect
      * @param mc     the Minecraft instance, for convenience
      * @param alpha  the alpha value, blinks when the potion is about to run out
+     * @deprecated use {@link #renderHUDEffect(PotionEffect, net.minecraft.client.gui.Gui, int, int, float, float)}
      */
     @SideOnly(Side.CLIENT)
+    @Deprecated // TODO: remove
     public void renderHUDEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc, float alpha) {
+    }
+
+    /**
+     * Called to draw the this Potion onto the player's ingame HUD when it's active.
+     * This can be used to e.g. render Potion icons from your own texture.
+     *
+     * @param effect the active PotionEffect
+     * @param gui    the gui instance
+     * @param x      the x coordinate
+     * @param y      the y coordinate
+     * @param z      the z level
+     * @param alpha  the alpha value, blinks when the potion is about to run out
+     */
+    @SideOnly(Side.CLIENT)
+    public void renderHUDEffect(PotionEffect effect, net.minecraft.client.gui.Gui gui, int x, int y, float z, float alpha) {
+        renderHUDEffect(x, y, effect, net.minecraft.client.Minecraft.getMinecraft(), alpha);
     }
 
     /**

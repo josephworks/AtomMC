@@ -16,11 +16,33 @@ public class ReflectionMethods {
     }
 
     public static Class<?> forName(String className, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
-        if (!className.startsWith("net.minecraft.server." + RemapUtils.NMS_VERSION))
-            return Class.forName(className, initialize, classLoader);
+        if (className.startsWith("net.minecraft.server." + RemapUtils.NMS_VERSION)||isBrokenNmsClass(className)){
+            //remap array class forname
+            if (className.startsWith("[L")&&className.endsWith(";")) {
+                className = className.substring(2);
+                className = className.replace(";","");
+                String key = RemapUtils.NMS_PREFIX + RemapUtils.NMS_VERSION +"/"+ getClassSimpleName(className);
+                className = "[L"+ReflectionTransformer.jarMapping.classes.getOrDefault(key,className).replace("/",".")+";";
+            }else {
+                String key = RemapUtils.NMS_PREFIX + RemapUtils.NMS_VERSION +"/"+ getClassSimpleName(className);
+                className = ReflectionTransformer.jarMapping.classes.getOrDefault(key,className).replace("/",".");
+            }
+        }else {
+            Class.forName(className,initialize,classLoader);
+        }
+
         className = ReflectionTransformer.jarMapping.classes.getOrDefault(className.replace('.', '/'), className).replace('/', '.');
         return Class.forName(className, initialize, classLoader);
     }
+
+    public static String getClassSimpleName(String className) {
+        String[] split = className.split("\\.");
+        if (split.length==0) {
+            return className;
+        }
+        return split[split.length - 1];
+    }
+
 
     // Get Fields
     public static Field getField(Class<?> inst, String name) throws NoSuchFieldException, SecurityException {
@@ -83,4 +105,18 @@ public class ReflectionMethods {
             className = RemapUtils.mapClass(className.replace('.', '/')).replace('/', '.');
         return inst.loadClass(className);
     }
+
+    public static boolean isBrokenNmsClass(String className){
+        if (className.startsWith("[L")) {
+            className = className.substring(2);
+        }
+        boolean name = className.startsWith("net.minecraft.server") && !className.contains("v1");
+        try {
+            Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            return name;
+        }
+        return false;
+    }
+
 }

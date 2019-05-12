@@ -137,8 +137,8 @@ public class NetworkModHolder {
                 }
                 return String.format("Failed mod's custom NetworkCheckHandler %s", container);
             } catch (Exception e) {
-                FMLLog.log.error("Error occurred invoking NetworkCheckHandler {} at {}", container, e);
-                return String.format("Error occurred invoking NetworkCheckHandler %s", container);
+                FMLLog.log.error("Error occurred invoking NetworkCheckHandler {} at {}", checkHandler.getName(), container, e);
+                return String.format("Error occurred invoking NetworkCheckHandler %s at %s", checkHandler.getName(), container);
             }
         }
 
