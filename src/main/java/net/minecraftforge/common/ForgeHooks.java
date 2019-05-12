@@ -153,6 +153,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher.ConnectionType;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
@@ -266,17 +267,17 @@ public class ForgeHooks {
         }
         toolInit = true;
 
-        Set<Block> blocks = ObfuscationReflectionHelper.getPrivateValue(ItemPickaxe.class, null, "field_150915" + "_c");
+        Set<Block> blocks = ReflectionHelper.getPrivateValue(ItemPickaxe.class, null, 0); // TODO: ReflectionHelper -> ObfuscationReflectionHelper
         for (Block block : blocks) {
             block.setHarvestLevel("pickaxe", 0);
         }
 
-        blocks = ObfuscationReflectionHelper.getPrivateValue(ItemSpade.class, null, "field_150916" + "_c");
+        blocks = ReflectionHelper.getPrivateValue(ItemSpade.class, null, 0); // TODO: ReflectionHelper -> ObfuscationReflectionHelper
         for (Block block : blocks) {
             block.setHarvestLevel("shovel", 0);
         }
 
-        blocks = ObfuscationReflectionHelper.getPrivateValue(ItemAxe.class, null, "field_150917" + "_c");
+        blocks = ReflectionHelper.getPrivateValue(ItemAxe.class, null, 0); // TODO: ReflectionHelper -> ObfuscationReflectionHelper
         for (Block block : blocks) {
             block.setHarvestLevel("axe", 0);
         }
