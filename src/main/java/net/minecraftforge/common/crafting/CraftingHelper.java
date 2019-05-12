@@ -212,7 +212,7 @@ public class CraftingHelper {
                 if (element.isJsonObject())
                     nbt = JsonToNBT.getTagFromJson(GSON.toJson(element));
                 else
-                    nbt = JsonToNBT.getTagFromJson(element.getAsString());
+                    nbt = JsonToNBT.getTagFromJson(JsonUtils.getString(element, "nbt"));
 
                 NBTTagCompound tmp = new NBTTagCompound();
                 if (nbt.hasKey("ForgeCaps")) {
@@ -334,6 +334,11 @@ public class CraftingHelper {
             throw new IllegalArgumentException("Key defines symbols that aren't used in pattern: " + keys);
 
         return ret;
+    }
+
+    public static boolean processConditions(JsonObject json, String memberName, JsonContext context)
+    {
+        return !json.has(memberName) || processConditions(JsonUtils.getJsonArray(json, memberName), context);
     }
 
     public static boolean processConditions(JsonArray conditions, JsonContext context) {
@@ -591,8 +596,8 @@ public class CraftingHelper {
                     loadFactories(json, ctx);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (JsonParseException | IOException e) {
+            FMLLog.log.error("Error loading _factories.json: ", e);
         } finally {
             IOUtils.closeQuietly(fs);
         }
@@ -609,7 +614,7 @@ public class CraftingHelper {
                         try (BufferedReader reader = Files.newBufferedReader(fPath)) {
                             JsonObject[] json = JsonUtils.fromJson(GSON, reader, JsonObject[].class);
                             ctx.loadConstants(json);
-                        } catch (IOException e) {
+                        } catch (JsonParseException | IOException e) {
                             FMLLog.log.error("Error loading _constants.json: ", e);
                             return false;
                         }
@@ -629,7 +634,7 @@ public class CraftingHelper {
 
                     try (BufferedReader reader = Files.newBufferedReader(file)) {
                         JsonObject json = JsonUtils.fromJson(GSON, reader, JsonObject.class);
-                        if (json.has("conditions") && !CraftingHelper.processConditions(JsonUtils.getJsonArray(json, "conditions"), ctx))
+                        if (!processConditions(json, "conditions", ctx))
                             return true;
                         IRecipe recipe = CraftingHelper.getRecipe(json, ctx);
                         ForgeRegistries.RECIPES.register(recipe.setRegistryName(key));

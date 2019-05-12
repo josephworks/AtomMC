@@ -201,7 +201,6 @@ public class AccessTransformer implements IClassTransformer {
                         if (DEBUG) {
                             FMLLog.log.debug("Field: {}.{} {} -> {}", name, n.name, toBinary(m.oldAccess), toBinary(m.newAccess));
                         }
-
                         if (!m.name.equals("*")) {
                             break;
                         }
