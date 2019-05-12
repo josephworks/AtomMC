@@ -204,4 +204,9 @@ public class SidedInvWrapper implements IItemHandlerModifiable {
         int slot1 = getSlot(inv, slot, side);
         return slot1 == -1 ? false : inv.isItemValidForSlot(slot1, stack);
     }
+    
+    public IInventory getInv() {
+        return this.inv;
+    }
+
 }
