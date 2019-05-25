@@ -146,8 +146,8 @@ task jar_server(type: Jar) {
         attributes(
                 "Implementation-Title": project.name,
                 "Implementation-Version": project.version,
-                "Implementation-Vendor": "AtomMC",
-                "Specification-Vendor": "AtomMC",
+                "Implementation-Vendor": " AtomMC",
+                "Specification-Vendor": " AtomMC",
                 "Specification-Title": "Bukkit",
                 "Specification-Version": "1.12-R0.1-SNAPSHOT",
                 "Main-Class": "net.minecraftforge.fml.relauncher.ServerLaunchWrapper",
