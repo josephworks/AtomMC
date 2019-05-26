@@ -88,6 +88,8 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.DamageSource;
+import org.atom.entity.CraftCustomEntity;
+import org.atom.entity.CraftCustomProjectile;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Server;

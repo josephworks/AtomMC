@@ -1,4 +1,4 @@
-package org.bukkit.craftbukkit.entity;
+package org.atom.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;

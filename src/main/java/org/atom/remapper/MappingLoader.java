@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MappingLoader {
     private static final String org_bukkit_craftbukkit = new String(new char[]{'o', 'r', 'g', '/', 'b', 'u', 'k', 'k', 'i', 't', '/', 'c', 'r', 'a', 'f', 't', 'b', 'u', 'k', 'k', 'i', 't'});
@@ -17,9 +18,10 @@ public class MappingLoader {
         relocations.put("net.minecraft.server", "net.minecraft.server." + obfVersion);
 
         jarMapping.loadMappings(
-                new BufferedReader(new InputStreamReader(MappingLoader.class.getClassLoader().getResourceAsStream("mappings/" + obfVersion + "/cb2srg.srg"))),
+                new BufferedReader(new InputStreamReader(Objects.requireNonNull(MappingLoader.class.getClassLoader().getResourceAsStream("mappings/" + obfVersion + "/cb2srg.srg")))),
                 new MavenShade(relocations),
                 null, false);
+        HandleLookup.loadMappings(MappingTools.getMappingReader());
     }
 
     public static JarMapping loadMapping() {
@@ -29,7 +31,6 @@ public class MappingLoader {
             jarMapping.packages.put(org_bukkit_craftbukkit + "/libs/it/unimi/dsi/fastutil", "it/unimi/dsi/fastutil");
             jarMapping.packages.put(org_bukkit_craftbukkit + "/libs/jline", "jline");
             jarMapping.packages.put(org_bukkit_craftbukkit + "/libs/joptsimple", "joptsimple");
-            jarMapping.methods.put("org/bukkit/Bukkit/getOnlinePlayers ()[Lorg/bukkit/entity/Player;", "getOnlinePlayers_1710");
 
             loadNmsMappings(jarMapping, RemapUtils.NMS_VERSION);
         } catch (Exception e) {

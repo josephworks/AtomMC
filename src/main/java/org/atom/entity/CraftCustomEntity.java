@@ -1,26 +1,24 @@
-package org.bukkit.craftbukkit.entity;
+package org.atom.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 
 public class CraftCustomEntity extends CraftEntity {
-    public Class<? extends net.minecraft.entity.Entity> entityClass;
     private String entityName;
 
     public CraftCustomEntity(CraftServer server, net.minecraft.entity.Entity entity) {
         super(server, entity);
-        this.entityClass = entity.getClass();
-        this.entityName = EntityRegistry.entityTypeMap.get(entityClass);
+        this.entityName = EntityRegistry.entityTypeMap.get(entity.getClass());
         if (entityName == null)
-            entityName = entity.getCommandSenderEntity().getName();
+            entityName = entity.getName();
     }
 
     @Override
     public Entity getHandle() {
-        return (Entity) entity;
+        return entity;
     }
 
     @Override
@@ -33,5 +31,15 @@ public class CraftCustomEntity extends CraftEntity {
         if (type != null)
             return type;
         else return EntityType.UNKNOWN;
+    }
+
+    public String getCustomName() {
+        String name = getHandle().getCustomNameTag();
+
+        if (name == null || name.length() == 0) {
+            return this.entity.getName();
+        }
+
+        return name;
     }
 }
