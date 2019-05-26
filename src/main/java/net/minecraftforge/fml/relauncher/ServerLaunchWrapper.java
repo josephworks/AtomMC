@@ -19,16 +19,7 @@
 
 package net.minecraftforge.fml.relauncher;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
-import java.util.HashMap;
-
-import net.minecraft.launchwrapper.Launch;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.atom.remapper.AtomLauncherClassLoader;
-import sun.misc.Unsafe;
 
 public class ServerLaunchWrapper {
 
@@ -60,22 +51,12 @@ public class ServerLaunchWrapper {
         }
 
         try {
+            Method main = launchwrapper.getMethod("main", String[].class);
             String[] allArgs = new String[args.length + 2];
             allArgs[0] = "--tweakClass";
             allArgs[1] = "net.minecraftforge.fml.common.launcher.FMLServerTweaker";
             System.arraycopy(args, 0, allArgs, 2, args.length);
-            Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-            theUnsafeField.setAccessible(true);
-            Unsafe unsafe = (Unsafe) theUnsafeField.get(null);
-            Launch launch = (Launch) unsafe.allocateInstance(Launch.class);
-            final URLClassLoader ucl = (URLClassLoader) getClass().getClassLoader();
-            Launch.classLoader = new AtomLauncherClassLoader(ucl.getURLs());
-            Launch.blackboard = new HashMap<>();
-            Thread.currentThread().setContextClassLoader(Launch.classLoader);
-            Method launchMethod = launchwrapper.getDeclaredMethod("launch", String[].class);
-            launchMethod.setAccessible(true);
-            launchMethod.invoke(launch, (Object) allArgs);
-
+            main.invoke(null, (Object) allArgs);
         } catch (Exception e) {
             System.err.printf("A problem occurred running the Server launcher.");
             e.printStackTrace(System.err);

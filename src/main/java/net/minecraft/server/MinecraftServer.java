@@ -97,6 +97,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.AtomServerWatchDog;
+import org.atom.BukkitInjector;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.Main;
@@ -290,6 +291,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             } else {
                 ISaveHandler idatamanager = new AnvilSaveHandler(server.getWorldContainer(), name, true, this.dataFixer);
                 WorldInfo worlddata = idatamanager.loadWorldInfo();
+                if (!BukkitInjector.initializedBukkit) {
+                    BukkitInjector.injectBlockBukkitMaterials();
+                    BukkitInjector.injectItemBukkitMaterials();
+                    BukkitInjector.injectBiomes();
+                    BukkitInjector.injectEntityType();
+                    //BukkitInjector.registerEnchantments(); // TODO BukkitInjector register Enchantments()
+                    //BukkitInjector.registerPotions(); // TODO BukkitInjector register Potions()
+                    BukkitInjector.initializedBukkit = true;
+                }
                 if (worlddata == null) {
                     worlddata = new WorldInfo(worldsettings, name);
                 }

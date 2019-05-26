@@ -3,9 +3,9 @@ package org.atom.remapper;
 import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
 
-public class CatServerRemapper extends JarRemapper {
+public class AtomRemapper extends JarRemapper {
 
-    public CatServerRemapper(JarMapping jarMapping) {
+    public AtomRemapper(JarMapping jarMapping) {
         super(jarMapping);
     }
 
@@ -15,5 +15,9 @@ public class CatServerRemapper extends JarRemapper {
         } catch (Exception e) {
             return signature;
         }
+    }
+
+    public String mapFieldName(final String owner, final String name, final String desc, final int access) {
+        return super.mapFieldName(owner, name, desc, -1);
     }
 }

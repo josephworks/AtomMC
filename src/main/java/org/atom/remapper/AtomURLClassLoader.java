@@ -3,10 +3,13 @@ package org.atom.remapper;
 import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
 import net.md_5.specialsource.provider.ClassLoaderProvider;
+import net.md_5.specialsource.provider.InheritanceProvider;
 import net.md_5.specialsource.provider.JointProvider;
+import net.md_5.specialsource.repo.ClassRepo;
 import net.md_5.specialsource.repo.RuntimeRepo;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.atom.AtomServer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
@@ -20,44 +23,54 @@ import java.security.CodeSource;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CatURLClassLoader extends URLClassLoader {
+public class AtomURLClassLoader extends URLClassLoader {
 
     private JarMapping jarMapping;
     private JarRemapper remapper;
     private final Map<String, Class<?>> classes;
 
-    {
+    public AtomURLClassLoader(final URL[] urls, final ClassLoader parent) {
+        super(urls, parent);
         this.jarMapping = MappingLoader.loadMapping();
         final JointProvider provider = new JointProvider();
-        provider.add(new ClassInheritanceProvider());
-        provider.add(new ClassLoaderProvider(this));
-        this.jarMapping.setFallbackInheritanceProvider(provider);
-        this.remapper = new CatServerRemapper(this.jarMapping);
+        provider.add((InheritanceProvider) new ClassInheritanceProvider());
+        provider.add((InheritanceProvider) new ClassLoaderProvider((ClassLoader) this));
+        this.jarMapping.setFallbackInheritanceProvider((InheritanceProvider) provider);
+        this.remapper = new AtomRemapper(this.jarMapping);
+        this.classes = new HashMap<String, Class<?>>();
     }
 
-    public CatURLClassLoader(final URL[] urls, final ClassLoader parent) {
-        super(urls, parent);
-        this.classes = new HashMap<>();
-    }
-
-    public CatURLClassLoader(final URL[] urls) {
+    public AtomURLClassLoader(final URL[] urls) {
         super(urls);
-        this.classes = new HashMap<>();
+        this.jarMapping = MappingLoader.loadMapping();
+        final JointProvider provider = new JointProvider();
+        provider.add((InheritanceProvider) new ClassInheritanceProvider());
+        provider.add((InheritanceProvider) new ClassLoaderProvider((ClassLoader) this));
+        this.jarMapping.setFallbackInheritanceProvider((InheritanceProvider) provider);
+        this.remapper = new AtomRemapper(this.jarMapping);
+        this.classes = new HashMap<String, Class<?>>();
     }
 
-    public CatURLClassLoader(final URL[] urls, final ClassLoader parent, final URLStreamHandlerFactory factory) {
+    public AtomURLClassLoader(final URL[] urls, final ClassLoader parent, final URLStreamHandlerFactory factory) {
         super(urls, parent, factory);
-        this.classes = new HashMap<>();
+        this.jarMapping = MappingLoader.loadMapping();
+        final JointProvider provider = new JointProvider();
+        provider.add((InheritanceProvider) new ClassInheritanceProvider());
+        provider.add((InheritanceProvider) new ClassLoaderProvider((ClassLoader) this));
+        this.jarMapping.setFallbackInheritanceProvider((InheritanceProvider) provider);
+        this.remapper = new AtomRemapper(this.jarMapping);
+        this.classes = new HashMap<String, Class<?>>();
     }
 
+    @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         return this.findClass(name, true);
     }
 
     private Class<?> findClass(final String name, final boolean checkGlobal) throws ClassNotFoundException {
-        if (name.startsWith("net.minecraft.server." + RemapUtils.NMS_VERSION)) {
+        if (name.startsWith("net.minecraft.server." + AtomServer.getNativeVersion())) {
             final String remappedClass = this.jarMapping.classes.get(name.replaceAll("\\.", "\\/"));
-            final Class<?> clazz = ((LaunchClassLoader) FMLCommonHandler.instance().getMinecraftServerInstance().getClass().getClassLoader()).findClass(remappedClass);
+            final Class<?> clazz = (Class<?>) ((LaunchClassLoader) FMLCommonHandler.instance().getMinecraftServerInstance().getClass().getClassLoader()).findClass(remappedClass);
             return clazz;
         }
         Class<?> result = this.classes.get(name);
@@ -71,10 +84,12 @@ public class CatURLClassLoader extends URLClassLoader {
                     try {
                         result = super.findClass(name);
                     } catch (ClassNotFoundException e) {
-                        result = ((LaunchClassLoader) FMLCommonHandler.instance().getMinecraftServerInstance().getClass().getClassLoader()).findClass(name);
+                        result = (Class<?>) ((LaunchClassLoader) FMLCommonHandler.instance().getMinecraftServerInstance().getClass().getClassLoader()).findClass(name);
                     }
                 }
-                if (result == null) throw new ClassNotFoundException(name);
+                if (result == null) {
+                    throw new ClassNotFoundException(name);
+                }
                 this.classes.put(name, result);
             }
         }
@@ -89,8 +104,7 @@ public class CatURLClassLoader extends URLClassLoader {
             if (url != null) {
                 final InputStream stream = url.openStream();
                 if (stream != null) {
-                    byte[] bytecode;
-                    bytecode = this.remapper.remapClassFile(stream, RuntimeRepo.getInstance());
+                    byte[] bytecode = this.remapper.remapClassFile(stream, (ClassRepo) RuntimeRepo.getInstance());
                     bytecode = ReflectionTransformer.transform(bytecode);
                     final JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
                     final URL jarURL = jarURLConnection.getJarFileURL();
@@ -112,7 +126,7 @@ public class CatURLClassLoader extends URLClassLoader {
             this.classes.put(name, clazz);
             if (ConfigurationSerializable.class.isAssignableFrom(clazz)) {
                 final Class<? extends ConfigurationSerializable> serializable = clazz.asSubclass(ConfigurationSerializable.class);
-                ConfigurationSerialization.registerClass(serializable);
+                ConfigurationSerialization.registerClass((Class) serializable);
             }
         }
     }
