@@ -443,7 +443,7 @@ public class FMLCommonHandler {
         Loader.instance().serverStopped();
         // FORCE the internal server to stop: hello optifine workaround!
         if (server != null)
-            ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, false, "field_71316" + "_v");
+            ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, false, "field_71316" + "_v",  "u", "serverStopped");
 
         // allow any pending exit to continue, clear exitLatch
         CountDownLatch latch = exitLatch;
