@@ -46,7 +46,7 @@ public class LayerHeldItemWitch implements LayerRenderer<EntityWitch> {
                 GlStateManager.rotate(-5.0F, 0.0F, 1.0F, 0.0F);
                 float f1 = 0.375F;
                 GlStateManager.scale(0.375F, -0.375F, 0.375F);
-            } else if (item == Items.BOW) {
+            } else if (item instanceof net.minecraft.item.ItemBow) {
                 GlStateManager.translate(0.0F, 0.125F, -0.125F);
                 GlStateManager.rotate(-45.0F, 0.0F, 1.0F, 0.0F);
                 float f2 = 0.625F;

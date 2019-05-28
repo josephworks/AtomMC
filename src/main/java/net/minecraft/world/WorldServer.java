@@ -100,6 +100,8 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraft.world.storage.WorldSavedDataCallableSave;
 import net.minecraft.world.storage.loot.LootTableManager;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.WorldSpecificSaveHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -151,6 +153,14 @@ public class WorldServer extends World implements IThreadListener {
         this.calculateInitialSkylight();
         this.calculateInitialWeather();
         this.getWorldBorder().setSize(server.getMaxWorldSize());
+        WorldServer overworld = DimensionManager.getWorld(0);
+        if (overworld != null) {
+            this.mapStorage = overworld.mapStorage;
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, overworld.saveHandler));
+        } else {
+            this.mapStorage = new MapStorage(saveHandlerIn);
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, this.saveHandler));
+        }
         net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, mcServer);
     }
 
@@ -170,6 +180,15 @@ public class WorldServer extends World implements IThreadListener {
         this.calculateInitialSkylight();
         this.calculateInitialWeather();
         this.getWorldBorder().setSize(server.getMaxWorldSize());
+        WorldServer overworld = DimensionManager.getWorld(0);
+        if (overworld != null) {
+            this.mapStorage = overworld.mapStorage;
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, overworld.saveHandler));
+        } else {
+            this.mapStorage = new MapStorage(saveHandlerIn);
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, this.saveHandler));
+        }
+
         net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, mcServer);
     }
 

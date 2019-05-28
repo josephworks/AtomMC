@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -182,6 +182,11 @@ public class ConfigElement implements IConfigElement {
     }
 
     @Override
+    public String[] getValidValuesDisplay() {
+        return isProperty ? prop.getValidValuesDisplay() : null;
+    }
+
+    @Override
     public String getLanguageKey() {
         return isProperty ? prop.getLanguageKey() : category.getLanguagekey();
     }
@@ -302,9 +307,14 @@ public class ConfigElement implements IConfigElement {
         return isProperty ? prop.getMaxValue() : null;
     }
 
+
+    @Override
+    public boolean hasSlidingControl() {
+        return prop.hasSlidingControl();
+    }
+
     /**
      * Provides a ConfigElement derived from the annotation-based config system
-     *
      * @param configClass the class which contains the configuration
      * @return A ConfigElement based on the described category.
      */
@@ -344,10 +354,10 @@ public class ConfigElement implements IConfigElement {
             return new DummyCategoryElement(name, langKey, elements);
         } else {
             ConfigCategory category = config.getCategory(annotation.category());
-            DummyCategoryElement element = new DummyCategoryElement(name, langKey, new ConfigElement(category).getChildElements());
+            DummyCategoryElement element = new DummyCategoryElement(name, langKey, new ConfigElement(category).getChildElements());   
             element.setRequiresMcRestart(category.requiresMcRestart());
             element.setRequiresWorldRestart(category.requiresWorldRestart());
             return element;
-        }
+        } 
     }
 }

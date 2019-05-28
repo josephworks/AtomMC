@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,6 @@ package net.minecraftforge.common.config;
 //=========================================================
 // Run away thar' be dragons!
 //=========================================================
-
 import java.util.Arrays;
 
 import com.google.common.primitives.Booleans;
@@ -50,22 +49,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getBoolean();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Boolean) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Boolean) value);
         }
-
         @Override
         public Type getType() {
             return Type.BOOLEAN;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -76,22 +71,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getBooleanList();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues((boolean[]) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues((boolean[]) value);
         }
-
         @Override
         public Type getType() {
             return Type.BOOLEAN;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -102,22 +93,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Boolean.valueOf(prop.getBoolean());
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Boolean) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Boolean) value);
         }
-
         @Override
         public Type getType() {
             return Type.BOOLEAN;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -128,22 +115,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Booleans.asList(prop.getBooleanList()).toArray(new Boolean[prop.getBooleanList().length]);
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Booleans.toArray(Arrays.asList((Boolean[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Booleans.toArray(Arrays.asList((Boolean[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.BOOLEAN;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -154,22 +137,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return (float) prop.getDouble();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Float) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Float) value);
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -180,22 +159,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Floats.toArray(Doubles.asList(prop.getDoubleList()));
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Doubles.toArray(Floats.asList((float[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Doubles.toArray(Floats.asList((float[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -206,22 +181,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Float.valueOf((float) prop.getDouble());
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Float) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Float) value);
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -232,22 +203,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Floats.asList(Floats.toArray(Doubles.asList(prop.getDoubleList()))).toArray(new Float[prop.getDoubleList().length]);
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Doubles.toArray(Arrays.asList((Float[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Doubles.toArray(Arrays.asList((Float[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -258,22 +225,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getDouble();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Double) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Double) value);
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -289,7 +252,6 @@ class TypeAdapters {
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues((double[]) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues((double[]) value);
@@ -310,22 +272,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Double.valueOf(prop.getDouble());
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Double) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Double) value);
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -336,22 +294,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Doubles.asList(prop.getDoubleList()).toArray(new Double[prop.getDoubleList().length]);
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Doubles.toArray(Arrays.asList((Double[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Doubles.toArray(Arrays.asList((Double[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.DOUBLE;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -362,22 +316,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return (byte) prop.getInt();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Byte) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Byte) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -388,22 +338,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Bytes.toArray(Ints.asList(prop.getIntList()));
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Ints.toArray(Bytes.asList((byte[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Ints.toArray(Bytes.asList((byte[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -414,22 +360,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Byte.valueOf((byte) prop.getInt());
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Byte) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Byte) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -440,22 +382,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Bytes.asList(Bytes.toArray(Ints.asList(prop.getIntList()))).toArray(new Byte[prop.getIntList().length]);
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Ints.toArray(Arrays.asList((Byte[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Ints.toArray(Arrays.asList((Byte[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -467,22 +405,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return (char) prop.getInt();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Character) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Character) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -505,12 +439,10 @@ class TypeAdapters {
                 ret[x] = (char) v[x];
             return ret;
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(toPrim((char[]) value));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(toPrim((char[]) value));
@@ -532,22 +464,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Character.valueOf((char) prop.getInt());
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Character) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Character) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -570,12 +498,10 @@ class TypeAdapters {
                 ret[x] = Character.valueOf((char) v[x]);
             return ret;
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(toPrim((Character[]) value));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(toPrim((Character[]) value));
@@ -597,22 +523,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return (short) prop.getInt();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Short) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Short) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -623,22 +545,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Shorts.toArray(Ints.asList(prop.getIntList()));
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Ints.toArray(Shorts.asList((short[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Ints.toArray(Shorts.asList((short[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -650,22 +568,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Short.valueOf((short) prop.getInt());
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Short) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Short) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -680,22 +594,18 @@ class TypeAdapters {
                 ret[x] = Short.valueOf((short) v[x]);
             return ret;
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Ints.toArray(Arrays.asList((Short[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Ints.toArray(Arrays.asList((Short[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -706,22 +616,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getInt();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Integer) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Integer) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -732,22 +638,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getIntList();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues((int[]) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues((int[]) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -758,22 +660,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return (Integer) prop.getInt();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((Integer) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((Integer) value);
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -784,22 +682,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return Ints.asList(prop.getIntList()).toArray(new Integer[prop.getIntList().length]);
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues(Ints.toArray(Arrays.asList((Integer[]) value)));
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues(Ints.toArray(Arrays.asList((Integer[]) value)));
         }
-
         @Override
         public Type getType() {
             return Type.INTEGER;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;
@@ -810,22 +704,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getString();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValue((String) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValue((String) value);
         }
-
         @Override
         public Type getType() {
             return Type.STRING;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return false;
@@ -836,22 +726,18 @@ class TypeAdapters {
         public Object getValue(Property prop) {
             return prop.getStringList();
         }
-
         @Override
         public void setDefaultValue(Property property, Object value) {
             property.setDefaultValues((String[]) value);
         }
-
         @Override
         public void setValue(Property property, Object value) {
             property.setValues((String[]) value);
         }
-
         @Override
         public Type getType() {
             return Type.STRING;
         }
-
         @Override
         public boolean isArrayAdapter() {
             return true;

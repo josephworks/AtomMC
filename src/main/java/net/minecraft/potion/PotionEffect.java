@@ -70,6 +70,10 @@ public class PotionEffect implements Comparable<PotionEffect> {
     }
 
     public Potion getPotion() {
+        return this.getPotionRaw() == null ? null : this.getPotionRaw().delegate.get();
+    }
+
+    private Potion getPotionRaw() {
         return this.potion;
     }
 

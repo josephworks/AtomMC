@@ -1,19 +1,46 @@
 package org.atom.remapper;
 
-public class ReflectionUtils {
-    private static SecurityManager sm = new SecurityManager();
+import sun.misc.Unsafe;
 
-    public static Class<?> getCallerClass(int skip) {
-        return sm.getCallerClass(skip);
+import java.lang.reflect.Field;
+
+public class ReflectionUtils {
+    private static SecurityManager sm;
+
+    private static Class<?> getCallerClass(final int skip) {
+        return ReflectionUtils.sm.getCallerClass(skip);
     }
 
-    public static ClassLoader getCallerClassloader() {
-        return ReflectionUtils.getCallerClass(3).getClassLoader(); // added one due to it being the caller of the caller;
+    static ClassLoader getCallerClassloader() {
+        return getCallerClass(3).getClassLoader();
+    }
+
+    public static Class<?>[] getStackClass() {
+        return ReflectionUtils.sm.getStackClass();
+    }
+
+    public static Unsafe getUnsafe() {
+        try {
+            final Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            return (Unsafe) field.get(null);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    static {
+        ReflectionUtils.sm = new SecurityManager();
     }
 
     static class SecurityManager extends java.lang.SecurityManager {
-        public Class<?> getCallerClass(int skip) {
-            return getClassContext()[skip + 1];
+        Class<?> getCallerClass(final int skip) {
+            return (Class<?>) this.getClassContext()[skip + 1];
+        }
+
+        Class<?>[] getStackClass() {
+            return (Class<?>[]) this.getClassContext();
         }
     }
 }

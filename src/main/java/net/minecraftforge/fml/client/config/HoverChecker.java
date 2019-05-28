@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,9 +22,9 @@ package net.minecraftforge.fml.client.config;
 import net.minecraft.client.gui.GuiButton;
 
 /**
- * This class implements an easy way to check if the mouse has hovered within a certain region of the screen for a given
+ * This class implements an easy way to check if the mouse has hovered within a certain region of the screen for a given 
  * period of time. The region can be defined manually or by supplying a GuiButton object.
- *
+ * 
  * @author bspkrs
  */
 public class HoverChecker {

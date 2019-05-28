@@ -1,7 +1,5 @@
 package net.minecraft.creativetab;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.init.Blocks;
@@ -13,6 +11,8 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 public abstract class CreativeTabs {
     public static CreativeTabs[] CREATIVE_TAB_ARRAY = new CreativeTabs[12];
@@ -264,5 +264,9 @@ public abstract class CreativeTabs {
     @SideOnly(Side.CLIENT)
     public net.minecraft.util.ResourceLocation getBackgroundImage() {
         return new net.minecraft.util.ResourceLocation("textures/gui/container/creative_inventory/tab_" + this.getBackgroundImageName());
+    }
+
+    public int getLabelColor() {
+        return 4210752;
     }
 }

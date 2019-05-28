@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import net.minecraft.client.gui.GuiButton;
  * The gist of it is that it allows buttons of any size without gaps in the graphics and with the
  * borders drawn properly. It also prevents button text from extending out of the sides of the button by
  * trimming the end of the string and adding an ellipsis.<br/><br/>
- * <p>
+ *
  * The code that handles drawing the button is in GuiUtils.
  *
  * @author bspkrs

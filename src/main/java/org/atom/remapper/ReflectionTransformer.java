@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import net.md_5.specialsource.JarMapping;
+import net.md_5.specialsource.provider.InheritanceProvider;
 import net.md_5.specialsource.provider.JointProvider;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -17,10 +18,13 @@ import java.util.HashMap;
 import java.util.ListIterator;
 
 public class ReflectionTransformer {
-    public static final String DESC_ReflectionMethods = Type.getInternalName(ReflectionMethods.class);
+
+    public static final String DESC_ReflectionMethods;
+    public static final String DESC_RemapMethodHandle;
+
 
     public static JarMapping jarMapping;
-    public static CatServerRemapper remapper;
+    public static AtomRemapper remapper;
 
     public static final HashMap<String, String> classDeMapping = Maps.newHashMap();
     public static final Multimap<String, String> methodDeMapping = ArrayListMultimap.create();
@@ -29,23 +33,23 @@ public class ReflectionTransformer {
 
     private static boolean disable = false;
 
-    static {
+    public static void init() {
         try {
             ReflectionUtils.getCallerClassloader();
         } catch (Throwable e) {
             new RuntimeException("Unsupported Java version, disabled reflection remap!", e).printStackTrace();
-            disable = true;
+            ReflectionTransformer.disable = true;
         }
-        jarMapping = MappingLoader.loadMapping();
-        JointProvider provider = new JointProvider();
-        provider.add(new ClassInheritanceProvider());
-        jarMapping.setFallbackInheritanceProvider(provider);
-        remapper = new CatServerRemapper(jarMapping);
-
-        jarMapping.classes.forEach((k, v) -> classDeMapping.put(v, k));
-        jarMapping.methods.forEach((k, v) -> methodDeMapping.put(v, k));
-        jarMapping.fields.forEach((k, v) -> fieldDeMapping.put(v, k));
-        jarMapping.methods.forEach((k, v) -> methodFastMapping.put(k.split("\\s+")[0], k));
+        ReflectionTransformer.jarMapping = MappingLoader.loadMapping();
+        final JointProvider provider = new JointProvider();
+        provider.add((InheritanceProvider) new ClassInheritanceProvider());
+        ReflectionTransformer.jarMapping.setFallbackInheritanceProvider((InheritanceProvider) provider);
+        ReflectionTransformer.remapper = new AtomRemapper(ReflectionTransformer.jarMapping);
+        final String[] s = new String[1];
+        ReflectionTransformer.jarMapping.classes.forEach((k, v) -> s[0] = ReflectionTransformer.classDeMapping.put(v, k));
+        ReflectionTransformer.jarMapping.methods.forEach((k, v) -> ReflectionTransformer.methodDeMapping.put((String) v, (String) k));
+        ReflectionTransformer.jarMapping.fields.forEach((k, v) -> ReflectionTransformer.fieldDeMapping.put((String) v, (String) k));
+        ReflectionTransformer.jarMapping.methods.forEach((k, v) -> ReflectionTransformer.methodFastMapping.put((String) k.split("\\s+")[0], (String) k));
     }
 
     /**
@@ -57,7 +61,7 @@ public class ReflectionTransformer {
         reader.accept(node, 0); // Visit using ClassNode
         boolean remapCL = false;
         if (node.superName.equals("java/net/URLClassLoader")) {
-            node.superName = "org/atom/remapper/CatURLClassLoader";
+            node.superName = "org/atom/remapper/AtomURLClassLoader";
             remapCL = true;
         }
 
@@ -69,7 +73,7 @@ public class ReflectionTransformer {
                 if (next instanceof TypeInsnNode) {
                     TypeInsnNode insn = (TypeInsnNode) next;
                     if (insn.getOpcode() == Opcodes.NEW && insn.desc.equals("java/net/URLClassLoader")) { // remap new URLClassLoader
-                        insn.desc = "org/atom/remapper/CatURLClassLoader";
+                        insn.desc = "org/atom/remapper/AtomURLClassLoader";
                         remapCL = true;
                     }
                 }
@@ -101,45 +105,87 @@ public class ReflectionTransformer {
         return writer.toByteArray();
     }
 
-    public static void remapForName(AbstractInsnNode insn) {
-        MethodInsnNode method = (MethodInsnNode) insn;
-        if (disable || !method.owner.equals("java/lang/Class") || !method.name.equals("forName")) return;
-        method.owner = DESC_ReflectionMethods;
+
+    public static void remapForName(final AbstractInsnNode insn) {
+        final MethodInsnNode method = (MethodInsnNode) insn;
+        if (method.owner.equals("java/lang/invoke/MethodType") && method.name.equals("fromMethodDescriptorString")) {
+            method.owner = ReflectionTransformer.DESC_RemapMethodHandle;
+        }
+        if (ReflectionTransformer.disable || !method.owner.equals("java/lang/Class") || !method.name.equals("forName")) {
+            return;
+        }
+        method.owner = ReflectionTransformer.DESC_ReflectionMethods;
     }
 
-    public static void remapVirtual(AbstractInsnNode insn) {
-        MethodInsnNode method = (MethodInsnNode) insn;
+    public static void remapVirtual(final AbstractInsnNode insn) {
+        final MethodInsnNode method = (MethodInsnNode) insn;
+        boolean remapFlag = false;
+        if (method.owner.equals("java/lang/Class")) {
+            final String name = method.name;
+            switch (name) {
+                case "getField":
+                case "getDeclaredField":
+                case "getMethod":
+                case "getDeclaredMethod":
+                case "getSimpleName": {
+                    remapFlag = true;
+                    break;
+                }
+            }
+        } else if (method.name.equals("getName")) {
+            final String owner = method.owner;
+            switch (owner) {
+                case "java/lang/reflect/Field":
+                case "java/lang/reflect/Method": {
+                    remapFlag = true;
+                    break;
+                }
+            }
+        } else if (method.owner.equals("java/lang/ClassLoader") && method.name.equals("loadClass")) {
+            remapFlag = true;
+        } else if (method.owner.toLowerCase().endsWith("classloader") && method.name.equals("defineClass")) {
+            remapFlag = true;
+        } else if (method.owner.equals("java/lang/invoke/MethodHandles$Lookup")) {
+            final String name2 = method.name;
+            switch (name2) {
+                case "findVirtual":
+                case "findStatic":
+                case "findSpecial":
+                case "unreflect": {
+                    virtualToStatic(method, ReflectionTransformer.DESC_RemapMethodHandle);
+                    break;
+                }
+            }
+        }
+        if (remapFlag) {
+            virtualToStatic(method, ReflectionTransformer.DESC_ReflectionMethods);
+        }
+    }
 
-        if (!(
-                (method.owner.equals("java/lang/Class") && (
-                        method.name.equals("getField") ||
-                                method.name.equals("getDeclaredField") ||
-                                method.name.equals("getMethod") ||
-                                method.name.equals("getDeclaredMethod") ||
-                                method.name.equals("getSimpleName"))
-                )
-                        ||
-                        (method.name.equals("getName") && (
-                                method.owner.equals("java/lang/reflect/Field") ||
-                                        method.owner.equals("java/lang/reflect/Method"))
-                        )
-                        ||
-                        (method.owner.equals("java/lang/ClassLoader") && method.name.equals("loadClass"))
-        )) return;
+    private static void remapURLClassLoader(final MethodInsnNode method) {
+        if (!method.owner.equals("java/net/URLClassLoader") || !method.name.equals("<init>")) {
+            return;
+        }
+        method.owner = "org/atom/remapper/AtomURLClassLoader";
+    }
 
-        Type returnType = Type.getReturnType(method.desc);
-
-        ArrayList<Type> args = new ArrayList<Type>();
-        args.add(Type.getObjectType(method.owner));
+    private static void virtualToStatic(final MethodInsnNode method, final String desc) {
+        final Type returnType = Type.getReturnType(method.desc);
+        final ArrayList<Type> args = new ArrayList<Type>();
+        if (method.owner.toLowerCase().endsWith("classloader")) {
+            args.add(Type.getObjectType("java/lang/ClassLoader"));
+        } else {
+            args.add(Type.getObjectType(method.owner));
+        }
         args.addAll(Arrays.asList(Type.getArgumentTypes(method.desc)));
-
-        method.setOpcode(Opcodes.INVOKESTATIC);
-        method.owner = DESC_ReflectionMethods;
-        method.desc = Type.getMethodDescriptor(returnType, args.toArray(new Type[args.size()]));
+        method.setOpcode(184);
+        method.owner = desc;
+        method.desc = Type.getMethodDescriptor(returnType, (Type[]) args.toArray(new Type[0]));
     }
 
-    public static void remapURLClassLoader(MethodInsnNode method) {
-        if (!(method.owner.equals("java/net/URLClassLoader") && method.name.equals("<init>"))) return;
-        method.owner = "org/atom/remapper/CatURLClassLoader";
+    static {
+        DESC_ReflectionMethods = Type.getInternalName((Class) ReflectionMethods.class);
+        DESC_RemapMethodHandle = Type.getInternalName((Class) HandleLookup.class);
+        ReflectionTransformer.disable = false;
     }
 }

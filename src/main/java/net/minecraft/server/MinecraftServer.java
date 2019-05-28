@@ -41,7 +41,6 @@ import java.util.concurrent.FutureTask;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
-//import jline.console.ConsoleReader;
 import joptsimple.OptionSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
@@ -97,6 +96,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.atom.AtomServerWatchDog;
+import org.atom.BukkitInjector;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.Main;
@@ -172,6 +173,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
     public int autosavePeriod;
     // CraftBukkit end
+    // Spigot start
+    public static final int TPS = 20;
+    public static final int TICK_TIME = 1000000000 / TPS;
+    private static final int SAMPLE_INTERVAL = 100;
+    public final double[] recentTps = new double[ 3 ];
+    // Spigot end
 
     public MinecraftServer(OptionSet options, Proxy proxyIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn) {
         this.serverProxy = proxyIn;
@@ -284,6 +291,15 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             } else {
                 ISaveHandler idatamanager = new AnvilSaveHandler(server.getWorldContainer(), name, true, this.dataFixer);
                 WorldInfo worlddata = idatamanager.loadWorldInfo();
+                if (!BukkitInjector.initializedBukkit) {
+                    BukkitInjector.injectBlockBukkitMaterials();
+                    BukkitInjector.injectItemBukkitMaterials();
+                    BukkitInjector.injectBiomes();
+                    BukkitInjector.injectEntityType();
+                    //BukkitInjector.registerEnchantments(); // TODO BukkitInjector register Enchantments()
+                    //BukkitInjector.registerPotions(); // TODO BukkitInjector register Potions()
+                    BukkitInjector.initializedBukkit = true;
+                }
                 if (worlddata == null) {
                     worlddata = new WorldInfo(worldsettings, name);
                 }
@@ -468,6 +484,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         this.serverRunning = false;
     }
 
+    // Spigot Start
+    private static double calcTps(double avg, double exp, double tps) {
+        return (avg * exp) + (tps * (1 - exp));
+    }
+    // Spigot End
+
     public void run() {
         try {
             if (this.init()) {
@@ -478,39 +500,33 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12.2", 340));
                 this.applyServerIconToResponse(this.statusResponse);
 
+                // Spigot start
+                Arrays.fill( recentTps, 20 );
+                long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
                 while (this.serverRunning) {
-                    long k = getCurrentTimeMillis();
-                    long j = k - this.currentTime;
-
-                    if (j > 2000L && this.currentTime - this.timeOfLastWarning >= 15000L) {
-                        if (server.getWarnOnOverload()) // CraftBukkit
-                            LOGGER.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
-                        j = 2000L;
-                        this.timeOfLastWarning = this.currentTime;
-                    }
-
-                    if (j < 0L) {
-                        LOGGER.warn("Time ran backwards! Did the system time change?");
-                        j = 0L;
-                    }
-
-                    i += j;
-                    this.currentTime = k;
-
-                    if (this.worldServerList.get(0).areAllPlayersAsleep()) {
-                        this.tick();
-                        i = 0L;
+                    curTime = System.nanoTime();
+                    wait = TICK_TIME - (curTime - lastTick) - catchupTime;
+                    if (wait > 0) {
+                        Thread.sleep(wait / 1000000);
+                        catchupTime = 0;
+                        continue;
                     } else {
-                        while (i > 50L) {
-                            MinecraftServer.currentTick = (int) (System.currentTimeMillis() / 50); // CraftBukkit
-                            i -= 50L;
-                            this.tick();
-                        }
+                        catchupTime = Math.min(1000000000, Math.abs(wait));
                     }
 
-                    Thread.sleep(Math.max(1L, 50L - i));
+                    if (MinecraftServer.currentTick++ % SAMPLE_INTERVAL == 0) {
+                        double currentTps = 1E9 / (curTime - tickSection) * SAMPLE_INTERVAL;
+                        recentTps[0] = calcTps(recentTps[0], 0.92, currentTps); // 1/exp(5sec/1min)
+                        recentTps[1] = calcTps(recentTps[1], 0.9835, currentTps); // 1/exp(5sec/5min)
+                        recentTps[2] = calcTps(recentTps[2], 0.9945, currentTps); // 1/exp(5sec/15min)
+                        tickSection = curTime;
+                    }
+                    lastTick = curTime;
+
+                    this.tick();
                     this.serverIsRunning = true;
                 }
+                // Spigot end
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStopping();
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().expectServerStopped(); // has to come before finalTick to avoid race conditions
             } else {
@@ -655,6 +671,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
         this.profiler.endSection();
         this.profiler.endSection();
+        AtomServerWatchDog.updateTickTime();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
         SpigotTimings.serverTickTimer.stopTiming(); // Spigot
         org.spigotmc.CustomTimingsHandler.tick(); // Spigot

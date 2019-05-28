@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,9 +33,9 @@ import javax.annotation.Nullable;
 
 /**
  * This class's main purpose is to provide the necessary objects for a sample Config GUI for FML, although
- * there may be practical uses for the objects defined here such as using the DummyCategoryElement object as a
+ * there may be practical uses for the objects defined here such as using the DummyCategoryElement object as a 
  * wrapper for a custom IGuiConfigListEntry object that opens a special screen.
- *
+ * 
  * @author bspkrs
  */
 public class DummyConfigElement implements IConfigElement {
@@ -49,6 +49,7 @@ public class DummyConfigElement implements IConfigElement {
     protected Object[] values;
     protected Object[] defaultValues;
     protected String[] validValues;
+    protected String[] validValuesDisplay;
     protected Pattern validStringPattern;
     protected Object minValue;
     protected Object maxValue;
@@ -62,7 +63,7 @@ public class DummyConfigElement implements IConfigElement {
     protected Class<? extends IArrayEntry> arrayEntryClass;
 
     /**
-     * This class provides a Dummy Category IConfigElement. It can be used to define a custom list of GUI entries that will
+     * This class provides a Dummy Category IConfigElement. It can be used to define a custom list of GUI entries that will 
      * appear on the child screen or to specify a custom IGuiConfigListEntry for a special category.
      */
     public static class DummyCategoryElement extends DummyConfigElement {
@@ -83,7 +84,7 @@ public class DummyConfigElement implements IConfigElement {
     }
 
     /**
-     * This class provides a dummy array-type IConfigElement.
+     * This class provides a dummy array-type IConfigElement. 
      */
     public static class DummyListElement extends DummyConfigElement {
         public DummyListElement(String name, Object[] defaultValues, ConfigGuiType type, String langKey, boolean isListFixedLength, int maxListLength, @Nullable Pattern validStringPattern, @Nullable Object minValue, @Nullable Object maxValue) {
@@ -147,13 +148,14 @@ public class DummyConfigElement implements IConfigElement {
         }
     }
 
-    public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey, String[] validValues, Pattern validStringPattern, Object minValue, Object maxValue) {
+    public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey, String[] validValues, String[] validValuesDisplay, Pattern validStringPattern, Object minValue, Object maxValue) {
         this.name = name;
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.type = type;
         this.langKey = langKey;
         this.validValues = validValues;
+        this.validValuesDisplay = validValuesDisplay;
         this.validStringPattern = validStringPattern;
         if (minValue == null) {
             if (type == ConfigGuiType.INTEGER)
@@ -171,12 +173,20 @@ public class DummyConfigElement implements IConfigElement {
             this.maxValue = maxValue;
     }
 
+    public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey, String[] validValues, Pattern validStringPattern, Object minValue, Object maxValue) {
+        this(name, defaultValue, type, langKey, validValues, null, validStringPattern, minValue, maxValue);
+    }
+
     public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey, Pattern validStringPattern) {
         this(name, defaultValue, type, langKey, null, validStringPattern, null, null);
     }
 
     public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey, String[] validValues) {
         this(name, defaultValue, type, langKey, validValues, null, null, null);
+    }
+
+    public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey, String[] validValues, String[] validValuesDisplay) {
+        this(name, defaultValue, type, langKey, validValues, validValuesDisplay, null, null, null);
     }
 
     public DummyConfigElement(String name, Object defaultValue, ConfigGuiType type, String langKey) {
@@ -324,6 +334,11 @@ public class DummyConfigElement implements IConfigElement {
     @Override
     public String[] getValidValues() {
         return validValues;
+    }
+
+    @Override
+    public String[] getValidValuesDisplay() {
+        return validValuesDisplay;
     }
 
     @Override

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,7 @@ import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderException;
+import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder;
@@ -123,20 +124,19 @@ public class ConfigManager {
     /**
      * Synchronizes configuration data between the file on disk, the {@code Configuration} object and the annotated
      * mod classes containing the configuration variables.
-     * <p>
+     *
      * When first called, this method will try to load the configuration from disk. If this fails, because the file
      * does not exist, it will be created with default values derived from the mods config classes variable default values
      * and comments and ranges, as well as configuration names based on the appropriate annotations found in {@code @Config}.
-     * <p>
-     * Note, that this method is being called by the {@link FMLModContaier}, so the mod needn't call it in init().
-     * <p>
+     *
+     * Note, that this method is being called by the {@link net.minecraftforge.fml.common.FMLModContainer}, so the mod needn't call it in init().
+     *
      * If this method is called after the initial load, it will check whether the values in the Configuration object differ
      * from the values in the corresponding variables. If they differ, it will either overwrite the variables if the Configuration
      * object is marked as changed (e.g. if it was changed with the ConfigGui) or otherwise overwrite the Configuration object's values.
      * It then proceeds to saving the changes to disk.
-     *
      * @param modid the mod's ID for which the configuration shall be loaded
-     * @param type  the configuration type, currently always {@code Config.Type.INSTANCE}
+     * @param type the configuration type, currently always {@code Config.Type.INSTANCE}
      */
     public static void sync(String modid, Config.Type type) {
         FMLLog.log.debug("Attempting to inject @Config classes into {} for type {}", modid, type);
@@ -163,21 +163,19 @@ public class ConfigManager {
 
                 File file = new File(configDir, name + ".cfg");
 
-                boolean loading = false;
                 Configuration cfg = CONFIGS.get(file.getAbsolutePath());
                 if (cfg == null) {
                     cfg = new Configuration(file);
                     cfg.load();
                     CONFIGS.put(file.getAbsolutePath(), cfg);
-                    loading = true;
                 }
 
-                sync(cfg, cls, modid, category, loading, null);
+                sync(cfg, cls, modid, category, !Loader.instance().hasReachedState(LoaderState.AVAILABLE), null);
 
                 cfg.save();
 
             } catch (Exception e) {
-                FMLLog.log.error("An error occurred trying to load a config for {} into {}", targ.getClassName(), e);
+                FMLLog.log.error("An error occurred trying to load a config for {} into {}", modid, targ.getClassName(), e);
                 throw new LoaderException(e);
             }
         }
@@ -227,6 +225,7 @@ public class ConfigManager {
 
             boolean requiresMcRestart = f.isAnnotationPresent(Config.RequiresMcRestart.class);
             boolean requiresWorldRestart = f.isAnnotationPresent(Config.RequiresWorldRestart.class);
+            boolean hasSlidingControl = f.isAnnotationPresent(Config.SlidingOption.class);
 
             if (FieldWrapper.hasWrapperFor(f)) //Wrappers exist for primitives, enums, maps and arrays
             {
@@ -245,7 +244,6 @@ public class ConfigManager {
                         if (!existed || loading) //Creates keys in category specified by the wrapper if new ones are programaticaly added
                         {
                             Property property = property(cfg, wrapper.getCategory(), suffix, propType, adapt.isArrayAdapter());
-
                             adapt.setDefaultValue(property, wrapper.getValue(key));
                             if (!existed)
                                 adapt.setValue(property, wrapper.getValue(key));
@@ -279,7 +277,7 @@ public class ConfigManager {
                     }
 
                     if (loading)
-                        wrapper.setupConfiguration(cfg, comment, langKey, requiresMcRestart, requiresWorldRestart);
+                        wrapper.setupConfiguration(cfg, comment, langKey, requiresMcRestart, requiresWorldRestart, hasSlidingControl);
 
                 } catch (Exception e) {
                     String format = "Error syncing field '%s' of class '%s'!";

@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ModelBlock;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.EnumFacing;
@@ -69,6 +70,11 @@ final class FancyMissingModel implements IModel {
     @Override
     public Collection<ResourceLocation> getTextures() {
         return ImmutableList.of(font2);
+    }
+
+    @Override
+    public Optional<ModelBlock> asVanillaModel() {
+        return missingModel.asVanillaModel();
     }
 
     @Override
