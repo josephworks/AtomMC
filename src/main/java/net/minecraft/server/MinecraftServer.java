@@ -119,7 +119,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.SERVER)
     private String hostname;
     private int serverPort = -1;
-    public WorldServer[] worlds = new WorldServer[0];
+    public WorldServer[] worlds = new WorldServer[0]; // Fix ClimateControl(GeographiCraft)
     private PlayerList playerList;
     private boolean serverRunning = true;
     private boolean serverStopped;
@@ -252,7 +252,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         vanillaCommandManager.registerVanillaCommands();
         this.convertMapIfNeeded(saveName);
         this.setUserMessage("menu.loadingLevel");
-        this.worlds = new WorldServer[3];
 
         WorldServer world;
 
