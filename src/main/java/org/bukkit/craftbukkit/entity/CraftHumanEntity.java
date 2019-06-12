@@ -20,6 +20,7 @@ import net.minecraft.network.play.client.CPacketCloseWindow;
 import net.minecraft.network.play.server.SPacketOpenWindow;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBeacon;
+import net.minecraft.tileentity.TileEntityEnchantmentTable;
 import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.tileentity.TileEntityDropper;
@@ -297,7 +298,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
 
     private void openCustomInventory(Inventory inventory, EntityPlayerMP player, String windowType) {
         if (player.connection == null) return;
-        Container container = new CraftContainer(inventory, this.getHandle(), player.getNextWindowIdCB());
+        Container container = new CraftContainer(inventory, this.getHandle(), player.nextContainerCounter());
 
         container = CraftEventFactory.callInventoryOpenEvent(player, container);
         if (container == null) return;
@@ -350,7 +351,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         BlockPos pos = new BlockPos(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         TileEntity container = getHandle().world.getTileEntity(pos);
         if (container == null && force) {
-            container = new TileEntityBrewingStand();
+            container = new TileEntityEnchantmentTable();
             container.setWorld(getHandle().world);
             container.setPos(pos);
         }
@@ -374,7 +375,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
         if (inventory instanceof CraftInventoryView) {
             container = ((CraftInventoryView) inventory).getHandle();
         } else {
-            container = new CraftContainer(inventory, this.getHandle(), player.getNextWindowIdCB());
+            container = new CraftContainer(inventory, this.getHandle(), player.nextContainerCounter());
         }
 
         // Trigger an INVENTORY_OPEN event

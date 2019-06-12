@@ -93,7 +93,7 @@ class NamespacedDefaultedWrapper<V extends IForgeRegistryEntry<V>> extends Regis
     @Nullable
     public V getRandomObject(Random random) {
         Collection<V> values = this.delegate.getValuesCollection();
-        return values.stream().skip(random.nextInt(values.size())).findFirst().orElse(null);
+        return values.stream().skip(random.nextInt(values.size())).findFirst().orElse(this.delegate.getDefault());
     }
 
     //internal

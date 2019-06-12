@@ -88,6 +88,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
+import net.minecraft.network.datasync.DataSerializer;
 import net.minecraft.network.play.server.SPacketBlockChange;
 import net.minecraft.network.play.server.SPacketRecipeBook;
 import net.minecraft.network.play.server.SPacketRecipeBook.State;
@@ -97,15 +98,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityNote;
 import net.minecraft.tileentity.TileEntitySkull;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.JsonUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.WeightedRandom;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -155,13 +148,13 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher;
 import net.minecraftforge.fml.common.network.handshake.NetworkDispatcher.ConnectionType;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
+import net.minecraftforge.registries.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -204,6 +197,13 @@ public class ForgeHooks {
             return ItemStack.EMPTY;
         }
         return entry.getStack(rand, fortune);
+    }
+
+    public static boolean canContinueUsing(@Nonnull ItemStack from, @Nonnull ItemStack to) {
+        if (!from.isEmpty() && !to.isEmpty()) {
+            return from.getItem().canContinueUsing(from, to);
+        }
+        return false;
     }
 
     private static boolean toolInit = false;
@@ -267,17 +267,17 @@ public class ForgeHooks {
         }
         toolInit = true;
 
-        Set<Block> blocks = ReflectionHelper.getPrivateValue(ItemPickaxe.class, null, 0);
+        Set<Block> blocks = ReflectionHelper.getPrivateValue(ItemPickaxe.class, null, 0); // TODO: ReflectionHelper -> ObfuscationReflectionHelper
         for (Block block : blocks) {
             block.setHarvestLevel("pickaxe", 0);
         }
 
-        blocks = ReflectionHelper.getPrivateValue(ItemSpade.class, null, 0);
+        blocks = ReflectionHelper.getPrivateValue(ItemSpade.class, null, 0); // TODO: ReflectionHelper -> ObfuscationReflectionHelper
         for (Block block : blocks) {
             block.setHarvestLevel("shovel", 0);
         }
 
-        blocks = ReflectionHelper.getPrivateValue(ItemAxe.class, null, 0);
+        blocks = ReflectionHelper.getPrivateValue(ItemAxe.class, null, 0); // TODO: ReflectionHelper -> ObfuscationReflectionHelper
         for (Block block : blocks) {
             block.setHarvestLevel("axe", 0);
         }
@@ -317,7 +317,6 @@ public class ForgeHooks {
                 return new ItemStack(Items.WHEAT_SEEDS, 1 + rand.nextInt(fortune * 2 + 1));
             }
         });
-        initTools();
     }
 
     /**
@@ -1393,4 +1392,29 @@ public class ForgeHooks {
         return false;
     }
 
+    private static final Map<DataSerializer<?>, DataSerializerEntry> serializerEntries = GameData.getSerializerMap();
+    private static final ForgeRegistry<DataSerializerEntry> serializerRegistry = (ForgeRegistry<DataSerializerEntry>) ForgeRegistries.DATA_SERIALIZERS;
+
+    @Nullable
+    public static DataSerializer<?> getSerializer(int id, IntIdentityHashBiMap<DataSerializer<?>> vanilla)
+    {
+        DataSerializer<?> serializer = vanilla.get(id);
+        if (serializer == null)
+        {
+            DataSerializerEntry entry = serializerRegistry.getValue(id);
+            if (entry != null) serializer = entry.getSerializer();
+        }
+        return serializer;
+    }
+
+    public static int getSerializerId(DataSerializer<?> serializer, IntIdentityHashBiMap<DataSerializer<?>> vanilla)
+    {
+        int id = vanilla.getId(serializer);
+        if (id < 0)
+        {
+            DataSerializerEntry entry = serializerEntries.get(serializer);
+            if (entry != null) id = serializerRegistry.getID(entry);
+        }
+        return id;
+    }
 }

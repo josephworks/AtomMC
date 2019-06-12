@@ -118,6 +118,7 @@ public class VillageSiege {
                     Vec3d vec3d = this.findRandomSpawnPos(new BlockPos(this.spawnX, this.spawnY, this.spawnZ));
 
                     if (vec3d != null) {
+                        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.village.VillageSiegeEvent(this, world, entityplayer, village, vec3d))) return false;
                         break;
                     }
                 }

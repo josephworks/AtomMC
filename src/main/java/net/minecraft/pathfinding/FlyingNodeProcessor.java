@@ -227,7 +227,9 @@ public class FlyingNodeProcessor extends WalkNodeProcessor {
         EnumSet<PathNodeType> enumset = EnumSet.<PathNodeType>noneOf(PathNodeType.class);
         PathNodeType pathnodetype = PathNodeType.BLOCKED;
         BlockPos blockpos = new BlockPos(entitylivingIn);
+        this.currentEntity = entitylivingIn;
         pathnodetype = this.getPathNodeType(blockaccessIn, x, y, z, xSize, ySize, zSize, canBreakDoorsIn, canEnterDoorsIn, enumset, pathnodetype, blockpos);
+        this.currentEntity = null;
 
         if (enumset.contains(PathNodeType.FENCE)) {
             return PathNodeType.FENCE;
@@ -262,7 +264,8 @@ public class FlyingNodeProcessor extends WalkNodeProcessor {
             if (pathnodetype1 != PathNodeType.DAMAGE_FIRE && block != Blocks.MAGMA && pathnodetype1 != PathNodeType.LAVA) {
                 if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS) {
                     pathnodetype = PathNodeType.DAMAGE_CACTUS;
-                } else {
+                } else if (pathnodetype1 == PathNodeType.DAMAGE_OTHER) pathnodetype = PathNodeType.DAMAGE_OTHER;
+                else {
                     pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER ? PathNodeType.WALKABLE : PathNodeType.OPEN;
                 }
             } else {

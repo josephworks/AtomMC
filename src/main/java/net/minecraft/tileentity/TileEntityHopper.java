@@ -1,6 +1,7 @@
 package net.minecraft.tileentity;
 
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
@@ -201,7 +202,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
                         if (iinventory instanceof InventoryLargeChest) {
                             destinationInventory = new org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest((InventoryLargeChest) iinventory);
                         } else {
-                            destinationInventory = InventoryUtils.getInventoryOwner(iinventory).getInventory();
+                            if (InventoryUtils.getInventoryOwner(iinventory) != null)
+                                destinationInventory = Objects.requireNonNull(InventoryUtils.getInventoryOwner(iinventory)).getInventory();
+                            else
+                                destinationInventory = null;
                         }
 
                         InventoryMoveItemEvent event = new InventoryMoveItemEvent(InventoryUtils.getInventoryOwner(this).getInventory(), oitemstack.clone(), destinationInventory, true);

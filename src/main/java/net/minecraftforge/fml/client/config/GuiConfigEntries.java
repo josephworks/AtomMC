@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 package net.minecraftforge.fml.client.config;
 
 import static net.minecraftforge.fml.client.config.GuiUtils.RESET_CHAR;
@@ -126,11 +127,17 @@ public class GuiConfigEntries extends GuiListExtended {
                         this.listEntries.add(new GuiConfigEntries.ArrayEntry(this.owningScreen, this, configElement));
                     else if (configElement.getType() == ConfigGuiType.BOOLEAN)
                         this.listEntries.add(new GuiConfigEntries.BooleanEntry(this.owningScreen, this, configElement));
-                    else if (configElement.getType() == ConfigGuiType.INTEGER)
-                        this.listEntries.add(new GuiConfigEntries.IntegerEntry(this.owningScreen, this, configElement));
-                    else if (configElement.getType() == ConfigGuiType.DOUBLE)
-                        this.listEntries.add(new GuiConfigEntries.DoubleEntry(this.owningScreen, this, configElement));
-                    else if (configElement.getType() == ConfigGuiType.COLOR) {
+                    else if (configElement.getType() == ConfigGuiType.INTEGER) {
+                        if (configElement.hasSlidingControl())
+                            listEntries.add(new GuiConfigEntries.NumberSliderEntry(owningScreen, this, configElement));
+                        else
+                            this.listEntries.add(new GuiConfigEntries.IntegerEntry(this.owningScreen, this, configElement));
+                    } else if (configElement.getType() == ConfigGuiType.DOUBLE) {
+                        if (configElement.hasSlidingControl())
+                            listEntries.add(new NumberSliderEntry(owningScreen, this, configElement));
+                        else
+                            this.listEntries.add(new GuiConfigEntries.DoubleEntry(this.owningScreen, this, configElement));
+                    } else if (configElement.getType() == ConfigGuiType.COLOR) {
                         if (configElement.getValidValues() != null && configElement.getValidValues().length > 0)
                             this.listEntries.add(new GuiConfigEntries.ChatColorEntry(this.owningScreen, this, configElement));
                         else
@@ -320,7 +327,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * BooleanPropEntry
-     * <p>
+     *
      * Provides a GuiButton that toggles between true and false.
      */
     public static class BooleanEntry extends ButtonEntry {
@@ -395,7 +402,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * CycleValueEntry
-     * <p>
+     *
      * Provides a GuiButton that cycles through the prop's validValues array. If the current prop value is not a valid value, the first
      * entry replaces the current value.
      */
@@ -424,7 +431,12 @@ public class GuiConfigEntries extends GuiListExtended {
 
         @Override
         public void updateValueButtonText() {
-            this.btnValue.displayString = I18n.format(configElement.getValidValues()[currentIndex]);
+            this.btnValue.displayString = I18n.format(getValidValueDisplay());
+        }
+
+        protected String getValidValueDisplay() {
+            String[] validValuesDisplay = configElement.getValidValuesDisplay();
+            return validValuesDisplay != null && validValuesDisplay.length > 0 ? validValuesDisplay[currentIndex] : configElement.getValidValues()[currentIndex];
         }
 
         @Override
@@ -485,7 +497,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * ChatColorEntry
-     * <p>
+     *
      * Provides a GuiButton that cycles through the list of chat color codes.
      */
     public static class ChatColorEntry extends CycleValueEntry {
@@ -497,19 +509,19 @@ public class GuiConfigEntries extends GuiListExtended {
 
         @Override
         public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partial) {
-            this.btnValue.packedFGColour = GuiUtils.getColorCode(this.configElement.getValidValues()[currentIndex].charAt(0), true);
+            this.btnValue.packedFGColour = GuiUtils.getColorCode(getValidValueDisplay().charAt(0), true);
             super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partial);
         }
 
         @Override
         public void updateValueButtonText() {
-            this.btnValue.displayString = I18n.format(configElement.getValidValues()[currentIndex]) + " - " + I18n.format("fml.configgui.sampletext");
+            this.btnValue.displayString = I18n.format(getValidValueDisplay()) + " - " + I18n.format("fml.configgui.sampletext");
         }
     }
 
     /**
      * SelectValueEntry
-     * <p>
+     *
      * Provides a GuiButton with the current value as the displayString. Accepts a Map of selectable values with the signature <Object,
      * String> where the key is the Object to be selected and the value is the String that will show on the selection list. EG: a map of Mod
      * ID values where the key is the Mod ID and the value is the Mod Name.
@@ -598,7 +610,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * ArrayEntry
-     * <p>
+     *
      * Provides a GuiButton with the list contents as the displayString. Clicking the button navigates to a screen where the list can be
      * edited.
      */
@@ -682,7 +694,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * NumberSliderEntry
-     * <p>
+     *
      * Provides a slider for numeric properties.
      */
     public static class NumberSliderEntry extends ButtonEntry {
@@ -768,7 +780,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * ButtonEntry
-     * <p>
+     *
      * Provides a basic GuiButton entry to be used as a base for other entries that require a button for the value.
      */
     public static abstract class ButtonEntry extends ListEntryBase {
@@ -842,7 +854,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * IntegerEntry
-     * <p>
+     *
      * Provides a GuiTextField for user input. Input is restricted to ensure the value can be parsed using Integer.parseInteger().
      */
     public static class IntegerEntry extends StringEntry {
@@ -925,7 +937,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * DoubleEntry
-     * <p>
+     *
      * Provides a GuiTextField for user input. Input is restricted to ensure the value can be parsed using Double.parseDouble().
      */
     public static class DoubleEntry extends StringEntry {
@@ -1008,7 +1020,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * StringEntry
-     * <p>
+     *
      * Provides a GuiTextField for user input.
      */
     public static class StringEntry extends ListEntryBase {
@@ -1110,7 +1122,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * CategoryEntry
-     * <p>
+     *
      * Provides an entry that consists of a GuiButton for navigating to the child category GuiConfig screen.
      */
     public static class CategoryEntry extends ListEntryBase {
@@ -1255,7 +1267,7 @@ public class GuiConfigEntries extends GuiListExtended {
 
     /**
      * ListEntryBase
-     * <p>
+     *
      * Provides a base entry for others to extend. Handles drawing the prop label (if drawLabel == true) and the Undo/Default buttons.
      */
     public static abstract class ListEntryBase implements IConfigEntry {
@@ -1470,7 +1482,6 @@ public class GuiConfigEntries extends GuiListExtended {
     public static interface IConfigEntry extends GuiListExtended.IGuiListEntry {
         /**
          * Gets the IConfigElement object owned by this entry.
-         *
          * @return
          */
         IConfigElement getConfigElement();
