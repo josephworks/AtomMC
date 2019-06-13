@@ -51,7 +51,7 @@ dependencies {
     testCompile files("src/test/resources/launchwrapper-1.12.jar") // Use fixed LegacyLauncher for test running
     testCompile 'org.mockito:mockito-core:2.18.3'
     testCompile 'org.spongepowered:mixin:0.7.10-SNAPSHOT'
-    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.mojang:patchy:1.1'
     compile 'oshi-project:oshi-core:1.1'
     compile 'net.java.dev.jna:jna:4.4.0'
