@@ -57,7 +57,7 @@ dependencies {
     compile 'net.java.dev.jna:jna:4.4.0'
     compile 'net.java.dev.jna:platform:3.4.0'
     compile 'com.ibm.icu:icu4j-core-mojang:51.2'
-    compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+    compile 'net.sf.jopt-simple:jopt-simple:5.0.4'
     compile 'com.paulscode:codecjorbis:20101023'
     compile 'com.paulscode:codecwav:20101023'
     compile 'com.paulscode:libraryjavasound:20101123'
