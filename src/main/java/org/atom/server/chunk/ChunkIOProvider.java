@@ -47,7 +47,7 @@ public class ChunkIOProvider  implements AsynchronousExecutor.CallBackProvider<Q
 
         // See if someone already loaded this chunk while we were working on it
         // (API, etc)
-        if(queuedChunk.provider.id2ChunkMap.containsKey(queuedChunk.coords))
+        if(queuedChunk.provider.id2ChunkMap.contains(x,z))
         {
             // Make sure it isn't queued for unload, we need it
             queuedChunk.provider.droppedChunksSet.remove(queuedChunk.coords); // Spigot
@@ -71,6 +71,7 @@ public class ChunkIOProvider  implements AsynchronousExecutor.CallBackProvider<Q
         }
 
         chunk.populateCB(queuedChunk.provider, queuedChunk.provider.chunkGenerator, false);
+        chunk.onTick(false);
     }
 
     public void callStage3(QueuedChunk queuedChunk, Chunk chunk, Runnable runnable) throws RuntimeException

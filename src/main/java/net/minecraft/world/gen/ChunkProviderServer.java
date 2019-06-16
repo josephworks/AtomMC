@@ -35,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.server.chunk.ChunkHash;
 import org.atom.server.chunk.ChunkIOExecutor;
+import org.atom.server.chunk.ChunkMap;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 // TODO: This class needs serious testing.
@@ -43,7 +44,7 @@ public class ChunkProviderServer implements IChunkProvider {
     public final TIntSet droppedChunksSet = new TIntHashSet();
     public final IChunkGenerator chunkGenerator;
     public final IChunkLoader chunkLoader;
-    public final TIntObjectHashMap<Chunk> id2ChunkMap = new TIntObjectHashMap<>();
+    public final ChunkMap id2ChunkMap = new ChunkMap();
     public final WorldServer world;
     private final Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
 
@@ -75,8 +76,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     @Nullable
     public Chunk getLoadedChunk(int x, int z) {
-        int i = ChunkHash.chunkToKey(x, z);
-        Chunk chunk = (Chunk) this.id2ChunkMap.get(i);
+        Chunk chunk = (Chunk) this.id2ChunkMap.get(x,z);
 
         if (chunk != null) {
             chunk.unloadQueued = false;
@@ -87,7 +87,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     // Is it copy of method above?
     public Chunk getChunkIfLoaded(int x, int z) {
-        return id2ChunkMap.get(ChunkHash.chunkToKey(x, z));
+        return id2ChunkMap.get(x, z);
     }
 
     @Nullable
@@ -173,6 +173,7 @@ public class ChunkProviderServer implements IChunkProvider {
             chunk.onLoad();
             chunk.populateCB(this, this.chunkGenerator, true);
             world.timings.syncChunkLoadTimer.stopTiming(); // Spigot
+            chunk.onTick(false);
         }
 
         return chunk;
@@ -340,18 +341,18 @@ public class ChunkProviderServer implements IChunkProvider {
     }
 
     public boolean chunkExists(int x, int z) {
-        return this.id2ChunkMap.containsKey(ChunkHash.chunkToKey(x, z));
+        return this.id2ChunkMap.contains(x, z);
     }
 
     public boolean isChunkGeneratedAt(int x, int z) {
-        return this.id2ChunkMap.containsKey(ChunkHash.chunkToKey(x, z)) || this.chunkLoader.isChunkGeneratedAt(x, z);
+        return this.id2ChunkMap.contains(x, z) || this.chunkLoader.isChunkGeneratedAt(x, z);
     }
 
     /* ======================================== ATOMMC START =====================================*/
 
     public void loadAsync(int x, int z, Runnable callback) //XXX
     {
-        if(id2ChunkMap.containsKey(ChunkHash.chunkToKey(x, z)))
+        if(id2ChunkMap.contains(x, z))
         {
             callback.run();
             return;

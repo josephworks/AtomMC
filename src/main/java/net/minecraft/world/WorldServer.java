@@ -1492,4 +1492,13 @@ public class WorldServer extends World implements IThreadListener {
         private ServerBlockEventList() {
         }
     }
+
+    public boolean chunkRoundExists(int cx, int cz, int radius)
+    {
+        for(int x = cx - radius; x < cx + radius; x++)
+            for(int z = cz - radius; z < cz + radius; z++)
+                if(!this.isChunkLoaded(x, z, false)) return false;
+        return true;
+    }
+
 }
