@@ -343,7 +343,7 @@ public class CraftWorld implements World {
         }
 
         final int chunkKey = ChunkHash.chunkToKey(x, z);
-        world.getChunkProvider().droppedChunksSet.remove(chunkKey);
+        //world.getChunkProvider().droppedChunksSet.remove(chunkKey);
 
         net.minecraft.world.chunk.Chunk chunk = null;
 

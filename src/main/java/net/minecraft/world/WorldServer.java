@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.block.Block;
@@ -130,7 +132,7 @@ public class WorldServer extends World implements IThreadListener {
     /**
      * Stores the recently processed (lighting) chunks
      */
-    protected Set<ChunkPos> doneChunks = new java.util.HashSet<ChunkPos>();
+    protected TIntSet doneChunks = new TIntHashSet();
     public List<Teleporter> customTeleporters = new ArrayList<Teleporter>();
 
     public final int dimension;

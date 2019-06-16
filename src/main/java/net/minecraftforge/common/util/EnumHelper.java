@@ -231,6 +231,8 @@ public class EnumHelper {
     private static void cleanEnumCache(Class<?> enumClass) throws Exception {
         blankField(enumClass, "enumConstantDirectory");
         blankField(enumClass, "enumConstants");
+        //Open J9
+        blankField(enumClass, "enumVars");
     }
 
     @Nullable

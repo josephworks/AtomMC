@@ -29,10 +29,12 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.server.chunk.ChunkHash;
+import org.atom.server.chunk.ChunkIOExecutor;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 // TODO: This class needs serious testing.
@@ -116,7 +118,7 @@ public class ChunkProviderServer implements IChunkProvider {
     public Chunk loadChunk(int x, int z, @Nullable Runnable runnable, boolean generate) {
         Chunk chunk = this.getLoadedChunk(x, z);
         if (chunk == null) {
-            long pos = ChunkHash.chunkToKey(x, z);
+            long pos = ChunkPos.asLong(x, z);
             chunk = net.minecraftforge.common.ForgeChunkManager.fetchDormantChunk(pos, this.world);
             if (chunk != null || !(this.chunkLoader instanceof net.minecraft.world.chunk.storage.AnvilChunkLoader)) {
                 if (!loadingChunks.add(pos))
@@ -162,7 +164,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception generating new chunk");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Chunk to be generated");
                 crashreportcategory.addCrashSection("Location", String.format("%d,%d", x, z));
-                crashreportcategory.addCrashSection("Position hash", Long.valueOf(i));
+                crashreportcategory.addCrashSection("Position hash", i);
                 crashreportcategory.addCrashSection("Generator", this.chunkGenerator);
                 throw new ReportedException(crashreport);
             }
@@ -343,5 +345,20 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public boolean isChunkGeneratedAt(int x, int z) {
         return this.id2ChunkMap.containsKey(ChunkHash.chunkToKey(x, z)) || this.chunkLoader.isChunkGeneratedAt(x, z);
+    }
+
+    /* ======================================== ATOMMC START =====================================*/
+
+    public void loadAsync(int x, int z, Runnable callback) //XXX
+    {
+        if(id2ChunkMap.containsKey(ChunkHash.chunkToKey(x, z)))
+        {
+            callback.run();
+            return;
+        }
+        else
+        {
+            ChunkIOExecutor.queueChunkLoad(this.world, (AnvilChunkLoader)chunkLoader, this, x, z, callback);
+        }
     }
 }

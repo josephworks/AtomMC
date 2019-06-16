@@ -98,6 +98,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.AtomServerWatchDog;
 import org.atom.BukkitInjector;
+import org.atom.server.chunk.ChunkIOExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.Main;
@@ -677,6 +678,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     }
 
     public void updateTimeLightAndEntities() {
+        this.profiler.startSection("ChunkIOExecutor");
+        ChunkIOExecutor.tick();
+        this.profiler.endSection();
         SpigotTimings.schedulerTimer.startTiming(); // Spigot
         this.server.getScheduler().mainThreadHeartbeat(this.tickCounter); // CraftBukkit
         SpigotTimings.schedulerTimer.stopTiming(); // Spigot
@@ -687,6 +691,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 Util.runTask(this.futureTaskQueue.poll(), LOGGER);
             }
         }
+
+
 
         this.profiler.endStartSection("levels");
         // CraftBukkit start
@@ -709,7 +715,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 entityplayer.connection.sendPacket(new SPacketTimeUpdate(entityplayer.world.getTotalWorldTime(), entityplayer.getPlayerTime(), entityplayer.world.getGameRules().getBoolean("doDaylightCycle"))); // Add support for per player time
             }
         }
-        net.minecraftforge.common.chunkio.ChunkIOExecutor.tick();
+        //net.minecraftforge.common.chunkio.ChunkIOExecutor.tick();
 
         // TODO: Check if it's OK to replace ids for worldServerList.size()
         Integer[] ids = net.minecraftforge.common.DimensionManager.getIDs(this.tickCounter % 200 == 0);
@@ -1061,7 +1067,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public boolean isServerInOnlineMode() {
         // return this.onlineMode;
-        return server.getOnlineMode(); // CraftBukkit
+        return server != null ? server.getOnlineMode() : this.onlineMode; // CraftBukkit
     }
 
     public void setOnlineMode(boolean online) {

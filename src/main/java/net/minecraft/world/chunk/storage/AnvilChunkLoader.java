@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -35,10 +36,11 @@ import net.minecraft.world.storage.IThreadedFileIO;
 import net.minecraft.world.storage.ThreadedFileIOBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.atom.server.chunk.ChunkHash;
 
 public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Map<ChunkPos, NBTTagCompound> chunksToSave = Maps.<ChunkPos, NBTTagCompound>newConcurrentMap();
+    private final TIntObjectHashMap<PendingChunk> chunksToSave = new TIntObjectHashMap<>();
     private final Set<ChunkPos> chunksBeingSaved = Collections.<ChunkPos>newSetFromMap(Maps.newConcurrentMap());
     public final File chunkSaveLocation;
     private final DataFixer fixer;
@@ -73,7 +75,12 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
     @Nullable
     public Object[] loadChunk__Async(World worldIn, int x, int z) throws IOException {
         ChunkPos chunkpos = new ChunkPos(x, z);
-        NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
+        NBTTagCompound nbttagcompound = null;
+
+        if(this.chunksToSave.get(ChunkHash.chunkToKey(chunkpos.x, chunkpos.z)) != null){
+            nbttagcompound = this.chunksToSave.get(ChunkHash.chunkToKey(chunkpos.x, chunkpos.z)).nbtTags;
+        }
+
 
         if (nbttagcompound == null) {
             NBTTagCompound nbtTagCompound = RegionFileCache.getChunkInputStreamCB(this.chunkSaveLocation, x, z);
@@ -90,7 +97,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
     public boolean isChunkGeneratedAt(int x, int z) {
         ChunkPos chunkpos = new ChunkPos(x, z);
-        NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
+        NBTTagCompound nbttagcompound = this.chunksToSave.get(ChunkHash.chunkToKey(chunkpos.x, chunkpos.z)).nbtTags;
         return nbttagcompound != null ? true : RegionFileCache.chunkExists(this.chunkSaveLocation, x, z);
     }
 
@@ -163,7 +170,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
     protected void addChunkToPending(ChunkPos pos, NBTTagCompound compound) {
         if (!this.chunksBeingSaved.contains(pos)) {
-            this.chunksToSave.put(pos, compound);
+            this.chunksToSave.put(ChunkHash.chunkToKey(pos.x,pos.z), new PendingChunk(pos, compound));
         }
 
         ThreadedFileIOBase.getThreadedIOInstance().queueIO(this);
@@ -177,12 +184,13 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
             return false;
         } else {
-            ChunkPos chunkpos = this.chunksToSave.keySet().iterator().next();
+            int key = this.chunksToSave.keySet().iterator().next();
+            ChunkPos chunkpos = this.chunksToSave.get(key).chunkCoordinate;
             boolean lvt_3_1_;
 
             try {
-                this.chunksBeingSaved.add(chunkpos);
-                NBTTagCompound nbttagcompound = this.chunksToSave.remove(chunkpos);
+                this.chunksBeingSaved.add(chunksToSave.get(key).chunkCoordinate);
+                NBTTagCompound nbttagcompound = this.chunksToSave.remove(key).nbtTags;
 
                 if (nbttagcompound != null) {
                     try {
@@ -547,5 +555,18 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
     public int getPendingSaveCount() {
         return this.chunksToSave.size();
+    }
+
+    static class PendingChunk
+    {
+        public final ChunkPos chunkCoordinate;
+        public final NBTTagCompound nbtTags;
+        private static final String __OBFID = "CL_00000385";
+
+        public PendingChunk(ChunkPos chunkPos, NBTTagCompound nbtTags)
+        {
+            this.chunkCoordinate = chunkPos;
+            this.nbtTags = nbtTags;
+        }
     }
 }

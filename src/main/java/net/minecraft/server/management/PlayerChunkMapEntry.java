@@ -44,7 +44,7 @@ public class PlayerChunkMapEntry {
     public PlayerChunkMapEntry(PlayerChunkMap mapIn, int chunkX, int chunkZ) {
         this.playerChunkMap = mapIn;
         this.pos = new ChunkPos(chunkX, chunkZ);
-        mapIn.getWorldServer().getChunkProvider().loadChunk(chunkX, chunkZ, this.loadedRunnable);
+        mapIn.getWorldServer().getChunkProvider().loadAsync(chunkX, chunkZ, this.loadedRunnable);
     }
 
     public ChunkPos getPos() {
