@@ -108,6 +108,10 @@ dependencies {
     compile 'net.md-5:SpecialSource:1.8.5'
 }
 
+tasks.withType(JavaCompile) {
+    options.incremental = true // one flag, and things will get MUCH faster
+}
+
 jar {
     classifier = 'dev'
 }

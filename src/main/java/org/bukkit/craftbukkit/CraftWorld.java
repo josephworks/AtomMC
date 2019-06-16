@@ -143,6 +143,7 @@ import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.commons.lang3.Validate;
+import org.atom.server.chunk.ChunkHash;
 import org.bukkit.BlockChangeDelegate;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -274,7 +275,7 @@ public class CraftWorld implements World {
     }
 
     public Chunk[] getLoadedChunks() {
-        Object[] chunks = world.getChunkProvider().id2ChunkMap.values().toArray();
+        Object[] chunks = world.getChunkProvider().id2ChunkMap.valueCollection().toArray();
         Chunk[] craftChunks = new CraftChunk[chunks.length];
 
         for (int i = 0; i < chunks.length; i++) {
@@ -341,7 +342,7 @@ public class CraftWorld implements World {
             return false;
         }
 
-        final long chunkKey = ChunkPos.asLong(x, z);
+        final int chunkKey = ChunkHash.chunkToKey(x, z);
         world.getChunkProvider().droppedChunksSet.remove(chunkKey);
 
         net.minecraft.world.chunk.Chunk chunk = null;
@@ -1682,14 +1683,14 @@ public class CraftWorld implements World {
         }
 
         ChunkProviderServer cps = world.getChunkProvider();
-        for (net.minecraft.world.chunk.Chunk chunk : cps.id2ChunkMap.values()) {
+        for (net.minecraft.world.chunk.Chunk chunk : cps.id2ChunkMap.valueCollection()) {
             // If in use, skip it
             if (isChunkInUse(chunk.x, chunk.z)) {
                 continue;
             }
 
             // Already unloading?
-            if (cps.droppedChunksSet.contains(ChunkPos.asLong(chunk.x, chunk.z))) {
+            if (cps.droppedChunksSet.contains(ChunkHash.chunkToKey(chunk.x, chunk.z))) {
                 continue;
             }
 
