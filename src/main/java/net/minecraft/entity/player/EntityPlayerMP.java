@@ -891,9 +891,9 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener {
         this.connection.sendPacket(new SPacketSignEditorOpen(signTile.getPos()));
     }
 
-    public int getNextWindowIdCB() // CraftBukkit - void -> int
+    public int nextContainerCounter() // CraftBukkit - getNextWindowId void -> nextContainerCounter int
     {
-        this.currentWindowId = this.currentWindowId % 100 + 1;
+        this.getNextWindowId();
         return this.currentWindowId;
     }
 
