@@ -2,26 +2,21 @@ package net.minecraft.world.chunk.storage;
 
 import com.google.common.collect.Maps;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import gnu.trove.iterator.TIntObjectIterator;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.VanillaChunkPos;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IDataFixer;
@@ -35,14 +30,18 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.storage.IThreadedFileIO;
 import net.minecraft.world.storage.ThreadedFileIOBase;
+import net.openhft.koloboke.collect.map.IntObjCursor;
+import net.openhft.koloboke.collect.map.IntObjMap;
+import net.openhft.koloboke.collect.map.hash.HashIntObjMaps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.server.chunk.ChunkHash;
 
 public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final TIntObjectHashMap<PendingChunk> chunksToSave = new TIntObjectHashMap<>();
-    private final Set<ChunkPos> chunksBeingSaved = Collections.<ChunkPos>newSetFromMap(Maps.newConcurrentMap());
+    protected final IntObjMap<PendingChunk> pendingSaves = HashIntObjMaps.newMutableMap();
+    private final Map<ChunkPos, NBTTagCompound> chunksToSave = Maps.<ChunkPos, NBTTagCompound>newConcurrentMap(); // TODO compat
+    private final Set<ChunkPos> chunksBeingSaved = new VanillaChunkPos(pendingSaves.keySet()); // mods compatibility
     private Object syncLockObject = new Object();
     public final File chunkSaveLocation;
     private final DataFixer fixer;
@@ -82,8 +81,8 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
         synchronized (this.syncLockObject)
         {
-            if(this.chunksToSave.get(ChunkHash.chunkToKey(chunkpos.x, chunkpos.z)) != null){
-                nbttagcompound = this.chunksToSave.get(ChunkHash.chunkToKey(chunkpos.x, chunkpos.z)).nbtTags;
+            if(this.chunksToSave.get(chunkpos) != null){
+                nbttagcompound = this.chunksToSave.get(chunkpos);
             }
         }
 
@@ -102,7 +101,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
     public boolean isChunkGeneratedAt(int x, int z) {
         ChunkPos chunkpos = new ChunkPos(x, z);
-        NBTTagCompound nbttagcompound = this.chunksToSave.get(ChunkHash.chunkToKey(chunkpos.x, chunkpos.z)).nbtTags;
+        NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
         return nbttagcompound != null ? true : RegionFileCache.chunkExists(this.chunkSaveLocation, x, z);
     }
 
@@ -178,18 +177,30 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
 
         synchronized (this.syncLockObject)
         {
-            if (!this.chunksBeingSaved.contains(pos)) {
-                this.chunksToSave.put(ChunkHash.chunkToKey(pos.x,pos.z), new PendingChunk(pos, compound));
-            }
 
+            /*if (!this.pendingSaves.containsKey(pos)) {
+                this.chunksToSave.put(pos, compound);
+            }*/
+            int hash = ChunkHash.chunkToKey(pos.x, pos.z);
+            PendingChunk pendingChunk = new PendingChunk(pos, compound);
+            if(pendingSaves.put(hash, pendingChunk) != null)
+            {
+                if(chunksToSave.containsKey(pos))
+                {
+                    chunksToSave.replace(pos, compound);
+                    return;
+                }
+            }
+            chunksToSave.put(pos, compound);
             ThreadedFileIOBase.getThreadedIOInstance().queueIO(this);
         }
-        }
+    }
 
 
     public boolean writeNextIO() {
         AnvilChunkLoader.PendingChunk pendingchunk = null;
         Object object = this.syncLockObject;
+        int key;
 
         synchronized (this.syncLockObject)
         {
@@ -201,45 +212,45 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
                 return false;
             } else {
 
-                TIntObjectIterator<PendingChunk> it = chunksToSave.iterator();
-                it.advance();
+                IntObjCursor<PendingChunk> it = pendingSaves.cursor();
+                it.moveNext();
                 pendingchunk = it.value(); // TODO
-                it.remove();
+                key = it.key();
 
                 if(pendingchunk != null){
                     try {
-                        this.chunksBeingSaved.add(pendingchunk.chunkCoordinate);
                         this.writeChunkData(pendingchunk.chunkCoordinate, pendingchunk.nbtTags);
                     } catch (IOException e) {
                         LOGGER.error("Failed to save chunk", (Throwable) e);
-                    } finally {
-                        this.chunksBeingSaved.remove(pendingchunk.chunkCoordinate);
+                    }
+                    synchronized (this.syncLockObject)
+                    {
+                        pendingSaves.remove(key);
+                        chunksToSave.remove(pendingchunk.chunkCoordinate,pendingchunk.nbtTags);
                     }
                 }
-        }
+                /*hunkPos chunkpos = this.chunksToSave.keySet().iterator().next();
+                boolean lvt_3_1_;
 
-/*            int key = this.chunksToSave.keySet().iterator().next();
-            ChunkPos chunkpos = this.chunksToSave.get(key).chunkCoordinate;
-            boolean lvt_3_1_;
+                try {
+                    this.chunksBeingSaved.add(chunkpos);
+                    NBTTagCompound nbttagcompound = this.chunksToSave.remove(chunkpos);
 
-            try {
-                this.chunksBeingSaved.add(chunksToSave.get(key).chunkCoordinate);
-                NBTTagCompound nbttagcompound = this.chunksToSave.remove(key).nbtTags;
-
-                if (nbttagcompound != null) {
-                    try {
-                        this.writeChunkData(chunkpos, nbttagcompound);
-                    } catch (Exception exception) {
-                        LOGGER.error("Failed to save chunk", (Throwable) exception);
+                    if (nbttagcompound != null) {
+                        try {
+                            this.writeChunkData(chunkpos, nbttagcompound);
+                        } catch (Exception exception) {
+                            LOGGER.error("Failed to save chunk", (Throwable) exception);
+                        }
                     }
+
+                    lvt_3_1_ = true;
+                } finally {
+                    this.chunksBeingSaved.remove(chunkpos);
                 }
 
-                lvt_3_1_ = true;
-            } finally {
-                this.chunksBeingSaved.remove(chunkpos);
+                return lvt_3_1_;*/
             }
-
-            return lvt_3_1_;*/
         }
         return true;
     }
@@ -592,7 +603,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
         return this.chunksToSave.size();
     }
 
-    static class PendingChunk
+    public static class PendingChunk
     {
         public final ChunkPos chunkCoordinate;
         public final NBTTagCompound nbtTags;

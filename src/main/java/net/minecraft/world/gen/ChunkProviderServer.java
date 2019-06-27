@@ -21,6 +21,8 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.VanillaChunkHashMap;
+import net.minecraft.util.VanillaChunkHashSet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.MinecraftException;
@@ -31,6 +33,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 import net.minecraft.world.chunk.storage.IChunkLoader;
+import net.openhft.koloboke.collect.IntIterator;
+import net.openhft.koloboke.collect.set.IntSet;
+import net.openhft.koloboke.collect.set.hash.HashIntSets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.server.chunk.ChunkHash;
@@ -41,10 +46,12 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 // TODO: This class needs serious testing.
 public class ChunkProviderServer implements IChunkProvider {
     private static final Logger LOGGER = LogManager.getLogger();
-    public final TIntSet droppedChunksSet = new TIntHashSet();
+    public final IntSet unloadQueue = HashIntSets.newMutableSet();
+    public final Set<Long> droppedChunksSet = new VanillaChunkHashSet(unloadQueue); // mods compatibility
     public final IChunkGenerator chunkGenerator;
     public final IChunkLoader chunkLoader;
-    public final ChunkMap id2ChunkMap = new ChunkMap();
+    public final ChunkMap chunkMap = new ChunkMap();
+    public final Long2ObjectMap<Chunk> id2ChunkMap = new VanillaChunkHashMap<Chunk>(chunkMap); // mods compatibility
     public final WorldServer world;
     private final Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
 
@@ -55,12 +62,12 @@ public class ChunkProviderServer implements IChunkProvider {
     }
 
     public Collection<Chunk> getLoadedChunks() {
-        return this.id2ChunkMap.valueCollection();
+        return this.chunkMap.valueCollection();
     }
 
     public void queueUnload(Chunk chunkIn) {
         if (this.world.provider.canDropChunk(chunkIn.x, chunkIn.z)) {
-            this.droppedChunksSet.add(ChunkHash.chunkToKey(chunkIn.x, chunkIn.z));
+            this.unloadQueue.add(ChunkHash.chunkToKey(chunkIn.x, chunkIn.z));
             chunkIn.unloadQueued = true;
         }
     }
@@ -76,7 +83,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     @Nullable
     public Chunk getLoadedChunk(int x, int z) {
-        Chunk chunk = (Chunk) this.id2ChunkMap.get(x,z);
+        Chunk chunk = (Chunk) this.chunkMap.get(x,z);
 
         if (chunk != null) {
             chunk.unloadQueued = false;
@@ -87,7 +94,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     // Is it copy of method above?
     public Chunk getChunkIfLoaded(int x, int z) {
-        return id2ChunkMap.get(x, z);
+        return chunkMap.get(x, z);
     }
 
     @Nullable
@@ -126,7 +133,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 if (chunk == null) chunk = this.loadChunkFromFile(x, z);
 
                 if (chunk != null) {
-                    this.id2ChunkMap.put(ChunkHash.chunkToKey(x, z), chunk);
+                    this.chunkMap.put(ChunkHash.chunkToKey(x, z), chunk);
                     chunk.onLoad();
                     chunk.populateCB(this, this.chunkGenerator, false);
                 }
@@ -169,7 +176,7 @@ public class ChunkProviderServer implements IChunkProvider {
                 throw new ReportedException(crashreport);
             }
 
-            this.id2ChunkMap.put(i, chunk);
+            this.chunkMap.put(i, chunk);
             chunk.onLoad();
             chunk.populateCB(this, this.chunkGenerator, true);
             world.timings.syncChunkLoadTimer.stopTiming(); // Spigot
@@ -217,7 +224,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public boolean saveChunks(boolean all) {
         int i = 0;
-        List<Chunk> list = Lists.newArrayList(this.id2ChunkMap.valueCollection());
+        List<Chunk> list = Lists.newArrayList(this.chunkMap.valueCollection());
 
         for (int j = 0; j < list.size(); ++j) {
             Chunk chunk = list.get(j);
@@ -246,16 +253,16 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public boolean tick() {
         if (!this.world.disableLevelSaving) {
-            if (!this.droppedChunksSet.isEmpty()) {
+            if (!this.unloadQueue.isEmpty()) {
                 for (ChunkPos forced : this.world.getPersistentChunks().keySet()) {
-                    this.droppedChunksSet.remove(ChunkHash.chunkToKey(forced.x, forced.z));
+                    this.unloadQueue.remove(ChunkHash.chunkToKey(forced.x, forced.z));
                 }
 
-                TIntIterator iterator = this.droppedChunksSet.iterator();
+                IntIterator iterator = this.unloadQueue.iterator();
 
                 for (int i = 0; i < 100 && iterator.hasNext(); iterator.remove()) {
                     int olong = iterator.next();
-                    Chunk chunk = (Chunk) this.id2ChunkMap.get(olong);
+                    Chunk chunk = (Chunk) this.chunkMap.get(olong);
 
                     if (chunk != null && chunk.unloadQueued) {
 //                        chunk.onUnload();
@@ -311,7 +318,7 @@ public class ChunkProviderServer implements IChunkProvider {
         net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkHash.chunkToKey(chunk.x, chunk.z), chunk);
         this.saveChunkData(chunk);
         this.saveChunkExtraData(chunk);
-        this.id2ChunkMap.remove(ChunkHash.chunkToKey(chunk.x, chunk.z));
+        this.chunkMap.remove(ChunkHash.chunkToKey(chunk.x, chunk.z));
         return true;
     }
 
@@ -320,7 +327,7 @@ public class ChunkProviderServer implements IChunkProvider {
     }
 
     public String makeString() {
-        return "ServerChunkCache: " + this.id2ChunkMap.size() + " Drop: " + this.droppedChunksSet.size();
+        return "ServerChunkCache: " + this.chunkMap.size() + " Drop: " + this.unloadQueue.size();
     }
 
     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos) {
@@ -337,22 +344,22 @@ public class ChunkProviderServer implements IChunkProvider {
     }
 
     public int getLoadedChunkCount() {
-        return this.id2ChunkMap.size();
+        return this.chunkMap.size();
     }
 
     public boolean chunkExists(int x, int z) {
-        return this.id2ChunkMap.contains(x, z);
+        return this.chunkMap.contains(x, z);
     }
 
     public boolean isChunkGeneratedAt(int x, int z) {
-        return this.id2ChunkMap.contains(x, z) || this.chunkLoader.isChunkGeneratedAt(x, z);
+        return this.chunkMap.contains(x, z) || this.chunkLoader.isChunkGeneratedAt(x, z);
     }
 
     /* ======================================== ATOMMC START =====================================*/
 
     public void loadAsync(int x, int z, Runnable callback) //XXX
     {
-        if(id2ChunkMap.contains(x, z))
+        if(chunkMap.contains(x, z))
         {
             callback.run();
             return;

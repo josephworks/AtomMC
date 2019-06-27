@@ -275,7 +275,7 @@ public class CraftWorld implements World {
     }
 
     public Chunk[] getLoadedChunks() {
-        Object[] chunks = world.getChunkProvider().id2ChunkMap.valueCollection().toArray();
+        Object[] chunks = world.getChunkProvider().chunkMap.valueCollection().toArray();
         Chunk[] craftChunks = new CraftChunk[chunks.length];
 
         for (int i = 0; i < chunks.length; i++) {
@@ -354,7 +354,7 @@ public class CraftWorld implements World {
         }
 
         if (chunk != null) {
-            world.getChunkProvider().id2ChunkMap.put(chunkKey, chunk);
+            world.getChunkProvider().chunkMap.put(chunkKey, chunk);
 
             chunk.onLoad();
             chunk.populateCB(world.getChunkProvider(), world.getChunkProvider().chunkGenerator, true);
@@ -1683,14 +1683,14 @@ public class CraftWorld implements World {
         }
 
         ChunkProviderServer cps = world.getChunkProvider();
-        for (net.minecraft.world.chunk.Chunk chunk : cps.id2ChunkMap.valueCollection()) {
+        for (net.minecraft.world.chunk.Chunk chunk : cps.chunkMap.valueCollection()) {
             // If in use, skip it
             if (isChunkInUse(chunk.x, chunk.z)) {
                 continue;
             }
 
             // Already unloading?
-            if (cps.droppedChunksSet.contains(ChunkHash.chunkToKey(chunk.x, chunk.z))) {
+            if (cps.unloadQueue.contains(ChunkHash.chunkToKey(chunk.x, chunk.z))) {
                 continue;
             }
 

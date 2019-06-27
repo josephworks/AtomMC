@@ -47,10 +47,10 @@ public class ChunkIOProvider  implements AsynchronousExecutor.CallBackProvider<Q
 
         // See if someone already loaded this chunk while we were working on it
         // (API, etc)
-        if(queuedChunk.provider.id2ChunkMap.contains(x,z))
+        if(queuedChunk.provider.chunkMap.contains(x,z))
         {
             // Make sure it isn't queued for unload, we need it
-            queuedChunk.provider.droppedChunksSet.remove(queuedChunk.coords); // Spigot
+            queuedChunk.provider.unloadQueue.remove(queuedChunk.coords); // Spigot
             return;
         }
 
@@ -62,7 +62,7 @@ public class ChunkIOProvider  implements AsynchronousExecutor.CallBackProvider<Q
         // ChunkDataEvent.Load
         // async
         chunk.setLastSaveTime(queuedChunk.provider.world.getTotalWorldTime());
-        queuedChunk.provider.id2ChunkMap.put(queuedChunk.coords, chunk);
+        queuedChunk.provider.chunkMap.put(queuedChunk.coords, chunk);
         chunk.onLoad();
 
         if(queuedChunk.provider.chunkGenerator != null)
