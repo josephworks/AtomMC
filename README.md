@@ -15,7 +15,7 @@ Our main goals are:
 2. Highest performance possible.
 
 ## Installation
-The Atom latest version can be dowloaded on the following page: https://gitlab.com/divinecode/atom/Atom/pipelines.  
+The Atom latest version can be dowloaded on the following page: https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/.  
 Once the download is completed you have to follow the next steps:
 1. Create a directory, where your future server will be located.
 2. Put a jar file which ends with `-server.jar` and a `libraries` folder from artifacts.zip to this directory.
@@ -23,7 +23,7 @@ Once the download is completed you have to follow the next steps:
     Example (You may add optional flags): `java -jar Atom-*-*-server.jar`
 
 ## Building
-- `git clone https://gitlab.com/divinecode/atom/Atom.git`
+- `git clone https://github.com/josephworks/AtomMC.git`
 - `git submodule update --init --recursive`
 - `gradlew build`
 
