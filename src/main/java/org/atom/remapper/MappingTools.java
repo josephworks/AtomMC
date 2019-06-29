@@ -1,3 +1,4 @@
+// This code is from CatServer (Added by the AtomMC Team)
 package org.atom.remapper;
 
 import LZMA.LzmaInputStream;
@@ -45,7 +46,7 @@ class MappingTools {
         if (MappingTools.srgMappings == null) {
             MappingTools.srgMappings = new JarMapping();
             try (final InputStream classData = MappingTools.class.getResourceAsStream("/deobfuscation_data-1.12.2.lzma");
-                 final BufferedReader br = new BufferedReader(new InputStreamReader(new LzmaInputStream(classData)))) {
+                 final BufferedReader br = new BufferedReader(new InputStreamReader(new LzmaInputStream(classData)))) {// 
                 MappingTools.srgMappings.loadMappings(br, null, null, false);
             } catch (IOException e) {
                 e.printStackTrace();
