@@ -1,4 +1,5 @@
 // This code is from CatServer (Added by the AtomMC Team)
+// Mohist is Prohibited from using this code
 package org.atom.remapper;
 
 import LZMA.LzmaInputStream;
