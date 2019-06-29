@@ -33,4 +33,3 @@ Should you have any questions or need any assistance please do not hesitate to c
 You're always more than welcome to send pull requests and raise issues.
 
 Feel free to donate to my hard work at https://paypal.me/emeraldtnt
-
