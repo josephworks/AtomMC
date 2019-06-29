@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 
 import net.minecraftforge.fml.relauncher.Side;
 
-import org.apache.logging.log4j.Level;
-
 public interface ILanguageAdapter {
     Object getNewInstance(FMLModContainer container, Class<?> objectClass, ClassLoader classLoader, Method factoryMarkedAnnotation) throws Exception;
 
@@ -101,7 +99,7 @@ public interface ILanguageAdapter {
                     }
                 }
             } catch (InvocationTargetException e) {
-                FMLLog.log.error("An error occurred trying to load a proxy into {}.{}", target.getName(), e);
+                FMLLog.log.error("An error occurred trying to load a proxy into {}.{}", proxyTarget.getSimpleName(), target.getName(), e);
                 throw new LoaderException(e);
             }
 
@@ -151,7 +149,7 @@ public interface ILanguageAdapter {
 
                             setProxy(target, proxyTarget, proxy);
                         } catch (Exception e) {
-                            FMLLog.log.error("An error occurred trying to load a proxy into {}.{}", target.getName(), e);
+                            FMLLog.log.error("An error occurred trying to load a proxy into {}.{}", proxyTarget.getSimpleName(), target.getName(), e);
                             throw new LoaderException(e);
                         }
                     }

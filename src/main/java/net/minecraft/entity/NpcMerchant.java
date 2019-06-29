@@ -37,7 +37,7 @@ public class NpcMerchant implements IMerchant {
 
     @Nullable
     public MerchantRecipeList getRecipes(EntityPlayer player) {
-        return this.recipeList;
+        return net.minecraftforge.event.ForgeEventFactory.listTradeOffers(this, player, this.recipeList);
     }
 
     public void setRecipes(@Nullable MerchantRecipeList recipeList) {

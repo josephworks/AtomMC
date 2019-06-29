@@ -112,7 +112,7 @@ public class BlockFarmland extends Block {
             }
         }
 
-        return false;
+        return net.minecraftforge.common.FarmlandWaterManager.hasBlockWaterTicket(worldIn, pos);
     }
 
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {

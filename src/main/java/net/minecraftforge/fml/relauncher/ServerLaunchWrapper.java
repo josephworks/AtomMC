@@ -21,9 +21,6 @@ package net.minecraftforge.fml.relauncher;
 
 import java.lang.reflect.Method;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-
 public class ServerLaunchWrapper {
 
     /**

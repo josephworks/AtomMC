@@ -32,6 +32,10 @@ public class CraftInventoryCustom extends CraftInventory {
         super(new MinecraftInventory(owner, size, title));
     }
 
+    public CraftInventoryCustom(InventoryHolder owner, NonNullList<ItemStack> size) {
+        super(new MinecraftInventory(owner, size));
+    }
+
     static class MinecraftInventory implements IInventory {
         private final NonNullList<ItemStack> items;
         private int maxStack = MAX_STACK;
@@ -57,6 +61,14 @@ public class CraftInventoryCustom extends CraftInventory {
             Validate.notNull(title, "Title cannot be null");
             this.items = NonNullList.withSize(size, ItemStack.EMPTY);
             this.title = title;
+            this.owner = owner;
+            this.type = InventoryType.CHEST;
+        }
+
+        public MinecraftInventory(InventoryHolder owner, NonNullList<ItemStack> size) {
+            this.maxStack = 64;
+            this.items = size;
+            this.title = "Chest";
             this.owner = owner;
             this.type = InventoryType.CHEST;
         }

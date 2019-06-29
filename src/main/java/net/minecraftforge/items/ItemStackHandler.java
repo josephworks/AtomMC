@@ -191,4 +191,8 @@ public class ItemStackHandler implements IItemHandler, IItemHandlerModifiable, I
     protected void onContentsChanged(int slot) {
 
     }
+
+    public NonNullList<ItemStack> getStacksList() {
+        return this.stacks;
+    }
 }

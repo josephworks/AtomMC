@@ -30,6 +30,7 @@ import net.minecraft.item.ItemBucket;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -72,7 +73,7 @@ public class BlockLiquidWrapper implements IFluidHandler {
         if (doFill) {
             Material material = blockLiquid.getDefaultState().getMaterial();
             BlockLiquid block = BlockLiquid.getFlowingBlock(material);
-            world.setBlockState(blockPos, block.getDefaultState().withProperty(BlockLiquid.LEVEL, 0), 11);
+            world.setBlockState(blockPos, block.getDefaultState().withProperty(BlockLiquid.LEVEL, 0), Constants.BlockFlags.DEFAULT_AND_RERENDER);
         }
 
         return Fluid.BUCKET_VOLUME;
@@ -90,7 +91,7 @@ public class BlockLiquidWrapper implements IFluidHandler {
             FluidStack containedStack = getStack(blockState);
             if (containedStack != null && resource.containsFluid(containedStack)) {
                 if (doDrain) {
-                    world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
+                    world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.DEFAULT_AND_RERENDER);
                 }
                 return containedStack;
             }

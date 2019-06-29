@@ -21,6 +21,7 @@ public class MinecraftServerRunner extends BlockJUnit4ClassRunner {
     }
 
     static {
+        ///System.out.println(FMLServerTweaker.class.getCanonicalName() + "   dsda  " + MixinTweaker.class.getCanonicalName());
         Launch.main(new String[]{
                 "--tweakClass", FMLServerTweaker.class.getCanonicalName(),
                 "--tweakClass", MixinTweaker.class.getCanonicalName(),
@@ -30,7 +31,6 @@ public class MinecraftServerRunner extends BlockJUnit4ClassRunner {
         LaunchClassLoader lcl = Launch.classLoader;
         lcl.addClassLoaderExclusion("org.junit.");
     }
-
     @Override
     public void run(final RunNotifier notifier) {
         final List<Runnable> runnableTasks = new ArrayList<>();

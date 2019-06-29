@@ -443,7 +443,7 @@ public class EntityEnderman extends EntityMob {
             IBlockState iblockstate1 = world.getBlockState(blockpos.down());
             IBlockState iblockstate2 = this.enderman.getHeldBlockState();
 
-            if (iblockstate2 != null && this.canPlaceBlock(world, blockpos, iblockstate2.getBlock(), iblockstate, iblockstate1)) {
+            if (iblockstate2 != null && this.canPlaceBlock(world, blockpos, iblockstate2.getBlock(), iblockstate, iblockstate1) && net.minecraftforge.event.ForgeEventFactory.onBlockPlace(enderman, new net.minecraftforge.common.util.BlockSnapshot(world, blockpos, iblockstate2), net.minecraft.util.EnumFacing.UP).isCanceled()) {
                 // CraftBukkit start - Place event
                 if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.enderman, blockpos, this.enderman.getHeldBlockState().getBlock(), this.enderman.getHeldBlockState().getBlock().getMetaFromState(this.enderman.getHeldBlockState())).isCancelled()) {
                     world.setBlockState(blockpos, iblockstate2, 3);
