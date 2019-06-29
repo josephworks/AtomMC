@@ -27,7 +27,7 @@ Once the download is completed you have to follow the next steps:
 - `gradlew build`
 
 ## Getting Help
-Should you have any questions or need any assistance please do not hesitate to create an issue.
+Should you have any questions or need any assistance please do not hesitate to contact **emerald tnt#7908** on Discord or create an issue.
 
 ## Contributing
 You're always more than welcome to send pull requests and raise issues.
