@@ -19,9 +19,9 @@ public class FoodStats {
 
     private EntityPlayer entityhuman;
 
-    public FoodStats() {
+    /*public FoodStats() {
         throw new AssertionError("Whoopsie, we missed the bukkit.");
-    }
+    }*/
 
     public FoodStats(EntityPlayer entityhuman) {
         org.apache.commons.lang3.Validate.notNull(entityhuman);

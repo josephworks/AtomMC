@@ -111,7 +111,7 @@ public class ClassInheritanceMultiMap<T> extends AbstractSet<T> {
     }
 
     public Iterator<T> iterator() {
-        return (Iterator<T>) (this.values.isEmpty() ? Collections.emptyIterator() : Iterators.unmodifiableIterator(this.values.iterator()));
+        return (Iterator<T>) (this.values.isEmpty() ? Collections.emptyIterator() : this.values.iterator());
     }
 
     public int size() {
