@@ -24,7 +24,7 @@ public class AtomGradleStart {
     Map<String, String> argMap = Maps.newHashMap();
     List<String> extras = Lists.newArrayList();
 
-    static final File SRG_SRG_MCP = new File(AtomGradleStart.class.getClassLoader().getResource("mappings/" + AtomServer.getNativeVersion() + "/srg2mcp.srg").getFile());
+    static final File SRG_SRG_MCP = new File(AtomGradleStart.class.getClassLoader().getResource("mappings/" + AtomServerCore.getNativeVersion() + "/srg2mcp.srg").getFile());
 
     protected void launch(String[] args) throws Throwable {
         System.setProperty("net.minecraftforge.gradle.GradleStart.srg.srg-mcp", SRG_SRG_MCP.getCanonicalPath());

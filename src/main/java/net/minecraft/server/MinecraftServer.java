@@ -177,6 +177,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     // Spigot start
     public static final int TPS = 20;
     public static final int TICK_TIME = 1000000000 / TPS;
+    public double currentTPS = 20;
     private static final int SAMPLE_INTERVAL = 100;
     public final double[] recentTps = new double[ 3 ];
     // Spigot end
@@ -502,25 +503,35 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 // Spigot start
                 Arrays.fill( recentTps, 20 );
-                long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
+                long curPeakWait = 0L;
+                long lastTick = System.nanoTime(), catchupTime = 0, curTime = 0L, wait, tickSection = lastTick;
                 while (this.serverRunning) {
                     curTime = System.nanoTime();
-                    wait = TICK_TIME - (curTime - lastTick) - catchupTime;
-                    if (wait > 0) {
+                    wait = TICK_TIME - (curTime - lastTick);
+                    if ( curTime == 0) curTime = wait;
+                    wait -= catchupTime;
+                    if (wait > 1000000) {
                         Thread.sleep(wait / 1000000);
                         catchupTime = 0;
                         continue;
                     } else {
-                        catchupTime = Math.min(1000000000, Math.abs(wait));
+                        catchupTime = Math.min(TICK_TIME * TPS, -wait);
                     }
 
                     if (MinecraftServer.currentTick++ % SAMPLE_INTERVAL == 0) {
-                        double currentTps = 1E9 / (curTime - tickSection) * SAMPLE_INTERVAL;
-                        recentTps[0] = calcTps(recentTps[0], 0.92, currentTps); // 1/exp(5sec/1min)
-                        recentTps[1] = calcTps(recentTps[1], 0.9835, currentTps); // 1/exp(5sec/5min)
-                        recentTps[2] = calcTps(recentTps[2], 0.9945, currentTps); // 1/exp(5sec/15min)
-                        tickSection = curTime;
+                        currentTPS = (currentTPS * 0.95) + (1E9 / (curTime - lastTick) * 0.05);
+                        recentTps[0] = calcTps(recentTps[0], 0.92, currentTPS); // 1/exp(5sec/1min)
+                        recentTps[1] = calcTps(recentTps[1], 0.9835, currentTPS); // 1/exp(5sec/5min)
+                        recentTps[2] = calcTps(recentTps[2], 0.9945, currentTPS); // 1/exp(5sec/15min)
                     }
+                    if(wait < curPeakWait)
+                        curPeakWait = wait;
+                    if(tickCounter % 20 == 0)
+                    {
+                        wait = curPeakWait;
+                        curPeakWait = TICK_TIME;
+                    }
+                    wait = 0;
                     lastTick = curTime;
 
                     this.tick();

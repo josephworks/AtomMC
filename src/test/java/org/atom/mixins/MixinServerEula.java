@@ -1,4 +1,4 @@
-package org.atom.mixin;
+package org.atom.mixins;
 
 import net.minecraft.server.ServerEula;
 import org.spongepowered.asm.mixin.Mixin;
