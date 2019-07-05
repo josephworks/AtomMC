@@ -12,7 +12,7 @@ public class AtomServerCore implements IFMLLoadingPlugin {
 
 
     public AtomServerCore(){
-        System.setProperty("mixin.debug.export", "true");
+        System.setProperty("mixin.debug.export", "false");
         MixinBootstrap.init();
         LogManager.getLogger().warn(" ");
         LogManager.getLogger().warn("[AtomMC] Trying to apply class transformers.");
