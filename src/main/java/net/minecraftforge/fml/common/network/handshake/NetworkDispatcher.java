@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.EnumConnectionState;
@@ -72,10 +71,6 @@ import net.minecraftforge.registries.ForgeRegistry;
 // TODO build test suites to validate the behaviour of this stuff and make it less annoyingly magical
 public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> implements ChannelOutboundHandler {
     private static boolean DEBUG_HANDSHAKE = Boolean.parseBoolean(System.getProperty("fml.debugNetworkHandshake", "false"));
-
-    public EntityPlayerMP getPlayer() {
-        return player;
-    }
 
     private static enum ConnectionState {
         OPENING, AWAITING_HANDSHAKE, HANDSHAKING, HANDSHAKECOMPLETE, FINALIZING, CONNECTED
@@ -309,7 +304,6 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
 
     private boolean handleClientSideCustomPacket(SPacketCustomPayload msg, ChannelHandlerContext context) {
         String channelName = msg.getChannelName();
-        player.getBukkitEntity().addChannel(channelName); // Atom - register channel for bukkit player
         if ("FML|MP".equals(channelName)) {
             boolean result = handleMultiPartCustomPacket(msg, context);
             if (result) {

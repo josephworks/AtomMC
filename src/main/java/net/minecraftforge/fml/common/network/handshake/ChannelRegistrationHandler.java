@@ -25,6 +25,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
@@ -48,8 +49,8 @@ public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLP
             FMLCommonHandler.instance().fireNetRegistrationEvent(manager, channelSet, msg.channel(), side);
             msg.payload().release();
             // Atom start - register bukkit channels for players
-            NetworkDispatcher dispatcher = ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).get();
-            CraftPlayer player = dispatcher.getPlayer().getBukkitEntity();
+            NetHandlerPlayServer dispatcher = (NetHandlerPlayServer)ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).get().getNetHandler();
+            CraftPlayer player = dispatcher.getPlayer();
             if (msg.channel().equals("REGISTER")) {
                 for (String channel : channelSet) {
                     player.addChannel(channel);
