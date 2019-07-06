@@ -183,7 +183,8 @@ public class EntityTracker {
     public synchronized void track(Entity entityIn, int trackingRange, final int updateFrequency, boolean sendVelocityUpdates) {
         try {
             if (this.trackedEntityHashTable.containsItem(entityIn.getEntityId())) {
-                throw new IllegalStateException("Entity is already tracked!");
+                //throw new IllegalStateException("Entity is already tracked!");
+                return;
             }
 
             EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entityIn, trackingRange, this.maxTrackingDistanceThreshold, updateFrequency, sendVelocityUpdates);

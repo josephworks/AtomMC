@@ -120,7 +120,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     protected InventoryEnderChest enderChest = new InventoryEnderChest(this); // CraftBukkit - add "this" to constructor
     public Container inventoryContainer;
     public Container openContainer;
-    protected FoodStats foodStats = new FoodStats(this); // CraftBukkit - add "this" to constructor
+    protected FoodStats foodStats = new FoodStats(); // CraftBukkit - modify constructor, compatible with AppleCore
     protected int flyToggleTimer;
     public float prevCameraYaw;
     public float cameraYaw;
