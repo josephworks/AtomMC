@@ -26,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.ChunkDataEvent;
+import org.atom.server.chunk.ChunkHash;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -92,7 +93,7 @@ class ChunkIOProvider implements Runnable {
         this.chunk.setLastSaveTime(provider.world.getTotalWorldTime());
         this.provider.chunkGenerator.recreateStructures(this.chunk, this.chunkInfo.x, this.chunkInfo.z);
 
-        provider.id2ChunkMap.put(ChunkPos.asLong(this.chunkInfo.x, this.chunkInfo.z), this.chunk);
+        provider.chunkMap.put(ChunkHash.chunkToKey(this.chunkInfo.x, this.chunkInfo.z), this.chunk);
         this.chunk.onLoad();
         this.chunk.populateCB(provider, provider.chunkGenerator, false);
 

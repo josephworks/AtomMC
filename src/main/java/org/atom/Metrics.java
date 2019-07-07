@@ -409,30 +409,32 @@ public class Metrics
             final boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
             if (config.getBoolean("enabled", true)) {
                 final Metrics metrics = new Metrics("Atom", serverUUID, logFailedRequests, Bukkit.getLogger());
-                final String[] minecraftVersion = new String[1];
-                final String[] minecraftVersion2 = new String[1];
                 metrics.addCustomChart(new SimplePie("minecraft_version", () -> {
-                    minecraftVersion[0] = Bukkit.getVersion();
-                    minecraftVersion2[0] = minecraftVersion[0].substring(minecraftVersion[0].indexOf("MC: ") + 4, minecraftVersion[0].length() - 1);
-                    return minecraftVersion2[0];
+                    String minecraftVersion = Bukkit.getVersion();
+                    minecraftVersion = minecraftVersion.substring(minecraftVersion.indexOf("MC: ") + 4, minecraftVersion.length() - 1);
+                    return minecraftVersion;
                 }));
-                metrics.addCustomChart(new SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
-                metrics.addCustomChart(new SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : "offline"));
+                metrics.addCustomChart(new SingleLineChart("players", () -> FMLCommonHandler.instance().getMinecraftServerInstance().getServer().getCurrentPlayerCount()));
+                metrics.addCustomChart(new SimplePie("online_mode", () -> FMLCommonHandler.instance().getMinecraftServerInstance().getServer().isServerInOnlineMode() ? "online" : "offline"));
                 metrics.addCustomChart(new SimplePie("paper_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown"));
-                metrics.addCustomChart(new DrilldownPie("java_version", () -> {
+                metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                     Map<String, Map<String, Integer>> map = new HashMap<>();
                     String javaVersion = System.getProperty("java.version");
-                    HashMap<String, Integer> entry = new HashMap<String, Integer>();
+                    Map<String, Integer> entry = new HashMap<>();
                     entry.put(javaVersion, 1);
+                    // http://openjdk.java.net/jeps/223
+                    // Java decided to change their versioning scheme and in doing so modified the java.version system
+                    // property to return $major[.$minor][.$secuity][-ea], as opposed to 1.$major.0_$identifier
+                    // we can handle pre-9 by checking if the "major" is equal to "1", otherwise, 9+
                     String majorVersion = javaVersion.split("\\.")[0];
                     String release;
-                    Matcher versionMatcher;
-                    int indexOf = javaVersion.lastIndexOf(46);
+                    int indexOf = javaVersion.lastIndexOf('.');
                     if (majorVersion.equals("1")) {
                         release = "Java " + javaVersion.substring(0, indexOf);
-                    }
-                    else {
-                        versionMatcher = Pattern.compile("\\d+").matcher(majorVersion);
+                    } else {
+                        // of course, it really wouldn't be all that simple if they didn't add a quirk, now would it
+                        // valid strings for the major may potentially include values such as -ea to deannotate a pre release
+                        Matcher versionMatcher = Pattern.compile("\\d+").matcher(majorVersion);
                         if (versionMatcher.find()) {
                             majorVersion = versionMatcher.group(0);
                         }
