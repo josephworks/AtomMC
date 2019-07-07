@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -167,8 +167,8 @@ public class Configuration {
     /**
      * Gets a boolean Property object without a comment using the default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
      * @return a boolean Property object without a comment
      */
@@ -179,10 +179,10 @@ public class Configuration {
     /**
      * Gets a boolean Property object with a comment using the default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
+     * @param comment a String comment
      * @return a boolean Property object without a comment
      */
     public Property get(String category, String key, boolean defaultValue, String comment) {
@@ -199,8 +199,8 @@ public class Configuration {
     /**
      * Gets a boolean array Property without a comment using the default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
      * @return a boolean array Property without a comment using these defaults: isListLengthFixed = false, maxListLength = -1
      */
@@ -211,10 +211,10 @@ public class Configuration {
     /**
      * Gets a boolean array Property with a comment using the default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
+     * @param comment a String comment
      * @return a boolean array Property with a comment using these defaults: isListLengthFixed = false, maxListLength = -1
      */
     public Property get(String category, String key, boolean[] defaultValues, String comment) {
@@ -224,13 +224,13 @@ public class Configuration {
     /**
      * Gets a boolean array Property with all settings defined.
      *
-     * @param category          the config category
-     * @param key               the Property key value
-     * @param defaultValues     an array containing the default values
-     * @param comment           a String comment
+     * @param category the config category
+     * @param key the Property key value
+     * @param defaultValues an array containing the default values
+     * @param comment a String comment
      * @param isListLengthFixed boolean for whether this array is required to be a specific length (defined by the default value array
-     *                          length or maxListLength)
-     * @param maxListLength     the maximum length of this array, use -1 for no max length
+     *            length or maxListLength)
+     * @param maxListLength the maximum length of this array, use -1 for no max length
      * @return a boolean array Property with all settings defined
      */
     public Property get(String category, String key, boolean[] defaultValues, String comment,
@@ -261,8 +261,8 @@ public class Configuration {
     /**
      * Gets an integer Property object without a comment using default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
      * @return an integer Property object with default bounds of Integer.MIN_VALUE and Integer.MAX_VALUE
      */
@@ -273,10 +273,10 @@ public class Configuration {
     /**
      * Gets an integer Property object with a comment using default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
+     * @param comment a String comment
      * @return an integer Property object with default bounds of Integer.MIN_VALUE and Integer.MAX_VALUE
      */
     public Property get(String category, String key, int defaultValue, String comment) {
@@ -286,12 +286,12 @@ public class Configuration {
     /**
      * Gets an integer Property object with the defined comment, minimum and maximum bounds.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
-     * @param minValue     minimum boundary
-     * @param maxValue     maximum boundary
+     * @param comment a String comment
+     * @param minValue minimum boundary
+     * @param maxValue maximum boundary
      * @return an integer Property object with the defined comment, minimum and maximum bounds
      */
     public Property get(String category, String key, int defaultValue, String comment, int minValue, int maxValue) {
@@ -309,11 +309,11 @@ public class Configuration {
     /**
      * Gets an integer array Property object without a comment using default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
      * @return an integer array Property object with default bounds of Integer.MIN_VALUE and Integer.MAX_VALUE, isListLengthFixed = false,
-     * maxListLength = -1
+     *         maxListLength = -1
      */
     public Property get(String category, String key, int[] defaultValues) {
         return get(category, key, defaultValues, null);
@@ -322,12 +322,12 @@ public class Configuration {
     /**
      * Gets an integer array Property object with a comment using default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
+     * @param comment a String comment
      * @return an integer array Property object with default bounds of Integer.MIN_VALUE and Integer.MAX_VALUE, isListLengthFixed = false,
-     * maxListLength = -1
+     *         maxListLength = -1
      */
     public Property get(String category, String key, int[] defaultValues, String comment) {
         return get(category, key, defaultValues, comment, Integer.MIN_VALUE, Integer.MAX_VALUE, false, -1);
@@ -336,14 +336,14 @@ public class Configuration {
     /**
      * Gets an integer array Property object with the defined comment, minimum and maximum bounds.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
-     * @param minValue      minimum boundary
-     * @param maxValue      maximum boundary
+     * @param comment a String comment
+     * @param minValue minimum boundary
+     * @param maxValue maximum boundary
      * @return an integer array Property object with the defined comment, minimum and maximum bounds, isListLengthFixed
-     * = false, maxListLength = -1
+     *         = false, maxListLength = -1
      */
     public Property get(String category, String key, int[] defaultValues, String comment, int minValue, int maxValue) {
         return get(category, key, defaultValues, comment, minValue, maxValue, false, -1);
@@ -352,15 +352,15 @@ public class Configuration {
     /**
      * Gets an integer array Property object with all settings defined.
      *
-     * @param category          the config category
-     * @param key               the Property key value
-     * @param defaultValues     an array containing the default values
-     * @param comment           a String comment
-     * @param minValue          minimum boundary
-     * @param maxValue          maximum boundary
+     * @param category the config category
+     * @param key the Property key value
+     * @param defaultValues an array containing the default values
+     * @param comment a String comment
+     * @param minValue minimum boundary
+     * @param maxValue maximum boundary
      * @param isListLengthFixed boolean for whether this array is required to be a specific length (defined by the default value array
-     *                          length or maxListLength)
-     * @param maxListLength     the maximum length of this array, use -1 for no max length
+     *            length or maxListLength)
+     * @param maxListLength the maximum length of this array, use -1 for no max length
      * @return an integer array Property object with all settings defined
      */
     public Property get(String category, String key, int[] defaultValues, String comment, int minValue, int maxValue,
@@ -393,8 +393,8 @@ public class Configuration {
     /**
      * Gets a double Property object without a comment using default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
      * @return a double Property object with default bounds of Double.MIN_VALUE and Double.MAX_VALUE
      */
@@ -405,10 +405,10 @@ public class Configuration {
     /**
      * Gets a double Property object with a comment using default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
+     * @param comment a String comment
      * @return a double Property object with default bounds of Double.MIN_VALUE and Double.MAX_VALUE
      */
     public Property get(String category, String key, double defaultValue, String comment) {
@@ -418,12 +418,12 @@ public class Configuration {
     /**
      * Gets a double Property object with the defined comment, minimum and maximum bounds
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
-     * @param minValue     minimum boundary
-     * @param maxValue     maximum boundary
+     * @param comment a String comment
+     * @param minValue minimum boundary
+     * @param maxValue maximum boundary
      * @return a double Property object with the defined comment, minimum and maximum bounds
      */
     public Property get(String category, String key, double defaultValue, String comment, double minValue, double maxValue) {
@@ -441,11 +441,11 @@ public class Configuration {
     /**
      * Gets a double array Property object without a comment using default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
      * @return a double array Property object with default bounds of Double.MIN_VALUE and Double.MAX_VALUE, isListLengthFixed = false,
-     * maxListLength = -1
+     *         maxListLength = -1
      */
     public Property get(String category, String key, double[] defaultValues) {
         return get(category, key, defaultValues, null);
@@ -454,12 +454,12 @@ public class Configuration {
     /**
      * Gets a double array Property object without a comment using default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
+     * @param comment a String comment
      * @return a double array Property object with default bounds of Double.MIN_VALUE and Double.MAX_VALUE, isListLengthFixed = false,
-     * maxListLength = -1
+     *         maxListLength = -1
      */
     public Property get(String category, String key, double[] defaultValues, String comment) {
         return get(category, key, defaultValues, comment, -Double.MAX_VALUE, Double.MAX_VALUE, false, -1);
@@ -468,14 +468,14 @@ public class Configuration {
     /**
      * Gets a double array Property object with the defined comment, minimum and maximum bounds.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
-     * @param minValue      minimum boundary
-     * @param maxValue      maximum boundary
+     * @param comment a String comment
+     * @param minValue minimum boundary
+     * @param maxValue maximum boundary
      * @return a double array Property object with the defined comment, minimum and maximum bounds, isListLengthFixed =
-     * false, maxListLength = -1
+     *         false, maxListLength = -1
      */
     public Property get(String category, String key, double[] defaultValues, String comment, double minValue, double maxValue) {
         return get(category, key, defaultValues, comment, minValue, maxValue, false, -1);
@@ -484,15 +484,15 @@ public class Configuration {
     /**
      * Gets a double array Property object with all settings defined.
      *
-     * @param category          the config category
-     * @param key               the Property key value
-     * @param defaultValues     an array containing the default values
-     * @param comment           a String comment
-     * @param minValue          minimum boundary
-     * @param maxValue          maximum boundary
+     * @param category the config category
+     * @param key the Property key value
+     * @param defaultValues an array containing the default values
+     * @param comment a String comment
+     * @param minValue minimum boundary
+     * @param maxValue maximum boundary
      * @param isListLengthFixed boolean for whether this array is required to be a specific length (defined by the default value array
-     *                          length or maxListLength)
-     * @param maxListLength     the maximum length of this array, use -1 for no max length
+     *            length or maxListLength)
+     * @param maxListLength the maximum length of this array, use -1 for no max length
      * @return a double array Property object with all settings defined
      */
     public Property get(String category, String key, double[] defaultValues, String comment, double minValue, double maxValue,
@@ -526,8 +526,8 @@ public class Configuration {
     /**
      * Gets a string Property without a comment using the default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
      * @return a string Property with validationPattern = null, validValues = null
      */
@@ -538,10 +538,10 @@ public class Configuration {
     /**
      * Gets a string Property with a comment using the default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
+     * @param comment a String comment
      * @return a string Property with validationPattern = null, validValues = null
      */
     public Property get(String category, String key, String defaultValue, String comment) {
@@ -551,10 +551,10 @@ public class Configuration {
     /**
      * Gets a string Property with a comment using the defined validationPattern and otherwise default settings.
      *
-     * @param category          the config category
-     * @param key               the Property key value
-     * @param defaultValue      the default value
-     * @param comment           a String comment
+     * @param category the config category
+     * @param key the Property key value
+     * @param defaultValue the default value
+     * @param comment a String comment
      * @param validationPattern a Pattern object for input validation
      * @return a string Property with the defined validationPattern, validValues = null
      */
@@ -567,12 +567,12 @@ public class Configuration {
     /**
      * Gets a string Property with a comment using the defined validValues array and otherwise default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
-     * @param validValues  an array of valid values that this Property can be set to. If an array is provided the Config GUI control will be
-     *                     a value cycle button.
+     * @param comment a String comment
+     * @param validValues an array of valid values that this Property can be set to. If an array is provided the Config GUI control will be
+     *            a value cycle button.
      * @return a string Property with the defined validValues array, validationPattern = null
      */
     public Property get(String category, String key, String defaultValue, String comment, String[] validValues) {
@@ -582,10 +582,28 @@ public class Configuration {
     }
 
     /**
+     * Gets a string Property with a comment using the defined validValues array and otherwise default settings.
+     *
+     * @param category           the config category
+     * @param key                the Property key value
+     * @param defaultValue       the default value
+     * @param comment            a String comment
+     * @param validValues        an array of valid values that this Property can be set to. If an array is provided the Config GUI control will be
+     *                           a value cycle button.
+     * @param validValuesDisplay an array of the config GUI display versions of the valid values that this Property can be set to.
+     * @return a string Property with the defined validValues array, validationPattern = null
+     */
+    public Property get(String category, String key, String defaultValue, String comment, String[] validValues, String[] validValuesDisplay) {
+        Property prop = get(category, key, defaultValue, comment, validValues);
+        prop.setValidValuesDisplay(validValuesDisplay);
+        return prop;
+    }
+
+    /**
      * Gets a string array Property without a comment using the default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
      * @return a string array Property with validationPattern = null, isListLengthFixed = false, maxListLength = -1
      */
@@ -596,10 +614,10 @@ public class Configuration {
     /**
      * Gets a string array Property with a comment using the default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
+     * @param comment a String comment
      * @return a string array Property with validationPattern = null, isListLengthFixed = false, maxListLength = -1
      */
     public Property get(String category, String key, String[] defaultValues, String comment) {
@@ -609,10 +627,10 @@ public class Configuration {
     /**
      * Gets a string array Property with a comment using the defined validationPattern and otherwise default settings.
      *
-     * @param category          the config category
-     * @param key               the Property key value
-     * @param defaultValues     an array containing the default values
-     * @param comment           a String comment
+     * @param category the config category
+     * @param key the Property key value
+     * @param defaultValues an array containing the default values
+     * @param comment a String comment
      * @param validationPattern a Pattern object for input validation
      * @return a string array Property with the defined validationPattern, isListLengthFixed = false, maxListLength = -1
      */
@@ -623,13 +641,13 @@ public class Configuration {
     /**
      * Gets a string array Property with a comment with all settings defined.
      *
-     * @param category          the config category
-     * @param key               the Property key value
-     * @param defaultValues     an array containing the default values
-     * @param comment           a String comment
+     * @param category the config category
+     * @param key the Property key value
+     * @param defaultValues an array containing the default values
+     * @param comment a String comment
      * @param isListLengthFixed boolean for whether this array is required to be a specific length (defined by the default value array
-     *                          length or maxListLength)
-     * @param maxListLength     the maximum length of this array, use -1 for no max length
+     *            length or maxListLength)
+     * @param maxListLength the maximum length of this array, use -1 for no max length
      * @param validationPattern a Pattern object for input validation
      * @return a string array Property with a comment with all settings defined
      */
@@ -651,11 +669,11 @@ public class Configuration {
     /**
      * Gets a Property object of the specified type using default settings.
      *
-     * @param category     the config category
-     * @param key          the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValue the default value
-     * @param comment      a String comment
-     * @param type         a Property.Type enum value
+     * @param comment a String comment
+     * @param type a Property.Type enum value
      * @return a Property object of the specified type using default settings
      */
     public Property get(String category, String key, String defaultValue, String comment, Property.Type type) {
@@ -687,11 +705,11 @@ public class Configuration {
     /**
      * Gets a list (array) Property object of the specified type using default settings.
      *
-     * @param category      the config category
-     * @param key           the Property key value
+     * @param category the config category
+     * @param key the Property key value
      * @param defaultValues an array containing the default values
-     * @param comment       a String comment
-     * @param type          a Property.Type enum value
+     * @param comment a String comment
+     * @param type a Property.Type enum value
      * @return a list (array) Property object of the specified type using default settings
      */
     public Property get(String category, String key, String[] defaultValues, String comment, Property.Type type) {
@@ -1060,7 +1078,7 @@ public class Configuration {
      * Adds a comment to the specified ConfigCategory object
      *
      * @param category the config category
-     * @param comment  a String comment
+     * @param comment a String comment
      */
     public Configuration setCategoryComment(String category, String comment) {
         getCategory(category).setComment(comment);
@@ -1075,7 +1093,7 @@ public class Configuration {
      * Adds a language key to the specified ConfigCategory object
      *
      * @param category the config category
-     * @param langKey  a language key string such as configcategory.general
+     * @param langKey a language key string such as configcategory.general
      */
     public Configuration setCategoryLanguageKey(String category, String langKey) {
         getCategory(category).setLanguageKey(langKey);
@@ -1236,7 +1254,7 @@ public class Configuration {
     /**
      * Renames a property in a given category.
      *
-     * @param category    the category in which the property resides
+     * @param category the category in which the property resides
      * @param oldPropName the existing property name
      * @param newPropName the new property name
      * @return true if the category and property exist, false otherwise
@@ -1258,7 +1276,7 @@ public class Configuration {
      * Moves a property from one category to another.
      *
      * @param oldCategory the category the property currently resides in
-     * @param propName    the name of the property to move
+     * @param propName the name of the property to move
      * @param newCategory the category the property should be moved to
      * @return true if the old category and property exist, false otherwise
      */
@@ -1293,10 +1311,10 @@ public class Configuration {
     /**
      * Creates a string property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
+     * @param comment A brief description what the property does.
      * @return The value of the new string property.
      */
     public String getString(String name, String category, String defaultValue, String comment) {
@@ -1306,11 +1324,11 @@ public class Configuration {
     /**
      * Creates a string property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
-     * @param langKey      A language key used for localization of GUIs
+     * @param comment A brief description what the property does.
+     * @param langKey A language key used for localization of GUIs
      * @return The value of the new string property.
      */
     public String getString(String name, String category, String defaultValue, String comment, String langKey) {
@@ -1320,10 +1338,10 @@ public class Configuration {
     /**
      * Creates a string property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
+     * @param comment A brief description what the property does.
      * @return The value of the new string property.
      */
     public String getString(String name, String category, String defaultValue, String comment, Pattern pattern) {
@@ -1333,11 +1351,11 @@ public class Configuration {
     /**
      * Creates a string property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
-     * @param langKey      A language key used for localization of GUIs
+     * @param comment A brief description what the property does.
+     * @param langKey A language key used for localization of GUIs
      * @return The value of the new string property.
      */
     public String getString(String name, String category, String defaultValue, String comment, String langKey, Pattern pattern) {
@@ -1351,11 +1369,11 @@ public class Configuration {
     /**
      * Creates a string property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
-     * @param validValues  A list of valid values that this property can be set to.
+     * @param comment A brief description what the property does.
+     * @param validValues A list of valid values that this property can be set to.
      * @return The value of the new string property.
      */
     public String getString(String name, String category, String defaultValue, String comment, String[] validValues) {
@@ -1365,17 +1383,53 @@ public class Configuration {
     /**
      * Creates a string property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name               Name of the property.
+     * @param category           Category of the property.
+     * @param defaultValue       Default value of the property.
+     * @param comment            A brief description what the property does.
+     * @param validValues        A list of valid values that this property can be set to.
+     * @param validValuesDisplay an array of the config GUI display versions of the valid values that this Property can be set to.
+     * @return The value of the new string property.
+     */
+    public String getString(String name, String category, String defaultValue, String comment, String[] validValues, String[] validValuesDisplay) {
+        return setPropertyAndGetString(name, category, defaultValue, comment, validValues, validValuesDisplay, name);
+    }
+
+    /**
+     * Creates a string property.
+     *
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
-     * @param validValues  A list of valid values that this property can be set to.
-     * @param langKey      A language key used for localization of GUIs
+     * @param comment A brief description what the property does.
+     * @param validValues A list of valid values that this property can be set to.
+     * @param langKey A language key used for localization of GUIs
      * @return The value of the new string property.
      */
     public String getString(String name, String category, String defaultValue, String comment, String[] validValues, String langKey) {
+        return setPropertyAndGetString(name, category, defaultValue, comment, validValues, null, langKey);
+    }
+
+    /**
+     * Creates a string property.
+     *
+     * @param name               Name of the property.
+     * @param category           Category of the property.
+     * @param defaultValue       Default value of the property.
+     * @param comment            A brief description what the property does.
+     * @param validValues        A list of valid values that this property can be set to.
+     * @param validValuesDisplay an array of the config GUI display versions of the valid values that this Property can be set to.
+     * @param langKey            A language key used for localization of GUIs
+     * @return The value of the new string property.
+     */
+    public String getString(String name, String category, String defaultValue, String comment, String[] validValues, String[] validValuesDisplay, String langKey) {
+        return setPropertyAndGetString(name, category, defaultValue, comment, validValues, validValuesDisplay, langKey);
+    }
+
+    private String setPropertyAndGetString(String name, String category, String defaultValue, String comment, String[] validValues, String[] validValuesDisplay, String langKey) {
         Property prop = this.get(category, name, defaultValue);
         prop.setValidValues(validValues);
+        prop.setValidValuesDisplay(validValuesDisplay);
         prop.setLanguageKey(langKey);
         prop.setComment(comment + " [default: " + defaultValue + "]");
         return prop.getString();
@@ -1384,10 +1438,10 @@ public class Configuration {
     /**
      * Creates a string list property.
      *
-     * @param name          Name of the property.
-     * @param category      Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValues Default values of the property.
-     * @param comment       A brief description what the property does.
+     * @param comment A brief description what the property does.
      * @return The value of the new string property.
      */
     public String[] getStringList(String name, String category, String[] defaultValues, String comment) {
@@ -1397,10 +1451,10 @@ public class Configuration {
     /**
      * Creates a string list property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
+     * @param comment A brief description what the property does.
      * @return The value of the new string property.
      */
     public String[] getStringList(String name, String category, String[] defaultValue, String comment, String[] validValues) {
@@ -1410,16 +1464,54 @@ public class Configuration {
     /**
      * Creates a string list property.
      *
+     * @param name Name of the property.
+     * @param category Category of the property.
+     * @param defaultValue Default value of the property.
+     * @param comment A brief description what the property does.
+     * @param validValues A list of valid values that this property can be set to.
+     * @param validValuesDisplay an array of the config GUI display versions of the valid values that this Property can be set to.
+     * @return The value of the new string property.
+     */
+    public String[] getStringList(String name, String category, String[] defaultValue, String comment, String[] validValues, String[] validValuesDisplay) {
+        return setPropertyAndGetStringList(name, category, defaultValue, comment, validValues, validValuesDisplay, name);
+    }
+
+    /**
+     * Creates a string list property.
+     *
      * @param name         Name of the property.
      * @param category     Category of the property.
      * @param defaultValue Default value of the property.
      * @param comment      A brief description what the property does.
+     * @param validValues  A list of valid values that this property can be set to.
+     * @param langKey      A language key used for localization of GUIs
      * @return The value of the new string property.
      */
     public String[] getStringList(String name, String category, String[] defaultValue, String comment, String[] validValues, String langKey) {
+        return setPropertyAndGetStringList(name, category, defaultValue, comment, validValues, null, langKey);
+    }
+
+    /**
+     * Creates a string list property.
+     *
+     * @param name               Name of the property.
+     * @param category           Category of the property.
+     * @param defaultValue       Default value of the property.
+     * @param comment            A brief description what the property does.
+     * @param validValues        A list of valid values that this property can be set to.
+     * @param validValuesDisplay an array of the config GUI display versions of the valid values that this Property can be set to.
+     * @param langKey            A language key used for localization of GUIs
+     * @return The value of the new string property.
+     */
+    public String[] getStringList(String name, String category, String[] defaultValue, String comment, String[] validValues, String[] validValuesDisplay, String langKey) {
+        return setPropertyAndGetStringList(name, category, defaultValue, comment, validValues, validValuesDisplay, langKey);
+    }
+
+    private String[] setPropertyAndGetStringList(String name, String category, String[] defaultValue, String comment, String[] validValues, String[] validValuesDisplay, String langKey) {
         Property prop = this.get(category, name, defaultValue);
-        prop.setLanguageKey(langKey);
         prop.setValidValues(validValues);
+        prop.setValidValuesDisplay(validValuesDisplay);
+        prop.setLanguageKey(langKey);
         prop.setComment(comment + " [default: " + prop.getDefault() + "]");
         return prop.getStringList();
     }
@@ -1427,10 +1519,10 @@ public class Configuration {
     /**
      * Creates a boolean property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
+     * @param comment A brief description what the property does.
      * @return The value of the new boolean property.
      */
     public boolean getBoolean(String name, String category, boolean defaultValue, String comment) {
@@ -1440,11 +1532,11 @@ public class Configuration {
     /**
      * Creates a boolean property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param comment      A brief description what the property does.
-     * @param langKey      A language key used for localization of GUIs
+     * @param comment A brief description what the property does.
+     * @param langKey A language key used for localization of GUIs
      * @return The value of the new boolean property.
      */
     public boolean getBoolean(String name, String category, boolean defaultValue, String comment, String langKey) {
@@ -1457,12 +1549,12 @@ public class Configuration {
     /**
      * Creates a integer property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param minValue     Minimum value of the property.
-     * @param maxValue     Maximum value of the property.
-     * @param comment      A brief description what the property does.
+     * @param minValue Minimum value of the property.
+     * @param maxValue Maximum value of the property.
+     * @param comment A brief description what the property does.
      * @return The value of the new integer property.
      */
     public int getInt(String name, String category, int defaultValue, int minValue, int maxValue, String comment) {
@@ -1472,13 +1564,13 @@ public class Configuration {
     /**
      * Creates a integer property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param minValue     Minimum value of the property.
-     * @param maxValue     Maximum value of the property.
-     * @param comment      A brief description what the property does.
-     * @param langKey      A language key used for localization of GUIs
+     * @param minValue Minimum value of the property.
+     * @param maxValue Maximum value of the property.
+     * @param comment A brief description what the property does.
+     * @param langKey A language key used for localization of GUIs
      * @return The value of the new integer property.
      */
     public int getInt(String name, String category, int defaultValue, int minValue, int maxValue, String comment, String langKey) {
@@ -1493,12 +1585,12 @@ public class Configuration {
     /**
      * Creates a float property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param minValue     Minimum value of the property.
-     * @param maxValue     Maximum value of the property.
-     * @param comment      A brief description what the property does.
+     * @param minValue Minimum value of the property.
+     * @param maxValue Maximum value of the property.
+     * @param comment A brief description what the property does.
      * @return The value of the new float property.
      */
     public float getFloat(String name, String category, float defaultValue, float minValue, float maxValue, String comment) {
@@ -1508,13 +1600,13 @@ public class Configuration {
     /**
      * Creates a float property.
      *
-     * @param name         Name of the property.
-     * @param category     Category of the property.
+     * @param name Name of the property.
+     * @param category Category of the property.
      * @param defaultValue Default value of the property.
-     * @param minValue     Minimum value of the property.
-     * @param maxValue     Maximum value of the property.
-     * @param comment      A brief description what the property does.
-     * @param langKey      A language key used for localization of GUIs
+     * @param minValue Minimum value of the property.
+     * @param maxValue Maximum value of the property.
+     * @param comment A brief description what the property does.
+     * @param langKey A language key used for localization of GUIs
      * @return The value of the new float property.
      */
     public float getFloat(String name, String category, float defaultValue, float minValue, float maxValue, String comment, String langKey) {

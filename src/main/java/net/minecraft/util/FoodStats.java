@@ -17,16 +17,16 @@ public class FoodStats {
     public int foodTimer;
     public int prevFoodLevel = 20;
 
-    private EntityPlayer entityhuman;
+    public EntityPlayer player;
 
-    public FoodStats() {
+    /*public FoodStats() {
         throw new AssertionError("Whoopsie, we missed the bukkit.");
-    }
+    }*/
 
-    public FoodStats(EntityPlayer entityhuman) {
+    /*public FoodStats(EntityPlayer entityhuman) {
         org.apache.commons.lang3.Validate.notNull(entityhuman);
         this.entityhuman = entityhuman;
-    }
+    }*/
 
     public void addStats(int foodLevelIn, float foodSaturationModifier) {
         this.foodLevel = Math.min(foodLevelIn + this.foodLevel, 20);
@@ -37,13 +37,13 @@ public class FoodStats {
         // this.addStats(foodItem.getHealAmount(stack), foodItem.getSaturationModifier(stack));
         int oldFoodLevel = foodLevel;
 
-        org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callFoodLevelChangeEvent(entityhuman, foodItem.getHealAmount(stack) + oldFoodLevel);
+        org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callFoodLevelChangeEvent(player, foodItem.getHealAmount(stack) + oldFoodLevel);
 
         if (!event.isCancelled()) {
             this.addStats(event.getFoodLevel() - oldFoodLevel, foodItem.getSaturationModifier(stack));
         }
 
-        ((EntityPlayerMP) entityhuman).getBukkitEntity().sendHealthUpdate();
+        ((EntityPlayerMP) player).getBukkitEntity().sendHealthUpdate();
     }
 
     public void onUpdate(EntityPlayer player) {
@@ -57,13 +57,13 @@ public class FoodStats {
                 this.foodSaturationLevel = Math.max(this.foodSaturationLevel - 1.0F, 0.0F);
             } else if (enumdifficulty != EnumDifficulty.PEACEFUL) {
                 // this.foodLevel = Math.max(this.foodLevel - 1, 0);
-                org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callFoodLevelChangeEvent(entityhuman, Math.max(this.foodLevel - 1, 0));
+                org.bukkit.event.entity.FoodLevelChangeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callFoodLevelChangeEvent(player, Math.max(this.foodLevel - 1, 0));
 
                 if (!event.isCancelled()) {
                     this.foodLevel = event.getFoodLevel();
                 }
 
-                ((EntityPlayerMP) entityhuman).connection.sendPacket(new SPacketUpdateHealth(((EntityPlayerMP) entityhuman).getBukkitEntity().getScaledHealth(), this.foodLevel, this.foodSaturationLevel));
+                ((EntityPlayerMP) player).connection.sendPacket(new SPacketUpdateHealth(((EntityPlayerMP) player).getBukkitEntity().getScaledHealth(), this.foodLevel, this.foodSaturationLevel));
             }
         }
 

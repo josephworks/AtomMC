@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -87,22 +87,22 @@ public class GuiConfig extends GuiScreen {
 
     /**
      * This constructor handles the {@code @Config} configuration classes
-     *
      * @param parentScreen the parent GuiScreen object
-     * @param mod          the mod for which to create a screen
+     * @param modid the mod for which to create a screen
      */
     public GuiConfig(GuiScreen parentScreen, String modid, String title) {
-        this(parentScreen, modid, false, false, title, ConfigManager.getModConfigClasses(modid));
+        this(parentScreen, modid, false, false, title, ConfigManager.getModConfigClasses(modid)); 
     }
 
     /**
-     * @param parentScreen           the parrent GuiScreen object
-     * @param modID                  the mod ID for the mod whose config settings will be editted
+     *
+     * @param parentScreen the parrent GuiScreen object
+     * @param modID the mod ID for the mod whose config settings will be editted
      * @param allRequireWorldRestart whether all config elements on this screen require a world restart
-     * @param allRequireMcRestart    whether all config elements on this screen require a game restart
-     * @param title                  the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
-     *                               edited.
-     * @param configClasses          an array of classes annotated with {@code @Config} providing the configuration
+     * @param allRequireMcRestart whether all config elements on this screen require a game restart
+     * @param title the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
+     *            edited.
+     * @param configClasses an array of classes annotated with {@code @Config} providing the configuration
      */
     public GuiConfig(GuiScreen parentScreen, String modID, boolean allRequireWorldRestart, boolean allRequireMcRestart, String title,
                      Class<?>... configClasses) {
@@ -129,15 +129,15 @@ public class GuiConfig extends GuiScreen {
      * (includes child screens). If configID is not defined, the events will be posted if the parent gui is null or if the parent gui
      * is not an instance of GuiConfig.
      *
-     * @param parentScreen           the parent GuiScreen object
-     * @param configElements         a List of IConfigElement objects
-     * @param modID                  the mod ID for the mod whose config settings will be edited
-     * @param configID               an identifier that will be passed to the OnConfigChanged and PostConfigChanged events. Setting this value will force
-     *                               the save action to be called when the Done button is pressed on this screen if any configElements were changed.
+     * @param parentScreen the parent GuiScreen object
+     * @param configElements a List of IConfigElement objects
+     * @param modID the mod ID for the mod whose config settings will be edited
+     * @param configID an identifier that will be passed to the OnConfigChanged and PostConfigChanged events. Setting this value will force
+     *            the save action to be called when the Done button is pressed on this screen if any configElements were changed.
      * @param allRequireWorldRestart send true if all configElements on this screen require a world restart
-     * @param allRequireMcRestart    send true if all configElements on this screen require MC to be restarted
-     * @param title                  the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
-     *                               edited.
+     * @param allRequireMcRestart send true if all configElements on this screen require MC to be restarted
+     * @param title the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
+     *            edited.
      */
     public GuiConfig(GuiScreen parentScreen, List<IConfigElement> configElements, String modID, String configID,
                      boolean allRequireWorldRestart, boolean allRequireMcRestart, String title) {
@@ -148,13 +148,13 @@ public class GuiConfig extends GuiScreen {
      * GuiConfig constructor that will use ConfigChangedEvent when editing is concluded. This constructor passes null for configID.
      * If configID is not defined, the events will be posted if the parent gui is null or if the parent gui is not an instance of GuiConfig.
      *
-     * @param parentScreen           the parent GuiScreen object
-     * @param configElements         a List of IConfigElement objects
-     * @param modID                  the mod ID for the mod whose config settings will be edited
+     * @param parentScreen the parent GuiScreen object
+     * @param configElements a List of IConfigElement objects
+     * @param modID the mod ID for the mod whose config settings will be edited
      * @param allRequireWorldRestart send true if all configElements on this screen require a world restart
-     * @param allRequireMcRestart    send true if all configElements on this screen require MC to be restarted
-     * @param title                  the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
-     *                               edited.
+     * @param allRequireMcRestart send true if all configElements on this screen require MC to be restarted
+     * @param title the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
+     *            edited.
      */
     public GuiConfig(GuiScreen parentScreen, List<IConfigElement> configElements, String modID,
                      boolean allRequireWorldRestart, boolean allRequireMcRestart, String title) {
@@ -165,15 +165,15 @@ public class GuiConfig extends GuiScreen {
      * GuiConfig constructor that will use ConfigChangedEvent when editing is concluded. This constructor passes null for configID.
      * If configID is not defined, the events will be posted if the parent gui is null or if the parent gui is not an instance of GuiConfig.
      *
-     * @param parentScreen           the parent GuiScreen object
-     * @param configElements         a List of IConfigElement objects
-     * @param modID                  the mod ID for the mod whose config settings will be edited
+     * @param parentScreen the parent GuiScreen object
+     * @param configElements a List of IConfigElement objects
+     * @param modID the mod ID for the mod whose config settings will be edited
      * @param allRequireWorldRestart send true if all configElements on this screen require a world restart
-     * @param allRequireMcRestart    send true if all configElements on this screen require MC to be restarted
-     * @param title                  the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
-     *                               edited.
-     * @param titleLine2             the desired title second line for this screen. Typically this is used to send the category name of the category
-     *                               currently being edited.
+     * @param allRequireMcRestart send true if all configElements on this screen require MC to be restarted
+     * @param title the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
+     *            edited.
+     * @param titleLine2 the desired title second line for this screen. Typically this is used to send the category name of the category
+     *            currently being edited.
      */
     public GuiConfig(GuiScreen parentScreen, List<IConfigElement> configElements, String modID,
                      boolean allRequireWorldRestart, boolean allRequireMcRestart, String title, String titleLine2) {
@@ -186,16 +186,16 @@ public class GuiConfig extends GuiScreen {
      * pressed if any configElements were changed (includes child screens). If configID is not defined, the events will be posted if the parent
      * gui is null or if the parent gui is not an instance of GuiConfig.
      *
-     * @param parentScreen           the parent GuiScreen object
-     * @param configElements         a List of IConfigElement objects
-     * @param modID                  the mod ID for the mod whose config settings will be edited
-     * @param configID               an identifier that will be passed to the OnConfigChanged and PostConfigChanged events
+     * @param parentScreen the parent GuiScreen object
+     * @param configElements a List of IConfigElement objects
+     * @param modID the mod ID for the mod whose config settings will be edited
+     * @param configID an identifier that will be passed to the OnConfigChanged and PostConfigChanged events
      * @param allRequireWorldRestart send true if all configElements on this screen require a world restart
-     * @param allRequireMcRestart    send true if all configElements on this screen require MC to be restarted
-     * @param title                  the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
-     *                               edited.
-     * @param titleLine2             the desired title second line for this screen. Typically this is used to send the category name of the category
-     *                               currently being edited.
+     * @param allRequireMcRestart send true if all configElements on this screen require MC to be restarted
+     * @param title the desired title for this screen. For consistency it is recommended that you pass the path of the config file being
+     *            edited.
+     * @param titleLine2 the desired title second line for this screen. Typically this is used to send the category name of the category
+     *            currently being edited.
      */
     public GuiConfig(GuiScreen parentScreen, List<IConfigElement> configElements, String modID, @Nullable String configID,
                      boolean allRequireWorldRestart, boolean allRequireMcRestart, String title, @Nullable String titleLine2) {

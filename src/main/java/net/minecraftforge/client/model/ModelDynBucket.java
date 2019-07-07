@@ -19,14 +19,10 @@
 
 package net.minecraftforge.client.model;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.vecmath.Quat4f;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -50,19 +46,19 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fml.common.FMLLog;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.vecmath.Quat4f;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static net.minecraftforge.client.model.ModelDynBucket.LoaderDynBucket.getResource;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import net.minecraftforge.fml.common.FMLLog;
-import org.apache.commons.io.IOUtils;
 
 public final class ModelDynBucket implements IModel {
     public static final ModelResourceLocation LOCATION = new ModelResourceLocation(new ResourceLocation(ForgeVersion.MOD_ID, "dynbucket"), "inventory");
@@ -166,7 +162,7 @@ public final class ModelDynBucket implements IModel {
             }
         }
 
-        return new BakedDynBucket(this, builder.build(), particleSprite, format, Maps.immutableEnumMap(transformMap), Maps.newHashMap());
+        return new BakedDynBucket(this, builder.build(), particleSprite, format, Maps.immutableEnumMap(transformMap), Maps.newHashMap(), transform.isIdentity());
     }
 
     /**
@@ -413,13 +409,14 @@ public final class ModelDynBucket implements IModel {
         private final Map<String, IBakedModel> cache; // contains all the baked models since they'll never change
         private final VertexFormat format;
 
-        public BakedDynBucket(ModelDynBucket parent,
-                              ImmutableList<BakedQuad> quads,
-                              TextureAtlasSprite particle,
-                              VertexFormat format,
-                              ImmutableMap<TransformType, TRSRTransformation> transforms,
-                              Map<String, IBakedModel> cache) {
-            super(quads, particle, transforms, BakedDynBucketOverrideHandler.INSTANCE);
+        BakedDynBucket(ModelDynBucket parent,
+                       ImmutableList<BakedQuad> quads,
+                       TextureAtlasSprite particle,
+                       VertexFormat format,
+                       ImmutableMap<TransformType, TRSRTransformation> transforms,
+                       Map<String, IBakedModel> cache,
+                       boolean untransformed) {
+            super(quads, particle, transforms, BakedDynBucketOverrideHandler.INSTANCE, untransformed);
             this.format = format;
             this.parent = parent;
             this.cache = cache;

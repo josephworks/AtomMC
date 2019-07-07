@@ -127,6 +127,10 @@ public interface ISpecialArmor {
          * @return The left over damage that has not been absorbed by the armor
          */
         public static float applyArmor(EntityLivingBase entity, NonNullList<ItemStack> inventory, DamageSource source, double damage) {
+            return applyArmor(entity, inventory, source, damage, true);
+        }
+
+        public static float applyArmor(EntityLivingBase entity, NonNullList<ItemStack> inventory, DamageSource source, double damage, boolean damageArmor) {
             if (DEBUG) {
                 System.out.println("Start: " + damage);
             }
@@ -183,13 +187,15 @@ public interface ISpecialArmor {
                     if (absorb > 0) {
                         ItemStack stack = inventory.get(prop.Slot);
                         int itemDamage = (int) Math.max(1, absorb);
-                        if (stack.getItem() instanceof ISpecialArmor) {
-                            ((ISpecialArmor) stack.getItem()).damageArmor(entity, stack, source, itemDamage, prop.Slot);
-                        } else {
-                            if (DEBUG) {
-                                System.out.println("Item: " + stack.toString() + " Absorbed: " + absorb + " Damaged: " + itemDamage);
+                        if (damageArmor) {
+                            if (stack.getItem() instanceof ISpecialArmor) {
+                                ((ISpecialArmor) stack.getItem()).damageArmor(entity, stack, source, itemDamage, prop.Slot);
+                            } else {
+                                if (DEBUG) {
+                                    System.out.println("Item: " + stack.toString() + " Absorbed: " + absorb + " Damaged: " + itemDamage);
+                                }
+                                stack.damageItem(itemDamage, entity);
                             }
-                            stack.damageItem(itemDamage, entity);
                         }
                         if (stack.isEmpty()) {
                             /*if (entity instanceof EntityPlayer)
@@ -205,7 +211,7 @@ public interface ISpecialArmor {
             if (damage > 0 && (totalArmor > 0 || totalToughness > 0)) {
                 double armorDamage = Math.max(1.0F, damage / 4.0F);
 
-                for (int i = 0; i < inventory.size(); i++) {
+                for (int i = 0; (damageArmor) && (i < inventory.size()); i++) {
                     if (inventory.get(i).getItem() instanceof ItemArmor) {
                         inventory.get(i).damageItem((int) armorDamage, entity);
 

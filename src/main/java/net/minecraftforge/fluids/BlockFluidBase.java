@@ -31,6 +31,7 @@ import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockStairs;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyInteger;
@@ -157,8 +158,8 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock {
      */
     protected final Fluid definedFluid;
 
-    public BlockFluidBase(Fluid fluid, Material material) {
-        super(material);
+    public BlockFluidBase(Fluid fluid, Material material, MapColor mapColor) {
+        super(material, mapColor);
         this.setTickRandomly(true);
         this.disableStats();
 
@@ -173,6 +174,10 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock {
         this.definedFluid = fluid;
         displacements.putAll(defaultDisplacements);
         this.setDefaultState(blockState.getBaseState().withProperty(LEVEL, getMaxRenderHeightMeta()));
+    }
+
+    public BlockFluidBase(Fluid fluid, Material material) {
+        this(fluid, material, material.getMaterialMapColor());
     }
 
     @Override
@@ -361,7 +366,7 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock {
     @Override
     public int getPackedLightmapCoords(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         int lightThis = world.getCombinedLight(pos, 0);
-        int lightUp = world.getCombinedLight(pos.up(), 0);
+        int lightUp = world.getCombinedLight(pos.down(densityDir), 0);
         int lightThisBase = lightThis & 255;
         int lightUpBase = lightUp & 255;
         int lightThisExt = lightThis >> 16 & 255;
@@ -616,11 +621,15 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock {
     }
 
     private int getFlowDecay(IBlockAccess world, BlockPos pos) {
-        int quantaValue = getQuantaValue(world, pos);
-        return quantaValue > 0 && hasVerticalFlow(world, pos) ? 0 : quantaPerBlock - quantaValue;
+        return quantaPerBlock - getEffectiveQuanta(world, pos);
     }
 
-    private boolean hasVerticalFlow(IBlockAccess world, BlockPos pos) {
+    final int getEffectiveQuanta(IBlockAccess world, BlockPos pos) {
+        int quantaValue = getQuantaValue(world, pos);
+        return quantaValue > 0 && quantaValue < quantaPerBlock && hasVerticalFlow(world, pos) ? quantaPerBlock : quantaValue;
+    }
+
+    final boolean hasVerticalFlow(IBlockAccess world, BlockPos pos) {
         return world.getBlockState(pos.down(densityDir)).getBlock() == this;
     }
 
@@ -648,7 +657,7 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock {
     }
 
     public float getFilledPercentage(IBlockAccess world, BlockPos pos) {
-        int quantaRemaining = getQuantaValue(world, pos);
+        int quantaRemaining = getEffectiveQuanta(world, pos);
         float remaining = (quantaRemaining + 1f) / (quantaPerBlockFloat + 1f);
         return remaining * (density > 0 ? 1 : -1);
     }
@@ -692,4 +701,12 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock {
         return filled < 0 ? vec.y > pos.getY() + filled + 1
                 : vec.y < pos.getY() + filled;
     }
+
+    @Override
+    public float getBlockLiquidHeight(World world, BlockPos pos, IBlockState state, Material material)
+    {
+        float filled = getFilledPercentage(world, pos);
+        return Math.max(filled, 0);
+    }
+
 }

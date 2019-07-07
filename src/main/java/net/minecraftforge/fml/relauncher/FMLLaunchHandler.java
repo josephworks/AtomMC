@@ -69,6 +69,11 @@ public class FMLLaunchHandler {
         this.classLoader.addClassLoaderExclusion("LZMA.");
     }
 
+    public static File getMinecraftHome()
+    {
+        return INSTANCE.minecraftHome;
+    }
+
     private void setupClient() {
         side = Side.CLIENT;
         setupHome();
@@ -119,5 +124,7 @@ public class FMLLaunchHandler {
         INSTANCE.injectPostfixTransformers();
     }
 
-
+    public static boolean isDeobfuscatedEnvironment() {
+        return CoreModManager.deobfuscatedEnvironment;
+    }
 }

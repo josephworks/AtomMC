@@ -71,6 +71,7 @@ public class NBTTagCompound extends NBTBase {
     }
 
     public void setTag(String key, NBTBase value) {
+        if (value == null) throw new IllegalArgumentException("Invalid null NBT value with key " + key);
         this.tagMap.put(key, value);
     }
 

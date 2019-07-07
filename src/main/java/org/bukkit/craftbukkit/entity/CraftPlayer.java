@@ -131,7 +131,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     private boolean scaledHealth = false;
     private double healthScale = 20;
 
-    public CraftPlayer(CraftServer server, EntityPlayer entity) {
+    public CraftPlayer(CraftServer server, EntityPlayerMP entity) {
         super(server, entity);
 
         firstPlayed = System.currentTimeMillis();

@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.block.Block;
@@ -100,6 +102,8 @@ import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraft.world.storage.WorldSavedDataCallableSave;
 import net.minecraft.world.storage.loot.LootTableManager;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.WorldSpecificSaveHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -128,7 +132,7 @@ public class WorldServer extends World implements IThreadListener {
     /**
      * Stores the recently processed (lighting) chunks
      */
-    protected Set<ChunkPos> doneChunks = new java.util.HashSet<ChunkPos>();
+    protected TIntSet doneChunks = new TIntHashSet();
     public List<Teleporter> customTeleporters = new ArrayList<Teleporter>();
 
     public final int dimension;
@@ -151,6 +155,14 @@ public class WorldServer extends World implements IThreadListener {
         this.calculateInitialSkylight();
         this.calculateInitialWeather();
         this.getWorldBorder().setSize(server.getMaxWorldSize());
+        WorldServer overworld = DimensionManager.getWorld(0);
+        if (overworld != null) {
+            this.mapStorage = overworld.mapStorage;
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, overworld.saveHandler));
+        } else {
+            this.mapStorage = new MapStorage(saveHandlerIn);
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, this.saveHandler));
+        }
         net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, mcServer);
     }
 
@@ -170,6 +182,15 @@ public class WorldServer extends World implements IThreadListener {
         this.calculateInitialSkylight();
         this.calculateInitialWeather();
         this.getWorldBorder().setSize(server.getMaxWorldSize());
+        WorldServer overworld = DimensionManager.getWorld(0);
+        if (overworld != null) {
+            this.mapStorage = overworld.mapStorage;
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, overworld.saveHandler));
+        } else {
+            this.mapStorage = new MapStorage(saveHandlerIn);
+            this.perWorldStorage = new MapStorage(new WorldSpecificSaveHandler(this, this.saveHandler));
+        }
+
         net.minecraftforge.common.DimensionManager.setWorld(dimensionId, this, mcServer);
     }
 
@@ -740,7 +761,7 @@ public class WorldServer extends World implements IThreadListener {
     }
 
     public void updateEntities() {
-        if (false && this.playerEntities.isEmpty() && getPersistentChunks().isEmpty()) // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
+        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty()) // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
         {
             if (this.updateEntityTick++ >= 300) {
                 return;
@@ -1471,4 +1492,13 @@ public class WorldServer extends World implements IThreadListener {
         private ServerBlockEventList() {
         }
     }
+
+    public boolean chunkRoundExists(int cx, int cz, int radius)
+    {
+        for(int x = cx - radius; x < cx + radius; x++)
+            for(int z = cz - radius; z < cz + radius; z++)
+                if(!this.isChunkLoaded(x, z, false)) return false;
+        return true;
+    }
+
 }

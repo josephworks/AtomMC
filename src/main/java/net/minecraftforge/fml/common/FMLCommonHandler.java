@@ -204,7 +204,7 @@ public class FMLCommonHandler {
      * Raise an exception
      */
     public void raiseException(Throwable exception, String message, boolean stopGame) {
-        FMLLog.log.error("Something raised an exception. The message was '{}'. 'stopGame' is {}", stopGame, exception);
+        FMLLog.log.error("Something raised an exception. The message was '{}'. 'stopGame' is {}", message, stopGame, exception);
         if (stopGame) {
             getSidedDelegate().haltGame(message, exception);
         }
@@ -443,7 +443,7 @@ public class FMLCommonHandler {
         Loader.instance().serverStopped();
         // FORCE the internal server to stop: hello optifine workaround!
         if (server != null)
-            ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, false, "field_71316" + "_v", "u", "serverStopped");
+            ObfuscationReflectionHelper.setPrivateValue(MinecraftServer.class, server, false, "field_71316" + "_v",  "u", "serverStopped");
 
         // allow any pending exit to continue, clear exitLatch
         CountDownLatch latch = exitLatch;

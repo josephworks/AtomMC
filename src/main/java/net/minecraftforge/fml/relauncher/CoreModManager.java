@@ -72,16 +72,17 @@ import org.apache.logging.log4j.core.LoggerContext;
 public class CoreModManager {
     private static final Attributes.Name COREMODCONTAINSFMLMOD = new Attributes.Name("FMLCorePluginContainsFMLMod");
     private static final Attributes.Name MODTYPE = new Attributes.Name("ModType");
-    private static String[] rootPlugins = {"net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "org.atom.asm.AtomCorePlugin"};
+    private static String[] rootPlugins = {"net.minecraftforge.fml.relauncher.FMLCorePlugin", "net.minecraftforge.classloading.FMLForgePlugin", "org.atom.AtomServerCore","org.atom.asm.AtomCorePlugin"};
     private static List<String> ignoredModFiles = Lists.newArrayList();
     private static Map<String, List<String>> transformers = Maps.newHashMap();
     private static List<FMLPluginWrapper> loadPlugins;
-    private static boolean deobfuscatedEnvironment;
     private static FMLTweaker tweaker;
     private static File mcDir;
     private static List<String> candidateModFiles = Lists.newArrayList();
     private static List<String> accessTransformers = Lists.newArrayList();
     private static Set<String> rootNames = Sets.newHashSet();
+
+    static boolean deobfuscatedEnvironment;
 
     static {
         for (String cls : rootPlugins) {
@@ -508,15 +509,15 @@ public class CoreModManager {
             return wrap;
         } catch (ClassNotFoundException cnfe) {
             if (!Lists.newArrayList(rootPlugins).contains(coreModClass))
-                FMLLog.log.error("Coremod {}: Unable to class load the plugin {}", coreModClass, cnfe);
+                FMLLog.log.error("Coremod {}: Unable to class load the plugin {}", coreModName, coreModClass, cnfe);
             else
                 FMLLog.log.debug("Skipping root plugin {}", coreModClass);
         } catch (ClassCastException cce) {
-            FMLLog.log.error("Coremod {}: The plugin {} is not an implementor of IFMLLoadingPlugin", coreModClass, cce);
+            FMLLog.log.error("Coremod {}: The plugin {} is not an implementor of IFMLLoadingPlugin", coreModName, coreModClass, cce);
         } catch (InstantiationException ie) {
-            FMLLog.log.error("Coremod {}: The plugin class {} was not instantiable", coreModClass, ie);
+            FMLLog.log.error("Coremod {}: The plugin class {} was not instantiable", coreModName, coreModClass, ie);
         } catch (IllegalAccessException iae) {
-            FMLLog.log.error("Coremod {}: The plugin class {} was not accessible", coreModClass, iae);
+            FMLLog.log.error("Coremod {}: The plugin class {} was not accessible", coreModName, coreModClass, iae);
         }
         return null;
     }

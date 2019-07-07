@@ -88,6 +88,8 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraft.util.DamageSource;
+import org.atom.entity.CraftCustomEntity;
+import org.atom.entity.CraftCustomProjectile;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -127,7 +129,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             // Players
             if (entity instanceof EntityPlayer) {
                 if (entity instanceof EntityPlayerMP) {
-                    return new CraftPlayer(server, (EntityPlayer) entity);
+                    return new CraftPlayer(server, (EntityPlayerMP) entity);
                 } else {
                     return new CraftHumanEntity(server, (EntityPlayer) entity);
                 } // TODO add support fake player classes from mods( using FakePlayerFactory.class)
@@ -479,7 +481,13 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         // If this entity is riding another entity, we must dismount before teleporting.
         entity.dismountRidingEntity();
 
-        entity.world = ((CraftWorld) location.getWorld()).getHandle();
+        // Spigot start
+        if (!location.getWorld().equals(getWorld())) {
+            entity.teleportTo(location, cause.equals(TeleportCause.NETHER_PORTAL));
+            return true;
+        }
+        // entity.world = ((CraftWorld) location.getWorld()).getHandle();
+        // Spigot end
         // entity.setLocation() throws no event, and so cannot be cancelled
         entity.setPositionAndRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         // SPIGOT-619: Force sync head rotation also

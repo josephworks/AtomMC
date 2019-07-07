@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,6 @@ public @interface Config {
      * The mod id that this configuration is associated with.
      */
     String modid();
-
     /**
      * A user friendly name for the config file,
      * the default will be modid
@@ -91,7 +90,6 @@ public @interface Config {
     @Target(ElementType.FIELD)
     @interface RangeInt {
         int min() default Integer.MIN_VALUE;
-
         int max() default Integer.MAX_VALUE;
     }
 
@@ -99,7 +97,6 @@ public @interface Config {
     @Target(ElementType.FIELD)
     @interface RangeDouble {
         double min() default Double.MIN_VALUE;
-
         double max() default Double.MAX_VALUE;
     }
 
@@ -117,5 +114,13 @@ public @interface Config {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.FIELD, ElementType.TYPE})
     @interface RequiresWorldRestart {
+    }
+
+    /**
+     * A field marked with this annotation (and {@link RangeInt} or {@link RangeDouble}) will have a slider control attached in the config UI
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @interface SlidingOption {
     }
 }

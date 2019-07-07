@@ -180,6 +180,8 @@ public class EntityIllusionIllager extends EntitySpellcasterIllager implements I
 
     public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor) {
         EntityArrow entityarrow = this.createArrowEntity(distanceFactor);
+        if (this.getHeldItemMainhand().getItem() instanceof net.minecraft.item.ItemBow)
+            entityarrow = ((net.minecraft.item.ItemBow) this.getHeldItemMainhand().getItem()).customizeArrow(entityarrow);
         double d0 = target.posX - this.posX;
         double d1 = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - entityarrow.posY;
         double d2 = target.posZ - this.posZ;
