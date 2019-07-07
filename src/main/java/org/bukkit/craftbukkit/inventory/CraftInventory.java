@@ -480,7 +480,16 @@ public class CraftInventory implements Inventory {
     }
 
     public InventoryHolder getHolder() {
-        return InventoryUtils.getInventoryOwner(inventory);
+        try {
+            return inventory.getOwner();
+        } catch (AbstractMethodError e) {
+            if (inventory instanceof net.minecraft.tileentity.TileEntity) {
+                return InventoryUtils.getInventoryOwner(inventory);
+            } else {
+                return null;
+            }
+        }
+
     }
 
     public int getMaxStackSize() {
