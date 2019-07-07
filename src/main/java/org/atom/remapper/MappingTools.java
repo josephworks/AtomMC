@@ -75,7 +75,7 @@ class MappingTools {
         if (MappingTools.spigotMappings == null) {
             getSpigotMappings();
         }
-        final CustomSearge mappingWriter = new CustomSearge("Spigot", "CatServer", "");
+        final CustomSearge mappingWriter = new CustomSearge("Spigot", "Atom", "");
         final Map<String, String> spigotClassMap = new HashMap<>();
         final Map<String, String> spigotPackgeMap = new HashMap<>();
         for (final String key : MappingTools.srgMappings.classes.keySet()) {

@@ -53,11 +53,14 @@ import org.apache.logging.log4j.Logger;
 public class EntityTracker {
     private static final Logger LOGGER = LogManager.getLogger();
     private final WorldServer world;
-    private final Set<EntityTrackerEntry> entries = Sets.<EntityTrackerEntry>newHashSet();
-    public final IntHashMap<EntityTrackerEntry> trackedEntityHashTable = new IntHashMap<EntityTrackerEntry>();
+    private final Set<EntityTrackerEntry> entries;
+    public final IntHashMap<EntityTrackerEntry> trackedEntityHashTable;
     private int maxTrackingDistanceThreshold;
+    private final java.util.concurrent.locks.ReentrantLock trackerLock = new java.util.concurrent.locks.ReentrantLock(); // Thermos - prevent entity tracking crashes
 
     public EntityTracker(WorldServer theWorldIn) {
+        this.entries = Sets.<EntityTrackerEntry>newHashSet();
+        this.trackedEntityHashTable = new IntHashMap<EntityTrackerEntry>();
         this.world = theWorldIn;
         this.maxTrackingDistanceThreshold = theWorldIn.getMinecraftServer().getPlayerList().getEntityViewDistance();
     }
@@ -79,12 +82,15 @@ public class EntityTracker {
         if (entityIn instanceof EntityPlayerMP) {
             this.track(entityIn, 512, 2);
             EntityPlayerMP entityplayermp = (EntityPlayerMP) entityIn;
+            waitForLock(); // Themrmos Tracker Crash Prevention
+            lock(); // TTCP
 
             for (EntityTrackerEntry entitytrackerentry : this.entries) {
                 if (entitytrackerentry.getTrackedEntity() != entityplayermp) {
                     entitytrackerentry.updatePlayerEntity(entityplayermp);
                 }
             }
+            unlock();// TTCP
         } else if (entityIn instanceof EntityFishHook) {
             this.track(entityIn, 64, 5, true);
         } else if (entityIn instanceof EntityArrow) {
@@ -146,21 +152,49 @@ public class EntityTracker {
         }
     }
 
+    private void waitForLock() {
+        int counter = 0;
+        while(this.trackerLock.isLocked()){
+
+            try{counter += 1;
+                if(counter >= 100)
+                {
+                    unlock();
+                    break;
+                }
+                Thread.sleep(100L);
+            } catch (Exception e){
+
+            }
+        }
+    }
+    public void lock(){
+        this.trackerLock.lock();
+    }
+    public void unlock(){
+        if(!this.trackerLock.isLocked()) return;
+        this.trackerLock.unlock();
+    }
+
     public void track(Entity entityIn, int trackingRange, int updateFrequency) {
         this.track(entityIn, trackingRange, updateFrequency, false);
     }
 
-    public void track(Entity entityIn, int trackingRange, final int updateFrequency, boolean sendVelocityUpdates) {
+    public synchronized void track(Entity entityIn, int trackingRange, final int updateFrequency, boolean sendVelocityUpdates) {
         try {
             if (this.trackedEntityHashTable.containsItem(entityIn.getEntityId())) {
-                throw new IllegalStateException("Entity is already tracked!");
+                //throw new IllegalStateException("Entity is already tracked!");
+                return;
             }
 
             EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entityIn, trackingRange, this.maxTrackingDistanceThreshold, updateFrequency, sendVelocityUpdates);
+            waitForLock(); lock();// TTCP
             this.entries.add(entitytrackerentry);
+            unlock();// TTCP
             this.trackedEntityHashTable.addKey(entityIn.getEntityId(), entitytrackerentry);
             entitytrackerentry.updatePlayerEntities(this.world.playerEntities);
         } catch (Throwable throwable) {
+            unlock(); // TTCP
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding entity to track");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity To Track");
             crashreportcategory.addCrashSection("Tracking range", trackingRange + " blocks");
@@ -189,21 +223,25 @@ public class EntityTracker {
     public void untrack(Entity entityIn) {
         if (entityIn instanceof EntityPlayerMP) {
             EntityPlayerMP entityplayermp = (EntityPlayerMP) entityIn;
-
+            waitForLock();lock();// TTCP
             for (EntityTrackerEntry entitytrackerentry : this.entries) {
                 entitytrackerentry.removeFromTrackedPlayers(entityplayermp);
             }
+            unlock();// TTCP
         }
 
         EntityTrackerEntry entitytrackerentry1 = this.trackedEntityHashTable.removeObject(entityIn.getEntityId());
 
         if (entitytrackerentry1 != null) {
+            waitForLock();lock();// TTCP
             this.entries.remove(entitytrackerentry1);
+            unlock();// TTCP
             entitytrackerentry1.sendDestroyEntityPacketToTrackedPlayers();
         }
     }
 
     public void tick() {
+        waitForLock();lock();// TTCP
         List<EntityPlayerMP> list = Lists.<EntityPlayerMP>newArrayList();
 
         for (EntityTrackerEntry entitytrackerentry : this.entries) {
@@ -217,15 +255,16 @@ public class EntityTracker {
                 }
             }
         }
-
+        unlock();
         for (int i = 0; i < list.size(); ++i) {
             EntityPlayerMP entityplayermp = list.get(i);
-
+            waitForLock(); lock();// TTCP
             for (EntityTrackerEntry entitytrackerentry1 : this.entries) {
                 if (entitytrackerentry1.getTrackedEntity() != entityplayermp) {
                     entitytrackerentry1.updatePlayerEntity(entityplayermp);
                 }
             }
+            unlock();
         }
     }
 
@@ -276,15 +315,17 @@ public class EntityTracker {
     }
 
     public void removePlayerFromTrackers(EntityPlayerMP player) {
+        waitForLock(); lock(); // TTCP
         for (EntityTrackerEntry entitytrackerentry : this.entries) {
             entitytrackerentry.removeTrackedPlayerSymmetric(player);
         }
+        unlock(); // TTCP
     }
 
     public void sendLeashedEntitiesInChunk(EntityPlayerMP player, Chunk chunkIn) {
         List<Entity> list = Lists.<Entity>newArrayList();
         List<Entity> list1 = Lists.<Entity>newArrayList();
-
+        waitForLock(); lock(); // TTCP
         for (EntityTrackerEntry entitytrackerentry : this.entries) {
             Entity entity = entitytrackerentry.getTrackedEntity();
 
@@ -300,7 +341,7 @@ public class EntityTracker {
                 }
             }
         }
-
+        unlock(); // TTCP
         if (!list.isEmpty()) {
             for (Entity entity1 : list) {
                 player.connection.sendPacket(new SPacketEntityAttach(entity1, ((EntityLiving) entity1).getLeashHolder()));

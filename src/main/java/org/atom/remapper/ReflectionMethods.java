@@ -2,7 +2,7 @@ package org.atom.remapper;
 
 import net.md_5.specialsource.repo.ClassRepo;
 import net.md_5.specialsource.repo.RuntimeRepo;
-import org.atom.AtomServer;
+import org.atom.AtomServerCore;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +21,7 @@ public class ReflectionMethods {
     }
 
     public static Class<?> forName(String className, final boolean initialize, final ClassLoader classLoader) throws ClassNotFoundException {
-        if (className.startsWith("net.minecraft.server." + AtomServer.getNativeVersion())) {
+        if (className.startsWith("net.minecraft.server." + AtomServerCore.getNativeVersion())) {
             className = ReflectionTransformer.jarMapping.classes.getOrDefault(className.replace('.', '/'), className).replace('/', '.');
         }
         return Class.forName(className, initialize, classLoader);
