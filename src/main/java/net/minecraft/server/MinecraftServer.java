@@ -158,7 +158,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     private final GameProfileRepository profileRepo;
     private final PlayerProfileCache profileCache;
     private long nanoTimeSinceStatusRefresh;
-    public final Queue<FutureTask<?>> futureTaskQueue = Queues.<FutureTask<?>>newArrayDeque();
+    public final Queue<FutureTask<?>> futureTaskQueue = new org.atom.server.utils.CachedSizeConcurrentLinkedQueue<>();
     private Thread serverThread;
     protected long currentTime = getCurrentTimeMillis();
     @SideOnly(Side.CLIENT)
@@ -503,39 +503,31 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 // Spigot start
                 Arrays.fill( recentTps, 20 );
-                long curPeakWait = 0L;
-                long lastTick = System.nanoTime(), catchupTime = 0, curTime = 0L, wait, tickSection = lastTick;
-                while (this.serverRunning) {
+                long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
+                while (this.serverRunning)
+                {
                     curTime = System.nanoTime();
-                    wait = TICK_TIME - (curTime - lastTick);
-                    if ( curTime == 0) curTime = wait;
-                    wait -= catchupTime;
-                    if (wait > 1000000) {
+                    wait = TICK_TIME - (curTime - lastTick) - catchupTime;
+                    if (wait > 0) {
                         Thread.sleep(wait / 1000000);
                         catchupTime = 0;
                         continue;
                     } else {
-                        catchupTime = Math.min(TICK_TIME * TPS, -wait);
+                        catchupTime = Math.min(1000000000, Math.abs(wait));
                     }
-
-                    if (MinecraftServer.currentTick++ % SAMPLE_INTERVAL == 0) {
-                        currentTPS = (currentTPS * 0.95) + (1E9 / (curTime - lastTick) * 0.05);
-                        recentTps[0] = calcTps(recentTps[0], 0.92, currentTPS); // 1/exp(5sec/1min)
-                        recentTps[1] = calcTps(recentTps[1], 0.9835, currentTPS); // 1/exp(5sec/5min)
-                        recentTps[2] = calcTps(recentTps[2], 0.9945, currentTPS); // 1/exp(5sec/15min)
-                    }
-                    if(wait < curPeakWait)
-                        curPeakWait = wait;
-                    if(tickCounter % 20 == 0)
+                    if ( MinecraftServer.currentTick++ % SAMPLE_INTERVAL == 0 )
                     {
-                        wait = curPeakWait;
-                        curPeakWait = TICK_TIME;
+                        double currentTps = 1E9 / ( curTime - tickSection ) * SAMPLE_INTERVAL;
+                        recentTps[0] = calcTps( recentTps[0], 0.92, currentTps ); // 1/exp(5sec/1min)
+                        recentTps[1] = calcTps( recentTps[1], 0.9835, currentTps ); // 1/exp(5sec/5min)
+                        recentTps[2] = calcTps( recentTps[2], 0.9945, currentTps ); // 1/exp(5sec/15min)
+                        tickSection = curTime;
                     }
-                    wait = 0;
                     lastTick = curTime;
 
                     this.tick();
                     this.serverIsRunning = true;
+
                 }
                 // Spigot end
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStopping();
@@ -689,19 +681,17 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     }
 
     public void updateTimeLightAndEntities() {
-        this.profiler.startSection("ChunkIOExecutor");
-        ChunkIOExecutor.tick();
-        this.profiler.endSection();
         SpigotTimings.schedulerTimer.startTiming(); // Spigot
         this.server.getScheduler().mainThreadHeartbeat(this.tickCounter); // CraftBukkit
         SpigotTimings.schedulerTimer.stopTiming(); // Spigot
         this.profiler.startSection("jobs");
 
-        synchronized (this.futureTaskQueue) {
-            while (!this.futureTaskQueue.isEmpty()) {
-                Util.runTask(this.futureTaskQueue.poll(), LOGGER);
-            }
+        FutureTask<?> entry;
+        int count = this.futureTaskQueue.size();
+        while (count-- > 0 && (entry = this.futureTaskQueue.poll()) != null) {
+            Util.runTask(entry, MinecraftServer.LOGGER);
         }
+
 
 
 
@@ -727,15 +717,18 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             }
         }
         //net.minecraftforge.common.chunkio.ChunkIOExecutor.tick();
-
+        this.profiler.startSection("ChunkIOExecutor");
+        ChunkIOExecutor.tick();
+        this.profiler.endSection();
         // TODO: Check if it's OK to replace ids for worldServerList.size()
-        Integer[] ids = net.minecraftforge.common.DimensionManager.getIDs(this.tickCounter % 200 == 0);
-        for (int x = 0; x < ids.length; x++) {
-            int id = ids[x];
+        //Integer[] ids = net.minecraftforge.common.DimensionManager.getIDs(this.tickCounter % 200 == 0);
+        for (int x = 0; x < worldServerList.size(); x++) {
             long i = System.nanoTime();
 
+
             // if (id == 0 || this.getAllowNether()) {
-            WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
+            WorldServer worldserver = worldServerList.get(x); //net.minecraftforge.common.DimensionManager.getWorld(id);
+            int id = worldserver.dimension;
             this.profiler.func_194340_a(() ->
             {
                 return worldserver.getWorldInfo().getWorldName();
@@ -1277,10 +1270,11 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(callable);
 
-            synchronized (this.futureTaskQueue) {
-                this.futureTaskQueue.add(listenablefuturetask);
-                return listenablefuturetask;
-            }
+            // Spigot start
+            this.futureTaskQueue.add(listenablefuturetask);
+            return listenablefuturetask;
+            // Spigot end
+
         } else {
             try {
                 return Futures.<V>immediateFuture(callable.call());

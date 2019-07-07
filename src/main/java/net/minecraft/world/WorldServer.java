@@ -761,7 +761,7 @@ public class WorldServer extends World implements IThreadListener {
     }
 
     public void updateEntities() {
-        if (false && this.playerEntities.isEmpty() && getPersistentChunks().isEmpty()) // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
+        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty()) // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
         {
             if (this.updateEntityTick++ >= 300) {
                 return;
