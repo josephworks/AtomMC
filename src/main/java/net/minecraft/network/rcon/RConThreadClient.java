@@ -35,14 +35,14 @@ public class RConThreadClient extends RConThreadBase {
     }
 
     public void run() {
-        while (true) {
-            try {
+        try {
+            while (true) {
                 if (!this.running) {
                     return;
                 }
 
                 BufferedInputStream bufferedinputstream = new BufferedInputStream(this.clientSocket.getInputStream());
-                int i = bufferedinputstream.read(this.buffer, 0, 1460);
+                int i = bufferedinputstream.read(this.buffer, 0, this.buffer.length);
 
                 if (10 <= i) {
                     int j = 0;
@@ -93,18 +93,17 @@ public class RConThreadClient extends RConThreadBase {
                             continue;
                     }
                 }
-            } catch (SocketTimeoutException var17) {
-                return;
-            } catch (IOException var18) {
-                return;
-            } catch (Exception exception1) {
-                LOGGER.error("Exception whilst parsing RCON input", (Throwable) exception1);
-                return;
-            } finally {
-                this.closeSocket();
             }
-
+        }
+        catch (SocketTimeoutException var17) {
+                return;
+        } catch (IOException var18) {
             return;
+        } catch (Exception exception1) {
+            LOGGER.error("Exception whilst parsing RCON input", (Throwable) exception1);
+            return;
+        } finally {
+            this.closeSocket();
         }
     }
 
@@ -141,6 +140,7 @@ public class RConThreadClient extends RConThreadBase {
     }
 
     private void closeSocket() {
+        this.running = false;
         if (null != this.clientSocket) {
             try {
                 this.clientSocket.close();

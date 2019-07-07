@@ -1,7 +1,10 @@
 package org.bukkit.craftbukkit.block;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.BlockSnapshot;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.Chunk;
@@ -26,6 +29,7 @@ public class CraftBlockState implements BlockState {
     private final int z;
     protected int type;
     protected MaterialData data;
+    private final NBTTagCompound nbt;
     protected int flag;
 
     public CraftBlockState(final Block block) {
@@ -36,7 +40,15 @@ public class CraftBlockState implements BlockState {
         this.type = block.getTypeId();
         this.chunk = (CraftChunk) block.getChunk();
         this.flag = 3;
-
+        TileEntity te = world.getHandle().getTileEntity(new BlockPos(this.x, this.y, this.z));
+        if (te != null)
+        {
+            nbt = new NBTTagCompound();
+            te.writeToNBT(nbt);
+        }
+        else {
+            nbt = null;
+        }
         createData(block.getData());
     }
 
@@ -49,7 +61,21 @@ public class CraftBlockState implements BlockState {
         world = null;
         type = material.getId();
         chunk = null;
+        this.nbt = null;
         x = y = z = 0;
+    }
+
+    public CraftBlockState(BlockSnapshot snapshot) {
+        this.world = snapshot.getWorld().getWorld();
+        this.x = snapshot.getPos().getX();
+        this.y = snapshot.getPos().getY();
+        this.z = snapshot.getPos().getZ();
+        this.type = net.minecraft.block.Block.getIdFromBlock(snapshot.getReplacedBlock().getBlock());
+        this.chunk = (CraftChunk) this.world.getBlockAt(this.x, this.y, this.z).getChunk();
+        this.flag = 3;
+        this.nbt = snapshot.getNbt();
+
+        this.createData((byte) snapshot.getMeta());
     }
 
     public static CraftBlockState getBlockState(net.minecraft.world.World world, int x, int y, int z) {

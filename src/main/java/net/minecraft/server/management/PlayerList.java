@@ -317,7 +317,7 @@ public abstract class PlayerList {
         }
 
         worldserver.getPlayerChunkMap().addPlayer(playerIn);
-        worldserver.getChunkProvider().provideChunk((int) playerIn.posX >> 4, (int) playerIn.posZ >> 4);
+        //worldserver.getChunkProvider().provideChunk((int) playerIn.posX >> 4, (int) playerIn.posZ >> 4);
 
         if (worldIn != null) {
             CriteriaTriggers.CHANGED_DIMENSION.trigger(playerIn, worldIn.provider.getDimensionType(), worldserver.provider.getDimensionType());
@@ -380,7 +380,7 @@ public abstract class PlayerList {
         this.playerLoggedIn(playerIn, null);
     }
 
-    public void playerLoggedIn(EntityPlayerMP playerIn, String joinMessage) {
+    public void playerLoggedIn(final EntityPlayerMP playerIn, String joinMessage) {
         this.playerEntityList.add(playerIn);
         this.uuidToPlayerMap.put(playerIn.getUniqueID(), playerIn);
         // this.sendPacketToAllPlayers(new SPacketPlayerListItem(SPacketPlayerListItem.Action.ADD_PLAYER, new EntityPlayerMP[] {playerIn})); // CraftBukkit - replaced with loop below
@@ -426,12 +426,27 @@ public abstract class PlayerList {
         // CraftBukkit end
 
         playerIn.connection.sendPacket(new SPacketEntityMetadata(playerIn.getEntityId(), playerIn.getDataManager(), true)); // CraftBukkit - BungeeCord#2321, send complete data to self on spawn
-        net.minecraftforge.common.chunkio.ChunkIOExecutor.adjustPoolSize(this.getCurrentPlayerCount());
+        org.atom.server.chunk.ChunkIOExecutor.adjustPoolSize(this.getCurrentPlayerCount());
 
-        // CraftBukkit start - Only add if the player wasn't moved in the event
-        if (playerIn.world == worldserver && !worldserver.playerEntities.contains(playerIn)) {
+        int cx = MathHelper.floor(playerIn.posX) >> 4;
+        int cz = MathHelper.floor(playerIn.posZ) >> 4;
+        if(worldserver.isChunkLoaded(cx,cz,true)){
             worldserver.spawnEntity(playerIn);
             this.preparePlayer(playerIn, null);
+        } else {
+            worldserver.getChunkProvider().loadAsync(cx, cz, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    worldserver.spawnEntity(playerIn);
+                    preparePlayer(playerIn, null);
+                }
+            });
+        }
+        // CraftBukkit start - Only add if the player wasn't moved in the event
+        if (playerIn.world == worldserver && !worldserver.playerEntities.contains(playerIn)) {
+
         }
         // CraftBukkit end
     }
