@@ -1,4 +1,4 @@
-<center><img src="https://assets.gitlab-static.net/uploads/-/system/project/avatar/6581187/atom_logo1.png" width="400" height="350"></center>
+<img style="display:block;margin-left:auto;margin-right:auto;" src="https://assets.gitlab-static.net/uploads/-/system/project/avatar/6581187/atom_logo1.png" width="400" height="350">
 
 # Atom
 
