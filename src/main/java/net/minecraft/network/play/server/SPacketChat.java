@@ -18,6 +18,12 @@ public class SPacketChat implements Packet<INetHandlerPlayClient> {
     public SPacketChat() {
     }
 
+    public SPacketChat(ITextComponent message, byte type)
+    {
+        this.chatComponent = message;
+        this.type = ChatType.byId(type);
+    }
+
     public SPacketChat(ITextComponent componentIn) {
         this(componentIn, ChatType.SYSTEM);
     }

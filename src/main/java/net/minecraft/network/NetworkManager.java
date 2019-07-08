@@ -71,7 +71,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
     private final EnumPacketDirection direction;
     private final Queue<InboundHandlerTuplePacketListener> outboundPacketsQueue = Queues.<InboundHandlerTuplePacketListener>newConcurrentLinkedQueue();
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private Channel channel;
+    public Channel channel;
     public SocketAddress socketAddress;
     // Spigot Start
     public java.util.UUID spoofedUUID;
@@ -331,7 +331,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
             if (this.channel.pipeline().get("decompress") instanceof NettyCompressionDecoder) {
                 ((NettyCompressionDecoder) this.channel.pipeline().get("decompress")).setCompressionThreshold(threshold);
             } else {
-                this.channel.pipeline().addBefore("decoder", "decompress", new NettyCompressionDecoder(threshold));
+                this.channel.pipeline().addAfter("splitter", "decompress", new NettyCompressionDecoder(threshold));
             }
 
             if (this.channel.pipeline().get("compress") instanceof NettyCompressionEncoder) {

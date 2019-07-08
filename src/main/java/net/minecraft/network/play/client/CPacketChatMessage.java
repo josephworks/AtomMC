@@ -28,7 +28,17 @@ public class CPacketChatMessage implements Packet<INetHandlerPlayServer> {
         buf.writeString(this.message);
     }
 
-    public void processPacket(INetHandlerPlayServer handler) {
+
+    // Spigot Start
+    private static final java.util.concurrent.ExecutorService executors = java.util.concurrent.Executors.newCachedThreadPool(
+                new com.google.common.util.concurrent.ThreadFactoryBuilder().setDaemon( true ).setNameFormat( "Async Chat Thread - #%d" ).build() );
+        public void processPacket(final INetHandlerPlayServer handler) {
+            if ( !message.startsWith("/") )
+            {
+                executors.submit(() -> handler.processChatMessage( CPacketChatMessage.this ));
+                return;
+            }
+            // Spigot End
         handler.processChatMessage(this);
     }
 

@@ -156,7 +156,8 @@ public class DimensionManager {
 
     public static DimensionType getProviderType(int dim) {
         if (!dimensions.containsKey(dim)) {
-            throw new IllegalArgumentException(String.format("Could not get provider type for dimension %d, does not exist", dim));
+            return dimensions.get(0).type; // return Overworld
+            //throw new IllegalArgumentException(String.format("Could not get provider type for dimension %d, does not exist", dim));
         }
         return dimensions.get(dim).type;
     }

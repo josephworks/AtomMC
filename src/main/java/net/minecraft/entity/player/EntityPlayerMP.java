@@ -1622,7 +1622,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener {
         this.setHealth(this.getMaxHealth());
         this.fire = 0;
         this.fallDistance = 0;
-        this.foodStats = new FoodStats(this);
+        this.foodStats.player = this;
         this.experienceLevel = this.newLevel;
         this.experienceTotal = this.newTotalExp;
         this.experience = 0;

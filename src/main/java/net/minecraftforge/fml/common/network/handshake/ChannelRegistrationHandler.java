@@ -25,6 +25,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
@@ -32,6 +33,7 @@ import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import net.minecraftforge.fml.relauncher.Side;
 
 import com.google.common.collect.ImmutableSet;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLProxyPacket> {
     @Override
@@ -46,7 +48,19 @@ public class ChannelRegistrationHandler extends SimpleChannelInboundHandler<FMLP
             Set<String> channelSet = ImmutableSet.copyOf(split);
             FMLCommonHandler.instance().fireNetRegistrationEvent(manager, channelSet, msg.channel(), side);
             msg.payload().release();
-        } else {
+            // Atom start - register bukkit channels for players
+            NetHandlerPlayServer dispatcher = (NetHandlerPlayServer)ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).get().getNetHandler();
+            CraftPlayer player = dispatcher.getPlayer();
+            if (msg.channel().equals("REGISTER")) {
+                for (String channel : channelSet) {
+                    player.addChannel(channel);
+                }
+            } else {
+                for (String channel : channelSet) {
+                    player.removeChannel(channel);
+                }
+            }
+            } else {
             ctx.fireChannelRead(msg);
         }
     }

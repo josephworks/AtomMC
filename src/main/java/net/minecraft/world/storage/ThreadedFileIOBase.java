@@ -38,11 +38,11 @@ public class ThreadedFileIOBase implements Runnable {
                 ++this.savedIOCounter;
             }
 
-            try {
+            /*try {
                 Thread.sleep(this.isThreadWaiting ? 0L : 10L);
             } catch (InterruptedException interruptedexception1) {
                 interruptedexception1.printStackTrace();
-            }
+            }*/
         }
 
         if (this.threadedIOQueue.isEmpty()) {
