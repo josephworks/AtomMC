@@ -7,7 +7,4 @@
 **/.gradle
 
 # VSCode Java
-/bin
-/.classpath
-/.project
-/.settings
+**/.vscode
