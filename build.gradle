@@ -49,7 +49,7 @@ dependencies {
     testCompile 'org.opentest4j:opentest4j:1.2.0'
     testCompile 'org.hamcrest:hamcrest-library:2.1'
     testCompile files("src/test/resources/launchwrapper-1.12.jar") // Use fixed LegacyLauncher for test running
-    testCompile 'org.mockito:mockito-core:2.28.2'
+    testCompile 'org.mockito:mockito-core:3.0.0'
     testCompile 'org.spongepowered:mixin:0.7.10-SNAPSHOT'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.mojang:patchy:1.1'
