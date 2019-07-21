@@ -4,6 +4,7 @@
 
 [![Build Status](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/badge/icon)](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/)
 <a href="http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html"><img src="https://img.shields.io/badge/Forge-1.12.2--14.23.5.2836-brightgreen.svg?colorB=26303d"></a>
+https://img.shields.io/discord/595719397503402019.svg?label=Discord
 
 Atom is a Minecraft server core created by AtomicInteger which is based on [MinecraftForge](https://github.com/MinecraftForge/MinecraftForge) and [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) for 1.12.2 version of Minecraft.
 Also some parts of the code are taken from such project as [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
