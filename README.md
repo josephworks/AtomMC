@@ -3,6 +3,7 @@
 # [Atom](https://github.com/josephworks/AtomMC)
 
 [![Build Status](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/badge/icon)](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/)
+![GitHub release](https://img.shields.io/github/release-pre/josephworks/AtomMC.svg)
 <a href="http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html"><img src="https://img.shields.io/badge/Forge-1.12.2--14.23.5.2836-brightgreen.svg?colorB=26303d"></a>
 ![Discord](https://img.shields.io/discord/595719397503402019.svg?color=7289DA&label=Discord)
 
