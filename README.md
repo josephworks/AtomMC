@@ -9,7 +9,7 @@ Atom is a Minecraft server core created by AtomicInteger which is based on [Mine
 Also some parts of the code are taken from such project as [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
 and its derivatives.
 
-Some of the code is from https://gitlab.com/divinecode/atom/Atom but this is a fork, so it is more developed.
+Some of the code is from gitlab.com@divinecode/atom but this is a fork, so it is more developed.
 
 Our main goals are:
 1. Stable work with both Bukkit plugins and MinecraftForge mods support.
