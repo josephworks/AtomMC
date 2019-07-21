@@ -17,7 +17,8 @@ Our main goals are:
 
 ## Installation
 
-The Atom latest version can be dowloaded on the following page: https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/.  
+The Atom latest version can be dowloaded on the following page: https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/. 
+
 Once the download is completed you have to follow the next steps:
 1. Create a directory, where your future server will be located.
 2. Put a jar file which ends with `-server.jar` and a `libraries` folder from artifacts.zip to this directory.
