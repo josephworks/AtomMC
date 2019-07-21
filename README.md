@@ -4,13 +4,13 @@
 
 [![Build Status](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/badge/icon)](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/)
 <a href="http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html"><img src="https://img.shields.io/badge/Forge-1.12.2--14.23.5.2836-brightgreen.svg?colorB=26303d"></a>
-![Discord](https://img.shields.io/discord/595719397503402019.svg?label=Discord)
+![Discord](https://img.shields.io/discord/595719397503402019.svg?color=7289DA&label=Discord)
 
 Atom is a Minecraft server core created by AtomicInteger which is based on [MinecraftForge](https://github.com/MinecraftForge/MinecraftForge) and [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) for 1.12.2 version of Minecraft.
 Also some parts of the code are taken from such project as [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
 and its derivatives.
 
-Some of the code is from gitlab.com@divinecode/atom but this is a fork, so it is more developed.
+The code is from https://gitlab.com/AtomMC/Atom and its forks.
 
 Our main goals are:
 1. Stable work with both Bukkit plugins and MinecraftForge mods support.
@@ -33,7 +33,8 @@ Once the download is completed you have to follow the next steps:
 
 ## Getting Help
 
-Should you have any questions or need any assistance please do not hesitate to create an issue.
+Should you have any questions or need any assistance please do not hesitate to create an issue or join our [Discord](https://discord.gg/QjU72WG)
+
 ## Contributing
 
 You're always more than welcome to send pull requests and raise issues.
