@@ -1,6 +1,8 @@
 <img src="https://assets.gitlab-static.net/uploads/-/system/project/avatar/6581187/atom_logo1.png" width="400" height="350">
 
 # [Atom](https://github.com/josephworks/AtomMC)
+
+[![Build Status](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/badge/icon)](https://ci.openprocesses.ml/job/jospehworks/job/AtomMC/)
 <a href="http://files.minecraftforge.net/maven/net/minecraftforge/forge/index_1.12.2.html"><img src="https://img.shields.io/badge/Forge-1.12.2--14.23.5.2836-brightgreen.svg?colorB=26303d"></a>
 Atom is a Minecraft server core created by AtomicInteger which is based on [MinecraftForge](https://github.com/MinecraftForge/MinecraftForge) and [CraftBukkit](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse) for 1.12.2 version of Minecraft.
 Also some parts of the code are taken from such project as [Spigot](https://hub.spigotmc.org/stash/projects/SPIGOT/repos/spigot/browse)
@@ -32,4 +34,5 @@ Should you have any questions or need any assistance please do not hesitate to c
 ## Contributing
 
 You're always more than welcome to send pull requests and raise issues.
+
 Feel free to donate to my hard work at https://paypal.me/emeraldtnt
