@@ -827,12 +827,16 @@ public class ForgeHooks {
             TreeType treeType = BlockSapling.treeType;
             BlockSapling.treeType = null;
             @SuppressWarnings("unchecked")
-            List<BlockSnapshot> blocks = (List<BlockSnapshot>) world.capturedBlockSnapshots.clone();
+            //List<BlockSnapshot> blocks = (List<BlockSnapshot>) world.capturedBlockSnapshots.clone();
+            List<BlockState> blocks = new ArrayList();
+            for (net.minecraftforge.common.util.BlockSnapshot snapshot : (List<net.minecraftforge.common.util.BlockSnapshot>) world.capturedBlockSnapshots.clone()) {
+                blocks.add(new CraftBlockState(snapshot));
+            }
             world.capturedBlockSnapshots.clear();
             StructureGrowEvent event = null;
             if (treeType != null) {
                 boolean isBonemeal = itemstack.getItem() == Items.DYE && meta == 15;
-                event = new StructureGrowEvent(location, treeType, isBonemeal, (Player) player.getBukkitEntity(), toBlockStates(world, blocks));
+                event = new StructureGrowEvent(location, treeType, isBonemeal, (Player) player.getBukkitEntity(), blocks);
                 org.bukkit.Bukkit.getPluginManager().callEvent(event);
             }
             if (event == null || !event.isCancelled()) {
@@ -841,10 +845,10 @@ public class ForgeHooks {
                     itemstack.setItemDamage(newMeta);
                     itemstack.setCount(newSize);
                 }
-                for (BlockSnapshot blocksnapshot : Lists.reverse(blocks)) {
-                    world.restoringBlockSnapshots = true;
-                    blocksnapshot.restore(true, false);
-                    world.restoringBlockSnapshots = false;
+                for (BlockState blockState : Lists.reverse(blocks)) {
+                    //world.restoringBlockSnapshots = true;
+                    blockState.update();
+                    //world.restoringBlockSnapshots = false;
                 }
             }
 

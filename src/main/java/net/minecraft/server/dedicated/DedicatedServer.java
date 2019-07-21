@@ -53,6 +53,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.atom.AtomServerWatchDog;
+import org.atom.Metrics;
 import org.bukkit.craftbukkit.LoggerOutputStream;
 import org.bukkit.craftbukkit.SpigotTimings; // Spigot
 import org.bukkit.craftbukkit.util.Waitable;
@@ -73,6 +74,7 @@ public class DedicatedServer extends MinecraftServer implements IServer {
     private GameType gameType;
     private boolean guiIsEnabled;
     public static boolean allowPlayerLogins = false;
+    private static boolean metricsStarted;
 
     // CraftBukkit start - Signature changed
     public DedicatedServer(joptsimple.OptionSet options, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn) {
@@ -274,6 +276,10 @@ public class DedicatedServer extends MinecraftServer implements IServer {
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", (double) i1 / 1.0E9D);
                 LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object) s3);
+                if (!metricsStarted) {
+                    Metrics.PaperMetrics.startMetrics();
+                    metricsStarted = true;
+                }
                 this.currentTime = getCurrentTimeMillis();
 
                 if (this.settings.hasProperty("announce-player-achievements")) {

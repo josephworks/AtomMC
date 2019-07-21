@@ -323,8 +323,8 @@ public class PacketBuffer extends ByteBuf {
     public PacketBuffer writeString(String string) {
         byte[] abyte = string.getBytes(StandardCharsets.UTF_8);
 
-        if (abyte.length > 32767) {
-            throw new EncoderException("String too big (was " + abyte.length + " bytes encoded, max " + 32767 + ")");
+        if (abyte.length > 44767) {
+            throw new EncoderException("String too big (was " + string.length() + " bytes encoded, max " + 44767 + ")");
         } else {
             this.writeVarInt(abyte.length);
             this.writeBytes(abyte);

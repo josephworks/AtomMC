@@ -9,7 +9,7 @@ import net.md_5.specialsource.repo.ClassRepo;
 import net.md_5.specialsource.repo.RuntimeRepo;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import org.atom.AtomServer;
+import org.atom.AtomServerCore;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
@@ -68,7 +68,7 @@ public class AtomURLClassLoader extends URLClassLoader {
     }
 
     private Class<?> findClass(final String name, final boolean checkGlobal) throws ClassNotFoundException {
-        if (name.startsWith("net.minecraft.server." + AtomServer.getNativeVersion())) {
+        if (name.startsWith("net.minecraft.server." + AtomServerCore.getNativeVersion())) {
             final String remappedClass = this.jarMapping.classes.get(name.replaceAll("\\.", "\\/"));
             final Class<?> clazz = (Class<?>) ((LaunchClassLoader) FMLCommonHandler.instance().getMinecraftServerInstance().getClass().getClassLoader()).findClass(remappedClass);
             return clazz;
