@@ -18,7 +18,7 @@ public class MappingLoader {
         relocations.put("net.minecraft.server", "net.minecraft.server." + obfVersion);
 
         jarMapping.loadMappings(
-                new BufferedReader(new InputStreamReader(Objects.requireNonNull(MappingLoader.class.getClassLoader().getResourceAsStream("mappings/" + obfVersion + "/cb2srg.srg")))),
+                new BufferedReader(new InputStreamReader(Objects.requireNonNull(MappingLoader.class.getClassLoader().getResourceAsStream("mappings/" + obfVersion + "/NMSMappings.srg")))),
                 new MavenShade(relocations),
                 null, false);
         HandleLookup.loadMappings(MappingTools.getMappingReader());
