@@ -13717,6 +13717,7 @@ MD: net/minecraft/server/ChunkRegionLoader/a (II)Z net/minecraft/world/chunk/sto
 MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/ChunkCoordIntPair;Lnet/minecraft/server/NBTTagCompound;)V net/minecraft/world/chunk/storage/AnvilChunkLoader/func_75824_a (Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/nbt/NBTTagCompound;)V
 MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/DataConverterManager;)V net/minecraft/world/chunk/storage/AnvilChunkLoader/func_189889_a (Lnet/minecraft/util/datafix/DataFixer;)V
 MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/Entity;Lnet/minecraft/server/World;)V net/minecraft/world/chunk/storage/AnvilChunkLoader/func_186052_a (Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;)V
+MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/Entity;Lnet/minecraft/server/World;Lorg/bukkit/event/entity/CreatureSpawnEvent$SpawnReason;)V net/minecraft/world/chunk/storage/AnvilChunkLoader/spawnEntity (Lnet/minecraft/entity/Entity;Lnet/minecraft/world/World;Lorg/bukkit/event/entity/CreatureSpawnEvent$SpawnReason;)V
 MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/NBTTagCompound;Lnet/minecraft/server/World;)Lnet/minecraft/server/Entity; net/minecraft/world/chunk/storage/AnvilChunkLoader/func_186053_a (Lnet/minecraft/nbt/NBTTagCompound;Lnet/minecraft/world/World;)Lnet/minecraft/entity/Entity;
 MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/NBTTagCompound;Lnet/minecraft/server/World;DDDZ)Lnet/minecraft/server/Entity; net/minecraft/world/chunk/storage/AnvilChunkLoader/func_186054_a (Lnet/minecraft/nbt/NBTTagCompound;Lnet/minecraft/world/World;DDDZ)Lnet/minecraft/entity/Entity;
 MD: net/minecraft/server/ChunkRegionLoader/a (Lnet/minecraft/server/NBTTagCompound;Lnet/minecraft/server/World;Lnet/minecraft/server/Chunk;)Lnet/minecraft/server/Entity; net/minecraft/world/chunk/storage/AnvilChunkLoader/func_186050_a (Lnet/minecraft/nbt/NBTTagCompound;Lnet/minecraft/world/World;Lnet/minecraft/world/chunk/Chunk;)Lnet/minecraft/entity/Entity;
@@ -18059,7 +18060,7 @@ MD: net/minecraft/server/EntityPlayer/getStatisticManager ()Lnet/minecraft/serve
 MD: net/minecraft/server/EntityPlayer/j ()V net/minecraft/entity/player/EntityPlayerMP/func_152111_bt ()V
 MD: net/minecraft/server/EntityPlayer/k ()V net/minecraft/entity/player/EntityPlayerMP/func_152112_bu ()V
 MD: net/minecraft/server/EntityPlayer/l ()Lnet/minecraft/server/ItemCooldown; net/minecraft/entity/player/EntityPlayerMP/func_184815_l ()Lnet/minecraft/util/CooldownTracker;
-MD: net/minecraft/server/EntityPlayer/nextContainerCounter ()V net/minecraft/entity/player/EntityPlayerMP/nextContainerCounter ()V
+MD: net/minecraft/server/EntityPlayer/nextContainerCounter ()V net/minecraft/entity/player/EntityPlayerMP/func_71117_bO ()V
 MD: net/minecraft/server/EntityPlayer/o ()V net/minecraft/entity/player/EntityPlayerMP/func_184210_p ()V
 MD: net/minecraft/server/EntityPlayer/p ()V net/minecraft/entity/player/EntityPlayerMP/func_71053_j ()V
 MD: net/minecraft/server/EntityPlayer/playerTick ()V net/minecraft/entity/player/EntityPlayerMP/func_71127_g ()V
@@ -20707,7 +20708,7 @@ MD: net/minecraft/server/MinecraftServer/getPlayerList ()Lnet/minecraft/server/P
 MD: net/minecraft/server/MinecraftServer/getPlayers ()[Ljava/lang/String; net/minecraft/server/MinecraftServer/func_71213_z ()[Ljava/lang/String;
 MD: net/minecraft/server/MinecraftServer/getResourcePack ()Ljava/lang/String; net/minecraft/server/MinecraftServer/func_147133_T ()Ljava/lang/String;
 MD: net/minecraft/server/MinecraftServer/getResourcePackHash ()Ljava/lang/String; net/minecraft/server/MinecraftServer/func_175581_ab ()Ljava/lang/String;
-MD: net/minecraft/server/MinecraftServer/getServer ()Lnet/minecraft/server/MinecraftServer; net/minecraft/server/MinecraftServer/getServerInst ()Lnet/minecraft/server/MinecraftServer;
+MD: net/minecraft/server/MinecraftServer/getServer ()Lnet/minecraft/server/MinecraftServer; net/minecraft/server/MinecraftServer/getServerInstance ()Lnet/minecraft/server/MinecraftServer;
 MD: net/minecraft/server/MinecraftServer/getServerConnection ()Lnet/minecraft/server/ServerConnection; net/minecraft/server/MinecraftServer/func_147137_ag ()Lnet/minecraft/network/NetworkSystem;
 MD: net/minecraft/server/MinecraftServer/getServerIp ()Ljava/lang/String; net/minecraft/server/MinecraftServer/func_71211_k ()Ljava/lang/String;
 MD: net/minecraft/server/MinecraftServer/getServerModName ()Ljava/lang/String; net/minecraft/server/MinecraftServer/getServerModName ()Ljava/lang/String;
