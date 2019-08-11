@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Atom.iml" filepath="$PROJECT_DIR$/.idea/modules/Atom.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Atom.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/Atom.buildSrc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Atom.buildSrc.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Atom.buildSrc.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Atom.buildSrc.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Atom.buildSrc.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bukkit/Atom.bukkit.iml" filepath="$PROJECT_DIR$/.idea/modules/bukkit/Atom.bukkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bukkit/Atom.bukkit.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bukkit/Atom.bukkit.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bukkit/Atom.bukkit.test.iml" filepath="$PROJECT_DIR$/.idea/modules/bukkit/Atom.bukkit.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Atom.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Atom.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Atom.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Atom.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/AtomMC.iml" filepath="$PROJECT_DIR$/.idea/AtomMC.iml" />
+    </modules>
+  </component>
+</project>
