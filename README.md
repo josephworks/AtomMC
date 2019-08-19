@@ -13,6 +13,8 @@ and its derivatives.
 
 The code is from https://gitlab.com/AtomMC/Atom and its forks.
 
+This project is not affiliated with shadowdan's development team.
+
 Our main goals are:
 1. Stable work with both Bukkit plugins and MinecraftForge mods support.
 2. Highest performance possible.
