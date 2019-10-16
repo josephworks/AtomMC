@@ -103,7 +103,7 @@ dependencies {
     compile 'org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1'
     compile 'org.scala-lang:scala-compiler:2.11.1'
     compile 'net.md-5:bungeecord-chat:1.12-SNAPSHOT'
-    compile 'org.xerial:sqlite-jdbc:3.25.2'
+    compile 'org.xerial:sqlite-jdbc:3.28.0'
     compile 'mysql:mysql-connector-java:8.0.18'
     compile 'net.md-5:SpecialSource:1.8.5'
     //compile 'net.openhft:koloboke-api-jdk8:0.6.8'
