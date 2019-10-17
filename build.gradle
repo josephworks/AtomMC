@@ -84,7 +84,7 @@ dependencies {
     compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209'
     compile 'com.mojang:text2speech:1.10.3'
     compile 'net.minecraft:launchwrapper:1.12'
-    compile 'org.jline:jline:3.5.1'
+    compile 'org.jline:jline:3.13.0'
     compile 'org.fusesource.jansi:jansi:1.17.1'
     compile 'org.ow2.asm:asm-debug-all:5.2'
     compile 'com.typesafe.akka:akka-actor_2.11:2.5.25'
