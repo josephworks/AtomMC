@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="Atom.buildSrc.main" target="1.8" />
+      <module name="Atom.buildSrc.test" target="1.8" />
+      <module name="Atom.bukkit.main" target="1.8" />
+      <module name="Atom.bukkit.test" target="1.8" />
+      <module name="Atom.main" target="1.8" />
+      <module name="Atom.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
