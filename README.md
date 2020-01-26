@@ -32,7 +32,7 @@ Once the download is completed you have to follow the next steps:
 ## Building
 - `git clone https://github.com/josephworks/AtomMC.git`
 - `git submodule update --init --recursive`
-- `gradlew build`
+- `./gradlew build`
 
 ## Getting Help
 
