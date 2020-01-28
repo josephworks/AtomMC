@@ -87,7 +87,7 @@ dependencies {
     compile 'org.jline:jline:3.5.1'
     compile 'org.fusesource.jansi:jansi:1.17.1'
     compile 'org.ow2.asm:asm-debug-all:5.2'
-    compile 'com.typesafe.akka:akka-actor_2.11:2.5.25'
+    compile 'com.typesafe.akka:akka-actor_2.11:2.5.28'
     compile 'com.typesafe:config:1.2.1'
     compile 'lzma:lzma:0.0.1'
     compile 'java3d:vecmath:1.5.2'
