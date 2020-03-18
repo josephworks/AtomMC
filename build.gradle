@@ -63,7 +63,7 @@ dependencies {
     compile 'com.paulscode:libraryjavasound:20101123'
     compile 'com.paulscode:librarylwjglopenal:20100824'
     compile 'com.paulscode:soundsystem:20120107'
-    compile 'io.netty:netty-all:4.1.38.Final'
+    compile 'io.netty:netty-all:4.1.48.Final'
     compile 'com.google.guava:guava:23.0'
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'commons-io:commons-io:2.5'
