@@ -13,9 +13,15 @@ pipeline {
       }
     }
 
+    stage('DumpLibs') {
+      steps {
+        sh 'bash ./gradle dumpLibs'
+      }
+    }
+
     stage('Archive') {
       steps {
-        archiveArtifacts(artifacts: 'build/distribution/*.jar', fingerprint: true)
+        archiveArtifacts(artifacts: 'build/libs/*.jar', fingerprint: true)
       }
     }
 
