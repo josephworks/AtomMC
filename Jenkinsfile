@@ -15,7 +15,7 @@ pipeline {
 
     stage('DumpLibs') {
       steps {
-        sh 'bash ./gradle dumpLibs'
+        sh 'bash ./gradlew dumpLibs'
       }
     }
 
