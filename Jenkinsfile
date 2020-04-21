@@ -23,7 +23,7 @@ mv libraries.zip build/libs'''
 
     stage('Archive') {
       steps {
-        archiveArtifacts(artifacts: 'build/libs/*.jar', fingerprint: true)
+        archiveArtifacts(artifacts: 'build/libs/*', fingerprint: true)
       }
     }
 
