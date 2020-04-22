@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id=":bukkit" external.linked.project.path="$MODULE_DIR$/../../../bukkit" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="org.bukkit" external.system.module.version="1.12.2-R0.1-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="org.bukkit" externalSystemModuleVersion="1.12.2-R0.1-SNAPSHOT" linkedProjectId=":bukkit" linkedProjectPath="$MODULE_DIR$/../../../bukkit" rootProjectPath="$MODULE_DIR$/../../.." />
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../bukkit">
