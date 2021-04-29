@@ -44,7 +44,7 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 dependencies {
-    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.13.2'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0'
     testCompile 'org.opentest4j:opentest4j:1.0.0'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
