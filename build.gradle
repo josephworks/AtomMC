@@ -97,7 +97,7 @@ dependencies {
         exclude module: 'launchwrapper'
     }
     compile project(path: ':bukkit', configuration: 'default')
-    compile 'org.yaml:snakeyaml:1.21'
+    compile 'org.yaml:snakeyaml:1.29'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     compile 'commons-lang:commons-lang:2.6' // Is needed for plugin compatibility
     compile 'org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1'
